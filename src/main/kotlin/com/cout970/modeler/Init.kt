@@ -1,8 +1,8 @@
 package com.cout970.modeler
 
+import com.cout970.glutilities.event.EventManager
 import com.cout970.glutilities.window.GLFWLoader
 import com.cout970.modeler.event.EventController
-import java.util.*
 
 /**
  * Created by cout970 on 2016/11/29.
@@ -32,10 +32,11 @@ class Init {
         mainController = MainController(listOf(eventController, renderManager, modelController, windowController))
         windowController.stop = { mainController.stop = true}
 
-        eventController.addListener(windowController)
+        windowController.registerListeners(eventController)
 
         GLFWLoader.init()
         windowController.show()
+        EventManager.registerWindow(windowController.window.id)
         renderManager.initOpenGl()
     }
 

@@ -7,9 +7,9 @@ import com.cout970.modeler.ITickeable
 /**
  * Created by cout970 on 2016/11/29.
  */
-class EventController() : ITickeable {
+class EventController() : ITickeable, IEventController {
 
-    private val listeners = mutableListOf<IEventListener>()
+    private val listeners = mutableMapOf<Class<Event>, MutableList<IEventListener<Event>>>()
     private val eventQueue = mutableListOf<() -> Unit>()
 
     init {
@@ -23,14 +23,24 @@ class EventController() : ITickeable {
 
     private fun onEvent(event: Event) {
         eventQueue.add {
-            listeners.any {
-                it.onEvent(event)
+            listeners[event.javaClass]?.run {
+                any { it.onEvent(event) }
             }
         }
     }
 
-    fun addListener(l: IEventListener) {
-        listeners += l
-        listeners.sortBy { it.priority }
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : Event> addListener(clazz: Class<T>, listener: IEventListener<T>) {
+        putListener(clazz as Class<Event>, listener as IEventListener<Event>)
+    }
+
+    private fun putListener(clazz: Class<Event>, listener: IEventListener<Event>) {
+        if (listeners.containsKey(clazz)) {
+            val list = listeners[clazz]!!
+            list += listener
+            list.sortBy { it.priority }
+        } else {
+            listeners.put(clazz, mutableListOf(listener))
+        }
     }
 }
