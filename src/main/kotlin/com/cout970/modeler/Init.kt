@@ -3,6 +3,7 @@ package com.cout970.modeler
 import com.cout970.glutilities.event.EventManager
 import com.cout970.glutilities.window.GLFWLoader
 import com.cout970.modeler.event.EventController
+import org.liquidengine.legui.context.LeguiCallbackKeeper
 
 /**
  * Created by cout970 on 2016/11/29.
@@ -15,6 +16,7 @@ class Init {
     lateinit var eventController: EventController
     lateinit var renderManager: RenderManager
     lateinit var mainController: MainController
+    lateinit var callbackKeeper: LeguiCallbackKeeper
 
 
     fun run() {
@@ -30,12 +32,13 @@ class Init {
         eventController = EventController()
         renderManager = RenderManager()
         mainController = MainController(listOf(eventController, renderManager, modelController, windowController))
-        windowController.stop = { mainController.stop = true}
+        windowController.stop = { mainController.stop = true }
 
         windowController.registerListeners(eventController)
 
         GLFWLoader.init()
         windowController.show()
+        callbackKeeper = eventController.createCallbackKeeper()
         EventManager.registerWindow(windowController.window.id)
         renderManager.initOpenGl()
     }

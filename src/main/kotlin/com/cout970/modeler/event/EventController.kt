@@ -3,6 +3,7 @@ package com.cout970.modeler.event
 import com.cout970.glutilities.event.Event
 import com.cout970.glutilities.event.EventManager
 import com.cout970.modeler.ITickeable
+import org.liquidengine.legui.context.LeguiCallbackKeeper
 
 /**
  * Created by cout970 on 2016/11/29.
@@ -41,6 +42,26 @@ class EventController() : ITickeable, IEventController {
             list.sortBy { it.priority }
         } else {
             listeners.put(clazz, mutableListOf(listener))
+        }
+    }
+
+    fun createCallbackKeeper(): LeguiCallbackKeeper {
+        return LeguiCallbackKeeper().apply {
+            chainCharCallback = CharCallback
+            chainDropCallback = DropCallback
+            chainKeyCallback = KeyCallback
+            chainScrollCallback = ScrollCallback
+            chainCharModsCallback = CharModsCallback
+            chainCursorEnterCallback = CursorEnterCallback
+            chainFramebufferSizeCallback = FramebufferSizeCallback
+            chainMouseButtonCallback = MouseButtonCallback
+            chainCursorPosCallback = CursorPosCallback
+            chainWindowCloseCallback = WindowCloseCallback
+            chainWindowFocusCallback = WindowFocusCallback
+            chainWindowIconifyCallback = WindowIconifyCallback
+            chainWindowPosCallback = WindowPosCallback
+            chainWindowRefreshCallback = WindowRefreshCallback
+            chainWindowSizeCallback = WindowSizeCallback
         }
     }
 }

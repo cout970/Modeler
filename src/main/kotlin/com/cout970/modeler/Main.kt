@@ -6,4 +6,5 @@ package com.cout970.modeler
 
 fun main(args: Array<String>) {
     Init().run()
+//    Example.main(args)
 }
