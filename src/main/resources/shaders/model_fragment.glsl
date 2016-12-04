@@ -12,4 +12,5 @@ void main(){
 //    if(te.w < 0.1) discard;
 //    pixel = te;
     pixel = vec4(color, 1.0);
+//    pixel = vec4(0.0, pass_tex.x, pass_tex.y, 1.0);
 }

@@ -31,4 +31,9 @@ class Cache<K, T>(val limit: Int = 5) {
     }
 
     class Entry<out T>(val value: T, var count: Int)
+
+    fun clear() {
+        entries.clear()
+        count = 0
+    }
 }

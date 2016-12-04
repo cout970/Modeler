@@ -1,0 +1,201 @@
+<?xml version="1.0"?>
+<Document xmlns="http://www.evolus.vn/Namespace/Pencil"><Properties/><Pages><Page><Properties><Property name="name">Untitled Page</Property><Property name="id">1480792177509_1631</Property><Property name="width">800</Property><Property name="height">600</Property><Property name="dimBackground"/><Property name="transparentBackground"/><Property name="backgroundColor">#ffffff</Property></Properties><Content><g xmlns="http://www.w3.org/2000/svg" p:type="Shape" xmlns:p="http://www.evolus.vn/Namespace/Pencil" p:def="Evolus.Common:RoundedRect" id="bb9cb61a4e8b4b088ccc28b27fa565f3" transform="matrix(1,0,0,1,2,-6)"><p:metadata><p:property name="box"><![CDATA[181,609]]></p:property><p:property name="withBlur"><![CDATA[false]]></p:property><p:property name="radius"><![CDATA[0,0]]></p:property><p:property name="textPadding"><![CDATA[0,76.125]]></p:property><p:property name="fillColor"><![CDATA[#E3E3E3FF]]></p:property><p:property name="strokeColor"><![CDATA[#1B3280FF]]></p:property><p:property name="strokeStyle"><![CDATA[2|]]></p:property><p:property name="textContent"><![CDATA[
+                ]]></p:property><p:property name="textFont"><![CDATA[Arial|normal|normal|13px|none]]></p:property><p:property name="textColor"><![CDATA[#000000FF]]></p:property><p:property name="textAlign"><![CDATA[1,1]]></p:property></p:metadata>
+
+            <defs>
+                <rect width="179" height="607" rx="0" ry="0" x="0" y="0" style="stroke-width: 2; fill: rgb(227, 227, 227); fill-opacity: 1; stroke: rgb(27, 50, 128); stroke-opacity: 1;" p:name="rrRect" id="f248d067dc8c47fcb9af4510696039c3" transform="translate(1,1)"/>
+                <filter height="1.2558399" y="-0.12792" width="1.06396" x="-0.03198" p:name="shadingFilter" id="d09482bee119464e98ff2a8e52fea8ce">
+                    <feGaussianBlur stdDeviation="1" in="SourceAlpha"/>
+                </filter>
+            </defs>
+            <use xlink:href="#f248d067dc8c47fcb9af4510696039c3" xmlns:xlink="http://www.w3.org/1999/xlink" transform="translate(2, 2)" p:filter="url(#d09482bee119464e98ff2a8e52fea8ce)" style="opacity: 0.5; visibility: hidden; display: none;" p:heavy="true" p:name="bgCopy" id="78ec3c418a064a3e92146f50800d429c"/>
+            <use xlink:href="#f248d067dc8c47fcb9af4510696039c3" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+            <foreignObject x="76.125" y="305" width="28.75" height="0" p:name="text" id="ad04d54c8e07495f8d470efa068d0266" style="font-family: Arial; font-size: 13px; font-weight: normal; font-style: normal; text-decoration: none; fill: rgb(0, 0, 0); fill-opacity: 1; color: rgb(0, 0, 0); opacity: 1; text-align: center;"><div xmlns="http://www.w3.org/1999/xhtml">
+                </div></foreignObject>
+        </g><g xmlns="http://www.w3.org/2000/svg" p:type="Shape" xmlns:p="http://www.evolus.vn/Namespace/Pencil" p:def="Evolus.Common:RoundedRect" id="d4c004e729654c34b4a851565d194d27" transform="matrix(1,0,0,1,7,474)"><p:metadata><p:property name="box"><![CDATA[169,121]]></p:property><p:property name="withBlur"><![CDATA[false]]></p:property><p:property name="radius"><![CDATA[0,0]]></p:property><p:property name="textPadding"><![CDATA[0,15.124999999999998]]></p:property><p:property name="fillColor"><![CDATA[#B8C2CCFF]]></p:property><p:property name="strokeColor"><![CDATA[#1B3280FF]]></p:property><p:property name="strokeStyle"><![CDATA[2|]]></p:property><p:property name="textContent"><![CDATA[
+                ]]></p:property><p:property name="textFont"><![CDATA[Arial|normal|normal|13px|none]]></p:property><p:property name="textColor"><![CDATA[#000000FF]]></p:property><p:property name="textAlign"><![CDATA[1,1]]></p:property></p:metadata>
+
+            <defs>
+                <rect width="167" height="119" rx="0" ry="0" x="0" y="0" style="stroke-width: 2; fill: rgb(184, 194, 204); fill-opacity: 1; stroke: rgb(27, 50, 128); stroke-opacity: 1;" p:name="rrRect" id="c58796aaed474c85bf20fc3fb2ac3b2b" transform="translate(1,1)"/>
+                <filter height="1.2558399" y="-0.12792" width="1.06396" x="-0.03198" p:name="shadingFilter" id="9e67138d1b1947d688d98e73c44aea45">
+                    <feGaussianBlur stdDeviation="1" in="SourceAlpha"/>
+                </filter>
+            </defs>
+            <use xlink:href="#c58796aaed474c85bf20fc3fb2ac3b2b" xmlns:xlink="http://www.w3.org/1999/xlink" transform="translate(2, 2)" p:filter="url(#9e67138d1b1947d688d98e73c44aea45)" style="opacity: 0.5; visibility: hidden; display: none;" p:heavy="true" p:name="bgCopy" id="7273fc79b7274d1599a58891817eade8"/>
+            <use xlink:href="#c58796aaed474c85bf20fc3fb2ac3b2b" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+            <foreignObject x="15.125" y="61" width="138.75" height="0" p:name="text" id="a322faa56ab04b37b08dce811580b18e" style="font-family: Arial; font-size: 13px; font-weight: normal; font-style: normal; text-decoration: none; fill: rgb(0, 0, 0); fill-opacity: 1; color: rgb(0, 0, 0); opacity: 1; text-align: center;"><div xmlns="http://www.w3.org/1999/xhtml">
+                </div></foreignObject>
+        </g><g xmlns="http://www.w3.org/2000/svg" p:type="Shape" xmlns:p="http://www.evolus.vn/Namespace/Pencil" p:def="Evolus.Common:RoundedRect" id="6e3682d571254feeb04adabfce3f8dfb" transform="matrix(1,0,0,1,-3,-1)"><p:metadata><p:property name="box"><![CDATA[807,37]]></p:property><p:property name="withBlur"><![CDATA[false]]></p:property><p:property name="radius"><![CDATA[0,0]]></p:property><p:property name="textPadding"><![CDATA[0,4.625]]></p:property><p:property name="fillColor"><![CDATA[#EDEDEDFF]]></p:property><p:property name="strokeColor"><![CDATA[#1B3280FF]]></p:property><p:property name="strokeStyle"><![CDATA[2|]]></p:property><p:property name="textContent"><![CDATA[
+                ]]></p:property><p:property name="textFont"><![CDATA[Arial|normal|normal|13px|none]]></p:property><p:property name="textColor"><![CDATA[#000000FF]]></p:property><p:property name="textAlign"><![CDATA[1,1]]></p:property></p:metadata>
+
+            <defs>
+                <rect width="805" height="35" rx="0" ry="0" x="0" y="0" style="stroke-width: 2; fill: rgb(237, 237, 237); fill-opacity: 1; stroke: rgb(27, 50, 128); stroke-opacity: 1;" p:name="rrRect" id="f0c86f249b544cc5ab2b97e4e4b5078f" transform="translate(1,1)"/>
+                <filter height="1.2558399" y="-0.12792" width="1.06396" x="-0.03198" p:name="shadingFilter" id="0338cfa7495c4cde80b7b88f34401232">
+                    <feGaussianBlur stdDeviation="1" in="SourceAlpha"/>
+                </filter>
+            </defs>
+            <use xlink:href="#f0c86f249b544cc5ab2b97e4e4b5078f" xmlns:xlink="http://www.w3.org/1999/xlink" transform="translate(2, 2)" p:filter="url(#0338cfa7495c4cde80b7b88f34401232)" style="opacity: 0.5; visibility: hidden; display: none;" p:heavy="true" p:name="bgCopy" id="5f3b8a84da594f988001a36933ce2f93"/>
+            <use xlink:href="#f0c86f249b544cc5ab2b97e4e4b5078f" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+            <foreignObject x="4.625" y="19" width="797.75" height="0" p:name="text" id="5ce847cd1be943aca31baad025161d85" style="font-family: Arial; font-size: 13px; font-weight: normal; font-style: normal; text-decoration: none; fill: rgb(0, 0, 0); fill-opacity: 1; color: rgb(0, 0, 0); opacity: 1; text-align: center;"><div xmlns="http://www.w3.org/1999/xhtml">
+                </div></foreignObject>
+        </g><g xmlns="http://www.w3.org/2000/svg" p:type="Shape" xmlns:p="http://www.evolus.vn/Namespace/Pencil" p:def="Evolus.GTK.Widgets:Button" id="e8245be485ac44528d7acbb91843a657" transform="matrix(1,0,0,1,2,5)"><p:metadata><p:property name="box"><![CDATA[90,24]]></p:property><p:property name="buttonText"><![CDATA[File]]></p:property><p:property name="textColor"><![CDATA[#000000FF]]></p:property><p:property name="textFont"><![CDATA[Liberation Sans|normal|normal|12px|none]]></p:property><p:property name="textAlign"><![CDATA[1,1]]></p:property><p:property name="disabled"><![CDATA[false]]></p:property></p:metadata>
+            
+            <defs>
+                <linearGradient x1="0%" y1="0%" x2="0%" y2="100%" p:name="linearFill" id="0fe0e5d3c903469592636521322ad4d4">
+                    <stop style="stop-color:#fdfdfc;stop-opacity:1" offset="0" p:name="stop1" id="ff2b166e559f49edbef1ca53bc598a05"/>
+                    <stop style="stop-color: rgb(235, 235, 235); stop-opacity: 1;" offset="0.7" p:name="stop2" id="952403e3dd3f4250b3c5563b14a6cf58"/>
+                    <stop style="stop-color: rgb(252, 252, 252); stop-opacity: 1;" offset="1" p:name="stop3" id="30ba2749c0ea4ac0a7773161a4df8054"/>
+                </linearGradient>
+            </defs>
+            <rect width="89" height="23" rx="3" ry="3" x="0.5" y="0.5" style="fill: url(&quot;#0fe0e5d3c903469592636521322ad4d4&quot;) none; stroke: rgb(161, 150, 133); stroke-width: 1; stroke-linejoin: round; stroke-opacity: 1;" p:name="rect" id="36331124e27b4d7ca52831365cc10882"/>
+            <text x="31.5" y="17.25" style="font-size: 12px; font-style: normal; font-weight: normal; text-align: left; text-anchor: start; dominant-baseline: central; fill: rgb(0, 0, 0); font-family: Liberation Sans; fill-opacity: 1; text-decoration: none;" xml:space="preserve" p:name="text" id="737cd667684c43fab2017707bc416b8d" transform="translate(4,-5)">File</text>
+        </g><g xmlns="http://www.w3.org/2000/svg" p:type="Shape" xmlns:p="http://www.evolus.vn/Namespace/Pencil" p:def="Evolus.GTK.Widgets:Button" id="e9d5a76110484bce835fef940be21267" transform="matrix(1,0,0,1,94,5)"><p:metadata><p:property name="box"><![CDATA[90,24]]></p:property><p:property name="buttonText"><![CDATA[Edit]]></p:property><p:property name="textColor"><![CDATA[#000000FF]]></p:property><p:property name="textFont"><![CDATA[Liberation Sans|normal|normal|12px|none]]></p:property><p:property name="textAlign"><![CDATA[1,1]]></p:property><p:property name="disabled"><![CDATA[false]]></p:property></p:metadata>
+            
+            <defs>
+                <linearGradient x1="0%" y1="0%" x2="0%" y2="100%" p:name="linearFill" id="5faf4a22a5f64b8fa2cdc38b028c42ad">
+                    <stop style="stop-color:#fdfdfc;stop-opacity:1" offset="0" p:name="stop1" id="aa3b210088a74f329f2e5c0ff095403a"/>
+                    <stop style="stop-color: rgb(235, 235, 235); stop-opacity: 1;" offset="0.7" p:name="stop2" id="3897b1d359e84cac9b75a8f226fa0bda"/>
+                    <stop style="stop-color: rgb(252, 252, 252); stop-opacity: 1;" offset="1" p:name="stop3" id="a5a5015b5ac942488a9412342b022796"/>
+                </linearGradient>
+            </defs>
+            <rect width="89" height="23" rx="3" ry="3" x="0.5" y="0.5" style="fill: url(&quot;#5faf4a22a5f64b8fa2cdc38b028c42ad&quot;) none; stroke: rgb(161, 150, 133); stroke-width: 1; stroke-linejoin: round; stroke-opacity: 1;" p:name="rect" id="7a527082b664488c98c494de57e271f5"/>
+            <text x="31.5" y="17.25" style="font-size: 12px; font-style: normal; font-weight: normal; text-align: left; text-anchor: start; dominant-baseline: central; fill: rgb(0, 0, 0); font-family: Liberation Sans; fill-opacity: 1; text-decoration: none;" xml:space="preserve" p:name="text" id="62267ff4891f4c6195ac2432502aaae1" transform="translate(3,-5)">Edit</text>
+        </g><g xmlns="http://www.w3.org/2000/svg" p:type="Shape" xmlns:p="http://www.evolus.vn/Namespace/Pencil" p:def="Evolus.GTK.Widgets:Button" id="50a8503034f646f0803ae162677d2d8b" transform="matrix(1,0,0,1,186,5)"><p:metadata><p:property name="box"><![CDATA[90,24]]></p:property><p:property name="buttonText"><![CDATA[View]]></p:property><p:property name="textColor"><![CDATA[#000000FF]]></p:property><p:property name="textFont"><![CDATA[Liberation Sans|normal|normal|12px|none]]></p:property><p:property name="textAlign"><![CDATA[1,1]]></p:property><p:property name="disabled"><![CDATA[false]]></p:property></p:metadata>
+            
+            <defs>
+                <linearGradient x1="0%" y1="0%" x2="0%" y2="100%" p:name="linearFill" id="fc96d1269d934a8eba1e39fa1838ea3c">
+                    <stop style="stop-color:#fdfdfc;stop-opacity:1" offset="0" p:name="stop1" id="d16d1cda07924a59a619ea38613ce11b"/>
+                    <stop style="stop-color: rgb(235, 235, 235); stop-opacity: 1;" offset="0.7" p:name="stop2" id="9d1e295fff594f66a1199d637e64d292"/>
+                    <stop style="stop-color: rgb(252, 252, 252); stop-opacity: 1;" offset="1" p:name="stop3" id="e1e649da04dc4889a2490a0af55ea13d"/>
+                </linearGradient>
+            </defs>
+            <rect width="89" height="23" rx="3" ry="3" x="0.5" y="0.5" style="fill: url(&quot;#fc96d1269d934a8eba1e39fa1838ea3c&quot;) none; stroke: rgb(161, 150, 133); stroke-width: 1; stroke-linejoin: round; stroke-opacity: 1;" p:name="rect" id="d3e791c5f2b24b1881116c79d667db5a"/>
+            <text x="31.5" y="17.25" style="font-size: 12px; font-style: normal; font-weight: normal; text-align: left; text-anchor: start; dominant-baseline: central; fill: rgb(0, 0, 0); font-family: Liberation Sans; fill-opacity: 1; text-decoration: none;" xml:space="preserve" p:name="text" id="86676025ad404340bb44be7791b1e3ef" transform="translate(1,-5)">View</text>
+        </g><g xmlns="http://www.w3.org/2000/svg" p:type="Shape" xmlns:p="http://www.evolus.vn/Namespace/Pencil" p:def="Evolus.GTK.Widgets:ComboBox" id="059effca3fc748578cc012d0181a6bc9" transform="matrix(1,0,0,1,602,5)"><p:metadata><p:property name="box"><![CDATA[194,25]]></p:property><p:property name="disabled"><![CDATA[false]]></p:property><p:property name="text"><![CDATA[Model View]]></p:property><p:property name="textColor"><![CDATA[#000000FF]]></p:property><p:property name="textFont"><![CDATA[Liberation Sans|normal|normal|12px|none]]></p:property><p:property name="textAlign"><![CDATA[0,1]]></p:property></p:metadata>
+              <defs p:name="defs2659" id="96793d8b6b2f4e34b01fcb063b1f45dc">
+                <linearGradient p:name="linearGradient31435" id="77c0c107c0864a1d979dfda25ab422f1">
+                  <stop style="stop-color:#bab4a7;stop-opacity:1" offset="0" p:name="stop31437" id="8a315f688e7247d1b3eff38bc4e203b3"/>
+                  <stop style="stop-color:#bab4a8;stop-opacity:1" offset="30%" p:name="stop31439" id="c2bbf3771e434c2c90d2d8ec8ee47930"/>
+                  <stop style="stop-color:#d6cec0;stop-opacity:1" offset="100%" p:name="stop31441" id="93bfa03be4cd49a1844b175e0eb687e1"/>
+                </linearGradient>
+                <linearGradient p:name="linearGradient2237" id="f70d4f90d14b463bb093e23a5c5f3f5d">
+                  <stop style="stop-color:#0080c3;stop-opacity:1" offset="0" p:name="stop2239" id="40394c966f25414eb1f1b683f222b2a8"/>
+                  <stop style="stop-color:#28a2e1;stop-opacity:1" offset="0.57124019" p:name="stop2268" id="1153ee40c4ac47a6ba1e419fc0dc1840"/>
+                  <stop style="stop-color:#3cb3f0;stop-opacity:1" offset="0.74453777" p:name="stop2270" id="b7a4d0a41be24f88a4762276bb2882a5"/>
+                  <stop style="stop-color:#51c4ff;stop-opacity:1" offset="1" p:name="stop2241" id="81aaec46758f43f2bd98737c127234a3"/>
+                </linearGradient>
+                <linearGradient x1="439.5" y1="104" x2="439.5" y2="88" xlink:href="#f70d4f90d14b463bb093e23a5c5f3f5d" xmlns:xlink="http://www.w3.org/1999/xlink" gradientUnits="userSpaceOnUse" gradientTransform="translate(-381.00001,-85.899192)" p:name="linearGradient57450" id="0a9e436b8afc4d7a8e6b4040a25d43f5"/>
+                <linearGradient p:name="linearGradient27481" id="b5acc43fba9c4d56b11bdc1e37eb18e7">
+                  <stop style="stop-color:#f6f4ef;stop-opacity:1" offset="0" p:name="stop27483" id="f22686fc316d4ef8a33377b9bf1831ad"/>
+                  <stop style="stop-color:#eae7df;stop-opacity:1" offset="0.30131003" p:name="stop27489" id="10559a44f351488287e861b3300b706a"/>
+                  <stop style="stop-color:#fdfdfc;stop-opacity:1" offset="1" p:name="stop27485" id="91191715238f4cf7a31ef07b80bebb0f"/>
+                </linearGradient>
+                <linearGradient x1="198" y1="118" x2="198" y2="93" xlink:href="#b5acc43fba9c4d56b11bdc1e37eb18e7" xmlns:xlink="http://www.w3.org/1999/xlink" gradientUnits="userSpaceOnUse" gradientTransform="translate(-16.00949,-92.954482)" p:name="linearGradient38337" id="fd4097c772d542dba60da8ed69db3b1f"/>
+              </defs>
+              <rect style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#a19685;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" width="193" height="24" x="0.5" y="0.5" rx="3" ry="3" p:name="rect" id="66217170156a4cfaafa96fb9db5fa55c"/>
+              <path d="M 169.5,0.54551944 L 169.5,24.5 L 190.5,24.5 C 193,24.5 194.5,23 194.5,21.5 L 194.5,3.5455196 C 194.5,1.8835196 193,0.54551944 190.5,0.54551944 L 169.5,0.54551944 z " style="color:#000000;fill:url(#fd4097c772d542dba60da8ed69db3b1f);fill-opacity:1;fill-rule:nonzero;stroke:#a19685;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" p:name="dropDownButton" id="31fb95b9705a460fb32e51fb407ee9c9"/>
+              <path d="M 169,1.3360847 L 3.4959684,1.3360847 C 2.0817584,1.2771647 1.1978687,2.5825147 1.3746487,3.9378047 L 1.3746487,23.3" style="opacity: 0.273632; fill: none; fill-rule: evenodd; stroke: rgb(109, 109, 109); stroke-width: 1px; stroke-linecap: butt; stroke-linejoin: miter; stroke-opacity: 1; visibility: visible;" p:name="path" id="cbc2f1a4bfe64c14b32a79702b80fde7"/>
+              <text xml:space="preserve" style="font-size: 12px; font-style: normal; font-weight: normal; text-align: left; text-anchor: start; dominant-baseline: central; fill: rgb(0, 0, 0); font-family: Liberation Sans; fill-opacity: 1; text-decoration: none;" x="4.5048509" y="14.894419" p:name="text" id="f5e64c2620514d92b6bdad7f6b1faaeb" transform="translate(1,-2)">Model View</text>
+              <path d="M 178,11 L 182,15.5 L 186,11" style="opacity:1;color:#000000;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" p:name="marker" id="dc2227f3d85945c698bbcbc20527959f"/>
+             </g><g xmlns="http://www.w3.org/2000/svg" p:type="Shape" xmlns:p="http://www.evolus.vn/Namespace/Pencil" p:def="Evolus.GTK.Widgets:Button" id="4038ecc9a3d44085930fdcf1e0b85404" transform="matrix(1,0,0,1,7,48)"><p:metadata><p:property name="box"><![CDATA[170,24]]></p:property><p:property name="buttonText"><![CDATA[Translate]]></p:property><p:property name="textColor"><![CDATA[#000000FF]]></p:property><p:property name="textFont"><![CDATA[Liberation Sans|normal|normal|12px|none]]></p:property><p:property name="textAlign"><![CDATA[1,1]]></p:property><p:property name="disabled"><![CDATA[false]]></p:property></p:metadata>
+            
+            <defs>
+                <linearGradient x1="0%" y1="0%" x2="0%" y2="100%" p:name="linearFill" id="a84d608719bc48b5b8f285116dfec014">
+                    <stop style="stop-color:#fdfdfc;stop-opacity:1" offset="0" p:name="stop1" id="09a20b2f8b3b4df28ec5d12150a86f55"/>
+                    <stop style="stop-color: rgb(235, 235, 235); stop-opacity: 1;" offset="0.7" p:name="stop2" id="8f4fca66f8a849f2be2e14f066add459"/>
+                    <stop style="stop-color: rgb(252, 252, 252); stop-opacity: 1;" offset="1" p:name="stop3" id="209496242d6949d093f68882239da398"/>
+                </linearGradient>
+            </defs>
+            <rect width="169" height="23" rx="3" ry="3" x="0.5" y="0.5" style="fill: url(&quot;#a84d608719bc48b5b8f285116dfec014&quot;) none; stroke: rgb(161, 150, 133); stroke-width: 1; stroke-linejoin: round; stroke-opacity: 1;" p:name="rect" id="da11b1a2ddc34bafb0b52cb47efba692"/>
+            <text x="31.5" y="17.25" style="font-size: 12px; font-style: normal; font-weight: normal; text-align: left; text-anchor: start; dominant-baseline: central; fill: rgb(0, 0, 0); font-family: Liberation Sans; fill-opacity: 1; text-decoration: none;" xml:space="preserve" p:name="text" id="56b6965d10c346bebf4f04e01f5c32b8" transform="translate(31,-5)">Translate</text>
+        </g><g xmlns="http://www.w3.org/2000/svg" p:type="Shape" xmlns:p="http://www.evolus.vn/Namespace/Pencil" p:def="Evolus.GTK.Widgets:Button" id="273d2a1a8270413b8791a760db560748" transform="matrix(1,0,0,1,7,74)"><p:metadata><p:property name="box"><![CDATA[170,24]]></p:property><p:property name="buttonText"><![CDATA[Rotate]]></p:property><p:property name="textColor"><![CDATA[#000000FF]]></p:property><p:property name="textFont"><![CDATA[Liberation Sans|normal|normal|12px|none]]></p:property><p:property name="textAlign"><![CDATA[1,1]]></p:property><p:property name="disabled"><![CDATA[false]]></p:property></p:metadata>
+            
+            <defs>
+                <linearGradient x1="0%" y1="0%" x2="0%" y2="100%" p:name="linearFill" id="83be231f72b449daaf07463fa48d7c44">
+                    <stop style="stop-color:#fdfdfc;stop-opacity:1" offset="0" p:name="stop1" id="dba694c0879442edb4f6d0013613c4c8"/>
+                    <stop style="stop-color: rgb(235, 235, 235); stop-opacity: 1;" offset="0.7" p:name="stop2" id="87ee1b704c64447e935f0624d765fab4"/>
+                    <stop style="stop-color: rgb(252, 252, 252); stop-opacity: 1;" offset="1" p:name="stop3" id="bc81745c53164d6899bfe5f020a6658c"/>
+                </linearGradient>
+            </defs>
+            <rect width="169" height="23" rx="3" ry="3" x="0.5" y="0.5" style="fill: url(&quot;#83be231f72b449daaf07463fa48d7c44&quot;) none; stroke: rgb(161, 150, 133); stroke-width: 1; stroke-linejoin: round; stroke-opacity: 1;" p:name="rect" id="5dfe641f00ce4363adcb77f4c029415f"/>
+            <text x="31.5" y="17.25" style="font-size: 12px; font-style: normal; font-weight: normal; text-align: left; text-anchor: start; dominant-baseline: central; fill: rgb(0, 0, 0); font-family: Liberation Sans; fill-opacity: 1; text-decoration: none;" xml:space="preserve" p:name="text" id="97b5b3edd5a94a4a92d90c67fcb64425" transform="translate(38,-5)">Rotate</text>
+        </g><g xmlns="http://www.w3.org/2000/svg" p:type="Shape" xmlns:p="http://www.evolus.vn/Namespace/Pencil" p:def="Evolus.GTK.Widgets:Button" id="8dcd617bf1094e9cae81a67df62c448d" transform="matrix(1,0,0,1,7,101)"><p:metadata><p:property name="box"><![CDATA[170,24]]></p:property><p:property name="buttonText"><![CDATA[Scale]]></p:property><p:property name="textColor"><![CDATA[#000000FF]]></p:property><p:property name="textFont"><![CDATA[Liberation Sans|normal|normal|12px|none]]></p:property><p:property name="textAlign"><![CDATA[1,1]]></p:property><p:property name="disabled"><![CDATA[false]]></p:property></p:metadata>
+            
+            <defs>
+                <linearGradient x1="0%" y1="0%" x2="0%" y2="100%" p:name="linearFill" id="4b3afbc7c36a4f29bab2571ba3a809df">
+                    <stop style="stop-color:#fdfdfc;stop-opacity:1" offset="0" p:name="stop1" id="e145f6bc724d4ffba01af1d68783d6c2"/>
+                    <stop style="stop-color: rgb(235, 235, 235); stop-opacity: 1;" offset="0.7" p:name="stop2" id="a1a8996bcb774d8ca786ae8c8b7b37c6"/>
+                    <stop style="stop-color: rgb(252, 252, 252); stop-opacity: 1;" offset="1" p:name="stop3" id="bc16b56af8d14642845ab632872a5f04"/>
+                </linearGradient>
+            </defs>
+            <rect width="169" height="23" rx="3" ry="3" x="0.5" y="0.5" style="fill: url(#4b3afbc7c36a4f29bab2571ba3a809df) none; stroke: rgb(161, 150, 133); stroke-width: 1; stroke-linejoin: round; stroke-opacity: 1;" p:name="rect" id="1821a0f84b0c4e1cbd77a2163f9f9230"/>
+            <text x="31.5" y="17.25" style="font-size: 12px; font-style: normal; font-weight: normal; text-align: left; text-anchor: start; dominant-baseline: central; fill: rgb(0, 0, 0); font-family: Liberation Sans; fill-opacity: 1; text-decoration: none;" xml:space="preserve" p:name="text" id="1a005011db454cab998298a9d4f0f5f3" transform="translate(40,-5)">Scale</text>
+        </g><g xmlns="http://www.w3.org/2000/svg" p:type="Shape" xmlns:p="http://www.evolus.vn/Namespace/Pencil" p:def="Evolus.BasicWebElements:heading" p:sc="Heading 5" id="42fc4d2c42874760b3ddc0e025c5ba55" transform="matrix(1,0,0,1,64,489)"><p:metadata><p:property name="textContent"><![CDATA[Translate]]></p:property><p:property name="textFont"><![CDATA["Liberation Sans",Arial,sans-serif|bold|normal|12px|none]]></p:property><p:property name="textColor"><![CDATA[#000000FF]]></p:property><p:property name="customStyle"><![CDATA[]]></p:property></p:metadata>
+
+            <foreignObject x="0" y="0" width="53" height="15" p:name="htmlObject" id="fbcdddd9d0b04a439517cabff7be628f" style="color: rgb(0, 0, 0); opacity: 1; font-family: &quot;Liberation Sans&quot;,Arial,sans-serif; font-size: 12px; font-weight: bold; font-style: normal; text-decoration: none;">
+                <div xmlns="http://www.w3.org/1999/xhtml" p:name="textDiv" id="4a3e9019204a4a67bc53fed6b8e46f02" style="white-space: nowrap; display: inline-block !important"><div xmlns="http://www.w3.org/1999/xhtml">Translate</div></div>
+            </foreignObject>
+        </g><g xmlns="http://www.w3.org/2000/svg" p:type="Shape" xmlns:p="http://www.evolus.vn/Namespace/Pencil" p:def="Evolus.GTK.Widgets:Label" id="18f198f321664a308c8cb9791c154a72" transform="matrix(1,0,0,1,130,518)"><p:metadata><p:property name="disabled"><![CDATA[false]]></p:property><p:property name="label"><![CDATA[X]]></p:property><p:property name="textColor"><![CDATA[#000000FF]]></p:property><p:property name="textFont"><![CDATA[Liberation Sans|normal|normal|12px|none]]></p:property></p:metadata>
+              <text y="9.0077095" x="17.999992" style="font-size: 12px; font-style: normal; font-weight: normal; text-align: left; text-anchor: start; dominant-baseline: central; fill: rgb(0, 0, 0); font-family: Liberation Sans; fill-opacity: 1; text-decoration: none;" xml:space="preserve" p:name="text" id="73a8637cfb46499e8c32f85dd1dfa5d8" transform="translate(-17,-3)">X</text>
+        </g><g xmlns="http://www.w3.org/2000/svg" p:type="Shape" xmlns:p="http://www.evolus.vn/Namespace/Pencil" p:def="Evolus.GTK.Widgets:TextBox" id="d7b0bfa5da6946b1883b6f2e57444228" transform="matrix(1,0,0,1,34,514)"><p:metadata><p:property name="box"><![CDATA[89,18]]></p:property><p:property name="disabled"><![CDATA[false]]></p:property><p:property name="text"><![CDATA[Text box]]></p:property><p:property name="textColor"><![CDATA[#000000FF]]></p:property><p:property name="textFont"><![CDATA[Liberation Sans|normal|normal|12px|none]]></p:property><p:property name="textAlign"><![CDATA[0,1]]></p:property></p:metadata>
+              <defs p:name="defs2659" id="ec38ae783e4d4edda28c6f2dad652823">
+                <linearGradient p:name="linearGradient31435" id="6917c33ac88d4ca38af6c48a3a93630b">
+                  <stop style="stop-color:#bab4a7;stop-opacity:1" offset="0" p:name="stop31437" id="103778bc81c641fba02a2ec14f706398"/>
+                  <stop style="stop-color:#bab4a8;stop-opacity:1" offset="0.30131003" p:name="stop31439" id="aa8d8847fb004ddaa48f379fa0cc5c24"/>
+                  <stop style="stop-color:#d6cec0;stop-opacity:1" offset="1" p:name="stop31441" id="b2a7f9083eae43118b93980dbfc98495"/>
+                </linearGradient>
+                <linearGradient x1="503" y1="106" x2="503" y2="86" xlink:href="#6917c33ac88d4ca38af6c48a3a93630b" xmlns:xlink="http://www.w3.org/1999/xlink" gradientUnits="userSpaceOnUse" gradientTransform="translate(-381.00001,-85.899192)" p:name="linearGradient55484" id="7b9ee2bf639a49219b3641ea7e8b65fb"/>
+                <linearGradient p:name="linearGradient2237" id="3e137fa5488346839dd13c9674eab47b">
+                  <stop style="stop-color:#0080c3;stop-opacity:1" offset="0" p:name="stop2239" id="f9acb5ae7f80439abfa7049e124c4800"/>
+                  <stop style="stop-color:#28a2e1;stop-opacity:1" offset="0.57124019" p:name="stop2268" id="6b81b3a8a9ed4151a73c00d9b37ae6c2"/>
+                  <stop style="stop-color:#3cb3f0;stop-opacity:1" offset="0.74453777" p:name="stop2270" id="b5e45fe4610446eaaf1b9d70e1ddf865"/>
+                  <stop style="stop-color:#51c4ff;stop-opacity:1" offset="1" p:name="stop2241" id="fe1bb6419d1d4398b46ce38fe5817eab"/>
+                </linearGradient>
+                <linearGradient x1="439.5" y1="104" x2="439.5" y2="88" xlink:href="#3e137fa5488346839dd13c9674eab47b" xmlns:xlink="http://www.w3.org/1999/xlink" gradientUnits="userSpaceOnUse" gradientTransform="translate(-381.00001,-85.899192)" p:name="linearGradient57450" id="8b727cd4c1124b18a10ec6ab13fd80d7"/>
+              </defs>
+              <rect style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#a19685;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" width="88" height="17" x="0.5" y="0.5" rx="3" ry="3" p:name="rect" id="d32e28084d444d3f94c7adcd6bd20601"/>
+              <text xml:space="preserve" style="font-size: 12px; font-style: normal; font-weight: normal; text-align: left; text-anchor: start; dominant-baseline: central; fill: rgb(0, 0, 0); font-family: Liberation Sans; fill-opacity: 1; text-decoration: none;" x="4.5048509" y="14.894419" p:name="text" id="5dc2c2749dcf46daa0904585147f1730" transform="translate(1,-6)">Text box</text>
+              <path d="M 87.7,1.3360847 L 3.4959684,1.3360847 C 2.0817584,1.2771647 1.1978687,2.5825147 1.3746487,3.9378047 L 1.3746487,16.3" style="opacity: 0.273632; fill: none; fill-rule: evenodd; stroke: rgb(109, 109, 109); stroke-width: 1px; stroke-linecap: butt; stroke-linejoin: miter; stroke-opacity: 1; visibility: visible;" p:name="path" id="9caa9b7eb828400793aabc62a01e0884"/>
+        </g><g xmlns="http://www.w3.org/2000/svg" p:type="Shape" xmlns:p="http://www.evolus.vn/Namespace/Pencil" p:def="Evolus.GTK.Widgets:Label" id="88c746e4ee5f481d8f67f99a54e2fe17" transform="matrix(1,0,0,1,130,541)"><p:metadata><p:property name="disabled"><![CDATA[false]]></p:property><p:property name="label"><![CDATA[Y]]></p:property><p:property name="textColor"><![CDATA[#000000FF]]></p:property><p:property name="textFont"><![CDATA[Liberation Sans|normal|normal|12px|none]]></p:property></p:metadata>
+              <text y="9.0077095" x="17.999992" style="font-size: 12px; font-style: normal; font-weight: normal; text-align: left; text-anchor: start; dominant-baseline: central; fill: rgb(0, 0, 0); font-family: Liberation Sans; fill-opacity: 1; text-decoration: none;" xml:space="preserve" p:name="text" id="a2ef333b73fc46f89c62ddc7496cbb36" transform="translate(-17,-3)">Y</text>
+        </g><g xmlns="http://www.w3.org/2000/svg" p:type="Shape" xmlns:p="http://www.evolus.vn/Namespace/Pencil" p:def="Evolus.GTK.Widgets:TextBox" id="23e47c795e964deeb69646ed4720a8c5" transform="matrix(1,0,0,1,34,537)"><p:metadata><p:property name="box"><![CDATA[89,18]]></p:property><p:property name="disabled"><![CDATA[false]]></p:property><p:property name="text"><![CDATA[Text box]]></p:property><p:property name="textColor"><![CDATA[#000000FF]]></p:property><p:property name="textFont"><![CDATA[Liberation Sans|normal|normal|12px|none]]></p:property><p:property name="textAlign"><![CDATA[0,1]]></p:property></p:metadata>
+              <defs p:name="defs2659" id="20e0e7c402094eba87abd0c144d017c4">
+                <linearGradient p:name="linearGradient31435" id="c9f368318ccb4e7784d29e6ebe94871b">
+                  <stop style="stop-color:#bab4a7;stop-opacity:1" offset="0" p:name="stop31437" id="b07b363cee1d437fbd6014a01691faca"/>
+                  <stop style="stop-color:#bab4a8;stop-opacity:1" offset="0.30131003" p:name="stop31439" id="c574b8a14b5d4457b1e7c51fd4e93955"/>
+                  <stop style="stop-color:#d6cec0;stop-opacity:1" offset="1" p:name="stop31441" id="b71cb9cbbbbb4efe89f5be28d42b2e54"/>
+                </linearGradient>
+                <linearGradient x1="503" y1="106" x2="503" y2="86" xlink:href="#c9f368318ccb4e7784d29e6ebe94871b" xmlns:xlink="http://www.w3.org/1999/xlink" gradientUnits="userSpaceOnUse" gradientTransform="translate(-381.00001,-85.899192)" p:name="linearGradient55484" id="3666e94c4a5747fbade496f47b675374"/>
+                <linearGradient p:name="linearGradient2237" id="6f3a9b2c3da8491e8a97504c928b1107">
+                  <stop style="stop-color:#0080c3;stop-opacity:1" offset="0" p:name="stop2239" id="8d7830961a5f46ab80ac77747afca8a3"/>
+                  <stop style="stop-color:#28a2e1;stop-opacity:1" offset="0.57124019" p:name="stop2268" id="36351804df5949588a08280393ef5270"/>
+                  <stop style="stop-color:#3cb3f0;stop-opacity:1" offset="0.74453777" p:name="stop2270" id="584e2f15e9a1427688beb05ae276f5e0"/>
+                  <stop style="stop-color:#51c4ff;stop-opacity:1" offset="1" p:name="stop2241" id="4f2d3138442c4a4083946a908b2084e2"/>
+                </linearGradient>
+                <linearGradient x1="439.5" y1="104" x2="439.5" y2="88" xlink:href="#6f3a9b2c3da8491e8a97504c928b1107" xmlns:xlink="http://www.w3.org/1999/xlink" gradientUnits="userSpaceOnUse" gradientTransform="translate(-381.00001,-85.899192)" p:name="linearGradient57450" id="22dfb27599334898929d8f25f7c6e48b"/>
+              </defs>
+              <rect style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#a19685;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" width="88" height="17" x="0.5" y="0.5" rx="3" ry="3" p:name="rect" id="7343fe53e9cc48e8af71adbc3f1538c0"/>
+              <text xml:space="preserve" style="font-size: 12px; font-style: normal; font-weight: normal; text-align: left; text-anchor: start; dominant-baseline: central; fill: rgb(0, 0, 0); font-family: Liberation Sans; fill-opacity: 1; text-decoration: none;" x="4.5048509" y="14.894419" p:name="text" id="1814b528d4ba4c0a90066c7932dc5360" transform="translate(1,-6)">Text box</text>
+              <path d="M 87.7,1.3360847 L 3.4959684,1.3360847 C 2.0817584,1.2771647 1.1978687,2.5825147 1.3746487,3.9378047 L 1.3746487,16.3" style="opacity: 0.273632; fill: none; fill-rule: evenodd; stroke: rgb(109, 109, 109); stroke-width: 1px; stroke-linecap: butt; stroke-linejoin: miter; stroke-opacity: 1; visibility: visible;" p:name="path" id="2561a017dd854a20aa81ccbdffbdafa3"/>
+        </g><g xmlns="http://www.w3.org/2000/svg" p:type="Shape" xmlns:p="http://www.evolus.vn/Namespace/Pencil" p:def="Evolus.GTK.Widgets:Label" id="2ba1e0f138f44f0caaa8039515c0f198" transform="matrix(1,0,0,1,131,564)"><p:metadata><p:property name="disabled"><![CDATA[false]]></p:property><p:property name="label"><![CDATA[Z]]></p:property><p:property name="textColor"><![CDATA[#000000FF]]></p:property><p:property name="textFont"><![CDATA[Liberation Sans|normal|normal|12px|none]]></p:property></p:metadata>
+              <text y="9.0077095" x="17.999992" style="font-size: 12px; font-style: normal; font-weight: normal; text-align: left; text-anchor: start; dominant-baseline: central; fill: rgb(0, 0, 0); font-family: Liberation Sans; fill-opacity: 1; text-decoration: none;" xml:space="preserve" p:name="text" id="43a9c228af254b459114a3a073e5bf8e" transform="translate(-17,-3)">Z</text>
+        </g><g xmlns="http://www.w3.org/2000/svg" p:type="Shape" xmlns:p="http://www.evolus.vn/Namespace/Pencil" p:def="Evolus.GTK.Widgets:TextBox" id="9fccfeaa8c374363afe90e8845597845" transform="matrix(1,0,0,1,35,560)"><p:metadata><p:property name="box"><![CDATA[89,18]]></p:property><p:property name="disabled"><![CDATA[false]]></p:property><p:property name="text"><![CDATA[Text box]]></p:property><p:property name="textColor"><![CDATA[#000000FF]]></p:property><p:property name="textFont"><![CDATA[Liberation Sans|normal|normal|12px|none]]></p:property><p:property name="textAlign"><![CDATA[0,1]]></p:property></p:metadata>
+              <defs p:name="defs2659" id="784b329d586e4a4fa0b83ab7630d2ea2">
+                <linearGradient p:name="linearGradient31435" id="2c28fb5e65dd407bbf0f8a7d557c56e9">
+                  <stop style="stop-color:#bab4a7;stop-opacity:1" offset="0" p:name="stop31437" id="7e23142aac8c4d09a20fe3da9a6e7876"/>
+                  <stop style="stop-color:#bab4a8;stop-opacity:1" offset="0.30131003" p:name="stop31439" id="bca67b028e3c4faebdb9c3c5c891563c"/>
+                  <stop style="stop-color:#d6cec0;stop-opacity:1" offset="1" p:name="stop31441" id="1a1481f9f57a4578a3618ef290d79679"/>
+                </linearGradient>
+                <linearGradient x1="503" y1="106" x2="503" y2="86" xlink:href="#2c28fb5e65dd407bbf0f8a7d557c56e9" xmlns:xlink="http://www.w3.org/1999/xlink" gradientUnits="userSpaceOnUse" gradientTransform="translate(-381.00001,-85.899192)" p:name="linearGradient55484" id="21f34a2b965b439fbb48e2c8e6dd5f8d"/>
+                <linearGradient p:name="linearGradient2237" id="46daacd815eb4c5f9d51d1de2612f578">
+                  <stop style="stop-color:#0080c3;stop-opacity:1" offset="0" p:name="stop2239" id="cb783cedf6524aa091862a58c2a55559"/>
+                  <stop style="stop-color:#28a2e1;stop-opacity:1" offset="0.57124019" p:name="stop2268" id="6ab2424ce3934827bca9299725929c35"/>
+                  <stop style="stop-color:#3cb3f0;stop-opacity:1" offset="0.74453777" p:name="stop2270" id="03434327e4cb42c4801e3b8682fde10d"/>
+                  <stop style="stop-color:#51c4ff;stop-opacity:1" offset="1" p:name="stop2241" id="8d0e1044cb6049a2b1b06a4b3541f2de"/>
+                </linearGradient>
+                <linearGradient x1="439.5" y1="104" x2="439.5" y2="88" xlink:href="#46daacd815eb4c5f9d51d1de2612f578" xmlns:xlink="http://www.w3.org/1999/xlink" gradientUnits="userSpaceOnUse" gradientTransform="translate(-381.00001,-85.899192)" p:name="linearGradient57450" id="baa7e6b8e3d14a178a41a7b0cba3cd33"/>
+              </defs>
+              <rect style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#a19685;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" width="88" height="17" x="0.5" y="0.5" rx="3" ry="3" p:name="rect" id="b5394b393b694ab383e806de6c425315"/>
+              <text xml:space="preserve" style="font-size: 12px; font-style: normal; font-weight: normal; text-align: left; text-anchor: start; dominant-baseline: central; fill: rgb(0, 0, 0); font-family: Liberation Sans; fill-opacity: 1; text-decoration: none;" x="4.5048509" y="14.894419" p:name="text" id="b0f4e15ce29d44b3819f3f73180942a4" transform="translate(1,-6)">Text box</text>
+              <path d="M 87.7,1.3360847 L 3.4959684,1.3360847 C 2.0817584,1.2771647 1.1978687,2.5825147 1.3746487,3.9378047 L 1.3746487,16.3" style="opacity: 0.273632; fill: none; fill-rule: evenodd; stroke: rgb(109, 109, 109); stroke-width: 1px; stroke-linecap: butt; stroke-linejoin: miter; stroke-opacity: 1; visibility: visible;" p:name="path" id="68dc40830352496492f8bf9ed8c9feb1"/>
+        </g></Content></Page></Pages></Document>

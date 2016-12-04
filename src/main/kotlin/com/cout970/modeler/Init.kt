@@ -8,6 +8,7 @@ import com.cout970.modeler.model.ModelObject
 import com.cout970.modeler.model.Plane
 import com.cout970.modeler.model.Vertex
 import com.cout970.modeler.render.RenderManager
+import com.cout970.modeler.render.layout.ViewModelEdit
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.vec3Of
 
@@ -51,18 +52,43 @@ class Init {
         modelController.model.objects += ModelObject().apply {
             groups += ModelGroup().apply {
                 components += Plane(
-                        Vertex(vec3Of(-0.2, -0.2, 0), vec2Of(1, 0)),
-                        Vertex(vec3Of(0.9, -0.2, 0), vec2Of(1, 0)),
-                        Vertex(vec3Of(0.9, 0.9, 0), vec2Of(1, 0)),
-                        Vertex(vec3Of(-0.2, 0.9, 0), vec2Of(1, 0)))
+                        Vertex(vec3Of(0, 0, 0), vec2Of(1, 0)),
+                        Vertex(vec3Of(1, 0, 0), vec2Of(1, 0)),
+                        Vertex(vec3Of(1, 1, 0), vec2Of(1, 0)),
+                        Vertex(vec3Of(0, 1, 0), vec2Of(1, 0)))
 
                 components += Plane(
-                        Vertex(vec3Of(0, -0.2, -0.2), vec2Of(1, 0)),
-                        Vertex(vec3Of(0, 0.9, -0.2), vec2Of(1, 0)),
-                        Vertex(vec3Of(0, 0.9, 0.9), vec2Of(1, 0)),
-                        Vertex(vec3Of(0, -0.2, 0.9), vec2Of(1, 0)))
+                        Vertex(vec3Of(0, 0, 1), vec2Of(1, 0)),
+                        Vertex(vec3Of(1, 0, 1), vec2Of(1, 0)),
+                        Vertex(vec3Of(1, 1, 1), vec2Of(1, 0)),
+                        Vertex(vec3Of(0, 1, 1), vec2Of(1, 0)))
+
+                components += Plane(
+                        Vertex(vec3Of(0, 0, 0), vec2Of(1, 0)),
+                        Vertex(vec3Of(0, 1, 0), vec2Of(1, 0)),
+                        Vertex(vec3Of(0, 1, 1), vec2Of(1, 0)),
+                        Vertex(vec3Of(0, 0, 1), vec2Of(1, 0)))
+
+                components += Plane(
+                        Vertex(vec3Of(1, 0, 0), vec2Of(1, 0)),
+                        Vertex(vec3Of(1, 1, 0), vec2Of(1, 0)),
+                        Vertex(vec3Of(1, 1, 1), vec2Of(1, 0)),
+                        Vertex(vec3Of(1, 0, 1), vec2Of(1, 0)))
+
+                components += Plane(
+                        Vertex(vec3Of(0, 0, 0), vec2Of(1, 0)),
+                        Vertex(vec3Of(1, 0, 0), vec2Of(1, 0)),
+                        Vertex(vec3Of(1, 0, 1), vec2Of(1, 0)),
+                        Vertex(vec3Of(0, 0, 1), vec2Of(1, 0)))
+
+                components += Plane(
+                        Vertex(vec3Of(0, 1, 0), vec2Of(1, 0)),
+                        Vertex(vec3Of(1, 1, 0), vec2Of(1, 0)),
+                        Vertex(vec3Of(1, 1, 1), vec2Of(1, 0)),
+                        Vertex(vec3Of(0, 1, 1), vec2Of(1, 0)))
             }
         }
+        (renderManager.allViews.first() as ViewModelEdit).modelRender.debug(this)
         renderManager.initOpenGl(windowController.window)
     }
 
