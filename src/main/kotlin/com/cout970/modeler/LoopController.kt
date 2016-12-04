@@ -6,7 +6,7 @@ import com.cout970.glutilities.structure.Timer
 /**
  * Created by cout970 on 2016/11/29.
  */
-class MainController(val tickeables: List<ITickeable>) {
+class LoopController(val tickeables: List<ITickeable>) {
 
     val timer = Timer()
     var stop = false
@@ -14,7 +14,7 @@ class MainController(val tickeables: List<ITickeable>) {
             field = true
         }
 
-    fun loop() {
+    fun run() {
         GameLoop(this::tick).start()
     }
 
@@ -24,6 +24,5 @@ class MainController(val tickeables: List<ITickeable>) {
         tickeables.forEach(ITickeable::tick)
         tickeables.forEach(ITickeable::postTick)
         if (stop) loop.stop()
-        println(timer.fps)
     }
 }

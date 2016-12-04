@@ -1,11 +1,12 @@
 package com.cout970.modeler
 
-import com.cout970.glutilities.event.EventFrameBufferSize
 import com.cout970.glutilities.window.GLFWWindow
 import com.cout970.glutilities.window.WindowBuilder
 import com.cout970.modeler.event.IEventController
-import com.cout970.modeler.event.IEventListener
 import com.cout970.vector.extensions.vec2Of
+import com.cout970.vector.extensions.xi
+import com.cout970.vector.extensions.yi
+import org.lwjgl.opengl.GL11
 
 /**
  * Created by cout970 on 2016/11/29.
@@ -29,15 +30,15 @@ class WindowController : ITickeable {
             stop()
         }
         window.swapBuffers()
+        GL11.glViewport(0, 0, window.size.xi, window.size.yi)
     }
 
     fun registerListeners(controller: IEventController) {
-        controller.addListener(EventFrameBufferSize::class.java, object : IEventListener<EventFrameBufferSize> {
-
-            override fun onEvent(e: EventFrameBufferSize): Boolean {
-                window.setAspectRatio(vec2Of(e.width, e.height))
-                return false
-            }
-        })
+//        controller.addListener(EventFrameBufferSize::class.java, object : IEventListener<EventFrameBufferSize> {
+//
+//            override fun onEvent(e: EventFrameBufferSize): Boolean {
+//                return false
+//            }
+//        })
     }
 }

@@ -9,7 +9,7 @@ class Cache<K, T>(val limit: Int = 5) {
     private var count = 0
     var onRemove: ((K, T) -> Unit)? = null
 
-    fun getOrCompute(key: K, func: () -> T): T {
+    fun getOrCompute(key: K, func: (K) -> T): T {
         if (key in entries) {
             val entry = entries[key]!!
             entry.count = count++
@@ -20,7 +20,7 @@ class Cache<K, T>(val limit: Int = 5) {
                 entries.remove(oldest.key)
                 onRemove?.invoke(oldest.key, oldest.value.value)
             }
-            val value = func()
+            val value = func(key)
             entries.put(key, Entry(value, count++))
             return value
         }

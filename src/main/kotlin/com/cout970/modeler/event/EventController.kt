@@ -1,9 +1,8 @@
 package com.cout970.modeler.event
 
-import com.cout970.glutilities.event.Event
-import com.cout970.glutilities.event.EventManager
+import com.cout970.glutilities.event.*
 import com.cout970.modeler.ITickeable
-import org.liquidengine.legui.context.LeguiCallbackKeeper
+import java.util.*
 
 /**
  * Created by cout970 on 2016/11/29.
@@ -11,15 +10,32 @@ import org.liquidengine.legui.context.LeguiCallbackKeeper
 class EventController() : ITickeable, IEventController {
 
     private val listeners = mutableMapOf<Class<Event>, MutableList<IEventListener<Event>>>()
-    private val eventQueue = mutableListOf<() -> Unit>()
+    private val lock = Any()
+    private val eventQueue = Collections.synchronizedList(mutableListOf<() -> Unit>())
 
     init {
         EventManager.registerListener(this::onEvent)
+        addListener(EventCharTyped::class.java, CharCallback)
+        addListener(EventFileDrop::class.java, DropCallback)
+        addListener(EventKeyUpdate::class.java, KeyCallback)
+        addListener(EventMouseScroll::class.java, ScrollCallback)
+        addListener(EventCharMods::class.java, CharModsCallback)
+        addListener(EventCursorEnter::class.java, CursorEnterCallback)
+        addListener(EventFrameBufferSize::class.java, FramebufferSizeCallback)
+        addListener(EventMouseClick::class.java, MouseButtonCallback)
+        addListener(EventCursorPos::class.java, CursorPosCallback)
+        addListener(EventWindowClose::class.java, WindowCloseCallback)
+        addListener(EventWindowFocus::class.java, WindowFocusCallback)
+        addListener(EventWindowIconify::class.java, WindowIconifyCallback)
+        addListener(EventWindowPos::class.java, WindowPosCallback)
+        addListener(EventWindowRefresh::class.java, WindowRefreshCallback)
+        addListener(EventWindowSize::class.java, WindowSizeCallback)
     }
 
     override fun tick() {
         EventManager.pollEvents()
         eventQueue.forEach { it() }
+        eventQueue.clear()
     }
 
     private fun onEvent(event: Event) {
@@ -42,26 +58,6 @@ class EventController() : ITickeable, IEventController {
             list.sortBy { it.priority }
         } else {
             listeners.put(clazz, mutableListOf(listener))
-        }
-    }
-
-    fun createCallbackKeeper(): LeguiCallbackKeeper {
-        return LeguiCallbackKeeper().apply {
-            chainCharCallback = CharCallback
-            chainDropCallback = DropCallback
-            chainKeyCallback = KeyCallback
-            chainScrollCallback = ScrollCallback
-            chainCharModsCallback = CharModsCallback
-            chainCursorEnterCallback = CursorEnterCallback
-            chainFramebufferSizeCallback = FramebufferSizeCallback
-            chainMouseButtonCallback = MouseButtonCallback
-            chainCursorPosCallback = CursorPosCallback
-            chainWindowCloseCallback = WindowCloseCallback
-            chainWindowFocusCallback = WindowFocusCallback
-            chainWindowIconifyCallback = WindowIconifyCallback
-            chainWindowPosCallback = WindowPosCallback
-            chainWindowRefreshCallback = WindowRefreshCallback
-            chainWindowSizeCallback = WindowSizeCallback
         }
     }
 }
