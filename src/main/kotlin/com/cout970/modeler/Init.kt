@@ -1,14 +1,9 @@
 package com.cout970.modeler
 
-import com.cout970.glutilities.event.EventManager
 import com.cout970.glutilities.window.GLFWLoader
 import com.cout970.modeler.event.EventController
-import com.cout970.modeler.model.ModelGroup
-import com.cout970.modeler.model.ModelObject
-import com.cout970.modeler.model.Plane
-import com.cout970.modeler.model.Vertex
+import com.cout970.modeler.model.*
 import com.cout970.modeler.render.RenderManager
-import com.cout970.modeler.render.layout.ViewModelEdit
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.vec3Of
 
@@ -43,14 +38,13 @@ class Init {
 
         GLFWLoader.init()
         windowController.show()
-        EventManager.registerWindow(windowController.window.id)
+        eventController.bindWindow(windowController.window)
 
-        renderManager.allViews.forEach {
-            it.loadResources(resourceManager)
-            it.modelController = modelController
-        }
+        renderManager.load(resourceManager, eventController, modelController)
+
         modelController.model.objects += ModelObject().apply {
             groups += ModelGroup().apply {
+                components += Cube.create(vec3Of(1, 1, 1))
                 components += Plane(
                         Vertex(vec3Of(0, 0, 0), vec2Of(1, 0)),
                         Vertex(vec3Of(1, 0, 0), vec2Of(1, 0)),
@@ -88,7 +82,6 @@ class Init {
                         Vertex(vec3Of(0, 1, 1), vec2Of(1, 0)))
             }
         }
-        (renderManager.allViews.first() as ViewModelEdit).modelRender.debug(this)
         renderManager.initOpenGl(windowController.window)
     }
 

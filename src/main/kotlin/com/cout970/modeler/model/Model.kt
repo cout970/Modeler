@@ -1,8 +1,5 @@
 package com.cout970.modeler.model
 
-import com.cout970.vector.extensions.Quaternion
-import com.cout970.vector.extensions.Vector3
-
 /**
  * Created by cout970 on 2016/11/29.
  */
@@ -25,6 +22,6 @@ class ModelObject() {
 
 class ModelGroup() {
 
-    val transform = Transformation(Vector3.ORIGIN, Quaternion.IDENTITY, Vector3.ORIGIN)
+    val transform = Transformation.IDENTITY
     val components = mutableListOf<ModelComponent>()
 }

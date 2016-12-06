@@ -1,6 +1,9 @@
 package com.cout970.modeler.event
 
+import com.cout970.glutilities.device.Keyboard
+import com.cout970.glutilities.device.Mouse
 import com.cout970.glutilities.event.*
+import com.cout970.glutilities.window.GLFWWindow
 import com.cout970.modeler.ITickeable
 import java.util.*
 
@@ -12,6 +15,8 @@ class EventController() : ITickeable, IEventController {
     private val listeners = mutableMapOf<Class<Event>, MutableList<IEventListener<Event>>>()
     private val lock = Any()
     private val eventQueue = Collections.synchronizedList(mutableListOf<() -> Unit>())
+    lateinit var keyboard: Keyboard
+    lateinit var mouse: Mouse
 
     init {
         EventManager.registerListener(this::onEvent)
@@ -59,5 +64,11 @@ class EventController() : ITickeable, IEventController {
         } else {
             listeners.put(clazz, mutableListOf(listener))
         }
+    }
+
+    fun bindWindow(window: GLFWWindow) {
+        EventManager.registerWindow(window.id)
+        keyboard = Keyboard(window.id)
+        mouse = Mouse(window.id)
     }
 }
