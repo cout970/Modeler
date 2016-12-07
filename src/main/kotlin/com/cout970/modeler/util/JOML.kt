@@ -1,7 +1,8 @@
 package com.cout970.modeler.util
 
 import com.cout970.matrix.api.IMatrix4
-import com.cout970.matrix.extensions.mat4Of
+import com.cout970.matrix.extensions.*
+import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.api.IVector4
@@ -12,18 +13,20 @@ import org.joml.*
  * Created by cout970 on 2016/12/06.
  */
 
-fun Vector2d.toImmutable(): IVector2 = vec2Of(x, y)
+fun Number.toRads() = Math.toRadians(this.toDouble())
 
-fun Vector3d.toImmutable(): IVector3 = vec3Of(x, y, z)
-fun Vector4d.toImmutable(): IVector4 = vec4Of(x, y, z, w)
+fun Vector2d.toIVector(): IVector2 = vec2Of(x, y)
 
-fun Vector2f.toImmutable(): IVector2 = vec2Of(x, y)
-fun Vector3f.toImmutable(): IVector3 = vec3Of(x, y, z)
-fun Vector4f.toImmutable(): IVector4 = vec4Of(x, y, z, w)
+fun Vector3d.toIVector(): IVector3 = vec3Of(x, y, z)
+fun Vector4d.toIVector(): IVector4 = vec4Of(x, y, z, w)
 
-fun Vector2i.toImmutable(): IVector2 = vec2Of(x, y)
-fun Vector3i.toImmutable(): IVector3 = vec3Of(x, y, z)
-fun Vector4i.toImmutable(): IVector4 = vec4Of(x, y, z, w)
+fun Vector2f.toIVector(): IVector2 = vec2Of(x, y)
+fun Vector3f.toIVector(): IVector3 = vec3Of(x, y, z)
+fun Vector4f.toIVector(): IVector4 = vec4Of(x, y, z, w)
+
+fun Vector2i.toIVector(): IVector2 = vec2Of(x, y)
+fun Vector3i.toIVector(): IVector3 = vec3Of(x, y, z)
+fun Vector4i.toIVector(): IVector4 = vec4Of(x, y, z, w)
 
 fun IVector2.toJoml2f(): Vector2f = Vector2f(xf, yf)
 fun IVector2.toJoml2d(): Vector2d = Vector2d(xd, yd)
@@ -42,3 +45,13 @@ fun Matrix4d.toIMatrix(): IMatrix4 = mat4Of(
         m10(), m11(), m12(), m13(),
         m20(), m21(), m22(), m23(),
         m30(), m31(), m32(), m33())
+
+fun IMatrix4.toJOML(): Matrix4d = Matrix4d(
+        m00d, m01d, m02d, m03d,
+        m10d, m11d, m12d, m13d,
+        m20d, m21d, m22d, m23d,
+        m30d, m31d, m32d, m33d)
+
+fun IQuaternion.toJOML(): Quaterniond {
+    return Quaterniond(xd, yd, zd, wd)
+}

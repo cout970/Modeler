@@ -1,5 +1,7 @@
 package com.cout970.modeler.model
 
+import com.cout970.modeler.modelcontrol.ISelectable
+import com.cout970.modeler.modelcontrol.SelectionMode
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.cross
 import com.cout970.vector.extensions.minus
@@ -14,7 +16,7 @@ data class Quad(
         val b: Vertex,
         val c: Vertex,
         val d: Vertex
-) {
+) : ISelectable {
     val vertex: List<Vertex> get() = listOf(a, b, c, d)
 
     val normal: IVector3 by lazy {
@@ -22,6 +24,8 @@ data class Quad(
         val ac = c.pos - a.pos
         (ab cross ac).normalize()
     }
+
+    override fun canBeSelected(mode: SelectionMode): Boolean = mode == SelectionMode.QUAD
 
     companion object {
 

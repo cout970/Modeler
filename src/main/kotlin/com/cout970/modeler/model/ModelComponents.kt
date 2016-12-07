@@ -1,6 +1,13 @@
 package com.cout970.modeler.model
 
+import com.cout970.modeler.modelcontrol.ISelectable
+import com.cout970.modeler.modelcontrol.SelectionMode
+import com.cout970.raytrace.IRayObstacle
+import com.cout970.raytrace.Ray
+import com.cout970.raytrace.RayTraceResult
+import com.cout970.raytrace.RayTraceUtil
 import com.cout970.vector.api.IVector3
+import com.cout970.vector.extensions.distance
 import com.cout970.vector.extensions.div
 import com.cout970.vector.extensions.unaryMinus
 import com.cout970.vector.extensions.vec3Of
@@ -9,12 +16,24 @@ import com.cout970.vector.extensions.vec3Of
  * Created by cout970 on 2016/11/29.
  */
 
-sealed class ModelComponent() {
+sealed class ModelComponent() : ISelectable, IRayObstacle {
 
     var transformation: Transformation = Transformation.IDENTITY
 
     abstract fun getQuads(): List<Quad>
     abstract fun getVertices(): List<Vertex>
+
+    override fun canBeSelected(mode: SelectionMode): Boolean = mode == SelectionMode.COMPONENT
+
+    override fun rayTrace(ray: Ray): RayTraceResult? {
+        val hits = mutableListOf<RayTraceResult>()
+        for ((a, b, c, d) in getQuads()) {
+            RayTraceUtil.rayTraceQuad(ray, this, a.pos, b.pos, c.pos, d.pos)?.let { hits += it }
+        }
+        if (hits.isEmpty()) return null
+        if (hits.size == 1) return hits.first()
+        return hits.apply { sortBy { it.hit.distance(ray.start) } }.first()
+    }
 }
 
 data class Mesh(
@@ -43,7 +62,6 @@ data class Plane(
     override fun getVertices(): List<Vertex> = listOf(vertex0, vertex1, vertex2, vertex3)
 }
 
-//TODO redo, using quads instead of vertex, due to problems with UV
 data class Cube(
         var negX: Quad,
         var posX: Quad,

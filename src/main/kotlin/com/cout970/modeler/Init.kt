@@ -3,6 +3,7 @@ package com.cout970.modeler
 import com.cout970.glutilities.window.GLFWLoader
 import com.cout970.modeler.event.EventController
 import com.cout970.modeler.model.*
+import com.cout970.modeler.modelcontrol.ModelController
 import com.cout970.modeler.render.RenderManager
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.vec3Of
@@ -34,17 +35,17 @@ class Init {
         mainLoop = LoopController(listOf(renderManager, eventController, modelController, windowController))
 
         windowController.stop = { mainLoop.stop = true }
-        windowController.registerListeners(eventController)
 
         GLFWLoader.init()
         windowController.show()
         eventController.bindWindow(windowController.window)
 
-        renderManager.load(resourceManager, eventController, modelController)
+        renderManager.load(resourceManager, eventController, modelController, mainLoop.timer)
+        modelController.registerListeners(eventController)
 
         modelController.model.objects += ModelObject().apply {
             groups += ModelGroup().apply {
-                components += Cube.create(vec3Of(1, 1, 1))
+                components += Cube.create(vec3Of(5, 1, 5))
                 components += Plane(
                         Vertex(vec3Of(0, 0, 0), vec2Of(1, 0)),
                         Vertex(vec3Of(1, 0, 0), vec2Of(1, 0)),

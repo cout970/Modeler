@@ -38,9 +38,12 @@ class RootPanel(val renderManager: RenderManager) : Panel(), Viewport {
         init {
             position = Vector2f(0f, 0f)
             size = Vector2f(root.size.x, 20f)
-            addComponent(Button(0f, 0f, 60f, 20f, "File"))
-            addComponent(Button(60f, 0f, 60f, 20f, "Edit"))
-            addComponent(Button(120f, 0f, 60f, 20f, "View"))
+            var i = 0
+            addComponent(Button(i++ * 60f, 0f, 60f, 20f, "File"))
+            addComponent(Button(i++ * 60f, 0f, 60f, 20f, "Edit"))
+            addComponent(Button(i++ * 60f, 0f, 60f, 20f, "View"))
+            addComponent(Button(i++ * 60f, 0f, 60f, 20f, "Structure"))
+            addComponent(Button(i++ * 60f, 0f, 60f, 20f, "Help"))
         }
 
         override fun render(context: LeguiContext?) {

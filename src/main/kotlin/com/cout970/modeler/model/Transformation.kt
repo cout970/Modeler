@@ -1,9 +1,6 @@
 package com.cout970.modeler.model
 
-import com.cout970.matrix.extensions.asImmutable
-import com.cout970.matrix.extensions.mutableMat4Of
-import com.cout970.matrix.extensions.rotate
-import com.cout970.matrix.extensions.times
+import com.cout970.matrix.extensions.*
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.Quaternion
@@ -24,12 +21,11 @@ data class Transformation(
     }
 
     val matrix by lazy {
-        mutableMat4Of(
-                scale.x, 0, 0, position.x,
-                0, scale.y, 0, position.y,
-                0, 0, scale.z, position.z,
-                0, 0, 0, 1
-        ).apply { rotate(rotation) }.asImmutable()
+        mutableMat4Of(1).apply {
+            translate(position)
+            rotate(rotation)
+            scale(scale)
+        }.asImmutable()
     }
 
     fun apply(v: Vertex): Vertex {

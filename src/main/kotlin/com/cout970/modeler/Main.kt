@@ -5,6 +5,8 @@ package com.cout970.modeler
  */
 
 fun main(args: Array<String>) {
+//    Example.main(args)
     Init().run()
+
     System.exit(0)
 }

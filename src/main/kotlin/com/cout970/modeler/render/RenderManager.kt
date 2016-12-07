@@ -1,11 +1,12 @@
 package com.cout970.modeler.render
 
 import com.cout970.glutilities.structure.GLStateMachine
+import com.cout970.glutilities.structure.Timer
 import com.cout970.glutilities.window.GLFWWindow
 import com.cout970.modeler.ITickeable
-import com.cout970.modeler.ModelController
 import com.cout970.modeler.ResourceManager
 import com.cout970.modeler.event.EventController
+import com.cout970.modeler.modelcontrol.ModelController
 import com.cout970.modeler.render.layout.Layout
 import com.cout970.modeler.render.layout.LayoutModelEdit
 import com.cout970.modeler.render.renderer.GuiRenderer
@@ -24,7 +25,7 @@ class RenderManager() : ITickeable {
     lateinit var gui: GuiRenderer
     lateinit var modelController: ModelController
     lateinit var modelRenderer: ModelRenderer
-
+    lateinit var timer: Timer
     val root: RootPanel
 
     init {
@@ -32,9 +33,10 @@ class RenderManager() : ITickeable {
         root.loadView(layout)
     }
 
-    fun load(resourceManager: ResourceManager, eventController: EventController, modelController: ModelController) {
+    fun load(resourceManager: ResourceManager, eventController: EventController, modelController: ModelController, timer: Timer) {
         modelRenderer = ModelRenderer(resourceManager)
         this.modelController = modelController
+        this.timer = timer
         allLayouts.forEach {
             it.loadResources(resourceManager)
             it.viewController.registerListeners(eventController)

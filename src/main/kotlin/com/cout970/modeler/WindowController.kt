@@ -2,7 +2,6 @@ package com.cout970.modeler
 
 import com.cout970.glutilities.window.GLFWWindow
 import com.cout970.glutilities.window.WindowBuilder
-import com.cout970.modeler.event.IEventController
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.xi
 import com.cout970.vector.extensions.yi
@@ -31,14 +30,5 @@ class WindowController : ITickeable {
         }
         window.swapBuffers()
         GL11.glViewport(0, 0, window.size.xi, window.size.yi)
-    }
-
-    fun registerListeners(controller: IEventController) {
-//        controller.addListener(EventFrameBufferSize::class.java, object : IEventListener<EventFrameBufferSize> {
-//
-//            override fun onEvent(e: EventFrameBufferSize): Boolean {
-//                return false
-//            }
-//        })
     }
 }
