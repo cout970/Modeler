@@ -21,4 +21,8 @@ data class ModelPath(
         else if (vertex == null) 4
         else 5
     }
+
+    override fun toString(): String {
+        return "ModelPath(model=${model.javaClass}, obj=${obj?.javaClass}, group=${group?.javaClass}, component=${component?.javaClass}, quad=$quad, vertex=$vertex)"
+    }
 }

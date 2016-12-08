@@ -7,8 +7,6 @@ in vec3 in_position;
 in vec2 in_texture;
 //vertex surface normal
 in vec3 in_normal;
-//isSelected from 0 to 1
-in float in_selected;
 
 //output parameters to the fragment shader
 //interpolated texture coordinates
@@ -21,8 +19,6 @@ out vec3 toLightVectorA;
 out vec3 toLightVectorB;
 //vector to the camera
 out vec3 toCameraVector;
-//isSelected
-out float selected;
 
 //matrix used to add perspective projection
 uniform mat4 projectionMatrix;
@@ -47,7 +43,6 @@ void main(void){
     //values passed to openGL to interpoalte
     pass_texture = in_texture;
     surfaceNormal = in_normal;
-    selected = in_selected;
 
     //vectors towards the ligth
     toLightVectorA = lightPositionA - worldPos.xyz;

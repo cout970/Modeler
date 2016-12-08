@@ -1,4 +1,4 @@
-package com.cout970.modeler.render.layout
+package com.cout970.modeler.render.controller
 
 import com.cout970.glutilities.device.Keyboard
 import com.cout970.glutilities.device.Mouse
@@ -9,7 +9,8 @@ import com.cout970.glutilities.event.EventMouseScroll
 import com.cout970.modeler.event.EventController
 import com.cout970.modeler.event.IEventListener
 import com.cout970.modeler.event.KeyBindings
-import com.cout970.modeler.render.controller.IViewController
+import com.cout970.modeler.modelcontrol.SelectionMode
+import com.cout970.modeler.render.layout.LayoutModelEdit
 import com.cout970.modeler.util.absolutePosition
 import com.cout970.modeler.util.inside
 import com.cout970.modeler.util.toIVector
@@ -100,6 +101,14 @@ class ViewControllerModelEdit(val layout: LayoutModelEdit) : IViewController {
     }
 
     fun onButtonPress(id: Int) {
-        println("click $id")
+        when (id) {
+            0 -> layout.renderManager.modelController.selectionManager.selectionMode = SelectionMode.GROUP
+            1 -> layout.renderManager.modelController.selectionManager.selectionMode = SelectionMode.COMPONENT
+            2 -> layout.renderManager.modelController.selectionManager.selectionMode = SelectionMode.QUAD
+            3 -> layout.renderManager.modelController.selectionManager.selectionMode = SelectionMode.VERTEX
+            8 -> layout.renderManager.modelController.historyRecord.undo()
+            9 -> layout.renderManager.modelController.historyRecord.redo()
+            else -> println("ID: $id")
+        }
     }
 }

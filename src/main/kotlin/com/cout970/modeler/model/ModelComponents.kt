@@ -1,7 +1,5 @@
 package com.cout970.modeler.model
 
-import com.cout970.modeler.modelcontrol.ISelectable
-import com.cout970.modeler.modelcontrol.SelectionMode
 import com.cout970.raytrace.IRayObstacle
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
@@ -16,14 +14,12 @@ import com.cout970.vector.extensions.vec3Of
  * Created by cout970 on 2016/11/29.
  */
 
-sealed class ModelComponent() : ISelectable, IRayObstacle {
+sealed class ModelComponent() : IRayObstacle {
 
     var transformation: Transformation = Transformation.IDENTITY
 
     abstract fun getQuads(): List<Quad>
     abstract fun getVertices(): List<Vertex>
-
-    override fun canBeSelected(mode: SelectionMode): Boolean = mode == SelectionMode.COMPONENT
 
     override fun rayTrace(ray: Ray): RayTraceResult? {
         val hits = mutableListOf<RayTraceResult>()

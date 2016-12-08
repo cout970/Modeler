@@ -12,8 +12,6 @@ in vec3 toLightVectorA;
 in vec3 toLightVectorB;
 //vector towards camera
 in vec3 toCameraVector;
-//isSelected from 0 to 1
-in float selected;
 
 //output
 out vec4 out_color;
@@ -37,7 +35,6 @@ uniform float textureSize;
 
 //ambient light
 const float ambient = 0.15;
-const vec3 selectedColor = vec3(1.0, 0.5, 0.0);
 
 vec3 getLight(vec3 color, vec3 lcolor, vec3 toLight, vec3 normal, vec3 toCamera);
 
@@ -59,7 +56,6 @@ void main(void){
     } else {
         out_color = color;
     }
-    out_color = mix(out_color, vec4(selectedColor, 1.0), selected);
 }
 
 /**

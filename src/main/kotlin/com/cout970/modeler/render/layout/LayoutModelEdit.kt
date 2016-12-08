@@ -3,6 +3,7 @@ package com.cout970.modeler.render.layout
 import com.cout970.matrix.extensions.times
 import com.cout970.modeler.render.RenderManager
 import com.cout970.modeler.render.controller.Camera
+import com.cout970.modeler.render.controller.ViewControllerModelEdit
 import com.cout970.modeler.util.toIMatrix
 import com.cout970.vector.extensions.vec2Of
 import org.joml.*
@@ -66,7 +67,7 @@ class LayoutModelEdit(renderManager: RenderManager) : Layout(renderManager) {
                 sidePanel.addComponent(Button(10f, line, 80f, 20f, "Mesh").apply {
                     leguiEventListeners.addListener(MouseClickEvent::class.java, Listener(this@LayoutModelEdit, 6))
                 })
-                sidePanel.addComponent(Button(90f, line, 80f, 20f, "").apply {
+                sidePanel.addComponent(Button(90f, line, 80f, 20f, "Submodel").apply {
                     leguiEventListeners.addListener(MouseClickEvent::class.java, Listener(this@LayoutModelEdit, 7))
                 })
                 line += 30f
@@ -144,7 +145,9 @@ class LayoutModelEdit(renderManager: RenderManager) : Layout(renderManager) {
             matrixV = Matrix4d().apply { translate(Vector3d(0.0, 0.0, zoom.toDouble())) }.toIMatrix() * camera.matrix
 
             start(vec2Of(pos.x, pos.y), vec2Of(size.x, size.y))
-            render(renderManager.modelController.model, renderManager.modelController.selectionManager)
+            render(renderManager.modelController.model)
+            startSelection()
+            renderSelection(renderManager.modelController.model, renderManager.modelController.selectionManager)
             stop()
         }
     }

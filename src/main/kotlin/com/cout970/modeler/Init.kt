@@ -45,7 +45,7 @@ class Init {
 
         modelController.model.objects += ModelObject().apply {
             groups += ModelGroup().apply {
-                components += Cube.create(vec3Of(5, 1, 5))
+                components += Cube.create(vec3Of(1, 1, 1))
                 components += Plane(
                         Vertex(vec3Of(0, 0, 0), vec2Of(1, 0)),
                         Vertex(vec3Of(1, 0, 0), vec2Of(1, 0)),
