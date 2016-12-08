@@ -1,7 +1,7 @@
 package com.cout970.modeler.modelcontrol.action
 
 import com.cout970.modeler.model.Cube
-import com.cout970.modeler.modelcontrol.ModelPath
+import com.cout970.modeler.modelcontrol.selection.ModelPath
 import com.cout970.vector.extensions.vec3Of
 
 /**

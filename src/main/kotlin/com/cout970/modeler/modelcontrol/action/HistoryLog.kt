@@ -1,6 +1,6 @@
 package com.cout970.modeler.modelcontrol.action
 
-import java.io.PrintWriter
+import java.io.PrintStream
 import java.util.*
 
 /**
@@ -22,7 +22,7 @@ class HistoryLog {
         log += Type.REDO to action
     }
 
-    fun writeLog(out: PrintWriter) {
+    fun writeLog(out: PrintStream) {
         for (i in log) {
             out.println("${i.first} -> ${i.second}")
         }

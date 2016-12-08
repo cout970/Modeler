@@ -143,7 +143,10 @@ class LayoutModelEdit(renderManager: RenderManager) : Layout(renderManager) {
         renderManager.modelRenderer.run {
             matrixP = Matrix4d().setPerspective(Math.toRadians(60.0), (modelPanel.size.x / modelPanel.size.y).toDouble(), 0.001, 1000.0).toIMatrix()
             matrixV = Matrix4d().apply { translate(Vector3d(0.0, 0.0, zoom.toDouble())) }.toIMatrix() * camera.matrix
-
+            if (renderManager.modelController.modelUpdate) {
+                renderManager.modelController.modelUpdate = false
+                cache.clear()
+            }
             start(vec2Of(pos.x, pos.y), vec2Of(size.x, size.y))
             render(renderManager.modelController.model)
             startSelection()

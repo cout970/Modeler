@@ -1,7 +1,8 @@
-package com.cout970.modeler.modelcontrol
+package com.cout970.modeler.modelcontrol.selection
 
 import com.cout970.glutilities.device.Keyboard
 import com.cout970.matrix.extensions.times
+import com.cout970.modeler.modelcontrol.ModelController
 import com.cout970.modeler.modelcontrol.action.ActionChangeSelection
 import com.cout970.modeler.render.renderer.ModelRenderer
 import com.cout970.modeler.util.toIVector
@@ -89,10 +90,10 @@ class SelectionManager(val modelController: ModelController) {
 
         if (hit != null) {
             val sel = handleSelection(hit.second)
-            modelController.historyRecord.doAction(ActionChangeSelection(selection, sel, this) { renderer.cache.clear() })
+            modelController.historyRecord.doAction(ActionChangeSelection(selection, sel, modelController))
         } else {
             if (!modelController.eventController.keyboard.isKeyPressed(Keyboard.KEY_LEFT_CONTROL)) {
-                modelController.historyRecord.doAction(ActionChangeSelection(selection, SelectionNone, this) { renderer.cache.clear() })
+                modelController.historyRecord.doAction(ActionChangeSelection(selection, SelectionNone, modelController))
             }
         }
     }
@@ -162,5 +163,9 @@ class SelectionManager(val modelController: ModelController) {
             }
         }
         return null
+    }
+
+    fun clearSelection() {
+        selection = SelectionNone
     }
 }

@@ -14,9 +14,10 @@ import com.cout970.vector.extensions.vec3Of
  * Created by cout970 on 2016/11/29.
  */
 
+//this class and subclasses must be immutable
 sealed class ModelComponent() : IRayObstacle {
 
-    var transformation: Transformation = Transformation.IDENTITY
+    val transformation: Transformation = Transformation.IDENTITY
 
     abstract fun getQuads(): List<Quad>
     abstract fun getVertices(): List<Vertex>
@@ -33,8 +34,8 @@ sealed class ModelComponent() : IRayObstacle {
 }
 
 data class Mesh(
-        var vertex: List<Vertex>,
-        var indices: List<QuadIndices>
+        val vertex: List<Vertex>,
+        val indices: List<QuadIndices>
 ) : ModelComponent() {
 
     override fun getQuads(): List<Quad> = indices.map { it.toQuad(vertex) }
@@ -47,10 +48,10 @@ data class Mesh(
 }
 
 data class Plane(
-        var vertex0: Vertex,
-        var vertex1: Vertex,
-        var vertex2: Vertex,
-        var vertex3: Vertex
+        val vertex0: Vertex,
+        val vertex1: Vertex,
+        val vertex2: Vertex,
+        val vertex3: Vertex
 ) : ModelComponent() {
 
     override fun getQuads(): List<Quad> = listOf(Quad(vertex0, vertex1, vertex2, vertex3))
@@ -59,12 +60,12 @@ data class Plane(
 }
 
 data class Cube(
-        var negX: Quad,
-        var posX: Quad,
-        var negY: Quad,
-        var posY: Quad,
-        var negZ: Quad,
-        var posZ: Quad
+        val negX: Quad,
+        val posX: Quad,
+        val negY: Quad,
+        val posY: Quad,
+        val negZ: Quad,
+        val posZ: Quad
 ) : ModelComponent() {
 
     override fun getQuads(): List<Quad> = listOf(negX, posX, negY, posY, negZ, posZ)

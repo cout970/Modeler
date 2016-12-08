@@ -1,21 +1,21 @@
 package com.cout970.modeler.modelcontrol.action
 
-import com.cout970.modeler.modelcontrol.Selection
-import com.cout970.modeler.modelcontrol.SelectionManager
+import com.cout970.modeler.modelcontrol.ModelController
+import com.cout970.modeler.modelcontrol.selection.Selection
 
 /**
  * Created by cout970 on 2016/12/08.
  */
-data class ActionChangeSelection(val oldSelection: Selection, val newSelection: Selection, val selectionManager: SelectionManager, val update: () -> Unit) : IAction {
+data class ActionChangeSelection(val oldSelection: Selection, val newSelection: Selection, val modelController: ModelController) : IAction {
 
     override fun run() {
-        selectionManager.selection = newSelection
-        update()
+        modelController.selectionManager.selection = newSelection
+        modelController.modelUpdate = true
     }
 
     override fun undo() {
-        selectionManager.selection = oldSelection
-        update()
+        modelController.selectionManager.selection = oldSelection
+        modelController.modelUpdate = true
     }
 
     override fun toString(): String {

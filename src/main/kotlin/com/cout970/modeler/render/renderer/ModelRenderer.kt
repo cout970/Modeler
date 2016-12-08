@@ -13,7 +13,7 @@ import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.mat4Of
 import com.cout970.modeler.ResourceManager
 import com.cout970.modeler.model.Model
-import com.cout970.modeler.modelcontrol.*
+import com.cout970.modeler.modelcontrol.selection.*
 import com.cout970.modeler.util.Cache
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -111,8 +111,8 @@ class ModelRenderer(resourceManager: ResourceManager) {
         projectionMatrix.setMatrix4(matrixP)
         viewMatrix.setMatrix4(matrixV)
         transformationMatrix.setMatrix4(matrixM)
-        lightPositionA.setVector3(vec3Of(100, 75, 100))
-        lightPositionB.setVector3(vec3Of(-100, -75, -100))
+        lightPositionA.setVector3(vec3Of(150, 75, 100))
+        lightPositionB.setVector3(vec3Of(-150, -75, -100))
         lightColorA.setVector3(vec3Of(1))
         lightColorB.setVector3(vec3Of(1))
         shineDamper.setFloat(1f)

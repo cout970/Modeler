@@ -1,4 +1,4 @@
-package com.cout970.modeler.modelcontrol
+package com.cout970.modeler.modelcontrol.selection
 
 import com.cout970.modeler.model.*
 

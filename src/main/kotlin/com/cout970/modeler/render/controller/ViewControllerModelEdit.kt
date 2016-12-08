@@ -9,7 +9,9 @@ import com.cout970.glutilities.event.EventMouseScroll
 import com.cout970.modeler.event.EventController
 import com.cout970.modeler.event.IEventListener
 import com.cout970.modeler.event.KeyBindings
-import com.cout970.modeler.modelcontrol.SelectionMode
+import com.cout970.modeler.modelcontrol.ModelController
+import com.cout970.modeler.modelcontrol.action.ActionDelete
+import com.cout970.modeler.modelcontrol.selection.SelectionMode
 import com.cout970.modeler.render.layout.LayoutModelEdit
 import com.cout970.modeler.util.absolutePosition
 import com.cout970.modeler.util.inside
@@ -19,6 +21,8 @@ import com.cout970.vector.extensions.*
 import org.joml.Math
 
 class ViewControllerModelEdit(val layout: LayoutModelEdit) : IViewController {
+
+    val modelController: ModelController get() = layout.renderManager.modelController
     lateinit var mouse: Mouse
     lateinit var keyboard: Keyboard
     lateinit var keyBindings: KeyBindings
@@ -31,8 +35,11 @@ class ViewControllerModelEdit(val layout: LayoutModelEdit) : IViewController {
         eventController.addListener(EventKeyUpdate::class.java, object : IEventListener<EventKeyUpdate> {
             override fun onEvent(e: EventKeyUpdate): Boolean {
                 if (!enableControl) return false
-                if (e.keyState == EnumKeyState.PRESS && e.keycode == Keyboard.KEY_P) {
-                    layout.renderManager.modelRenderer.cache.clear()
+                if (e.keyState == EnumKeyState.PRESS) {
+                    when (e.keycode) {
+                        Keyboard.KEY_P -> layout.renderManager.modelRenderer.cache.clear()
+                        Keyboard.KEY_DELETE -> modelController.historyRecord.doAction(ActionDelete(modelController.selectionManager.selection, modelController))
+                    }
                 }
                 return false
             }
@@ -48,7 +55,7 @@ class ViewControllerModelEdit(val layout: LayoutModelEdit) : IViewController {
             override fun onEvent(e: EventMouseClick): Boolean {
                 if (!enableControl || e.keyState != EnumKeyState.PRESS || !keyBindings.selectModel.check(mouse)) return false
                 if (inside(mouse.getMousePos(), layout.modelPanel.absolutePosition, layout.modelPanel.size.toIVector())) {
-                    layout.renderManager.modelController.selectionManager
+                    modelController.selectionManager
                             .mouseTrySelect(mouse.getMousePos() - layout.modelPanel.absolutePosition, layout.renderManager.modelRenderer, layout.modelPanel.size.toIVector())
                     return true
                 }
@@ -102,13 +109,16 @@ class ViewControllerModelEdit(val layout: LayoutModelEdit) : IViewController {
 
     fun onButtonPress(id: Int) {
         when (id) {
-            0 -> layout.renderManager.modelController.selectionManager.selectionMode = SelectionMode.GROUP
-            1 -> layout.renderManager.modelController.selectionManager.selectionMode = SelectionMode.COMPONENT
-            2 -> layout.renderManager.modelController.selectionManager.selectionMode = SelectionMode.QUAD
-            3 -> layout.renderManager.modelController.selectionManager.selectionMode = SelectionMode.VERTEX
-            8 -> layout.renderManager.modelController.historyRecord.undo()
-            9 -> layout.renderManager.modelController.historyRecord.redo()
-            else -> println("ID: $id")
+            0 -> modelController.selectionManager.selectionMode = SelectionMode.GROUP
+            1 -> modelController.selectionManager.selectionMode = SelectionMode.COMPONENT
+            2 -> modelController.selectionManager.selectionMode = SelectionMode.QUAD
+            3 -> modelController.selectionManager.selectionMode = SelectionMode.VERTEX
+            8 -> modelController.historyRecord.undo()
+            9 -> modelController.historyRecord.redo()
+            10 -> modelController.clipboard.copy()
+            11 -> modelController.clipboard.cut()
+            12 -> modelController.clipboard.paste()
+            else -> println("unregistered button ID: $id")
         }
     }
 }
