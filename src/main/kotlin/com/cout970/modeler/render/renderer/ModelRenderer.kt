@@ -13,8 +13,14 @@ import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.mat4Of
 import com.cout970.modeler.ResourceManager
 import com.cout970.modeler.model.Model
-import com.cout970.modeler.modelcontrol.selection.*
+import com.cout970.modeler.modelcontrol.selection.ModelPath
+import com.cout970.modeler.modelcontrol.selection.Selection
+import com.cout970.modeler.modelcontrol.selection.SelectionMode
+import com.cout970.modeler.modelcontrol.selection.SelectionNone
+import com.cout970.modeler.render.controller.ModelSelector
+import com.cout970.modeler.render.controller.SelectionAxis
 import com.cout970.modeler.util.Cache
+import com.cout970.modeler.util.RenderUtil
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
@@ -29,7 +35,12 @@ class ModelRenderer(resourceManager: ResourceManager) {
 
     val tessellator = Tessellator()
     var consumer: Consumer<VAO>
-    val cache = Cache<Int, VAO>(10).apply { onRemove = { k, v -> v.close() } }
+    //cache
+    val modelCache = Cache<Int, VAO>(1).apply { onRemove = { k, v -> v.close() } }
+    val selectionCache = Cache<Int, VAO>(1).apply { onRemove = { k, v -> v.close() } }
+    //vao formats
+    val formatPC = FormatPC()
+    val formatPTN = FormatPTN()
     //Model, View, Projection matrices
     var matrixM: IMatrix4 = mat4Of(1)
     var matrixV: IMatrix4 = mat4Of(1)
@@ -71,8 +82,8 @@ class ModelRenderer(resourceManager: ResourceManager) {
             bindAttribute(2, "in_normal")
         }
         selectionShader = ShaderBuilder.build {
-            compile(GL20.GL_VERTEX_SHADER, resourceManager.readResource("assets/shaders/selection_vertex.glsl").reader().readText())
-            compile(GL20.GL_FRAGMENT_SHADER, resourceManager.readResource("assets/shaders/selection_fragment.glsl").reader().readText())
+            compile(GL20.GL_VERTEX_SHADER, resourceManager.readResource("assets/shaders/scene_vertex.glsl").reader().readText())
+            compile(GL20.GL_FRAGMENT_SHADER, resourceManager.readResource("assets/shaders/scene_fragment.glsl").reader().readText())
             bindAttribute(0, "in_position")
             bindAttribute(1, "in_color")
         }
@@ -138,132 +149,90 @@ class ModelRenderer(resourceManager: ResourceManager) {
         selectionShader.stop()
     }
 
-    fun render(model: Model) {
-        consumer.accept(cache.getOrCompute(model.hashCode() % 17) {
-            tessellator.compile(GL11.GL_QUADS, FormatPTN()) {
-                model.getComponents().forEach { component ->
-                    component.getQuads().forEach { quad ->
-                        val norm = quad.normal
-                        quad.vertex.forEach { (pos, tex) ->
-                            set(0, pos.x, pos.y, pos.z).set(1, tex.x, tex.y).set(2, norm.x, norm.y, norm.z).endVertex()
-                        }
+    fun renderModel(model: Model) {
+        consumer.accept(modelCache.getOrCompute(model.hashCode()) {
+            tessellator.compile(GL11.GL_QUADS, formatPTN) {
+                model.quads.forEach { quad ->
+                    val norm = quad.normal
+                    quad.vertex.forEach { (pos, tex) ->
+                        set(0, pos.x, pos.y, pos.z).set(1, tex.x, tex.y).set(2, norm.x, norm.y, norm.z).endVertex()
                     }
                 }
             }
         })
-
-        tessellator.draw(GL11.GL_LINES, FormatPTN(), consumer) {
-            set(0, -10, 0, 0).set(1, 0, 0).set(2, 0, 1, 0).endVertex()
-            set(0, 10, 0, 0).set(1, 0, 0).set(2, 0, 1, 0).endVertex()
-
-            set(0, 0, -10, 0).set(1, 0, 0).set(2, 0, 1, 0).endVertex()
-            set(0, 0, 10, 0).set(1, 0, 0).set(2, 0, 1, 0).endVertex()
-
-            set(0, 0, 0, -10).set(1, 0, 0).set(2, 0, 1, 0).endVertex()
-            set(0, 0, 0, 10).set(1, 0, 0).set(2, 0, 1, 0).endVertex()
-        }
     }
 
-    fun renderSelection(model: Model, selectionManager: SelectionManager) {
-        if (selectionManager.selection == SelectionNone) {
+    fun renderModelSelection(model: Model, selection: Selection) {
+        if (selection == SelectionNone) {
             return
-        } else if (selectionManager.selection.mode == SelectionMode.GROUP) {
-            consumer.accept(cache.getOrCompute(model.hashCode() % 13) {
-                tessellator.compile(GL11.GL_QUADS, FormatPC()) {
-                    model.getGroups().forEach { group ->
-                        if ((selectionManager.selection as SelectionGroup).isSelected(group)) {
-                            group.components.forEach { component ->
-                                component.getQuads().forEach { (a, b, c, d) ->
-                                    renderBar(a.pos, b.pos)
-                                    renderBar(b.pos, c.pos)
-                                    renderBar(c.pos, d.pos)
-                                    renderBar(d.pos, a.pos)
-                                }
+        }
+
+        consumer.accept(selectionCache.getOrCompute(model.hashCode() xor selection.hashCode()) {
+            tessellator.compile(GL11.GL_QUADS, formatPC) {
+                if (selection.mode != SelectionMode.VERTEX) {
+                    model.getQuadsOptimized(selection) { quad ->
+                        RenderUtil.renderBar(tessellator, quad.a.pos, quad.b.pos)
+                        RenderUtil.renderBar(tessellator, quad.b.pos, quad.c.pos)
+                        RenderUtil.renderBar(tessellator, quad.c.pos, quad.d.pos)
+                        RenderUtil.renderBar(tessellator, quad.d.pos, quad.a.pos)
+                        if (selection.mode == SelectionMode.QUAD) {
+                            quad.vertex.forEach { (pos, tex) ->
+                                val pos_: IVector3 = pos
+                                set(0, pos_.xd + 0.01, pos_.yd + 0.01, pos_.zd + 0.01).set(1, 0.5, 0.5, 0.4).endVertex()
+                            }
+                            quad.vertex.forEach { (pos, tex) ->
+                                val pos_: IVector3 = pos
+                                set(0, pos_.xd - 0.01, pos_.yd - 0.01, pos_.zd - 0.01).set(1, 0.5, 0.5, 0.4).endVertex()
                             }
                         }
                     }
-                }
-            })
-        } else if (selectionManager.selection.mode == SelectionMode.COMPONENT) {
-            consumer.accept(cache.getOrCompute(model.hashCode() % 13) {
-                tessellator.compile(GL11.GL_QUADS, FormatPC()) {
-                    model.getComponents().forEach { component ->
-                        if ((selectionManager.selection as SelectionComponent).isSelected(component)) {
-                            component.getQuads().forEach { (a, b, c, d) ->
-                                renderBar(a.pos, b.pos)
-                                renderBar(b.pos, c.pos)
-                                renderBar(c.pos, d.pos)
-                                renderBar(d.pos, a.pos)
+                } else {
+                    model.getPaths(ModelPath.Level.COMPONENTS).forEach { compPath ->
+                        val paths = selection.paths.filter { it.compareLevel(compPath, ModelPath.Level.COMPONENTS) }
+                        if (paths.isNotEmpty()) {
+                            val matrix = compPath.getComponentMatrix(model)
+                            paths.map { it.getVertex(model)!! }.map { it.transform(matrix) }.forEach {
+                                RenderUtil.renderBar(tessellator, it.pos, it.pos, 0.0625)
                             }
                         }
                     }
+
                 }
-            })
-        } else if (selectionManager.selection.mode == SelectionMode.QUAD) {
-            consumer.accept(cache.getOrCompute(model.hashCode() % 13) {
-                tessellator.compile(GL11.GL_QUADS, FormatPC()) {
-                    model.getComponents().forEach { component ->
-                        component.getQuads().forEach({ quad ->
-                            if ((selectionManager.selection as SelectionQuad).isSelected(quad)) {
-                                renderBar(quad.a.pos, quad.b.pos)
-                                renderBar(quad.b.pos, quad.c.pos)
-                                renderBar(quad.c.pos, quad.d.pos)
-                                renderBar(quad.d.pos, quad.a.pos)
-                            }
-                        })
-                    }
-                }
-            })
-        } else if (selectionManager.selection.mode == SelectionMode.VERTEX) {
-            consumer.accept(cache.getOrCompute(model.hashCode() % 13) {
-                tessellator.compile(GL11.GL_QUADS, FormatPC()) {
-                    model.getComponents().forEach { component ->
-                        component.getQuads().forEach({ quad ->
-                            for (v in quad.vertex) {
-                                if ((selectionManager.selection as SelectionVertex).isSelected(v)) {
-                                    renderBar(v.pos, v.pos, 0.0625)
-                                }
-                            }
-                        })
-                    }
-                }
-            })
+            }
+        })
+    }
+
+    fun renderTranslation(center: IVector3, selector: ModelSelector, selection: Selection) {
+
+        GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
+        val selX = selector.selectedAxis == SelectionAxis.X || selector.phantomSelectedAxis == SelectionAxis.X
+        val selY = selector.selectedAxis == SelectionAxis.Y || selector.phantomSelectedAxis == SelectionAxis.Y
+        val selZ = selector.selectedAxis == SelectionAxis.Z || selector.phantomSelectedAxis == SelectionAxis.Z
+        val size = 0.0625 / 2
+
+        tessellator.draw(GL11.GL_QUADS, formatPC, consumer) {
+            if (selection.mode != SelectionMode.VERTEX) {
+                RenderUtil.renderBar(tessellator, center, center, 0.0625, vec3Of(1, 1, 1))
+            }
+
+            RenderUtil.renderBar(tessellator, center + vec3Of(0.8, 0, 0), center + vec3Of(1, 0, 0), if (selX) size * 1.5 else size, col = vec3Of(1, 0, 0))
+
+            RenderUtil.renderBar(tessellator, center + vec3Of(0, 0.8, 0), center + vec3Of(0, 1, 0), if (selY) size * 1.5 else size, col = vec3Of(0, 1, 0))
+
+            RenderUtil.renderBar(tessellator, center + vec3Of(0, 0, 0.8), center + vec3Of(0, 0, 1), if (selZ) size * 1.5 else size, col = vec3Of(0, 0, 1))
         }
     }
 
-    fun renderBar(a: IVector3, b: IVector3, d: Double = 0.03125 / 2.0) {
-        val col = vec3Of(1, 1, 0)
-        tessellator.apply {
-            //-x
-            set(0, Math.min(Math.min(a.xd + d, a.xd - d), Math.min(b.xd - d, b.xd + d)), Math.min(Math.min(a.yd + d, a.yd - d), Math.min(b.yd - d, b.yd + d)), Math.max(Math.max(a.zd + d, a.zd - d), Math.max(b.zd - d, b.zd + d))).set(1, col.x, col.y, col.z).endVertex()
-            set(0, Math.min(Math.min(a.xd + d, a.xd - d), Math.min(b.xd - d, b.xd + d)), Math.min(Math.min(a.yd + d, a.yd - d), Math.min(b.yd - d, b.yd + d)), Math.min(Math.min(a.zd + d, a.zd - d), Math.min(b.zd - d, b.zd + d))).set(1, col.x, col.y, col.z).endVertex()
-            set(0, Math.min(Math.min(a.xd + d, a.xd - d), Math.min(b.xd - d, b.xd + d)), Math.max(Math.max(a.yd + d, a.yd - d), Math.max(b.yd - d, b.yd + d)), Math.min(Math.min(a.zd + d, a.zd - d), Math.min(b.zd - d, b.zd + d))).set(1, col.x, col.y, col.z).endVertex()
-            set(0, Math.min(Math.min(a.xd + d, a.xd - d), Math.min(b.xd - d, b.xd + d)), Math.max(Math.max(a.yd + d, a.yd - d), Math.max(b.yd - d, b.yd + d)), Math.max(Math.max(a.zd + d, a.zd - d), Math.max(b.zd - d, b.zd + d))).set(1, col.x, col.y, col.z).endVertex()
-            //+x
-            set(0, Math.max(Math.max(a.xd + d, a.xd - d), Math.max(b.xd - d, b.xd + d)), Math.min(Math.min(a.yd + d, a.yd - d), Math.min(b.yd - d, b.yd + d)), Math.max(Math.max(a.zd + d, a.zd - d), Math.max(b.zd - d, b.zd + d))).set(1, col.x, col.y, col.z).endVertex()
-            set(0, Math.max(Math.max(a.xd + d, a.xd - d), Math.max(b.xd - d, b.xd + d)), Math.min(Math.min(a.yd + d, a.yd - d), Math.min(b.yd - d, b.yd + d)), Math.min(Math.min(a.zd + d, a.zd - d), Math.min(b.zd - d, b.zd + d))).set(1, col.x, col.y, col.z).endVertex()
-            set(0, Math.max(Math.max(a.xd + d, a.xd - d), Math.max(b.xd - d, b.xd + d)), Math.max(Math.max(a.yd + d, a.yd - d), Math.max(b.yd - d, b.yd + d)), Math.min(Math.min(a.zd + d, a.zd - d), Math.min(b.zd - d, b.zd + d))).set(1, col.x, col.y, col.z).endVertex()
-            set(0, Math.max(Math.max(a.xd + d, a.xd - d), Math.max(b.xd - d, b.xd + d)), Math.max(Math.max(a.yd + d, a.yd - d), Math.max(b.yd - d, b.yd + d)), Math.max(Math.max(a.zd + d, a.zd - d), Math.max(b.zd - d, b.zd + d))).set(1, col.x, col.y, col.z).endVertex()
-            //-y
-            set(0, Math.min(Math.min(a.xd + d, a.xd - d), Math.min(b.xd - d, b.xd + d)), Math.min(Math.min(a.yd + d, a.yd - d), Math.min(b.yd - d, b.yd + d)), Math.max(Math.max(a.zd + d, a.zd - d), Math.max(b.zd - d, b.zd + d))).set(1, col.x, col.y, col.z).endVertex()
-            set(0, Math.min(Math.min(a.xd + d, a.xd - d), Math.min(b.xd - d, b.xd + d)), Math.min(Math.min(a.yd + d, a.yd - d), Math.min(b.yd - d, b.yd + d)), Math.min(Math.min(a.zd + d, a.zd - d), Math.min(b.zd - d, b.zd + d))).set(1, col.x, col.y, col.z).endVertex()
-            set(0, Math.max(Math.max(a.xd + d, a.xd - d), Math.max(b.xd - d, b.xd + d)), Math.min(Math.min(a.yd + d, a.yd - d), Math.min(b.yd - d, b.yd + d)), Math.min(Math.min(a.zd + d, a.zd - d), Math.min(b.zd - d, b.zd + d))).set(1, col.x, col.y, col.z).endVertex()
-            set(0, Math.max(Math.max(a.xd + d, a.xd - d), Math.max(b.xd - d, b.xd + d)), Math.min(Math.min(a.yd + d, a.yd - d), Math.min(b.yd - d, b.yd + d)), Math.max(Math.max(a.zd + d, a.zd - d), Math.max(b.zd - d, b.zd + d))).set(1, col.x, col.y, col.z).endVertex()
-            //+y
-            set(0, Math.min(Math.min(a.xd + d, a.xd - d), Math.min(b.xd - d, b.xd + d)), Math.max(Math.max(a.yd + d, a.yd - d), Math.max(b.yd - d, b.yd + d)), Math.max(Math.max(a.zd + d, a.zd - d), Math.max(b.zd - d, b.zd + d))).set(1, col.x, col.y, col.z).endVertex()
-            set(0, Math.min(Math.min(a.xd + d, a.xd - d), Math.min(b.xd - d, b.xd + d)), Math.max(Math.max(a.yd + d, a.yd - d), Math.max(b.yd - d, b.yd + d)), Math.min(Math.min(a.zd + d, a.zd - d), Math.min(b.zd - d, b.zd + d))).set(1, col.x, col.y, col.z).endVertex()
-            set(0, Math.max(Math.max(a.xd + d, a.xd - d), Math.max(b.xd - d, b.xd + d)), Math.max(Math.max(a.yd + d, a.yd - d), Math.max(b.yd - d, b.yd + d)), Math.min(Math.min(a.zd + d, a.zd - d), Math.min(b.zd - d, b.zd + d))).set(1, col.x, col.y, col.z).endVertex()
-            set(0, Math.max(Math.max(a.xd + d, a.xd - d), Math.max(b.xd - d, b.xd + d)), Math.max(Math.max(a.yd + d, a.yd - d), Math.max(b.yd - d, b.yd + d)), Math.max(Math.max(a.zd + d, a.zd - d), Math.max(b.zd - d, b.zd + d))).set(1, col.x, col.y, col.z).endVertex()
-            //-z
-            set(0, Math.min(Math.min(a.xd + d, a.xd - d), Math.min(b.xd - d, b.xd + d)), Math.max(Math.max(a.yd + d, a.yd - d), Math.max(b.yd - d, b.yd + d)), Math.min(Math.min(a.zd + d, a.zd - d), Math.min(b.zd - d, b.zd + d))).set(1, col.x, col.y, col.z).endVertex()
-            set(0, Math.min(Math.min(a.xd + d, a.xd - d), Math.min(b.xd - d, b.xd + d)), Math.min(Math.min(a.yd + d, a.yd - d), Math.min(b.yd - d, b.yd + d)), Math.min(Math.min(a.zd + d, a.zd - d), Math.min(b.zd - d, b.zd + d))).set(1, col.x, col.y, col.z).endVertex()
-            set(0, Math.max(Math.max(a.xd + d, a.xd - d), Math.max(b.xd - d, b.xd + d)), Math.min(Math.min(a.yd + d, a.yd - d), Math.min(b.yd - d, b.yd + d)), Math.min(Math.min(a.zd + d, a.zd - d), Math.min(b.zd - d, b.zd + d))).set(1, col.x, col.y, col.z).endVertex()
-            set(0, Math.max(Math.max(a.xd + d, a.xd - d), Math.max(b.xd - d, b.xd + d)), Math.max(Math.max(a.yd + d, a.yd - d), Math.max(b.yd - d, b.yd + d)), Math.min(Math.min(a.zd + d, a.zd - d), Math.min(b.zd - d, b.zd + d))).set(1, col.x, col.y, col.z).endVertex()
-            //+z
-            set(0, Math.min(Math.min(a.xd + d, a.xd - d), Math.min(b.xd - d, b.xd + d)), Math.max(Math.max(a.yd + d, a.yd - d), Math.max(b.yd - d, b.yd + d)), Math.max(Math.max(a.zd + d, a.zd - d), Math.max(b.zd - d, b.zd + d))).set(1, col.x, col.y, col.z).endVertex()
-            set(0, Math.min(Math.min(a.xd + d, a.xd - d), Math.min(b.xd - d, b.xd + d)), Math.min(Math.min(a.yd + d, a.yd - d), Math.min(b.yd - d, b.yd + d)), Math.max(Math.max(a.zd + d, a.zd - d), Math.max(b.zd - d, b.zd + d))).set(1, col.x, col.y, col.z).endVertex()
-            set(0, Math.max(Math.max(a.xd + d, a.xd - d), Math.max(b.xd - d, b.xd + d)), Math.min(Math.min(a.yd + d, a.yd - d), Math.min(b.yd - d, b.yd + d)), Math.max(Math.max(a.zd + d, a.zd - d), Math.max(b.zd - d, b.zd + d))).set(1, col.x, col.y, col.z).endVertex()
-            set(0, Math.max(Math.max(a.xd + d, a.xd - d), Math.max(b.xd - d, b.xd + d)), Math.max(Math.max(a.yd + d, a.yd - d), Math.max(b.yd - d, b.yd + d)), Math.max(Math.max(a.zd + d, a.zd - d), Math.max(b.zd - d, b.zd + d))).set(1, col.x, col.y, col.z).endVertex()
+    fun renderExtras() {
+        tessellator.draw(GL11.GL_LINES, formatPC, consumer) {
+            set(0, -10, 0, 0).set(1, 1, 0, 0).endVertex()
+            set(0, 10, 0, 0).set(1, 1, 0, 0).endVertex()
+
+            set(0, 0, -10, 0).set(1, 0, 1, 0).endVertex()
+            set(0, 0, 10, 0).set(1, 0, 1, 0).endVertex()
+
+            set(0, 0, 0, -10).set(1, 0, 0, 1).endVertex()
+            set(0, 0, 0, 10).set(1, 0, 0, 1).endVertex()
         }
     }
 }

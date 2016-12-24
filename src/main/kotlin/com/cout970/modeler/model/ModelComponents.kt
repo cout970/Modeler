@@ -1,26 +1,39 @@
 package com.cout970.modeler.model
 
+import com.cout970.matrix.api.IMatrix4
 import com.cout970.raytrace.IRayObstacle
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
 import com.cout970.raytrace.RayTraceUtil
+import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.distance
-import com.cout970.vector.extensions.div
-import com.cout970.vector.extensions.unaryMinus
-import com.cout970.vector.extensions.vec3Of
+import com.cout970.vector.extensions.*
 
 /**
  * Created by cout970 on 2016/11/29.
  */
 
 //this class and subclasses must be immutable
-sealed class ModelComponent() : IRayObstacle {
+data class Mesh(
+        val positions: List<IVector3>,
+        val textures: List<IVector2>,
+        val indices: List<QuadIndices>,
+        val transform: Transformation = Transformation.IDENTITY
+) : IRayObstacle {
 
-    val transformation: Transformation = Transformation.IDENTITY
+    fun getQuads(): List<Quad> = indices.map { it.toQuad(positions, textures) }
 
-    abstract fun getQuads(): List<Quad>
-    abstract fun getVertices(): List<Vertex>
+    fun getVertices(): List<Vertex> = getQuads().flatMap(Quad::vertex).distinct()
+
+    fun rayTrace(matrix: IMatrix4, ray: Ray): RayTraceResult? {
+        val hits = mutableListOf<RayTraceResult>()
+        for ((a, b, c, d) in getQuads().map { it.transform(matrix) }) {
+            RayTraceUtil.rayTraceQuad(ray, this, a.pos, b.pos, c.pos, d.pos)?.let { hits += it }
+        }
+        if (hits.isEmpty()) return null
+        if (hits.size == 1) return hits.first()
+        return hits.apply { sortBy { it.hit.distance(ray.start) } }.first()
+    }
 
     override fun rayTrace(ray: Ray): RayTraceResult? {
         val hits = mutableListOf<RayTraceResult>()
@@ -31,52 +44,36 @@ sealed class ModelComponent() : IRayObstacle {
         if (hits.size == 1) return hits.first()
         return hits.apply { sortBy { it.hit.distance(ray.start) } }.first()
     }
-}
 
-data class Mesh(
-        val vertex: List<Vertex>,
-        val indices: List<QuadIndices>
-) : ModelComponent() {
-
-    override fun getQuads(): List<Quad> = indices.map { it.toQuad(vertex) }
-
-    override fun getVertices(): List<Vertex> = vertex
-
-    data class QuadIndices(val a: Int, val b: Int, val c: Int, val d: Int) {
-        fun toQuad(vertex: List<Vertex>): Quad = Quad(vertex[a], vertex[b], vertex[c], vertex[d])
+    override fun toString(): String {
+        return "Mesh(transform=$transform)"
     }
-}
-
-data class Plane(
-        val vertex0: Vertex,
-        val vertex1: Vertex,
-        val vertex2: Vertex,
-        val vertex3: Vertex
-) : ModelComponent() {
-
-    override fun getQuads(): List<Quad> = listOf(Quad(vertex0, vertex1, vertex2, vertex3))
-
-    override fun getVertices(): List<Vertex> = listOf(vertex0, vertex1, vertex2, vertex3)
-}
-
-data class Cube(
-        val negX: Quad,
-        val posX: Quad,
-        val negY: Quad,
-        val posY: Quad,
-        val negZ: Quad,
-        val posZ: Quad
-) : ModelComponent() {
-
-    override fun getQuads(): List<Quad> = listOf(negX, posX, negY, posY, negZ, posZ)
-
-    override fun getVertices(): List<Vertex> = getQuads().flatMap(Quad::vertex)
 
     companion object {
-        fun create(size: IVector3): Cube {
+        fun createPlane(size: IVector2) = Mesh(
+                listOf(vec3Of(0, 0, 0), vec3Of(0, 0, 1), vec3Of(1, 0, 1), vec3Of(1, 0, 0)),
+                listOf(vec2Of(0, 0), vec2Of(1, 0), vec2Of(1, 1), vec2Of(0, 1)),
+                listOf(QuadIndices(0, 0, 1, 1, 2, 2, 3, 3)),
+                Transformation.IDENTITY
+        )
+
+        fun quadsToMesh(quads: List<Quad>): Mesh {
+            val positions = quads.flatMap(Quad::vertex).map(Vertex::pos).distinct()
+            val textures = quads.flatMap(Quad::vertex).map(Vertex::tex).distinct()
+            val indices = quads.map {
+                QuadIndices(
+                        positions.indexOf(it.a.pos), textures.indexOf(it.a.tex),
+                        positions.indexOf(it.b.pos), textures.indexOf(it.b.tex),
+                        positions.indexOf(it.c.pos), textures.indexOf(it.c.tex),
+                        positions.indexOf(it.d.pos), textures.indexOf(it.d.tex))
+            }
+            return Mesh(positions, textures, indices)
+        }
+
+        fun createCube(size: IVector3): Mesh {
             val n = -(size / 2)
             val p = size / 2
-            return Cube(
+            return quadsToMesh(listOf(
                     //negX
                     Quad.create(vec3Of(n.x, n.y, n.z), vec3Of(n.x, p.y, n.z), vec3Of(n.x, p.y, p.z), vec3Of(n.x, n.y, p.z)),
                     //posX
@@ -89,7 +86,15 @@ data class Cube(
                     Quad.create(vec3Of(n.x, n.y, n.z), vec3Of(p.x, n.y, n.z), vec3Of(p.x, p.y, n.z), vec3Of(n.x, p.y, n.z)),
                     //posZ
                     Quad.create(vec3Of(n.x, n.y, p.z), vec3Of(n.x, p.y, p.z), vec3Of(p.x, p.y, p.z), vec3Of(p.x, n.y, p.z))
-            )
+            ))
         }
     }
+}
+
+data class QuadIndices(val aP: Int, val aT: Int, val bP: Int, val bT: Int, val cP: Int, val cT: Int, val dP: Int, val dT: Int) {
+    fun toQuad(pos: List<IVector3>, tex: List<IVector2>): Quad = Quad(
+            Vertex(pos[aP], tex[aT]),
+            Vertex(pos[bP], tex[bT]),
+            Vertex(pos[cP], tex[cT]),
+            Vertex(pos[dP], tex[dT]))
 }

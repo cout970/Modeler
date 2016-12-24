@@ -4,8 +4,8 @@ import com.cout970.modeler.event.CustomCallbackKeeper
 import com.cout970.modeler.render.RootPanel
 import org.liquidengine.legui.context.ILeguiCallbackKeeper
 import org.liquidengine.legui.context.LeguiContext
-import org.liquidengine.legui.processor.LeguiEventListenerProcessor
-import org.liquidengine.legui.processor.SystemEventListenerProcessor
+import org.liquidengine.legui.processor.LeguiEventProcessor
+import org.liquidengine.legui.processor.SystemEventProcessor
 import org.liquidengine.legui.render.LeguiRenderer
 import org.liquidengine.legui.render.nvg.NvgLeguiRenderer
 
@@ -16,15 +16,15 @@ class GuiRenderer(val rootPanel: RootPanel, window: Long) {
 
     val context: LeguiContext
     val callbackKeeper: ILeguiCallbackKeeper
-    val uiEventProcessor: LeguiEventListenerProcessor
-    val systemEventProcessor: SystemEventListenerProcessor
+    val uiEventProcessor: LeguiEventProcessor
+    val systemEventProcessor: SystemEventProcessor
     val renderer: LeguiRenderer
 
     init {
         context = LeguiContext(window, rootPanel)
         callbackKeeper = CustomCallbackKeeper()
-        uiEventProcessor = LeguiEventListenerProcessor()
-        systemEventProcessor = SystemEventListenerProcessor(rootPanel, context, callbackKeeper)
+        uiEventProcessor = LeguiEventProcessor()
+        systemEventProcessor = SystemEventProcessor(context, callbackKeeper)
         context.leguiEventProcessor = uiEventProcessor
         renderer = NvgLeguiRenderer(context)
         renderer.initialize()
@@ -32,10 +32,8 @@ class GuiRenderer(val rootPanel: RootPanel, window: Long) {
 
     fun updateEvents() {
         context.updateGlfwWindow()
-        for (i in 1..10) {
-            uiEventProcessor.processEvent()
-            systemEventProcessor.processEvent()
-        }
+        uiEventProcessor.processEvent()
+        systemEventProcessor.processEvent()
     }
 
     fun render() {

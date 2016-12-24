@@ -4,21 +4,18 @@ import com.cout970.glutilities.device.Keyboard
 import com.cout970.glutilities.device.Mouse
 import com.cout970.glutilities.event.EnumKeyState
 import com.cout970.glutilities.event.EventKeyUpdate
-import com.cout970.glutilities.event.EventMouseClick
 import com.cout970.glutilities.event.EventMouseScroll
 import com.cout970.modeler.event.EventController
 import com.cout970.modeler.event.IEventListener
 import com.cout970.modeler.event.KeyBindings
 import com.cout970.modeler.modelcontrol.ModelController
+import com.cout970.modeler.modelcontrol.action.ActionCreateCube
+import com.cout970.modeler.modelcontrol.action.ActionCreatePlane
 import com.cout970.modeler.modelcontrol.action.ActionDelete
 import com.cout970.modeler.modelcontrol.selection.SelectionMode
 import com.cout970.modeler.render.layout.LayoutModelEdit
-import com.cout970.modeler.util.absolutePosition
-import com.cout970.modeler.util.inside
-import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.util.toRads
 import com.cout970.vector.extensions.*
-import org.joml.Math
 
 class ViewControllerModelEdit(val layout: LayoutModelEdit) : IViewController {
 
@@ -28,41 +25,7 @@ class ViewControllerModelEdit(val layout: LayoutModelEdit) : IViewController {
     lateinit var keyBindings: KeyBindings
     var enableControl = true
 
-    override fun registerListeners(eventController: EventController) {
-        mouse = eventController.mouse
-        keyboard = eventController.keyboard
-        keyBindings = eventController.keyBindings
-        eventController.addListener(EventKeyUpdate::class.java, object : IEventListener<EventKeyUpdate> {
-            override fun onEvent(e: EventKeyUpdate): Boolean {
-                if (!enableControl) return false
-                if (e.keyState == EnumKeyState.PRESS) {
-                    when (e.keycode) {
-                        Keyboard.KEY_P -> layout.renderManager.modelRenderer.cache.clear()
-                        Keyboard.KEY_DELETE -> modelController.historyRecord.doAction(ActionDelete(modelController.selectionManager.selection, modelController))
-                    }
-                }
-                return false
-            }
-        })
-        eventController.addListener(EventMouseScroll::class.java, object : IEventListener<EventMouseScroll> {
-            override fun onEvent(e: EventMouseScroll): Boolean {
-                if (!enableControl) return false
-                layout.zoom += e.offsetY.toFloat()
-                return true
-            }
-        })
-        eventController.addListener(EventMouseClick::class.java, object : IEventListener<EventMouseClick> {
-            override fun onEvent(e: EventMouseClick): Boolean {
-                if (!enableControl || e.keyState != EnumKeyState.PRESS || !keyBindings.selectModel.check(mouse)) return false
-                if (inside(mouse.getMousePos(), layout.modelPanel.absolutePosition, layout.modelPanel.size.toIVector())) {
-                    modelController.selectionManager
-                            .mouseTrySelect(mouse.getMousePos() - layout.modelPanel.absolutePosition, layout.renderManager.modelRenderer, layout.modelPanel.size.toIVector())
-                    return true
-                }
-                return false
-            }
-        })
-    }
+    val modelSelector = ModelSelector(this, layout, layout.renderManager)
 
     fun update() {
         if (!enableControl) return
@@ -81,10 +44,10 @@ class ViewControllerModelEdit(val layout: LayoutModelEdit) : IViewController {
             layout.camera = layout.camera.run { copy(angleY = angleY - 0.05) }
         }
         if (keyboard.isKeyPressed(Keyboard.KEY_Q)) {
-            layout.zoom += 0.5f
+            layout.camera = layout.camera.copy(zoom = layout.camera.zoom + 0.5f)
         }
         if (keyboard.isKeyPressed(Keyboard.KEY_E)) {
-            layout.zoom -= 0.5f
+            layout.camera = layout.camera.copy(zoom = layout.camera.zoom - 0.5f)
         }
 
         //mouse
@@ -105,6 +68,7 @@ class ViewControllerModelEdit(val layout: LayoutModelEdit) : IViewController {
             layout.camera = layout.camera.run { copy(angleX = angleX + mouse.getMousePosDiff().xd * layout.renderManager.timer.delta * 0.5) }
             layout.camera = layout.camera.run { copy(angleY = angleY + mouse.getMousePosDiff().yd * layout.renderManager.timer.delta * 0.5) }
         }
+        modelSelector.update()
     }
 
     fun onButtonPress(id: Int) {
@@ -113,6 +77,8 @@ class ViewControllerModelEdit(val layout: LayoutModelEdit) : IViewController {
             1 -> modelController.selectionManager.selectionMode = SelectionMode.COMPONENT
             2 -> modelController.selectionManager.selectionMode = SelectionMode.QUAD
             3 -> modelController.selectionManager.selectionMode = SelectionMode.VERTEX
+            4 -> modelController.historyRecord.doAction(ActionCreateCube(modelController))
+            5 -> modelController.historyRecord.doAction(ActionCreatePlane(modelController))
             8 -> modelController.historyRecord.undo()
             9 -> modelController.historyRecord.redo()
             10 -> modelController.clipboard.copy()
@@ -120,5 +86,49 @@ class ViewControllerModelEdit(val layout: LayoutModelEdit) : IViewController {
             12 -> modelController.clipboard.paste()
             else -> println("unregistered button ID: $id")
         }
+    }
+
+    override fun registerListeners(eventController: EventController) {
+        mouse = eventController.mouse
+        keyboard = eventController.keyboard
+        keyBindings = eventController.keyBindings
+        eventController.addListener(EventKeyUpdate::class.java, object : IEventListener<EventKeyUpdate> {
+            override fun onEvent(e: EventKeyUpdate): Boolean {
+                if (!enableControl) return false
+                if (e.keyState != EnumKeyState.RELEASE) {
+                    when (e.keycode) {
+                        Keyboard.KEY_P -> {
+                            layout.renderManager.modelRenderer.modelCache.clear()
+                            layout.renderManager.modelRenderer.selectionCache.clear()
+                        }
+                        Keyboard.KEY_DELETE -> modelController.historyRecord.doAction(ActionDelete(modelController.selectionManager.selection, modelController))
+                        Keyboard.KEY_Z -> if (keyboard.isKeyPressed(Keyboard.KEY_LEFT_CONTROL)) {
+                            modelController.historyRecord.undo()
+                        }
+                        Keyboard.KEY_Y -> if (keyboard.isKeyPressed(Keyboard.KEY_LEFT_CONTROL)) {
+                            modelController.historyRecord.redo()
+                        }
+                        Keyboard.KEY_C -> if (keyboard.isKeyPressed(Keyboard.KEY_LEFT_CONTROL)) {
+                            modelController.clipboard.copy()
+                        }
+                        Keyboard.KEY_X -> if (keyboard.isKeyPressed(Keyboard.KEY_LEFT_CONTROL)) {
+                            modelController.clipboard.cut()
+                        }
+                        Keyboard.KEY_V -> if (keyboard.isKeyPressed(Keyboard.KEY_LEFT_CONTROL)) {
+                            modelController.clipboard.paste()
+                        }
+                    }
+                }
+                return false
+            }
+        })
+        eventController.addListener(EventMouseScroll::class.java, object : IEventListener<EventMouseScroll> {
+            override fun onEvent(e: EventMouseScroll): Boolean {
+                if (!enableControl) return false
+                layout.camera = layout.camera.copy(zoom = layout.camera.zoom - e.offsetY)
+                return true
+            }
+        })
+        modelSelector.registerListeners(eventController)
     }
 }

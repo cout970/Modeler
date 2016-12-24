@@ -1,12 +1,16 @@
 package com.cout970.modeler.render.layout
 
-import com.cout970.matrix.extensions.times
+import com.cout970.modeler.modelcontrol.selection.SelectionNone
 import com.cout970.modeler.render.RenderManager
 import com.cout970.modeler.render.controller.Camera
+import com.cout970.modeler.render.controller.TransformationMode
 import com.cout970.modeler.render.controller.ViewControllerModelEdit
 import com.cout970.modeler.util.toIMatrix
 import com.cout970.vector.extensions.vec2Of
-import org.joml.*
+import org.joml.Math
+import org.joml.Matrix4d
+import org.joml.Vector2f
+import org.joml.Vector4f
 import org.liquidengine.legui.component.Button
 import org.liquidengine.legui.component.Label
 import org.liquidengine.legui.component.Panel
@@ -25,7 +29,6 @@ class LayoutModelEdit(renderManager: RenderManager) : Layout(renderManager) {
     override val contentPanel = Panel()
     val controlPanelLength: Float
     var camera = Camera.DEFAULT
-    var zoom = -10f
     override val viewController = ViewControllerModelEdit(this)
 
     init {
@@ -138,21 +141,29 @@ class LayoutModelEdit(renderManager: RenderManager) : Layout(renderManager) {
         //if the model window is less than 1x1 do not render it.
         if (size.x < 1 || size.y < 1) return
 
-        viewController.update()
-
         renderManager.modelRenderer.run {
             matrixP = Matrix4d().setPerspective(Math.toRadians(60.0), (modelPanel.size.x / modelPanel.size.y).toDouble(), 0.001, 1000.0).toIMatrix()
-            matrixV = Matrix4d().apply { translate(Vector3d(0.0, 0.0, zoom.toDouble())) }.toIMatrix() * camera.matrix
+            matrixV = camera.matrix
             if (renderManager.modelController.modelUpdate) {
                 renderManager.modelController.modelUpdate = false
-                cache.clear()
+                modelCache.clear()
+                selectionCache.clear()
             }
+            val selector = viewController.modelSelector
+            val model = renderManager.modelController.model
+            val selection = renderManager.modelController.selectionManager.selection
+
             start(vec2Of(pos.x, pos.y), vec2Of(size.x, size.y))
-            render(renderManager.modelController.model)
+            renderModel(selector.getModel(model))
             startSelection()
-            renderSelection(renderManager.modelController.model, renderManager.modelController.selectionManager)
+            renderModelSelection(selector.getModel(model), selection)
+            renderExtras()
+            if (selection != SelectionNone && selector.transformationMode != TransformationMode.NONE) {
+                renderTranslation(selector.center, selector, selection)
+            }
             stop()
         }
+        viewController.update()
     }
 
     override fun onLoad() {

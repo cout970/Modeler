@@ -2,18 +2,18 @@ package com.cout970.modeler.modelcontrol.action
 
 import com.cout970.modeler.model.Mesh
 import com.cout970.modeler.modelcontrol.ModelController
-import com.cout970.vector.extensions.vec3Of
+import com.cout970.vector.extensions.vec2Of
 
 /**
- * Created by cout970 on 2016/12/07.
+ * Created by cout970 on 2016/12/09.
  */
-data class ActionCreateCube(val modelController: ModelController) : IAction {
+data class ActionCreatePlane(val modelController: ModelController) : IAction {
 
     val model = modelController.model
-    val cube = Mesh.createCube(vec3Of(1, 1, 1))
+    val plane = Mesh.createPlane(vec2Of(1))
 
     override fun run() {
-        modelController.inserter.insertComponent(cube)
+        modelController.inserter.insertComponent(plane)
         modelController.modelUpdate = true
     }
 
@@ -23,6 +23,6 @@ data class ActionCreateCube(val modelController: ModelController) : IAction {
     }
 
     override fun toString(): String {
-        return "ActionCreateCube(modelController=$modelController, model=$model, cube=$cube)"
+        return "ActionCreatePlane(modelController=$modelController, model=$model, cube=$plane)"
     }
 }

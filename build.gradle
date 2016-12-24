@@ -47,9 +47,9 @@ repositories {
 project.ext.lwjglVersion = "3.1.1-SNAPSHOT"
 
 dependencies {
-    compile files("./lib/CollisionLib-0.0.1.jar", "./lib/GlUtilities-0.1.3.jar", "./lib/MatrixLib-0.1.0.jar", "./lib/ObjLib-0.0.1.jar", "./lib/RaytraceLib-0.0.1.jar", "./lib/VectorLib-0.0.1.jar")
+    compile files("./lib/CollisionLib-0.0.1.jar", "./lib/GlUtilities-0.1.4.jar", "./lib/MatrixLib-0.1.0.jar", "./lib/ObjLib-0.0.1.jar", "./lib/RaytraceLib-0.0.1.jar", "./lib/VectorLib-0.0.1.jar")
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile "org.liquidengine:legui:0.1.3-SNAPSHOT"
+    compile "org.liquidengine:legui:0.1.8-SNAPSHOT"
     testCompile group: 'junit', name: 'junit', version: '4.11'
 
     compile "org.lwjgl:lwjgl:${lwjglVersion}"

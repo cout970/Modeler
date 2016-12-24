@@ -33,6 +33,11 @@ class Cache<K, T>(val limit: Int = 5) {
     class Entry<out T>(val value: T, var count: Int)
 
     fun clear() {
+        onRemove?.let {
+            for ((key, value) in entries) {
+                it.invoke(key, value.value)
+            }
+        }
         entries.clear()
         count = 0
     }

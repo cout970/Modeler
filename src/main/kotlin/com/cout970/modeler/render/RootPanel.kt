@@ -4,6 +4,7 @@ import com.cout970.modeler.render.layout.Layout
 import com.cout970.modeler.util.toJoml2f
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Button
+import org.liquidengine.legui.component.Frame
 import org.liquidengine.legui.component.Panel
 import org.liquidengine.legui.component.Viewport
 import org.liquidengine.legui.context.LeguiContext
@@ -12,7 +13,7 @@ import org.liquidengine.legui.context.LeguiContext
  * Created by cout970 on 2016/12/03.
  */
 
-class RootPanel(val renderManager: RenderManager) : Panel(), Viewport {
+class RootPanel(val renderManager: RenderManager) : Frame(), Viewport {
 
     lateinit var contentPanel: Panel
     lateinit var topBar: TopBar

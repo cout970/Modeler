@@ -1,5 +1,6 @@
 package com.cout970.modeler.model
 
+import com.cout970.matrix.api.IMatrix4
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.cross
 import com.cout970.vector.extensions.minus
@@ -32,5 +33,9 @@ data class Quad(
                     Vertex(c, vec2Of(1, 1)),
                     Vertex(d, vec2Of(0, 1)))
         }
+    }
+
+    fun transform(matrix: IMatrix4): Quad {
+        return Quad(a.transform(matrix), b.transform(matrix), c.transform(matrix), d.transform(matrix))
     }
 }

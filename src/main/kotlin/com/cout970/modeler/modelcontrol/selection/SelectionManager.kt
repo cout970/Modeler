@@ -1,83 +1,61 @@
 package com.cout970.modeler.modelcontrol.selection
 
 import com.cout970.glutilities.device.Keyboard
-import com.cout970.matrix.extensions.times
 import com.cout970.modeler.modelcontrol.ModelController
 import com.cout970.modeler.modelcontrol.action.ActionChangeSelection
-import com.cout970.modeler.render.renderer.ModelRenderer
-import com.cout970.modeler.util.toIVector
-import com.cout970.modeler.util.toJOML
-import com.cout970.modeler.util.toJoml3d
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
 import com.cout970.raytrace.RayTraceUtil
-import com.cout970.vector.api.IVector2
-import com.cout970.vector.extensions.*
-import org.joml.Vector3d
+import com.cout970.vector.extensions.distance
+import com.cout970.vector.extensions.minus
+import com.cout970.vector.extensions.plus
+import com.cout970.vector.extensions.vec3Of
 
 /**
  * Created by cout970 on 2016/12/07.
  */
 class SelectionManager(val modelController: ModelController) {
 
-    var selectionMode: SelectionMode = SelectionMode.GROUP
+    var selectionMode: SelectionMode = SelectionMode.COMPONENT
     var selection: Selection = SelectionNone
 
-    fun mouseTrySelect(mouse: IVector2, renderer: ModelRenderer, viewport: IVector2) {
-        val matrixMVP = renderer.matrixP * renderer.matrixV * renderer.matrixM
-
-        val m = matrixMVP.toJOML()
-        val a = m.unproject(vec3Of(mouse.x, viewport.yd - mouse.yd, 0.0).toJoml3d(), intArrayOf(0, 0, viewport.xi, viewport.yi), Vector3d()).toIVector()
-        val b = m.unproject(vec3Of(mouse.x, viewport.yd - mouse.yd, 1.0).toJoml3d(), intArrayOf(0, 0, viewport.xi, viewport.yi), Vector3d()).toIVector()
-
-        val ray = Ray(a, b)
+    fun mouseTrySelect(ray: Ray) {
 
         val hits = mutableListOf<Pair<RayTraceResult, ModelPath>>()
+        val model = modelController.model
 
         if (selectionMode == SelectionMode.GROUP) {
-            for (obj in modelController.model.objects) {
-                for (group in obj.groups) {
-                    for (i in group.components) {
-                        i.rayTrace(ray)?.let {
-                            hits += it to ModelPath(modelController.model, obj, group)
-                        }
-                    }
+            model.getPaths(ModelPath.Level.COMPONENTS).forEach { path ->
+                path.getComponent(model)!!.rayTrace(path.getComponentMatrix(model), ray)?.let {
+                    hits += it to ModelPath(path.obj, path.group)
                 }
             }
         } else if (selectionMode == SelectionMode.COMPONENT) {
-            for (obj in modelController.model.objects) {
-                for (group in obj.groups) {
-                    for (i in group.components) {
-                        i.rayTrace(ray)?.let {
-                            hits += it to ModelPath(modelController.model, obj, group, i)
-                        }
-                    }
+            model.getPaths(ModelPath.Level.COMPONENTS).forEach { path ->
+                path.getComponent(model)!!.rayTrace(path.getComponentMatrix(model), ray)?.let {
+                    hits += it to path
                 }
             }
         } else if (selectionMode == SelectionMode.QUAD) {
-            for (obj in modelController.model.objects) {
-                for (group in obj.groups) {
-                    for (i in group.components) {
-                        for (quad in i.getQuads()) {
-                            RayTraceUtil.rayTraceQuad(ray, i, quad.a.pos, quad.b.pos, quad.c.pos, quad.d.pos)?.let {
-                                hits += it to ModelPath(modelController.model, obj, group, i, quad)
-                            }
-                        }
+            model.getPaths(ModelPath.Level.COMPONENTS).forEach { path ->
+                val comp = path.getComponent(model)!!
+                val matrix = path.getComponentMatrix(model)
+                comp.getQuads().map { it.transform(matrix) }.forEachIndexed { quadIndex, quad ->
+                    RayTraceUtil.rayTraceQuad(ray, comp, quad.a.pos, quad.b.pos, quad.c.pos, quad.d.pos)?.let {
+                        hits += it to ModelPath(path.obj, path.group, path.component, quadIndex)
                     }
                 }
             }
         } else if (selectionMode == SelectionMode.VERTEX) {
-            for (obj in modelController.model.objects) {
-                for (group in obj.groups) {
-                    for (i in group.components) {
-                        for (quad in i.getQuads()) {
-                            for (v in quad.vertex) {
-                                val f = v.pos - vec3Of(0.125)
-                                val e = v.pos + vec3Of(0.125)
-                                RayTraceUtil.rayTraceBox3(f, e, ray, i)?.let {
-                                    hits += it to ModelPath(modelController.model, obj, group, i, quad, v)
-                                }
-                            }
+            model.getPaths(ModelPath.Level.COMPONENTS).forEach { path ->
+                val comp = path.getComponent(model)!!
+                val matrix = path.getComponentMatrix(model)
+                comp.getQuads().map { it.transform(matrix) }.mapIndexed { quadIndex, quad ->
+                    quad.vertex.forEachIndexed { vertexIndex, vertex ->
+                        val start = vertex.pos - vec3Of(0.125)
+                        val end = vertex.pos + vec3Of(0.125)
+                        RayTraceUtil.rayTraceBox3(start, end, ray, comp)?.let {
+                            hits += it to ModelPath(path.obj, path.group, path.component, quadIndex, vertexIndex)
                         }
                     }
                 }

@@ -1,7 +1,10 @@
 package com.cout970.modeler.modelcontrol.action
 
-import com.cout970.modeler.model.*
+import com.cout970.modeler.model.Mesh
+import com.cout970.modeler.model.Quad
+import com.cout970.modeler.model.QuadIndices
 import com.cout970.modeler.modelcontrol.ModelController
+import com.cout970.modeler.modelcontrol.selection.ModelPath
 import com.cout970.modeler.modelcontrol.selection.Selection
 import com.cout970.modeler.modelcontrol.selection.SelectionMode
 
@@ -10,59 +13,75 @@ import com.cout970.modeler.modelcontrol.selection.SelectionMode
  */
 data class ActionDelete(val selection: Selection, val modelController: ModelController) : IAction {
 
-    val model = modelController.model.copy()
+    val model = modelController.model
 
     override fun run() {
-        modelController.model.apply {
+        modelController.apply {
             when (selection.mode) {
-                SelectionMode.GROUP -> objects.forEach { obj ->
-                    obj.groups.removeAll { group -> selection.paths.any { it.group == group } }
+                SelectionMode.GROUP -> {
+                    updateModel(model.copy(model.objects.map { obj ->
+                        obj.copy(obj.groups.filterNot { group ->
+                            selection.isSelected(ModelPath.of(model, obj, group))
+                        })
+                    }))
                 }
-                SelectionMode.COMPONENT -> objects.forEach { obj ->
-                    obj.groups.forEach { group ->
-                        group.components.removeAll { component -> selection.paths.any { it.component == component } }
-                    }
+                SelectionMode.COMPONENT -> {
+                    updateModel(model.copy(model.objects.map { obj ->
+                        obj.copy(obj.groups.map { group ->
+                            group.copy(group.meshes.filterNot { component ->
+                                selection.isSelected(ModelPath.of(model, obj, group, component))
+                            })
+                        })
+                    }))
                 }
-                SelectionMode.QUAD -> objects.forEach { obj ->
-                    obj.groups.forEach { group ->
-                        val list = mutableListOf<ModelComponent>()
-                        group.components.forEach { comp ->
-                            if (selection.paths.any { it.component == comp }) {
-                                when (comp) {
-                                    is Plane -> Unit
-                                    is Cube, is Mesh -> {
-                                        val selectedQuads = selection.paths.map { it.quad }
-                                        val unselectedQuads = comp.getQuads().filter { it !in selectedQuads }
-                                        if (unselectedQuads.isNotEmpty()) {
-                                            val vertex = unselectedQuads.flatMap(Quad::vertex).distinct()
-                                            val indices = unselectedQuads.map {
-                                                Mesh.QuadIndices(
-                                                        vertex.indexOf(it.a), vertex.indexOf(it.b),
-                                                        vertex.indexOf(it.c), vertex.indexOf(it.d))
-                                            }
-                                            list += Mesh(vertex, indices)
-                                        }
-                                    }
-                                }
-                            } else {
-                                list += comp
-                            }
-                        }
-                        group.components.clear()
-                        group.components.addAll(list)
+                SelectionMode.QUAD -> {
+                    val selectedQuads = selection.paths.map { it.getQuad(model) }
+                    updateModel(model.copy(model.objects.map { obj ->
+                        obj.copy(obj.groups.map { group ->
+                            group.copy(group.meshes.map { comp ->
+                                if (selection.containsSelectedElements(ModelPath.of(model, obj, group, comp))) {
 
-                    }
+                                    val unselectedQuads = comp.getQuads().filter { it !in selectedQuads }
+                                    if (unselectedQuads.isNotEmpty()) {
+                                        val positions = unselectedQuads.flatMap(Quad::vertex).map { it.pos }.distinct()
+                                        val textures = unselectedQuads.flatMap(Quad::vertex).map { it.tex }.distinct()
+                                        val indices = unselectedQuads.map {
+                                            QuadIndices(
+                                                    positions.indexOf(it.a.pos), textures.indexOf(it.a.tex),
+                                                    positions.indexOf(it.b.pos), textures.indexOf(it.b.tex),
+                                                    positions.indexOf(it.c.pos), textures.indexOf(it.c.tex),
+                                                    positions.indexOf(it.d.pos), textures.indexOf(it.d.tex))
+                                        }
+                                        //return a new mesh, if only some parts of the component are removed, but not all
+                                        Mesh(positions, textures, indices)
+                                    } else {
+                                        //the mesh without the selected parts is empty
+                                        null
+                                    }
+                                } else {
+                                    //if not selected
+                                    comp
+                                }
+                            }.filterNotNull())
+                        })
+                    }))
                 }
-                SelectionMode.VERTEX -> Unit //you cant remove vertex because everything needs to be made of quads
+                SelectionMode.VERTEX -> Unit //you can't remove a vertex because everything needs to be made of quads
             }
-            modelController.selectionManager.clearSelection()
-            modelController.modelUpdate = true
         }
+        modelController.selectionManager.clearSelection()
+        modelController.modelUpdate = true
     }
 
     override fun undo() {
-        modelController.model = model
+        modelController.updateModel(model)
         modelController.selectionManager.selection = selection
         modelController.modelUpdate = true
     }
+
+    override fun toString(): String {
+        return "ActionDelete(selection=$selection, oldModel=$model)"
+    }
+
+
 }

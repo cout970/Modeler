@@ -1,5 +1,6 @@
 package com.cout970.modeler.modelcontrol.action
 
+import com.cout970.modeler.model.Model
 import java.io.PrintStream
 import java.util.*
 
@@ -32,6 +33,11 @@ class HistoryLog {
         DO,
         UNDO,
         REDO,
+        MODEL_CHANGE,
         BACKUP
+    }
+
+    fun onModelChange(newModel: Model, oldModel: Model) {
+        log += Type.REDO to Pair(newModel, oldModel)
     }
 }

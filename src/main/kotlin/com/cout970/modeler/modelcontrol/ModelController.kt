@@ -17,13 +17,16 @@ import java.util.*
  */
 class ModelController : ITickeable {
 
+    var model = Model(listOf())
+        private set
+
     private val actionQueue = LinkedList<() -> Unit>()
     lateinit var eventController: EventController
     val selectionManager = SelectionManager(this)
     val clipboard = ModelClipboard(this)
     val historyLog = HistoryLog()
     val historyRecord = HistoricalRecord(historyLog, this)
-    var model = Model()
+    val inserter = ModelInserter(this)
     var modelUpdate: Boolean = false
 
     fun registerListeners(eventController: EventController) {
@@ -38,13 +41,20 @@ class ModelController : ITickeable {
         })
     }
 
+    fun updateModel(newModel: Model) {
+        historyLog.onModelChange(newModel, model)
+        model = newModel
+    }
+
     fun addToQueue(function: () -> Unit) {
         actionQueue.add(function)
     }
 
-    override fun tick() {
+    override fun postTick() {
         while (actionQueue.isNotEmpty()) {
             actionQueue.poll().invoke()
         }
     }
+
+    override fun tick() = Unit
 }

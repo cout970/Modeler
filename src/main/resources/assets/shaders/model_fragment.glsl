@@ -43,6 +43,10 @@ void main(void){
     //color of the texture pixel
     vec4 color = texture(textureSampler, pass_texture / textureSize);
 
+    if(gl_FrontFacing){
+        color = vec4(1.0, 0.5, 0.5, 1.0);
+    }
+
     //pixels with less than 0.01 alpha are not rendered
     if(color.w < 0.01) discard;
 
