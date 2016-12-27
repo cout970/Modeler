@@ -125,7 +125,15 @@ class ViewControllerModelEdit(val layout: LayoutModelEdit) : IViewController {
         eventController.addListener(EventMouseScroll::class.java, object : IEventListener<EventMouseScroll> {
             override fun onEvent(e: EventMouseScroll): Boolean {
                 if (!enableControl) return false
-                layout.camera = layout.camera.copy(zoom = layout.camera.zoom - e.offsetY)
+                layout.run {
+                    if (camera.zoom <= 3) {
+                        if (camera.zoom - e.offsetY / 8 > 0.5) {
+                            camera = camera.copy(zoom = camera.zoom - e.offsetY / 8)
+                        }
+                    } else {
+                        camera = camera.copy(zoom = camera.zoom - e.offsetY)
+                    }
+                }
                 return true
             }
         })
