@@ -9,6 +9,7 @@ import com.cout970.glutilities.texture.Texture
 import com.cout970.glutilities.texture.TextureLoader
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.mat4Of
+import com.cout970.matrix.extensions.times
 import com.cout970.modeler.ResourceManager
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.modelcontrol.selection.ModelPath
@@ -187,8 +188,8 @@ class ModelRenderer(resourceManager: ResourceManager) {
                         val paths = selection.paths.filter { it.compareLevel(compPath, ModelPath.Level.COMPONENTS) }
                         if (paths.isNotEmpty()) {
                             val matrix = compPath.getComponentMatrix(model)
-                            paths.map { it.getVertex(model)!! }.map { it.transform(matrix) }.forEach {
-                                RenderUtil.renderBar(tessellator, it.pos, it.pos, 0.0625)
+                            paths.map { it.getVertex(model)!! }.map { matrix * it.toVector4(1.0) }.forEach {
+                                RenderUtil.renderBar(tessellator, it, it, 0.0625)
                             }
                         }
                     }

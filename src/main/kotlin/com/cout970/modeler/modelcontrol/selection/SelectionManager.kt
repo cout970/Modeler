@@ -1,6 +1,7 @@
 package com.cout970.modeler.modelcontrol.selection
 
 import com.cout970.glutilities.device.Keyboard
+import com.cout970.modeler.model.Vertex
 import com.cout970.modeler.modelcontrol.ModelController
 import com.cout970.modeler.modelcontrol.action.ActionChangeSelection
 import com.cout970.raytrace.Ray
@@ -26,38 +27,44 @@ class SelectionManager(val modelController: ModelController) {
 
         if (selectionMode == SelectionMode.GROUP) {
             model.getPaths(ModelPath.Level.COMPONENTS).forEach { path ->
-                path.getComponent(model)!!.rayTrace(path.getComponentMatrix(model), ray)?.let {
+                path.getMesh(model)!!.rayTrace(path.getComponentMatrix(model), ray)?.let {
                     hits += it to ModelPath(path.obj, path.group)
                 }
             }
         } else if (selectionMode == SelectionMode.COMPONENT) {
             model.getPaths(ModelPath.Level.COMPONENTS).forEach { path ->
-                path.getComponent(model)!!.rayTrace(path.getComponentMatrix(model), ray)?.let {
+                path.getMesh(model)!!.rayTrace(path.getComponentMatrix(model), ray)?.let {
                     hits += it to path
                 }
             }
         } else if (selectionMode == SelectionMode.QUAD) {
             model.getPaths(ModelPath.Level.COMPONENTS).forEach { path ->
-                val comp = path.getComponent(model)!!
+                val comp = path.getMesh(model)!!
                 val matrix = path.getComponentMatrix(model)
                 comp.getQuads().map { it.transform(matrix) }.forEachIndexed { quadIndex, quad ->
                     RayTraceUtil.rayTraceQuad(ray, comp, quad.a.pos, quad.b.pos, quad.c.pos, quad.d.pos)?.let {
-                        hits += it to ModelPath(path.obj, path.group, path.component, quadIndex)
+                        hits += it to ModelPath(path.obj, path.group, path.mesh, quadIndex)
                     }
                 }
             }
         } else if (selectionMode == SelectionMode.VERTEX) {
             model.getPaths(ModelPath.Level.COMPONENTS).forEach { path ->
-                val comp = path.getComponent(model)!!
+                val comp = path.getMesh(model)!!
                 val matrix = path.getComponentMatrix(model)
-                comp.getQuads().map { it.transform(matrix) }.mapIndexed { quadIndex, quad ->
-                    quad.vertex.forEachIndexed { vertexIndex, vertex ->
+                comp.indices.forEachIndexed { quadIndex, quadI ->
+                    val quad = quadI.toQuad(comp.positions, comp.textures).transform(matrix)
+
+                    fun rayTraceVertex(vertex: Vertex, index: Int) {
                         val start = vertex.pos - vec3Of(0.125)
                         val end = vertex.pos + vec3Of(0.125)
                         RayTraceUtil.rayTraceBox3(start, end, ray, comp)?.let {
-                            hits += it to ModelPath(path.obj, path.group, path.component, quadIndex, vertexIndex)
+                            hits += it to ModelPath(path.obj, path.group, path.mesh, quadIndex, index)
                         }
                     }
+                    rayTraceVertex(quad.a, quadI.aP)
+                    rayTraceVertex(quad.b, quadI.bP)
+                    rayTraceVertex(quad.c, quadI.cP)
+                    rayTraceVertex(quad.d, quadI.dP)
                 }
             }
         }

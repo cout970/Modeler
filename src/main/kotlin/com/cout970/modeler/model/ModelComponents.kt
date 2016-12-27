@@ -50,14 +50,14 @@ data class Mesh(
     }
 
     companion object {
-        fun createPlane(size: IVector2) = Mesh(
+        fun createPlane(size: IVector2, transform: Transformation = Transformation.IDENTITY) = Mesh(
                 listOf(vec3Of(0, 0, 0), vec3Of(0, 0, 1), vec3Of(1, 0, 1), vec3Of(1, 0, 0)),
                 listOf(vec2Of(0, 0), vec2Of(1, 0), vec2Of(1, 1), vec2Of(0, 1)),
                 listOf(QuadIndices(0, 0, 1, 1, 2, 2, 3, 3)),
-                Transformation.IDENTITY
+                transform
         )
 
-        fun quadsToMesh(quads: List<Quad>): Mesh {
+        fun quadsToMesh(quads: List<Quad>, transform: Transformation = Transformation.IDENTITY): Mesh {
             val positions = quads.flatMap(Quad::vertex).map(Vertex::pos).distinct()
             val textures = quads.flatMap(Quad::vertex).map(Vertex::tex).distinct()
             val indices = quads.map {
@@ -67,10 +67,10 @@ data class Mesh(
                         positions.indexOf(it.c.pos), textures.indexOf(it.c.tex),
                         positions.indexOf(it.d.pos), textures.indexOf(it.d.tex))
             }
-            return Mesh(positions, textures, indices)
+            return Mesh(positions, textures, indices, transform)
         }
 
-        fun createCube(size: IVector3, offset: IVector3 = vec3Of(0), centered: Boolean = true): Mesh {
+        fun createCube(size: IVector3, offset: IVector3 = vec3Of(0), centered: Boolean = true, transform: Transformation = Transformation.IDENTITY): Mesh {
             val n: IVector3
             val p: IVector3
             if (centered) {
@@ -94,7 +94,7 @@ data class Mesh(
                     Quad.create(vec3Of(n.x, p.y, n.z), vec3Of(p.x, p.y, n.z), vec3Of(p.x, n.y, n.z), vec3Of(n.x, n.y, n.z)),
                     //posZ
                     Quad.create(vec3Of(p.x, n.y, p.z), vec3Of(p.x, p.y, p.z), vec3Of(n.x, p.y, p.z), vec3Of(n.x, n.y, p.z))
-            ))
+            ), transform)
         }
     }
 }

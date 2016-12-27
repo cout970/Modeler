@@ -2,6 +2,8 @@ package com.cout970.modeler.modelcontrol
 
 import com.cout970.modeler.model.*
 import com.cout970.modeler.util.replaceWithIndex
+import com.cout970.vector.extensions.Quaternion
+import com.cout970.vector.extensions.vec3Of
 
 /**
  * Created by cout970 on 2016/12/09.
@@ -15,6 +17,8 @@ class ModelInserter(val modelController: ModelController) {
         private set
     var groupIndex = -1
         private set
+
+    var insertPosition = vec3Of(0, 0, 0)
 
     fun insertComponent(comp: Mesh) {
         if (groupIndex == -1) {
@@ -30,7 +34,7 @@ class ModelInserter(val modelController: ModelController) {
         }
     }
 
-    fun insertGroup(group: ModelGroup = ModelGroup(listOf(), Transformation.IDENTITY, "Group${groupCount++}")) {
+    fun insertGroup(group: ModelGroup = ModelGroup(listOf(), Transformation(insertPosition, Quaternion.IDENTITY, vec3Of(1)), "Group${groupCount++}")) {
         if (objectIndex == -1) {
             insertObject()
             objectIndex = 0
@@ -42,7 +46,7 @@ class ModelInserter(val modelController: ModelController) {
         }
     }
 
-    fun insertObject(obj: ModelObject = ModelObject(listOf(), Transformation.IDENTITY, "Object${objCount++}", Material.MaterialNone)) {
+    fun insertObject(obj: ModelObject = ModelObject(listOf(), Transformation(insertPosition, Quaternion.IDENTITY, vec3Of(1)), "Object${objCount++}", Material.MaterialNone)) {
         modelController.apply {
             updateModel(model.add(obj))
         }

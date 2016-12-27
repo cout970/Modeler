@@ -15,29 +15,29 @@ import com.cout970.vector.extensions.vec3Of
 data class ModelPath(
         val obj: Int,
         val group: Int = -1,
-        val component: Int = -1,
+        val mesh: Int = -1,
         val quad: Int = -1,
         val vertex: Int = -1) {
 
     fun getObject(model: Model) = if (obj == -1) null else model.objects[obj]
     fun getGroup(model: Model) = if (group == -1) null else getObject(model)?.groups?.get(group)
-    fun getComponent(model: Model) = if (component == -1) null else getGroup(model)?.meshes?.get(component)
-    fun getQuad(model: Model) = if (quad == -1) null else getComponent(model)?.getQuads()?.get(quad)
-    fun getVertex(model: Model) = if (vertex == -1) null else getQuad(model)?.vertex?.get(vertex)
+    fun getMesh(model: Model) = if (mesh == -1) null else getGroup(model)?.meshes?.get(mesh)
+    fun getQuad(model: Model) = if (quad == -1) null else getMesh(model)?.getQuads()?.get(quad)
+    fun getVertex(model: Model) = if (vertex == -1) null else getMesh(model)?.positions?.get(vertex)
 
     fun compareLevel(other: ModelPath, level: Level): Boolean {
         return when (level) {
             ModelPath.Level.OBJECTS -> obj == other.obj
             ModelPath.Level.GROUPS -> obj == other.obj && group == other.group
-            ModelPath.Level.COMPONENTS -> obj == other.obj && group == other.group && component == other.component
-            ModelPath.Level.QUADS -> obj == other.obj && group == other.group && component == other.component && quad == other.quad
-            ModelPath.Level.VERTEX -> obj == other.obj && group == other.group && component == other.component && quad == other.quad && vertex == other.vertex
+            ModelPath.Level.COMPONENTS -> obj == other.obj && group == other.group && mesh == other.mesh
+            ModelPath.Level.QUADS -> obj == other.obj && group == other.group && mesh == other.mesh && quad == other.quad
+            ModelPath.Level.VERTEX -> obj == other.obj && group == other.group && mesh == other.mesh && quad == other.quad && vertex == other.vertex
         }
     }
 
     val level: Level by lazy {
         if (group == -1) Level.OBJECTS
-        else if (component == -1) Level.GROUPS
+        else if (mesh == -1) Level.GROUPS
         else if (quad == -1) Level.COMPONENTS
         else if (vertex == -1) Level.QUADS
         else Level.VERTEX
@@ -47,15 +47,15 @@ data class ModelPath(
         return when (level) {
             Level.OBJECTS -> getObject(model)!!.transform.position
             Level.GROUPS -> getObject(model)!!.transform.position + getGroup(model)!!.transform.position
-            Level.COMPONENTS -> getObject(model)!!.transform.position + getGroup(model)!!.transform.position + getComponent(model)!!.transform.position + getComponent(model)!!.getQuads().map(Quad::center).middle()
-            Level.QUADS -> getObject(model)!!.transform.position + getGroup(model)!!.transform.position + getComponent(model)!!.transform.position + getQuad(model)!!.center()
-            Level.VERTEX -> getObject(model)!!.transform.position + getGroup(model)!!.transform.position + getComponent(model)!!.transform.position + getVertex(model)!!.pos
+            Level.COMPONENTS -> getObject(model)!!.transform.position + getGroup(model)!!.transform.position + getMesh(model)!!.transform.position + getMesh(model)!!.getQuads().map(Quad::center).middle()
+            Level.QUADS -> getObject(model)!!.transform.position + getGroup(model)!!.transform.position + getMesh(model)!!.transform.position + getQuad(model)!!.center()
+            Level.VERTEX -> getObject(model)!!.transform.position + getGroup(model)!!.transform.position + getMesh(model)!!.transform.position + getVertex(model)!!
             else -> vec3Of(0)
         }
     }
 
     override fun toString(): String {
-        return "ModelPath(obj=$obj, group=$group, component=$component, quad=$quad, vertex=$vertex)"
+        return "ModelPath(obj=$obj, group=$group, component=$mesh, quad=$quad, vertex=$vertex)"
     }
 
     companion object {
@@ -86,22 +86,22 @@ data class ModelPath(
     }
 
     fun getComponentMatrix(model: Model): IMatrix4 {
-        return getObject(model)!!.transform.matrix * getGroup(model)!!.transform.matrix * getComponent(model)!!.transform.matrix
+        return getObject(model)!!.transform.matrix * getGroup(model)!!.transform.matrix * getMesh(model)!!.transform.matrix
     }
 
     fun getSubPaths(model: Model): List<ModelPath> {
         return when (level) {
             ModelPath.Level.OBJECTS -> {
-                getObject(model)!!.groups.mapIndexed { i, modelGroup -> ModelPath(obj, i) }
+                getObject(model)!!.groups.mapIndexed { i, _ -> ModelPath(obj, i) }
             }
             ModelPath.Level.GROUPS -> {
-                getGroup(model)!!.meshes.mapIndexed { i, modelGroup -> ModelPath(obj, group, i) }
+                getGroup(model)!!.meshes.mapIndexed { i, _ -> ModelPath(obj, group, i) }
             }
             ModelPath.Level.COMPONENTS -> {
-                getComponent(model)!!.getQuads().mapIndexed { i, quad -> ModelPath(obj, group, component, i) }
+                getMesh(model)!!.getQuads().mapIndexed { i, _ -> ModelPath(obj, group, mesh, i) }
             }
             ModelPath.Level.QUADS -> {
-                getQuad(model)!!.vertex.mapIndexed { i, vertex -> ModelPath(obj, group, component, quad, i) }
+                getQuad(model)!!.vertex.mapIndexed { i, _ -> ModelPath(obj, group, mesh, quad, i) }
             }
             ModelPath.Level.VERTEX -> listOf()
         }

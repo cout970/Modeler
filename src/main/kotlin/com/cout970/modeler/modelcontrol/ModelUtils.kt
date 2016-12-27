@@ -7,7 +7,7 @@ import com.cout970.modeler.modelcontrol.selection.Selection
 import com.cout970.modeler.modelcontrol.selection.SelectionMode
 import com.cout970.modeler.render.controller.SelectionAxis
 import com.cout970.modeler.util.replace
-import com.cout970.vector.api.IVector3
+import com.cout970.modeler.util.replaceWithIndex
 import com.cout970.vector.extensions.plus
 import com.cout970.vector.extensions.times
 
@@ -51,7 +51,7 @@ fun Model.translate(selection: Selection, axis: SelectionAxis, offset: Float): M
                     group.meshes.any { selection.containsSelectedElements(ModelPath.of(this, obj, group, it)) }
                 }, { group ->
                     group.copy(meshes = group.meshes.replace({ selection.containsSelectedElements(ModelPath.of(this, obj, group, it)) }, { comp ->
-                        val selectedQuadsIndex = selection.paths.filter { it.getComponent(this) == comp }.map { it.quad }
+                        val selectedQuadsIndex = selection.paths.filter { it.getMesh(this) == comp }.map { it.quad }
                         val selectedPositions = comp.indices.filterIndexed { i, quadIndices -> i in selectedQuadsIndex }.map { it.toQuad(comp.positions, comp.textures) }.flatMap(Quad::vertex).map { it.pos }.distinct()
 
                         comp.copy(positions = comp.positions.replace({ pos -> pos in selectedPositions }, { pos ->
@@ -73,17 +73,10 @@ fun Model.translate(selection: Selection, axis: SelectionAxis, offset: Float): M
                 }, { group ->
                     group.copy(meshes = group.meshes.replace({ selection.containsSelectedElements(ModelPath.of(this, obj, group, it)) }, { comp ->
 
-                        val pathToThisComponent = selection.paths.filter { it.getComponent(this) == comp }
-                        val selectedQuadsIndex = pathToThisComponent.map { it.quad }
-                        val selectedQuads = comp.indices.filterIndexed { i, quadIndices -> i in selectedQuadsIndex }.map { it.toQuad(comp.positions, comp.textures) }
-                        val selectedPositions = mutableListOf<IVector3>()
+                        val pathToThisComponent = selection.paths.filter { it.getMesh(this) == comp }
+                        val selectedIndices = pathToThisComponent.map { it.vertex }
 
-                        selectedQuads.forEachIndexed { quadIndex, quad ->
-                            val vertices = quad.vertex
-                            selectedPositions += vertices.filterIndexed { i, vertex -> pathToThisComponent.any { it.quad == quadIndex && it.vertex == i } }.map { it.pos }
-                        }
-
-                        comp.copy(positions = comp.positions.replace({ pos -> pos in selectedPositions }, { pos ->
+                        comp.copy(positions = comp.positions.replaceWithIndex({ i, pos -> i in selectedIndices }, { i, pos ->
                             pos + axis.axis * offset
                         }))
                     }))

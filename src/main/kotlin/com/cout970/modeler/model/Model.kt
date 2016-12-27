@@ -12,7 +12,7 @@ data class Model(val objects: List<ModelObject>) {
 
     val quads: List<Quad> by lazy {
         getPaths(ModelPath.Level.COMPONENTS).flatMap { path ->
-            path.getComponent(this)!!.getQuads().map { it.transform(path.getComponentMatrix(this)) }
+            path.getMesh(this)!!.getQuads().map { it.transform(path.getComponentMatrix(this)) }
         }
     }
 
@@ -42,9 +42,12 @@ data class Model(val objects: List<ModelObject>) {
                 obj.groups.flatMap { group ->
                     group.meshes.flatMap { comp ->
                         var quadIndex = 0
-                        comp.getQuads().flatMap { quad ->
+                        comp.indices.flatMap { quad ->
                             quadIndex++
-                            quad.vertex.mapIndexed { i, vertex -> ModelPath.of(this, obj, group, comp, quadIndex, i) }
+                            listOf(ModelPath.of(this, obj, group, comp, quadIndex, quad.aP),
+                                    ModelPath.of(this, obj, group, comp, quadIndex, quad.bP),
+                                    ModelPath.of(this, obj, group, comp, quadIndex, quad.cP),
+                                    ModelPath.of(this, obj, group, comp, quadIndex, quad.dP))
                         }
                     }
                 }
@@ -59,10 +62,10 @@ data class Model(val objects: List<ModelObject>) {
             SelectionMode.GROUP -> getPaths(ModelPath.Level.GROUPS).filter { selection.isSelected(it) }.flatMap { group ->
                 group.getSubPaths(this)
             }.flatMap { path ->
-                path.getComponent(this)!!.getQuads().map { it.transform(path.getComponentMatrix(this)) }
+                path.getMesh(this)!!.getQuads().map { it.transform(path.getComponentMatrix(this)) }
             }
             SelectionMode.COMPONENT -> getPaths(ModelPath.Level.COMPONENTS).filter { selection.isSelected(it) }.flatMap { path ->
-                path.getComponent(this)!!.getQuads().map { it.transform(path.getComponentMatrix(this)) }
+                path.getMesh(this)!!.getQuads().map { it.transform(path.getComponentMatrix(this)) }
             }
             SelectionMode.QUAD -> {
                 getPaths(ModelPath.Level.COMPONENTS).filter { selection.containsSelectedElements(it) }.flatMap { comp ->
