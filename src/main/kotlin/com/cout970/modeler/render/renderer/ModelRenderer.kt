@@ -3,9 +3,7 @@ package com.cout970.modeler.render.renderer
 import com.cout970.glutilities.shader.ShaderBuilder
 import com.cout970.glutilities.shader.ShaderProgram
 import com.cout970.glutilities.shader.UniformVariable
-import com.cout970.glutilities.tessellator.Tessellator
-import com.cout970.glutilities.tessellator.VAO
-import com.cout970.glutilities.tessellator.format.FormatPC
+import com.cout970.glutilities.tessellator.*
 import com.cout970.glutilities.tessellator.format.FormatPTN
 import com.cout970.glutilities.texture.Texture
 import com.cout970.glutilities.texture.TextureLoader
@@ -176,13 +174,11 @@ class ModelRenderer(resourceManager: ResourceManager) {
                         RenderUtil.renderBar(tessellator, quad.c.pos, quad.d.pos)
                         RenderUtil.renderBar(tessellator, quad.d.pos, quad.a.pos)
                         if (selection.mode == SelectionMode.QUAD) {
-                            quad.vertex.forEach { (pos, tex) ->
-                                val pos_: IVector3 = pos
-                                set(0, pos_.xd + 0.01, pos_.yd + 0.01, pos_.zd + 0.01).set(1, 0.5, 0.5, 0.4).endVertex()
+                            quad.vertex.forEach { (pos, _) ->
+                                set(0, pos.xd + 0.005, pos.yd + 0.005, pos.zd + 0.005).set(1, 0.5, 0.5, 0.4).endVertex()
                             }
-                            quad.vertex.forEach { (pos, tex) ->
-                                val pos_: IVector3 = pos
-                                set(0, pos_.xd - 0.01, pos_.yd - 0.01, pos_.zd - 0.01).set(1, 0.5, 0.5, 0.4).endVertex()
+                            quad.vertex.forEach { (pos, _) ->
+                                set(0, pos.xd - 0.005, pos.yd - 0.005, pos.zd - 0.005).set(1, 0.5, 0.5, 0.4).endVertex()
                             }
                         }
                     }
@@ -233,6 +229,24 @@ class ModelRenderer(resourceManager: ResourceManager) {
 
             set(0, 0, 0, -10).set(1, 0, 0, 1).endVertex()
             set(0, 0, 0, 10).set(1, 0, 0, 1).endVertex()
+        }
+    }
+
+    class FormatPC : IFormat {
+
+        var bufferPos = Buffer(IBuffer.BufferType.FLOAT, 524288, 3)
+        var bufferCol = Buffer(IBuffer.BufferType.FLOAT, 524288, 3)
+
+        override fun getBuffers(): List<IBuffer> = listOf(bufferPos, bufferCol)
+
+        override fun injectData(builder: VaoBuilder) {
+            builder.bindAttribf(0, bufferPos.getBase().apply { flip() }, 3)
+            builder.bindAttribf(1, bufferCol.getBase().apply { flip() }, 3)
+        }
+
+        override fun reset() {
+            bufferPos.getBase().clear()
+            bufferCol.getBase().clear()
         }
     }
 }

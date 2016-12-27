@@ -70,22 +70,30 @@ data class Mesh(
             return Mesh(positions, textures, indices)
         }
 
-        fun createCube(size: IVector3): Mesh {
-            val n = -(size / 2)
-            val p = size / 2
+        fun createCube(size: IVector3, offset: IVector3 = vec3Of(0), centered: Boolean = true): Mesh {
+            val n: IVector3
+            val p: IVector3
+            if (centered) {
+                n = -(size / 2) + offset
+                p = size / 2 + offset
+            } else {
+                n = vec3Of(0) + offset
+                p = size + offset
+            }
+
             return quadsToMesh(listOf(
                     //negX
-                    Quad.create(vec3Of(n.x, n.y, n.z), vec3Of(n.x, p.y, n.z), vec3Of(n.x, p.y, p.z), vec3Of(n.x, n.y, p.z)),
+                    Quad.create(vec3Of(n.x, n.y, p.z), vec3Of(n.x, p.y, p.z), vec3Of(n.x, p.y, n.z), vec3Of(n.x, n.y, n.z)),
                     //posX
-                    Quad.create(vec3Of(p.x, n.y, n.z), vec3Of(p.x, n.y, p.z), vec3Of(p.x, p.y, p.z), vec3Of(p.x, p.y, n.z)),
+                    Quad.create(vec3Of(p.x, p.y, n.z), vec3Of(p.x, p.y, p.z), vec3Of(p.x, n.y, p.z), vec3Of(p.x, n.y, n.z)),
                     //negY
-                    Quad.create(vec3Of(n.x, n.y, n.z), vec3Of(n.x, n.y, p.z), vec3Of(p.x, n.y, p.z), vec3Of(p.x, n.y, n.z)),
+                    Quad.create(vec3Of(p.x, n.y, n.z), vec3Of(p.x, n.y, p.z), vec3Of(n.x, n.y, p.z), vec3Of(n.x, n.y, n.z)),
                     //posY
-                    Quad.create(vec3Of(n.x, p.y, n.z), vec3Of(p.x, p.y, n.z), vec3Of(p.x, p.y, p.z), vec3Of(n.x, p.y, p.z)),
+                    Quad.create(vec3Of(n.x, p.y, p.z), vec3Of(p.x, p.y, p.z), vec3Of(p.x, p.y, n.z), vec3Of(n.x, p.y, n.z)),
                     //negZ
-                    Quad.create(vec3Of(n.x, n.y, n.z), vec3Of(p.x, n.y, n.z), vec3Of(p.x, p.y, n.z), vec3Of(n.x, p.y, n.z)),
+                    Quad.create(vec3Of(n.x, p.y, n.z), vec3Of(p.x, p.y, n.z), vec3Of(p.x, n.y, n.z), vec3Of(n.x, n.y, n.z)),
                     //posZ
-                    Quad.create(vec3Of(n.x, n.y, p.z), vec3Of(n.x, p.y, p.z), vec3Of(p.x, p.y, p.z), vec3Of(p.x, n.y, p.z))
+                    Quad.create(vec3Of(p.x, n.y, p.z), vec3Of(p.x, p.y, p.z), vec3Of(n.x, p.y, p.z), vec3Of(n.x, n.y, p.z))
             ))
         }
     }

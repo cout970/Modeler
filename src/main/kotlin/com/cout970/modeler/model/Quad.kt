@@ -2,10 +2,7 @@ package com.cout970.modeler.model
 
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.cross
-import com.cout970.vector.extensions.minus
-import com.cout970.vector.extensions.normalize
-import com.cout970.vector.extensions.vec2Of
+import com.cout970.vector.extensions.*
 
 /**
  * Created by cout970 on 2016/12/04.
@@ -21,7 +18,19 @@ data class Quad(
     val normal: IVector3 by lazy {
         val ab = b.pos - a.pos
         val ac = c.pos - a.pos
-        (ab cross ac).normalize()
+        var vec = (ab cross ac).normalize()
+        if (vec.lengthSq() < 0.1) {
+            val bc = c.pos - b.pos
+            val bd = d.pos - b.pos
+            vec = -(bc cross bd).normalize()
+            if (vec.lengthSq() < 0.1) {
+                vec3Of(0)
+            } else {
+                vec
+            }
+        } else {
+            vec
+        }
     }
 
     companion object {

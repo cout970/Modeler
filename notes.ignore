@@ -1,3 +1,4 @@
 color for the invalid face of a quad
 detect duplicated shapes
 join shapes
+add cursor to mark location of pasted/new object

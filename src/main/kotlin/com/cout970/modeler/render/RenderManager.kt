@@ -15,7 +15,7 @@ import com.cout970.modeler.render.renderer.ModelRenderer
 /**
  * Created by cout970 on 2016/11/29.
  */
-class RenderManager() : ITickeable {
+class RenderManager : ITickeable {
 
     val allLayouts = mutableListOf(LayoutModelEdit(this))
     var layout: Layout = allLayouts.first()

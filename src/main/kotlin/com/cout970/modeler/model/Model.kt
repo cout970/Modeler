@@ -77,16 +77,23 @@ data class Model(val objects: List<ModelObject>) {
     }
 }
 
-data class ModelObject(val groups: List<ModelGroup>, val transform: Transformation) {
+data class ModelObject(val groups: List<ModelGroup>, val transform: Transformation, val name: String, val material: Material) {
 
     fun getComponents() = groups.map { it.meshes }.flatten()
 
     fun add(group: ModelGroup): ModelObject = copy(groups + group)
 }
 
-data class ModelGroup(val meshes: List<Mesh>, val transform: Transformation) {
+data class ModelGroup(val meshes: List<Mesh>, val transform: Transformation, val name: String) {
 
     fun getQuads() = meshes.flatMap(Mesh::getQuads)
 
     fun add(comp: Mesh): ModelGroup = copy(meshes + comp)
+}
+
+sealed class Material(val name: String) {
+
+    class TexturedMaterial(texture: String) : Material(texture)
+
+    object MaterialNone : Material("noTexture")
 }

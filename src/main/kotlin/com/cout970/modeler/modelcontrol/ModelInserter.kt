@@ -1,15 +1,15 @@
 package com.cout970.modeler.modelcontrol
 
-import com.cout970.modeler.model.Mesh
-import com.cout970.modeler.model.ModelGroup
-import com.cout970.modeler.model.ModelObject
-import com.cout970.modeler.model.Transformation
+import com.cout970.modeler.model.*
 import com.cout970.modeler.util.replaceWithIndex
 
 /**
  * Created by cout970 on 2016/12/09.
  */
 class ModelInserter(val modelController: ModelController) {
+
+    var groupCount = 0
+    var objCount = 0
 
     var objectIndex = -1
         private set
@@ -30,7 +30,7 @@ class ModelInserter(val modelController: ModelController) {
         }
     }
 
-    fun insertGroup(group: ModelGroup = ModelGroup(listOf(), Transformation.IDENTITY)) {
+    fun insertGroup(group: ModelGroup = ModelGroup(listOf(), Transformation.IDENTITY, "Group${groupCount++}")) {
         if (objectIndex == -1) {
             insertObject()
             objectIndex = 0
@@ -42,7 +42,7 @@ class ModelInserter(val modelController: ModelController) {
         }
     }
 
-    fun insertObject(obj: ModelObject = ModelObject(listOf(), Transformation.IDENTITY)) {
+    fun insertObject(obj: ModelObject = ModelObject(listOf(), Transformation.IDENTITY, "Object${objCount++}", Material.MaterialNone)) {
         modelController.apply {
             updateModel(model.add(obj))
         }

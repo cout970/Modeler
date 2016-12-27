@@ -2,7 +2,6 @@ package com.cout970.modeler.modelcontrol.selection
 
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.times
-import com.cout970.matrix.extensions.transpose
 import com.cout970.modeler.model.*
 import com.cout970.modeler.util.center
 import com.cout970.modeler.util.middle
@@ -87,7 +86,7 @@ data class ModelPath(
     }
 
     fun getComponentMatrix(model: Model): IMatrix4 {
-        return (getObject(model)!!.transform.matrix * getGroup(model)!!.transform.matrix * getComponent(model)!!.transform.matrix).transpose()
+        return getObject(model)!!.transform.matrix * getGroup(model)!!.transform.matrix * getComponent(model)!!.transform.matrix
     }
 
     fun getSubPaths(model: Model): List<ModelPath> {

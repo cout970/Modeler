@@ -24,11 +24,11 @@ data class Transformation(
             translate(position)
             rotate(rotation)
             scale(scale)
-        }.asImmutable()
+        }.asImmutable().transpose()
     }
 
     fun apply(v: Vertex): Vertex {
-        return Vertex(matrix * v.pos.toVector4(1.0), v.tex)
+        return Vertex(matrix.transpose() * v.pos.toVector4(1.0), v.tex)
     }
 
     fun move(axis: SelectionAxis, offset: Float): Transformation {
