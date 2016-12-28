@@ -3,13 +3,13 @@ package com.cout970.modeler.modelcontrol
 import com.cout970.glutilities.device.Keyboard
 import com.cout970.glutilities.event.EnumKeyState
 import com.cout970.glutilities.event.EventKeyUpdate
-import com.cout970.modeler.ITickeable
 import com.cout970.modeler.event.EventController
 import com.cout970.modeler.event.IEventListener
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.modelcontrol.action.HistoricalRecord
 import com.cout970.modeler.modelcontrol.action.HistoryLog
 import com.cout970.modeler.modelcontrol.selection.SelectionManager
+import com.cout970.modeler.util.ITickeable
 import java.util.*
 
 /**

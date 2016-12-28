@@ -1,8 +1,8 @@
 package com.cout970.modeler.view
 
 import com.cout970.glutilities.window.GLFWWindow
-import com.cout970.modeler.ITickeable
 import com.cout970.modeler.modelcontrol.ModelController
+import com.cout970.modeler.util.ITickeable
 import com.cout970.modeler.view.controller.ModuleController
 import com.cout970.modeler.view.controller.SceneController
 import com.cout970.modeler.view.module.ModuleAddElement

@@ -4,7 +4,7 @@ import com.cout970.glutilities.device.Keyboard
 import com.cout970.glutilities.device.Mouse
 import com.cout970.glutilities.event.*
 import com.cout970.glutilities.window.GLFWWindow
-import com.cout970.modeler.ITickeable
+import com.cout970.modeler.util.ITickeable
 import java.util.*
 
 /**

@@ -15,8 +15,8 @@ import org.liquidengine.legui.component.ScrollablePanel
 class RootFrame(val viewManager: ViewManager) : Frame() {
 
     val topBar = TopBar(this)
-    val leftBar = SideBar(this, true)
-    val rightBar = SideBar(this, false)
+    val leftBar = SideBar(this)
+    val rightBar = SideBar(this)
     val contentPanel = ContentPanel(this)
 
     init {
@@ -67,7 +67,7 @@ class RootFrame(val viewManager: ViewManager) : Frame() {
         }
     }
 
-    class SideBar(val root: RootFrame, side: Boolean) : ScrollablePanel() {
+    class SideBar(val root: RootFrame) : ScrollablePanel() {
 
         init {
             horizontalScrollBar.isVisible = false

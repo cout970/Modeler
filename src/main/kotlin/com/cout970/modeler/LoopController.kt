@@ -2,6 +2,7 @@ package com.cout970.modeler
 
 import com.cout970.glutilities.structure.GameLoop
 import com.cout970.glutilities.structure.Timer
+import com.cout970.modeler.util.ITickeable
 
 /**
  * Created by cout970 on 2016/11/29.

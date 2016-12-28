@@ -2,6 +2,7 @@ package com.cout970.modeler
 
 import com.cout970.glutilities.window.GLFWWindow
 import com.cout970.glutilities.window.WindowBuilder
+import com.cout970.modeler.util.ITickeable
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.xi
 import com.cout970.vector.extensions.yi

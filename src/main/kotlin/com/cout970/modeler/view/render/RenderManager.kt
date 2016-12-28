@@ -3,8 +3,8 @@ package com.cout970.modeler.view.render
 import com.cout970.glutilities.structure.GLStateMachine
 import com.cout970.glutilities.structure.Timer
 import com.cout970.glutilities.window.GLFWWindow
-import com.cout970.modeler.ITickeable
 import com.cout970.modeler.ResourceManager
+import com.cout970.modeler.util.ITickeable
 import com.cout970.modeler.view.ViewManager
 
 /**
