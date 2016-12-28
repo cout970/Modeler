@@ -19,12 +19,26 @@ data class Quad(
         val ab = b.pos - a.pos
         val ac = c.pos - a.pos
         var vec = (ab cross ac).normalize()
-        if (vec.lengthSq() < 0.1) {
+        if (vec.xd.isNaN()) {
             val bc = c.pos - b.pos
             val bd = d.pos - b.pos
             vec = -(bc cross bd).normalize()
-            if (vec.lengthSq() < 0.1) {
-                vec3Of(0)
+            if (vec.xd.isNaN()) {
+                val cd = d.pos - c.pos
+                val ca = a.pos - c.pos
+                vec = -(cd cross ca).normalize()
+                if (vec.xd.isNaN()) {
+                    val da = a.pos - d.pos
+                    val db = b.pos - d.pos
+                    vec = -(da cross db).normalize()
+                    if (vec.xd.isNaN()) {
+                        vec3Of(0)
+                    } else {
+                        vec
+                    }
+                } else {
+                    vec
+                }
             } else {
                 vec
             }

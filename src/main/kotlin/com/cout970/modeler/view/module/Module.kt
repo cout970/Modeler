@@ -1,6 +1,5 @@
 package com.cout970.modeler.view.module
 
-import com.cout970.modeler.view.RootFrame
 import com.cout970.modeler.view.controller.ModuleController
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Button
@@ -15,7 +14,7 @@ import org.liquidengine.legui.listener.LeguiEventListener
  * Created by cout970 on 2016/12/27.
  */
 abstract class Module(val controller: ModuleController, val name: String) : Panel() {
-    val sideBar: RootFrame.SideBar get() = parent as RootFrame.SideBar
+
     val label: Label
     val minimizeButton: Button
     val subPanel: Panel
@@ -26,7 +25,6 @@ abstract class Module(val controller: ModuleController, val name: String) : Pane
         subPanel = Panel().apply { this@Module.addComponent(this); border.isEnabled = false }
 
         position = Vector2f(5f, 0f)
-
 
         label.textState.horizontalAlign = HorizontalAlign.CENTER
         label.size = Vector2f(180f, 20f)
@@ -40,7 +38,7 @@ abstract class Module(val controller: ModuleController, val name: String) : Pane
                 } else {
                     maximize()
                 }
-                sideBar.root.viewManager.recalculateModules()
+                controller.viewManager.recalculateModules()
             }
         })
 

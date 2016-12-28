@@ -8,6 +8,9 @@ import com.cout970.modeler.event.EventController
 import com.cout970.modeler.event.IEventListener
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.modelcontrol.ModelController
+import com.cout970.modeler.util.absolutePosition
+import com.cout970.modeler.util.inside
+import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.util.toRads
 import com.cout970.modeler.view.ViewManager
 import com.cout970.modeler.view.scene.Scene
@@ -82,13 +85,15 @@ class SceneController(val viewManager: ViewManager, val modelController: ModelCo
 
         eventController.addListener(EventMouseScroll::class.java, object : IEventListener<EventMouseScroll> {
             override fun onEvent(e: EventMouseScroll): Boolean {
-                selectedScene.run {
-                    if (camera.zoom <= 3) {
-                        if (camera.zoom - e.offsetY / 8 > 0.5) {
-                            camera = camera.copy(zoom = camera.zoom - e.offsetY / 8)
+                if (inside(mouse.getMousePos(), selectedScene.absolutePosition, selectedScene.size.toIVector())) {
+                    selectedScene.run {
+                        if (camera.zoom <= 3) {
+                            if (camera.zoom - e.offsetY / 8 > 0.5) {
+                                camera = camera.copy(zoom = camera.zoom - e.offsetY / 8)
+                            }
+                        } else {
+                            camera = camera.copy(zoom = camera.zoom - e.offsetY)
                         }
-                    } else {
-                        camera = camera.copy(zoom = camera.zoom - e.offsetY)
                     }
                 }
                 return true

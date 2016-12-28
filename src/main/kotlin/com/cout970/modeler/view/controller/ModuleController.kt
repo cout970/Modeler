@@ -10,12 +10,13 @@ import com.cout970.modeler.modelcontrol.action.ActionCreateCube
 import com.cout970.modeler.modelcontrol.action.ActionCreatePlane
 import com.cout970.modeler.modelcontrol.action.ActionDelete
 import com.cout970.modeler.modelcontrol.selection.SelectionMode
+import com.cout970.modeler.view.ViewManager
 
 /**
  * Created by cout970 on 2016/12/27.
  */
 
-class ModuleController(val modelController: ModelController) {
+class ModuleController(val viewManager: ViewManager, val modelController: ModelController) {
 
     fun registerListeners(eventController: EventController) {
         val keyboard = eventController.keyboard

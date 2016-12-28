@@ -29,21 +29,22 @@ class ViewManager : ITickeable {
         window = renderManager.window
         sceneController = SceneController(this, modelController)
         sceneController.scenes += Scene(sceneController)
-        moduleController = ModuleController(modelController)
+        moduleController = ModuleController(this, modelController)
 
         val modules = listOf(ModuleAddElement(moduleController), ModuleSelectionType(moduleController), ModuleTransform(moduleController), ModuleHistoric(moduleController))
         modules.forEach {
-            root.leftBar.addComponent(it)
+            root.leftBar.container.addComponent(it)
         }
         recalculateModules()
     }
 
     fun recalculateModules() {
         var last = 5f
-        root.leftBar.components.forEach {
+        root.leftBar.container.components.forEach {
             it.position.y = last
             last = it.position.y + it.size.y + 5f
         }
+        root.leftBar.container.size.y = last
     }
 
     override fun tick() {

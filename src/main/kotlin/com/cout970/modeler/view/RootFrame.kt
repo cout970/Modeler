@@ -6,6 +6,7 @@ import org.joml.Vector4f
 import org.liquidengine.legui.component.Button
 import org.liquidengine.legui.component.Frame
 import org.liquidengine.legui.component.Panel
+import org.liquidengine.legui.component.ScrollablePanel
 
 /**
  * Created by cout970 on 2016/12/03.
@@ -14,8 +15,8 @@ import org.liquidengine.legui.component.Panel
 class RootFrame(val viewManager: ViewManager) : Frame() {
 
     val topBar = TopBar(this)
-    val leftBar = SideBar(this)
-    val rightBar = SideBar(this)
+    val leftBar = SideBar(this, true)
+    val rightBar = SideBar(this, false)
     val contentPanel = ContentPanel(this)
 
     init {
@@ -26,6 +27,8 @@ class RootFrame(val viewManager: ViewManager) : Frame() {
 
         leftBar.apply { backgroundColor = Vector4f(0.8f, 0.8f, 0.8f, 1f) }
         rightBar.apply { backgroundColor = Vector4f(0.8f, 0.8f, 0.8f, 1f) }
+        leftBar.container.apply { backgroundColor = Vector4f(0.8f, 0.8f, 0.8f, 1f) }
+        rightBar.container.apply { backgroundColor = Vector4f(0.8f, 0.8f, 0.8f, 1f) }
         contentPanel.apply { backgroundColor = Vector4f(0.73f, 0.9f, 1f, 1f) }
         rightBar.isEnabled = false
     }
@@ -35,6 +38,8 @@ class RootFrame(val viewManager: ViewManager) : Frame() {
         position = Vector2f(0f, 0f)
 
         topBar.size = Vector2f(size.x, 20f)
+        leftBar.container.size.x = 200f
+        rightBar.container.size.x = 200f
 
         leftBar.size = Vector2f(if (leftBar.isEnabled) 200f else 0f, size.y - topBar.size.y)
         rightBar.size = Vector2f(if (rightBar.isEnabled) 200f else 0f, size.y - topBar.size.y)
@@ -43,6 +48,9 @@ class RootFrame(val viewManager: ViewManager) : Frame() {
         leftBar.position = Vector2f(0f, topBar.size.y)
         contentPanel.position = Vector2f(leftBar.size.x, topBar.size.y)
         rightBar.position = Vector2f(leftBar.size.x + contentPanel.size.x, topBar.size.y)
+
+        leftBar.resize()
+        rightBar.resize()
     }
 
     class ContentPanel(val root: RootFrame) : Panel()
@@ -59,5 +67,10 @@ class RootFrame(val viewManager: ViewManager) : Frame() {
         }
     }
 
-    class SideBar(val root: RootFrame) : Panel()
+    class SideBar(val root: RootFrame, side: Boolean) : ScrollablePanel() {
+
+        init {
+            horizontalScrollBar.isVisible = false
+        }
+    }
 }
