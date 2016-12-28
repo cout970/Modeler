@@ -70,7 +70,7 @@ data class Mesh(
             return Mesh(positions, textures, indices, transform)
         }
 
-        fun createCube(size: IVector3, offset: IVector3 = vec3Of(0), centered: Boolean = true, transform: Transformation = Transformation.IDENTITY): Mesh {
+        fun createCube(size: IVector3, offset: IVector3 = vec3Of(0), centered: Boolean = false, transform: Transformation = Transformation.IDENTITY): Mesh {
             val n: IVector3
             val p: IVector3
             if (centered) {

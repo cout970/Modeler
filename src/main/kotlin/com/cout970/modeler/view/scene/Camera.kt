@@ -19,14 +19,14 @@ data class Camera(
 ) {
 
     companion object {
-        val DEFAULT = Camera(Vector3.ORIGIN, 0.0, 0.0, 10.0)
+        val DEFAULT = Camera(Vector3.ORIGIN, 0.0, 0.0, 32.0)
     }
 
     val matrix by lazy {
         Matrix4d().apply {
             translate(0.0, 0.0, -zoom)
-            rotate(angleY, 1.0, 0.0, 0.0)
-            rotate(angleX, 0.0, 1.0, 0.0)
+            rotate(angleX, 1.0, 0.0, 0.0)
+            rotate(angleY, 0.0, 1.0, 0.0)
             translate(position.xd, position.yd, position.zd)
         }.toIMatrix()
     }

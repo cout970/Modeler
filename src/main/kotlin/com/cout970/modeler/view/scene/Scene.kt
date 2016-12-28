@@ -2,6 +2,7 @@ package com.cout970.modeler.view.scene
 
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.times
+import com.cout970.modeler.config.Config
 import com.cout970.modeler.modelcontrol.selection.SelectionNone
 import com.cout970.modeler.util.toIMatrix
 import com.cout970.modeler.view.controller.ModelSelector
@@ -32,13 +33,26 @@ class Scene(val sceneController: SceneController) : Panel() {
             val model = sceneController.modelController.model
             val selection = sceneController.modelController.selectionManager.selection
 
-            start(vec2Of(position.x, 0), vec2Of(size.x, size.y))
+            if (sceneController.modelController.modelChange) {
+                sceneController.modelController.modelChange = false
+                modelCache.clear()
+                selectionCache.clear()
+            }
+
+            setViewport(vec2Of(position.x, 0), vec2Of(size.x, size.y))
+
+            startModel()
             renderModel(selector.getModel(model))
+
             startSelection()
             renderModelSelection(selector.getModel(model), selection)
             renderExtras()
             if (selection != SelectionNone && selector.transformationMode != TransformationMode.NONE) {
-                renderTranslation(selector.center, selector, selection)
+                renderTranslation(selector.center, selector, selection, camera)
+            }
+            if (Config.keyBindings.moveCamera.check(sceneController.mouse) || Config.keyBindings.rotateCamera.check(sceneController.mouse)) {
+                startPlane(vec2Of(size.x, size.y))
+                renderCursor()
             }
             stop()
         }

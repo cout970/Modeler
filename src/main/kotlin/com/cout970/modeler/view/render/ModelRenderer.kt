@@ -3,7 +3,9 @@ package com.cout970.modeler.view.render
 import com.cout970.glutilities.shader.ShaderBuilder
 import com.cout970.glutilities.shader.ShaderProgram
 import com.cout970.glutilities.shader.UniformVariable
+import com.cout970.glutilities.structure.GLStateMachine
 import com.cout970.glutilities.tessellator.*
+import com.cout970.glutilities.tessellator.format.FormatPT
 import com.cout970.glutilities.tessellator.format.FormatPTN
 import com.cout970.glutilities.texture.Texture
 import com.cout970.matrix.api.IMatrix4
@@ -19,6 +21,7 @@ import com.cout970.modeler.util.Cache
 import com.cout970.modeler.util.RenderUtil
 import com.cout970.modeler.view.controller.ModelSelector
 import com.cout970.modeler.view.controller.SelectionAxis
+import com.cout970.modeler.view.scene.Camera
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
@@ -39,6 +42,7 @@ class ModelRenderer(resourceManager: ResourceManager) {
     //vao formats
     val formatPC = FormatPC()
     val formatPTN = FormatPTN()
+    val formatPT = FormatPT()
     //Model, View, Projection matrices
     var matrixM: IMatrix4 = mat4Of(1)
     var matrixV: IMatrix4 = mat4Of(1)
@@ -47,14 +51,14 @@ class ModelRenderer(resourceManager: ResourceManager) {
     var mode = GL11.GL_FILL
 
     //selection shader
-    var plainColorShader: ShaderProgram
+    val plainColorShader: ShaderProgram
     //vertex shader variables
     val selProjectionMatrix: UniformVariable
     val selViewMatrix: UniformVariable
     val selTransformationMatrix: UniformVariable
 
     //model shader
-    var modelShader: ShaderProgram
+    val modelShader: ShaderProgram
     //vertex shader variables
     val projectionMatrix: UniformVariable
     val viewMatrix: UniformVariable
@@ -69,22 +73,37 @@ class ModelRenderer(resourceManager: ResourceManager) {
     val enableLight: UniformVariable
     val textureSize: UniformVariable
 
-    val debugTexture: Texture
+    //plane shader
+    val planeShader: ShaderProgram
+    //vertex shader variables
+    val viewport: UniformVariable
+
+    val modelTexture: Texture
+    val cursorTexture: Texture
 
     init {
         modelShader = ShaderBuilder.build {
-            compile(GL20.GL_VERTEX_SHADER, resourceManager.readResource("assets/shaders/model_vertex.glsl").reader().readText())
-            compile(GL20.GL_FRAGMENT_SHADER, resourceManager.readResource("assets/shaders/model_fragment.glsl").reader().readText())
+            compile(GL20.GL_VERTEX_SHADER, resourceManager.readResource("assets/shaders/scene_vertex.glsl").reader().readText())
+            compile(GL20.GL_FRAGMENT_SHADER, resourceManager.readResource("assets/shaders/scene_fragment.glsl").reader().readText())
             bindAttribute(0, "in_position")
             bindAttribute(1, "in_texture")
             bindAttribute(2, "in_normal")
         }
         plainColorShader = ShaderBuilder.build {
-            compile(GL20.GL_VERTEX_SHADER, resourceManager.readResource("assets/shaders/scene_vertex.glsl").reader().readText())
-            compile(GL20.GL_FRAGMENT_SHADER, resourceManager.readResource("assets/shaders/scene_fragment.glsl").reader().readText())
+            compile(GL20.GL_VERTEX_SHADER, resourceManager.readResource("assets/shaders/plain_color_vertex.glsl").reader().readText())
+            compile(GL20.GL_FRAGMENT_SHADER, resourceManager.readResource("assets/shaders/plain_color_fragment.glsl").reader().readText())
             bindAttribute(0, "in_position")
             bindAttribute(1, "in_color")
         }
+
+        planeShader = ShaderBuilder.build {
+            compile(GL20.GL_VERTEX_SHADER, resourceManager.readResource("assets/shaders/plane_vertex.glsl").reader().readText())
+            compile(GL20.GL_FRAGMENT_SHADER, resourceManager.readResource("assets/shaders/plane_fragment.glsl").reader().readText())
+            bindAttribute(0, "in_position")
+            bindAttribute(1, "in_texture")
+        }
+
+        viewport = planeShader.createUniformVariable("viewport")
 
         selProjectionMatrix = plainColorShader.createUniformVariable("projectionMatrix")
         selViewMatrix = plainColorShader.createUniformVariable("viewMatrix")
@@ -102,7 +121,8 @@ class ModelRenderer(resourceManager: ResourceManager) {
         enableLight = modelShader.createUniformVariable("enableLight")
         textureSize = modelShader.createUniformVariable("textureSize")
 
-        debugTexture = resourceManager.getTexture("assets/textures/debug.png")
+        modelTexture = resourceManager.getTexture("assets/textures/debug.png")
+        cursorTexture = resourceManager.getTexture("assets/textures/cursor.png")
 
         consumer = Consumer<VAO> {
             it.bind()
@@ -113,8 +133,11 @@ class ModelRenderer(resourceManager: ResourceManager) {
         }
     }
 
-    fun start(pos: IVector2, size: IVector2) {
+    fun setViewport(pos: IVector2, size: IVector2) {
         GL11.glViewport(pos.xi, pos.yi, size.xi, size.yi)
+    }
+
+    fun startModel() {
         modelShader.start()
         projectionMatrix.setMatrix4(matrixP)
         viewMatrix.setMatrix4(matrixV)
@@ -128,14 +151,19 @@ class ModelRenderer(resourceManager: ResourceManager) {
         enableLight.setBoolean(true)
         textureSize.setVector2(vec2Of(1, 1))
 
-        debugTexture.bind()
+        modelTexture.bind()
 
         GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, mode)
     }
 
+    fun startPlane(size: IVector2) {
+        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL)
+        planeShader.start()
+        viewport.setVector2(size)
+    }
+
     fun startSelection() {
         GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL)
-        modelShader.stop()
         plainColorShader.start()
         selProjectionMatrix.setMatrix4(matrixP)
         selViewMatrix.setMatrix4(matrixV)
@@ -197,25 +225,39 @@ class ModelRenderer(resourceManager: ResourceManager) {
         })
     }
 
-    fun renderTranslation(center: IVector3, selector: ModelSelector, selection: Selection) {
+    fun renderTranslation(center: IVector3, selector: ModelSelector, selection: Selection, camera: Camera) {
 
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
         val selX = selector.selectedAxis == SelectionAxis.X || selector.phantomSelectedAxis == SelectionAxis.X
         val selY = selector.selectedAxis == SelectionAxis.Y || selector.phantomSelectedAxis == SelectionAxis.Y
         val selZ = selector.selectedAxis == SelectionAxis.Z || selector.phantomSelectedAxis == SelectionAxis.Z
-        val size = 0.0625 / 2
 
         tessellator.draw(GL11.GL_QUADS, formatPC, consumer) {
+            val scale = camera.zoom / 10
+            val start = 0.8f * scale
+            val end = 1f * scale
+            val size = 0.0625 * scale
+
             if (selection.mode != SelectionMode.VERTEX) {
-                RenderUtil.renderBar(tessellator, center, center, 0.0625, vec3Of(1, 1, 1))
+                RenderUtil.renderBar(tessellator, center, center, size * 1.5, vec3Of(1, 1, 1))
             }
-
-            RenderUtil.renderBar(tessellator, center + vec3Of(0.8, 0, 0), center + vec3Of(1, 0, 0), if (selX) size * 1.5 else size, col = vec3Of(1, 0, 0))
-
-            RenderUtil.renderBar(tessellator, center + vec3Of(0, 0.8, 0), center + vec3Of(0, 1, 0), if (selY) size * 1.5 else size, col = vec3Of(0, 1, 0))
-
-            RenderUtil.renderBar(tessellator, center + vec3Of(0, 0, 0.8), center + vec3Of(0, 0, 1), if (selZ) size * 1.5 else size, col = vec3Of(0, 0, 1))
+            RenderUtil.renderBar(tessellator, center + vec3Of(start, 0, 0), center + vec3Of(end, 0, 0), if (selX) size * 1.5 else size, col = vec3Of(1, 0, 0))
+            RenderUtil.renderBar(tessellator, center + vec3Of(0, start, 0), center + vec3Of(0, end, 0), if (selY) size * 1.5 else size, col = vec3Of(0, 1, 0))
+            RenderUtil.renderBar(tessellator, center + vec3Of(0, 0, start), center + vec3Of(0, 0, end), if (selZ) size * 1.5 else size, col = vec3Of(0, 0, 1))
         }
+    }
+
+    fun renderCursor() {
+        val size = vec2Of(100)
+        GLStateMachine.blend.enable()
+        cursorTexture.bind()
+        tessellator.draw(GL11.GL_QUADS, formatPT, consumer) {
+            set(0, -size.xd / 2, -size.yd / 2, 0).set(1, 0, 0).endVertex()
+            set(0, -size.xd / 2, +size.yd / 2, 0).set(1, 1, 0).endVertex()
+            set(0, +size.xd / 2, +size.yd / 2, 0).set(1, 1, 1).endVertex()
+            set(0, +size.xd / 2, -size.yd / 2, 0).set(1, 0, 1).endVertex()
+        }
+        GLStateMachine.blend.disable()
     }
 
     fun renderExtras() {
@@ -228,6 +270,16 @@ class ModelRenderer(resourceManager: ResourceManager) {
 
             set(0, 0, 0, -10).set(1, 0, 0, 1).endVertex()
             set(0, 0, 0, 10).set(1, 0, 0, 1).endVertex()
+
+            for (x in -16..16) {
+                set(0, x, 0, -16).set(1, 0.5, 0.5, 0.5).endVertex()
+                set(0, x, 0, 16).set(1, 0.5, 0.5, 0.5).endVertex()
+            }
+
+            for (z in -16..16) {
+                set(0, -16, 0, z).set(1, 0.5, 0.5, 0.5).endVertex()
+                set(0, 16, 0, z).set(1, 0.5, 0.5, 0.5).endVertex()
+            }
         }
     }
 

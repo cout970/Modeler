@@ -15,7 +15,7 @@ class ResourceManager {
     }
 
     fun getTexture(name: String): Texture {
-        val aux = TextureLoader.loadTexture(readResource("assets/textures/debug.png"))
+        val aux = TextureLoader.loadTexture(readResource(name))
         return TextureLoader.uploadTexture2D(aux)
     }
 }

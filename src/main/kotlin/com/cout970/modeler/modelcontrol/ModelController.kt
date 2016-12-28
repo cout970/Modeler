@@ -20,6 +20,8 @@ class ModelController : ITickeable {
     var model = Model(listOf())
         private set
 
+    var modelChange = true
+
     private val actionQueue = LinkedList<() -> Unit>()
     lateinit var eventController: EventController
     val selectionManager = SelectionManager(this)
@@ -43,6 +45,7 @@ class ModelController : ITickeable {
     fun updateModel(newModel: Model) {
         historyLog.onModelChange(newModel, model)
         model = newModel
+        modelChange = true
     }
 
     fun addToQueue(function: () -> Unit) {

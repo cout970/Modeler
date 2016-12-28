@@ -44,23 +44,23 @@ class SceneController(val viewManager: ViewManager, val modelController: ModelCo
         mouse.update()
 
         if (Config.keyBindings.moveCamera.check(mouse)) {
-            val rotations = vec2Of(selectedScene.camera.angleX, selectedScene.camera.angleY).toDegrees()
+            val rotations = vec2Of(selectedScene.camera.angleY, selectedScene.camera.angleX).toDegrees()
             val axisX = vec2Of(Math.cos(rotations.x.toRads()), Math.sin(rotations.x.toRads()))
             var axisY = vec2Of(Math.cos((rotations.xd - 90).toRads()), Math.sin((rotations.xd - 90).toRads()))
             axisY *= Math.sin(rotations.y.toRads())
             var a = vec3Of(axisX.x, 0.0, axisX.y)
             var b = vec3Of(axisY.x, Math.cos(rotations.y.toRads()), axisY.y)
 
-            a = a.normalize() * (mouse.getMousePosDiff().xd * viewManager.renderManager.timer.delta * 2.0)
-            b = b.normalize() * (-mouse.getMousePosDiff().yd * viewManager.renderManager.timer.delta * 2.0)
+            a = a.normalize() * (mouse.getMousePosDiff().xd * viewManager.renderManager.timer.delta * Config.mouseTranslateSpeedX)
+            b = b.normalize() * (-mouse.getMousePosDiff().yd * viewManager.renderManager.timer.delta * Config.mouseTranslateSpeedY)
 
             selectedScene.camera = selectedScene.camera.run { copy(position = position + a + b) }
         } else if (Config.keyBindings.rotateCamera.check(mouse)) {
             selectedScene.camera = selectedScene.camera.run {
-                copy(angleX = angleX + mouse.getMousePosDiff().xd * viewManager.renderManager.timer.delta * 0.5)
+                copy(angleY = angleY + mouse.getMousePosDiff().xd * viewManager.renderManager.timer.delta * Config.mouseRotationSpeedX)
             }
             selectedScene.camera = selectedScene.camera.run {
-                copy(angleY = angleY + mouse.getMousePosDiff().yd * viewManager.renderManager.timer.delta * 0.5)
+                copy(angleX = angleX + mouse.getMousePosDiff().yd * viewManager.renderManager.timer.delta * Config.mouseRotationSpeedY)
             }
         }
         scenes.map(Scene::modelSelector).forEach(ModelSelector::update)
@@ -87,12 +87,17 @@ class SceneController(val viewManager: ViewManager, val modelController: ModelCo
             override fun onEvent(e: EventMouseScroll): Boolean {
                 if (inside(mouse.getMousePos(), selectedScene.absolutePosition, selectedScene.size.toIVector())) {
                     selectedScene.run {
-                        if (camera.zoom <= 3) {
-                            if (camera.zoom - e.offsetY / 8 > 0.5) {
-                                camera = camera.copy(zoom = camera.zoom - e.offsetY / 8)
+                        val scroll = -e.offsetY * Config.cameraScrollSpeed
+                        if (camera.zoom <= 10) {
+                            if (camera.zoom <= 3) {
+                                if (camera.zoom + scroll / 8 > 0.5) {
+                                    camera = camera.copy(zoom = camera.zoom + scroll / 8)
+                                }
+                            } else {
+                                camera = camera.copy(zoom = camera.zoom + scroll / 4)
                             }
                         } else {
-                            camera = camera.copy(zoom = camera.zoom - e.offsetY)
+                            camera = camera.copy(zoom = camera.zoom + scroll)
                         }
                     }
                 }

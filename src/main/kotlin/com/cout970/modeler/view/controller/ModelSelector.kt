@@ -55,9 +55,14 @@ class ModelSelector(val scene: Scene, val controller: SceneController) {
 
             if (!blockMouse) {
                 val center = selectionCenter
-                val resX = RayTraceUtil.rayTraceBox3(center + vec3Of(0.8, 0, 0) - vec3Of(0.0625), center + vec3Of(1, 0, 0) + vec3Of(0.0625), mouseRay, FakeRayObstacle)
-                val resY = RayTraceUtil.rayTraceBox3(center + vec3Of(0, 0.8, 0) - vec3Of(0.0625), center + vec3Of(0, 1, 0) + vec3Of(0.0625), mouseRay, FakeRayObstacle)
-                val resZ = RayTraceUtil.rayTraceBox3(center + vec3Of(0, 0, 0.8) - vec3Of(0.0625), center + vec3Of(0, 0, 1) + vec3Of(0.0625), mouseRay, FakeRayObstacle)
+                val scale = scene.camera.zoom / 10
+                val start = 0.8f * scale
+                val end = 1f * scale
+                val size = vec3Of(0.0625) * scale
+
+                val resX = RayTraceUtil.rayTraceBox3(center + vec3Of(start, 0, 0) - size, center + vec3Of(end, 0, 0) + size, mouseRay, FakeRayObstacle)
+                val resY = RayTraceUtil.rayTraceBox3(center + vec3Of(0, start, 0) - size, center + vec3Of(0, end, 0) + size, mouseRay, FakeRayObstacle)
+                val resZ = RayTraceUtil.rayTraceBox3(center + vec3Of(0, 0, start) - size, center + vec3Of(0, 0, end) + size, mouseRay, FakeRayObstacle)
 
                 val list = mutableListOf<Pair<RayTraceResult, SelectionAxis>>()
                 resX?.let { list += it to SelectionAxis.X }
@@ -97,9 +102,11 @@ class ModelSelector(val scene: Scene, val controller: SceneController) {
                     val new = direction.project(newMouse * viewport)
 
                     if (Config.keyBindings.disableGridMotion.check(controller.keyboard)) {
-                        offset = (new - old).toFloat() * (0.00125f * scene.camera.zoom.toFloat())
-                    } else {
+                        offset = Math.round((new - old).toFloat() * (0.00125f * scene.camera.zoom.toFloat()) * 16).toFloat() / 16
+                    } else if (Config.keyBindings.disablePixelGridMotion.check(controller.keyboard)) {
                         offset = Math.round((new - old).toFloat() * (0.00125f * scene.camera.zoom.toFloat()) * 4).toFloat() / 4
+                    } else {
+                        offset = Math.round((new - old).toFloat() * (0.00125f * scene.camera.zoom.toFloat())).toFloat()
                     }
                     if (lastOffset != offset) {
                         lastOffset = offset

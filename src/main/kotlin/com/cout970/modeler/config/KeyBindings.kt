@@ -13,4 +13,5 @@ class KeyBindings {
     var selectModel = MouseKeyBind(Mouse.Companion.BUTTON_LEFT)
     var selectModelControls = MouseKeyBind(Mouse.Companion.BUTTON_LEFT)
     var disableGridMotion = KeyBind(Keyboard.Companion.KEY_LEFT_CONTROL)
+    var disablePixelGridMotion = KeyBind(Keyboard.Companion.KEY_LEFT_SHIFT)
 }

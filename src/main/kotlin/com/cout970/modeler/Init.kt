@@ -34,7 +34,7 @@ class Init {
         eventController = EventController()
         viewManager = ViewManager()
         renderManager = RenderManager(viewManager)
-        mainLoop = LoopController(listOf(viewManager, renderManager, eventController, modelController, windowController))
+        mainLoop = LoopController(listOf(renderManager, viewManager, eventController, modelController, windowController))
 
         windowController.stop = { mainLoop.stop = true }
         modelController.registerListeners(eventController)
