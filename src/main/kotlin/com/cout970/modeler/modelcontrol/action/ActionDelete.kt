@@ -70,13 +70,11 @@ data class ActionDelete(val selection: Selection, val modelController: ModelCont
             }
         }
         modelController.selectionManager.clearSelection()
-        modelController.modelUpdate = true
     }
 
     override fun undo() {
         modelController.updateModel(model)
         modelController.selectionManager.selection = selection
-        modelController.modelUpdate = true
     }
 
     override fun toString(): String {

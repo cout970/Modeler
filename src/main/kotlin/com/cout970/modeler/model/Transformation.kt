@@ -1,7 +1,7 @@
 package com.cout970.modeler.model
 
 import com.cout970.matrix.extensions.*
-import com.cout970.modeler.render.controller.SelectionAxis
+import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*

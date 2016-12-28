@@ -1,4 +1,4 @@
-package com.cout970.modeler.render.renderer
+package com.cout970.modeler.view.render
 
 import com.cout970.glutilities.shader.ShaderBuilder
 import com.cout970.glutilities.shader.ShaderProgram
@@ -6,7 +6,6 @@ import com.cout970.glutilities.shader.UniformVariable
 import com.cout970.glutilities.tessellator.*
 import com.cout970.glutilities.tessellator.format.FormatPTN
 import com.cout970.glutilities.texture.Texture
-import com.cout970.glutilities.texture.TextureLoader
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.mat4Of
 import com.cout970.matrix.extensions.times
@@ -16,10 +15,10 @@ import com.cout970.modeler.modelcontrol.selection.ModelPath
 import com.cout970.modeler.modelcontrol.selection.Selection
 import com.cout970.modeler.modelcontrol.selection.SelectionMode
 import com.cout970.modeler.modelcontrol.selection.SelectionNone
-import com.cout970.modeler.render.controller.ModelSelector
-import com.cout970.modeler.render.controller.SelectionAxis
 import com.cout970.modeler.util.Cache
 import com.cout970.modeler.util.RenderUtil
+import com.cout970.modeler.view.controller.ModelSelector
+import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
@@ -35,8 +34,8 @@ class ModelRenderer(resourceManager: ResourceManager) {
     val tessellator = Tessellator()
     var consumer: Consumer<VAO>
     //cache
-    val modelCache = Cache<Int, VAO>(1).apply { onRemove = { k, v -> v.close() } }
-    val selectionCache = Cache<Int, VAO>(1).apply { onRemove = { k, v -> v.close() } }
+    val modelCache = Cache<Int, VAO>(1).apply { onRemove = { _, v -> v.close() } }
+    val selectionCache = Cache<Int, VAO>(1).apply { onRemove = { _, v -> v.close() } }
     //vao formats
     val formatPC = FormatPC()
     val formatPTN = FormatPTN()
@@ -48,7 +47,7 @@ class ModelRenderer(resourceManager: ResourceManager) {
     var mode = GL11.GL_FILL
 
     //selection shader
-    var selectionShader: ShaderProgram
+    var plainColorShader: ShaderProgram
     //vertex shader variables
     val selProjectionMatrix: UniformVariable
     val selViewMatrix: UniformVariable
@@ -80,16 +79,16 @@ class ModelRenderer(resourceManager: ResourceManager) {
             bindAttribute(1, "in_texture")
             bindAttribute(2, "in_normal")
         }
-        selectionShader = ShaderBuilder.build {
+        plainColorShader = ShaderBuilder.build {
             compile(GL20.GL_VERTEX_SHADER, resourceManager.readResource("assets/shaders/scene_vertex.glsl").reader().readText())
             compile(GL20.GL_FRAGMENT_SHADER, resourceManager.readResource("assets/shaders/scene_fragment.glsl").reader().readText())
             bindAttribute(0, "in_position")
             bindAttribute(1, "in_color")
         }
 
-        selProjectionMatrix = selectionShader.createUniformVariable("projectionMatrix")
-        selViewMatrix = selectionShader.createUniformVariable("viewMatrix")
-        selTransformationMatrix = selectionShader.createUniformVariable("transformationMatrix")
+        selProjectionMatrix = plainColorShader.createUniformVariable("projectionMatrix")
+        selViewMatrix = plainColorShader.createUniformVariable("viewMatrix")
+        selTransformationMatrix = plainColorShader.createUniformVariable("transformationMatrix")
 
         projectionMatrix = modelShader.createUniformVariable("projectionMatrix")
         viewMatrix = modelShader.createUniformVariable("viewMatrix")
@@ -103,15 +102,14 @@ class ModelRenderer(resourceManager: ResourceManager) {
         enableLight = modelShader.createUniformVariable("enableLight")
         textureSize = modelShader.createUniformVariable("textureSize")
 
-        val aux = TextureLoader.loadTexture(resourceManager.readResource("assets/textures/debug.png"))
-        debugTexture = TextureLoader.uploadTexture2D(aux)
+        debugTexture = resourceManager.getTexture("assets/textures/debug.png")
 
         consumer = Consumer<VAO> {
             it.bind()
             it.bindAttrib()
             it.draw()
             it.unbindAttrib()
-            VAO.unbind()
+            VAO.Companion.unbind()
         }
     }
 
@@ -138,14 +136,14 @@ class ModelRenderer(resourceManager: ResourceManager) {
     fun startSelection() {
         GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL)
         modelShader.stop()
-        selectionShader.start()
+        plainColorShader.start()
         selProjectionMatrix.setMatrix4(matrixP)
         selViewMatrix.setMatrix4(matrixV)
         selTransformationMatrix.setMatrix4(matrixM)
     }
 
     fun stop() {
-        selectionShader.stop()
+        plainColorShader.stop()
     }
 
     fun renderModel(model: Model) {

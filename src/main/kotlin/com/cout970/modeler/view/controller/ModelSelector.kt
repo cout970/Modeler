@@ -1,8 +1,8 @@
-package com.cout970.modeler.render.controller
+package com.cout970.modeler.view.controller
 
 import com.cout970.glutilities.event.EnumKeyState
 import com.cout970.glutilities.event.EventMouseClick
-import com.cout970.matrix.extensions.times
+import com.cout970.modeler.config.Config
 import com.cout970.modeler.event.EventController
 import com.cout970.modeler.event.IEventListener
 import com.cout970.modeler.model.Model
@@ -10,9 +10,8 @@ import com.cout970.modeler.modelcontrol.ModelController
 import com.cout970.modeler.modelcontrol.action.ActionTranslate
 import com.cout970.modeler.modelcontrol.selection.SelectionNone
 import com.cout970.modeler.modelcontrol.translate
-import com.cout970.modeler.render.RenderManager
-import com.cout970.modeler.render.layout.LayoutModelEdit
 import com.cout970.modeler.util.*
+import com.cout970.modeler.view.scene.Scene
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
 import com.cout970.raytrace.RayTraceUtil
@@ -25,10 +24,10 @@ import org.joml.Vector3d
 /**
  * Created by cout970 on 2016/12/17.
  */
-class ModelSelector(val controller: ViewControllerModelEdit, val layout: LayoutModelEdit, val renderManager: RenderManager) {
+class ModelSelector(val scene: Scene, val controller: SceneController) {
 
-    val modelController: ModelController get() = renderManager.modelController
-    val selectionCenter: IVector3 get() = modelController.selectionManager.selection.getCenter(modelController.model)
+    val modelController: ModelController get() = controller.modelController
+    val selectionCenter: IVector3 get() = modelController.selectionManager.selection.getCenter(controller.modelController.model)
     val center: IVector3 get() = selectionCenter + selectedAxis.axis * offset
 
     var mouseRay: Ray = Ray(vec3Of(0), vec3Of(0))
@@ -42,10 +41,10 @@ class ModelSelector(val controller: ViewControllerModelEdit, val layout: LayoutM
     var lastOffset = 0f
 
     fun update() {
-        val matrixMVP = layout.renderManager.modelRenderer.run { matrixP * matrixV * matrixM }
+        val matrixMVP = scene.getMatrixMVP()
         val matrix = matrixMVP.toJOML()
-        val mousePos = controller.mouse.getMousePos() - layout.modelPanel.absolutePosition
-        val viewport = layout.modelPanel.size.toIVector()
+        val mousePos = controller.mouse.getMousePos() - scene.absolutePosition
+        val viewport = scene.size.toIVector()
 
         val a = matrix.unproject(vec3Of(mousePos.x, viewport.yd - mousePos.yd, 0.0).toJoml3d(), intArrayOf(0, 0, viewport.xi, viewport.yi), Vector3d()).toIVector()
         val b = matrix.unproject(vec3Of(mousePos.x, viewport.yd - mousePos.yd, 1.0).toJoml3d(), intArrayOf(0, 0, viewport.xi, viewport.yi), Vector3d()).toIVector()
@@ -71,14 +70,14 @@ class ModelSelector(val controller: ViewControllerModelEdit, val layout: LayoutM
                 } else {
                     phantomSelectedAxis = SelectionAxis.NONE
                 }
-                if (phantomSelectedAxis != SelectionAxis.NONE && controller.keyBindings.selectModelControls.check(controller.mouse)) {
+                if (phantomSelectedAxis != SelectionAxis.NONE && Config.keyBindings.selectModelControls.check(controller.mouse)) {
                     blockMouse = true
                     blockMousePos = mousePos
                     selectedAxis = phantomSelectedAxis
                     phantomSelectedAxis = SelectionAxis.NONE
                 }
             } else {
-                if (!controller.keyBindings.selectModelControls.check(controller.mouse)) {
+                if (!Config.keyBindings.selectModelControls.check(controller.mouse)) {
                     blockMouse = false
                     tmpModel?.let {
                         modelController.historyRecord.doAction(ActionTranslate(modelController, it))
@@ -97,10 +96,10 @@ class ModelSelector(val controller: ViewControllerModelEdit, val layout: LayoutM
                     val old = direction.project(oldMouse * viewport)
                     val new = direction.project(newMouse * viewport)
 
-                    if (controller.keyBindings.disableGridMotion.check(controller.keyboard)) {
-                        offset = (new - old).toFloat() * (0.00125f * layout.camera.zoom.toFloat())
+                    if (Config.keyBindings.disableGridMotion.check(controller.keyboard)) {
+                        offset = (new - old).toFloat() * (0.00125f * scene.camera.zoom.toFloat())
                     } else {
-                        offset = Math.round((new - old).toFloat() * (0.00125f * layout.camera.zoom.toFloat()) * 4).toFloat() / 4
+                        offset = Math.round((new - old).toFloat() * (0.00125f * scene.camera.zoom.toFloat()) * 4).toFloat() / 4
                     }
                     if (lastOffset != offset) {
                         lastOffset = offset
@@ -127,8 +126,8 @@ class ModelSelector(val controller: ViewControllerModelEdit, val layout: LayoutM
     fun registerListeners(eventController: EventController) {
         eventController.addListener(EventMouseClick::class.java, object : IEventListener<EventMouseClick> {
             override fun onEvent(e: EventMouseClick): Boolean {
-                if (!controller.enableControl || e.keyState != EnumKeyState.PRESS || !controller.keyBindings.selectModel.check(controller.mouse)) return false
-                if (inside(controller.mouse.getMousePos(), layout.modelPanel.absolutePosition, layout.modelPanel.size.toIVector())) {
+                if (e.keyState != EnumKeyState.PRESS || !Config.keyBindings.selectModel.check(controller.mouse)) return false
+                if (inside(controller.mouse.getMousePos(), scene.absolutePosition, scene.size.toIVector())) {
                     if (phantomSelectedAxis == SelectionAxis.NONE && selectedAxis == SelectionAxis.NONE) {
                         modelController.selectionManager.mouseTrySelect(mouseRay)
                     }

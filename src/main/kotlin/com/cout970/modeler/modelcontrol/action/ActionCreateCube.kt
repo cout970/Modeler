@@ -16,12 +16,10 @@ data class ActionCreateCube(val modelController: ModelController) : IAction {
 
     override fun run() {
         modelController.inserter.insertComponent(cube)
-        modelController.modelUpdate = true
     }
 
     override fun undo() {
         modelController.updateModel(model)
-        modelController.modelUpdate = true
     }
 
     override fun toString(): String {

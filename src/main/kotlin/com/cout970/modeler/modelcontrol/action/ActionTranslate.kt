@@ -13,12 +13,10 @@ data class ActionTranslate(val modelController: ModelController, val newModel: M
 
     override fun run() {
         modelController.updateModel(newModel)
-        modelController.modelUpdate = true
     }
 
     override fun undo() {
         modelController.updateModel(model)
-        modelController.modelUpdate = true
     }
 
     override fun toString(): String {

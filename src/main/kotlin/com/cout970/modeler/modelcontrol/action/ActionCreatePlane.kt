@@ -17,12 +17,10 @@ data class ActionCreatePlane(val modelController: ModelController) : IAction {
 
     override fun run() {
         modelController.inserter.insertComponent(plane)
-        modelController.modelUpdate = true
     }
 
     override fun undo() {
         modelController.updateModel(model)
-        modelController.modelUpdate = true
     }
 
     override fun toString(): String {

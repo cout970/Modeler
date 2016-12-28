@@ -27,7 +27,6 @@ class ModelController : ITickeable {
     val historyLog = HistoryLog()
     val historyRecord = HistoricalRecord(historyLog, this)
     val inserter = ModelInserter(this)
-    var modelUpdate: Boolean = false
 
     fun registerListeners(eventController: EventController) {
         this.eventController = eventController

@@ -1,5 +1,7 @@
 package com.cout970.modeler
 
+import com.cout970.glutilities.texture.Texture
+import com.cout970.glutilities.texture.TextureLoader
 import java.io.FileNotFoundException
 import java.io.InputStream
 
@@ -10,5 +12,10 @@ class ResourceManager {
 
     fun readResource(name: String): InputStream {
         return Thread.currentThread().contextClassLoader.getResourceAsStream(name) ?: throw FileNotFoundException(name)
+    }
+
+    fun getTexture(name: String): Texture {
+        val aux = TextureLoader.loadTexture(readResource("assets/textures/debug.png"))
+        return TextureLoader.uploadTexture2D(aux)
     }
 }

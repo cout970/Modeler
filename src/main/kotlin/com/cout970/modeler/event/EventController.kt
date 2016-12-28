@@ -17,7 +17,6 @@ class EventController() : ITickeable, IEventController {
     private val eventQueue = Collections.synchronizedList(mutableListOf<() -> Unit>())
     lateinit var keyboard: Keyboard
     lateinit var mouse: Mouse
-    val keyBindings = KeyBindings()
 
     init {
         EventManager.registerListener(this::onEvent)

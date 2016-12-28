@@ -1,4 +1,4 @@
-package com.cout970.modeler.render.controller
+package com.cout970.modeler.view.scene
 
 import com.cout970.modeler.util.toIMatrix
 import com.cout970.vector.api.IVector3

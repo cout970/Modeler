@@ -1,4 +1,4 @@
-package com.cout970.modeler.event
+package com.cout970.modeler.config
 
 import com.cout970.glutilities.device.Mouse
 

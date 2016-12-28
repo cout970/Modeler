@@ -5,9 +5,9 @@ import com.cout970.modeler.model.Quad
 import com.cout970.modeler.modelcontrol.selection.ModelPath
 import com.cout970.modeler.modelcontrol.selection.Selection
 import com.cout970.modeler.modelcontrol.selection.SelectionMode
-import com.cout970.modeler.render.controller.SelectionAxis
 import com.cout970.modeler.util.replace
 import com.cout970.modeler.util.replaceWithIndex
+import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.vector.extensions.plus
 import com.cout970.vector.extensions.times
 

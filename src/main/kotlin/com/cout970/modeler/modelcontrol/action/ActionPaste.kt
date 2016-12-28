@@ -33,7 +33,6 @@ class ActionPaste(val selection: Selection, val copiedModel: Model, val modelCon
                     aux
                 }))
                 modelController.updateModel(newModel)
-                modelController.modelUpdate = true
             }
             SelectionMode.COMPONENT -> {
                 val components = copiedModel.objects.flatMap { obj ->
@@ -53,7 +52,6 @@ class ActionPaste(val selection: Selection, val copiedModel: Model, val modelCon
                     }))
                 }))
                 modelController.updateModel(newModel)
-                modelController.modelUpdate = true
             }
             SelectionMode.QUAD -> {
                 val components = copiedModel.objects.flatMap { obj ->
@@ -76,7 +74,6 @@ class ActionPaste(val selection: Selection, val copiedModel: Model, val modelCon
                     }))
                 }))
                 modelController.updateModel(newModel)
-                modelController.modelUpdate = true
             }
             SelectionMode.VERTEX -> IllegalStateException("Trying to paste vertex")
         }
@@ -84,7 +81,6 @@ class ActionPaste(val selection: Selection, val copiedModel: Model, val modelCon
 
     override fun undo() {
         modelController.updateModel(model)
-        modelController.modelUpdate = true
     }
 
     override fun toString(): String {

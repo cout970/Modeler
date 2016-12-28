@@ -10,12 +10,10 @@ data class ActionChangeSelection(val oldSelection: Selection, val newSelection: 
 
     override fun run() {
         modelController.selectionManager.selection = newSelection
-        modelController.modelUpdate = true
     }
 
     override fun undo() {
         modelController.selectionManager.selection = oldSelection
-        modelController.modelUpdate = true
     }
 
     override fun toString(): String {
