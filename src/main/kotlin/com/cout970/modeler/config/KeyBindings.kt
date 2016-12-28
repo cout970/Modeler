@@ -8,10 +8,12 @@ import com.cout970.glutilities.device.Mouse
  */
 class KeyBindings {
 
-    var rotateCamera = MouseKeyBind(Mouse.Companion.BUTTON_RIGHT)
-    var moveCamera = MouseKeyBind(Mouse.Companion.BUTTON_MIDDLE)
-    var selectModel = MouseKeyBind(Mouse.Companion.BUTTON_LEFT)
-    var selectModelControls = MouseKeyBind(Mouse.Companion.BUTTON_LEFT)
-    var disableGridMotion = KeyBind(Keyboard.Companion.KEY_LEFT_CONTROL)
-    var disablePixelGridMotion = KeyBind(Keyboard.Companion.KEY_LEFT_SHIFT)
+    var rotateCamera = MouseKeyBind(Mouse.BUTTON_RIGHT)
+    var moveCamera = MouseKeyBind(Mouse.BUTTON_MIDDLE)
+    var selectModel = MouseKeyBind(Mouse.BUTTON_LEFT)
+    var selectModelControls = MouseKeyBind(Mouse.BUTTON_LEFT)
+    var jumpCameraToCursor = MouseKeyBind(Mouse.BUTTON_RIGHT)
+
+    var disableGridMotion = KeyBind(Keyboard.KEY_LEFT_CONTROL)
+    var disablePixelGridMotion = KeyBind(Keyboard.KEY_LEFT_SHIFT)
 }

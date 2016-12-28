@@ -8,12 +8,18 @@ import com.cout970.modeler.modelcontrol.selection.SelectionMode
  * Created by cout970 on 2016/11/29.
  */
 
-data class Model(val objects: List<ModelObject>) {
+private var modelIds = 0
+
+data class Model(val objects: List<ModelObject>, val id: Int = modelIds++) {
 
     val quads: List<Quad> by lazy {
         getPaths(ModelPath.Level.COMPONENTS).flatMap { path ->
             path.getMesh(this)!!.getQuads().map { it.transform(path.getComponentMatrix(this)) }
         }
+    }
+
+    fun copy(objects: List<ModelObject> = this.objects): Model {
+        return Model(objects)
     }
 
     fun getGroups() = objects.map { it.groups }.flatten()

@@ -45,7 +45,7 @@ class Scene(val sceneController: SceneController) : Panel() {
             renderModel(selector.getModel(model))
 
             startSelection()
-            renderModelSelection(selector.getModel(model), selection)
+            renderModelSelection(selector.getModel(model), selection, camera)
             renderExtras()
             if (selection != SelectionNone && selector.transformationMode != TransformationMode.NONE) {
                 renderTranslation(selector.center, selector, selection, camera)

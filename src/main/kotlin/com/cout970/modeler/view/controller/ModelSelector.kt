@@ -131,14 +131,30 @@ class ModelSelector(val scene: Scene, val controller: SceneController) {
     }
 
     fun registerListeners(eventController: EventController) {
+        var time: Long = 0L
         eventController.addListener(EventMouseClick::class.java, object : IEventListener<EventMouseClick> {
             override fun onEvent(e: EventMouseClick): Boolean {
-                if (e.keyState != EnumKeyState.PRESS || !Config.keyBindings.selectModel.check(controller.mouse)) return false
-                if (inside(controller.mouse.getMousePos(), scene.absolutePosition, scene.size.toIVector())) {
-                    if (phantomSelectedAxis == SelectionAxis.NONE && selectedAxis == SelectionAxis.NONE) {
-                        modelController.selectionManager.mouseTrySelect(mouseRay)
+                if (e.keyState != EnumKeyState.PRESS) return false
+
+                if (Config.keyBindings.selectModel.keycode == e.button) {
+                    if (inside(controller.mouse.getMousePos(), scene.absolutePosition, scene.size.toIVector())) {
+                        if (phantomSelectedAxis == SelectionAxis.NONE && selectedAxis == SelectionAxis.NONE) {
+                            modelController.selectionManager.mouseTrySelect(mouseRay, controller.selectedScene.camera.zoom.toFloat())
+                            return true
+                        }
                     }
-                    return true
+                }
+                if (Config.keyBindings.jumpCameraToCursor.keycode == e.button) {
+                    if (inside(controller.mouse.getMousePos(), scene.absolutePosition, scene.size.toIVector())) {
+                        if (System.currentTimeMillis() - time < 500) {
+                            val hit = modelController.selectionManager.getMouseHit(mouseRay)
+                            if (hit != null) {
+                                scene.camera = scene.camera.copy(position = -hit.hit)
+                                return true
+                            }
+                        }
+                        time = System.currentTimeMillis()
+                    }
                 }
                 return false
             }

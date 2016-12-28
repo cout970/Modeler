@@ -7,10 +7,7 @@ import com.cout970.modeler.modelcontrol.action.ActionChangeSelection
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
 import com.cout970.raytrace.RayTraceUtil
-import com.cout970.vector.extensions.distance
-import com.cout970.vector.extensions.minus
-import com.cout970.vector.extensions.plus
-import com.cout970.vector.extensions.vec3Of
+import com.cout970.vector.extensions.*
 
 /**
  * Created by cout970 on 2016/12/07.
@@ -20,7 +17,24 @@ class SelectionManager(val modelController: ModelController) {
     var selectionMode: SelectionMode = SelectionMode.COMPONENT
     var selection: Selection = SelectionNone
 
-    fun mouseTrySelect(ray: Ray) {
+    fun getMouseHit(ray: Ray): RayTraceResult? {
+        val hits = mutableListOf<Pair<RayTraceResult, ModelPath>>()
+        val model = modelController.model
+
+        model.getPaths(ModelPath.Level.COMPONENTS).forEach { path ->
+            path.getMesh(model)!!.rayTrace(path.getComponentMatrix(model), ray)?.let {
+                hits += it to ModelPath(path.obj, path.group)
+            }
+        }
+
+        val hit = if (hits.isEmpty()) null
+        else if (hits.size == 1) hits.first()
+        else hits.apply { sortBy { it.first.hit.distance(ray.start) } }.first()
+
+        return hit?.first
+    }
+
+    fun mouseTrySelect(ray: Ray, zoom: Float) {
 
         val hits = mutableListOf<Pair<RayTraceResult, ModelPath>>()
         val model = modelController.model
@@ -55,8 +69,8 @@ class SelectionManager(val modelController: ModelController) {
                     val quad = quadI.toQuad(comp.positions, comp.textures).transform(matrix)
 
                     fun rayTraceVertex(vertex: Vertex, index: Int) {
-                        val start = vertex.pos - vec3Of(0.125)
-                        val end = vertex.pos + vec3Of(0.125)
+                        val start = vertex.pos - vec3Of(0.125) * zoom / 10
+                        val end = vertex.pos + vec3Of(0.125) * zoom / 10
                         RayTraceUtil.rayTraceBox3(start, end, ray, comp)?.let {
                             hits += it to ModelPath(path.obj, path.group, path.mesh, quadIndex, index)
                         }

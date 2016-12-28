@@ -187,7 +187,7 @@ class ModelRenderer(resourceManager: ResourceManager) {
         })
     }
 
-    fun renderModelSelection(model: Model, selection: Selection) {
+    fun renderModelSelection(model: Model, selection: Selection, camera: Camera) {
         if (selection == SelectionNone) {
             return
         }
@@ -215,7 +215,7 @@ class ModelRenderer(resourceManager: ResourceManager) {
                         if (paths.isNotEmpty()) {
                             val matrix = compPath.getComponentMatrix(model)
                             paths.map { it.getVertex(model)!! }.map { matrix * it.toVector4(1.0) }.forEach {
-                                RenderUtil.renderBar(tessellator, it, it, 0.0625)
+                                RenderUtil.renderBar(tessellator, it, it, 0.125)
                             }
                         }
                     }

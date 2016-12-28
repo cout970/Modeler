@@ -34,7 +34,7 @@ uniform float enableLight;
 uniform float textureSize;
 
 //ambient light
-const float ambient = 0.15;
+const float ambient = 0.25;
 
 vec3 getLight(vec3 color, vec3 lcolor, vec3 toLight, vec3 normal, vec3 toCamera);
 
