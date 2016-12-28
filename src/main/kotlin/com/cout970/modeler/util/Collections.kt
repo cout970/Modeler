@@ -1,5 +1,7 @@
 package com.cout970.modeler.util
 
+import java.io.File
+
 /**
  * Created by cout970 on 2016/12/09.
  */
@@ -18,4 +20,11 @@ fun <T> Iterable<T>.replaceWithIndex(predicate: (Int, T) -> Boolean, transform: 
         list += if (predicate(i, value)) transform(i, value) else value
     }
     return list
+}
+
+fun File.createIfNeeced(): File {
+    if (!exists()) {
+        createNewFile()
+    }
+    return this
 }

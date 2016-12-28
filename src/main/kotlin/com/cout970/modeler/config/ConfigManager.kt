@@ -1,0 +1,42 @@
+package com.cout970.modeler.config
+
+import com.cout970.modeler.util.createIfNeeced
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
+import java.io.File
+
+/**
+ * Created by cout970 on 2016/12/28.
+ */
+object ConfigManager {
+
+    fun loadConfig() {
+        val file = File("config.json")
+        if (file.exists()) {
+            val gson = GsonBuilder().setLenient().setPrettyPrinting().create()
+            val json = JsonParser().parse(file.createIfNeeced().reader()).asJsonObject
+
+            Config::class.java.declaredFields.filter { it.name != "INSTANCE" }.forEach { field ->
+                field.isAccessible = true
+                val value = json.get(field.name)
+                field.set(null, gson.fromJson(value, field.genericType))
+            }
+        } else {
+            saveConfig()
+        }
+    }
+
+    fun saveConfig() {
+        val file = File("config.json")
+        val gson = GsonBuilder().setLenient().setPrettyPrinting().create()
+        val clazz = JsonObject()
+
+        Config::class.java.declaredFields.filter { it.name != "INSTANCE" }.forEach { field ->
+            field.isAccessible = true
+            val value = field.get(null)
+            clazz.add(field.name, gson.toJsonTree(value))
+        }
+        file.writeText(gson.toJson(clazz))
+    }
+}

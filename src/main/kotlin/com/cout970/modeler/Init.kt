@@ -1,6 +1,7 @@
 package com.cout970.modeler
 
 import com.cout970.glutilities.window.GLFWLoader
+import com.cout970.modeler.config.ConfigManager
 import com.cout970.modeler.event.EventController
 import com.cout970.modeler.model.Mesh
 import com.cout970.modeler.modelcontrol.ModelController
@@ -38,6 +39,8 @@ class Init {
 
         windowController.stop = { mainLoop.stop = true }
         modelController.registerListeners(eventController)
+
+        ConfigManager.loadConfig()
 
         GLFWLoader.init()
         windowController.show()

@@ -5,7 +5,7 @@ package com.cout970.modeler.config
  */
 object Config {
 
-    val keyBindings = KeyBindings()
+    var keyBindings = KeyBindings()
     var mouseTranslateSpeedX: Float = 3f
     var mouseTranslateSpeedY: Float = 3f
     var mouseRotationSpeedX: Float = 0.25f
