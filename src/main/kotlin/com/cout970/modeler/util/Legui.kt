@@ -5,6 +5,7 @@ import com.cout970.vector.extensions.plus
 import com.cout970.vector.extensions.xd
 import com.cout970.vector.extensions.yd
 import org.liquidengine.legui.component.Component
+import org.liquidengine.legui.event.component.MouseClickEvent
 
 /**
  * Created by cout970 on 2016/12/07.
@@ -23,4 +24,13 @@ val Component.absolutePosition: IVector2 get() {
         parent = parent.parent
     }
     return sum
+}
+
+fun Component.onClick(id: Int, func: (Int) -> Unit): Component {
+    leguiEventListeners.addListener(MouseClickEvent::class.java, {
+        if (it.action == MouseClickEvent.MouseClickAction.PRESS) {
+            func(id)
+        }
+    })
+    return this
 }

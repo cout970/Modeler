@@ -1,6 +1,6 @@
 package com.cout970.modeler.view
 
-import com.cout970.glutilities.window.GLFWWindow
+import com.cout970.modeler.WindowController
 import com.cout970.modeler.modelcontrol.ModelController
 import com.cout970.modeler.util.ITickeable
 import com.cout970.modeler.view.controller.ModuleController
@@ -11,6 +11,7 @@ import com.cout970.modeler.view.module.ModuleSelectionType
 import com.cout970.modeler.view.module.ModuleTransform
 import com.cout970.modeler.view.render.RenderManager
 import com.cout970.modeler.view.scene.Scene
+import com.cout970.vector.api.IVector2
 
 /**
  * Created by cout970 on 2016/12/27.
@@ -20,13 +21,13 @@ class ViewManager : ITickeable {
 
     val root: RootFrame = RootFrame(this)
     lateinit var renderManager: RenderManager
-    lateinit var window: GLFWWindow
+    lateinit var windowController: WindowController
     lateinit var sceneController: SceneController
     lateinit var moduleController: ModuleController
 
-    fun init(renderManager: RenderManager, modelController: ModelController) {
+    fun init(renderManager: RenderManager, modelController: ModelController, windowController: WindowController) {
         this.renderManager = renderManager
-        window = renderManager.window
+        this.windowController = windowController
         sceneController = SceneController(this, modelController)
         sceneController.scenes += Scene(sceneController)
         moduleController = ModuleController(this, modelController)
@@ -50,4 +51,6 @@ class ViewManager : ITickeable {
     override fun tick() {
         sceneController.update()
     }
+
+    fun getSize(): IVector2 = windowController.window.getFrameBufferSize()
 }

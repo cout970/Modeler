@@ -271,14 +271,14 @@ class ModelRenderer(resourceManager: ResourceManager) {
             set(0, 0, 0, -10).set(1, 0, 0, 1).endVertex()
             set(0, 0, 0, 10).set(1, 0, 0, 1).endVertex()
 
-            for (x in -16..16) {
+            for (x in -16..32) {
                 set(0, x, 0, -16).set(1, 0.5, 0.5, 0.5).endVertex()
-                set(0, x, 0, 16).set(1, 0.5, 0.5, 0.5).endVertex()
+                set(0, x, 0, 32).set(1, 0.5, 0.5, 0.5).endVertex()
             }
 
-            for (z in -16..16) {
+            for (z in -16..32) {
                 set(0, -16, 0, z).set(1, 0.5, 0.5, 0.5).endVertex()
-                set(0, 16, 0, z).set(1, 0.5, 0.5, 0.5).endVertex()
+                set(0, 32, 0, z).set(1, 0.5, 0.5, 0.5).endVertex()
             }
         }
     }

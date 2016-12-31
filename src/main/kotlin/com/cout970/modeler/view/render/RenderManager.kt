@@ -6,6 +6,7 @@ import com.cout970.glutilities.window.GLFWWindow
 import com.cout970.modeler.ResourceManager
 import com.cout970.modeler.util.ITickeable
 import com.cout970.modeler.view.ViewManager
+import java.awt.Color
 
 /**
  * Created by cout970 on 2016/11/29.
@@ -22,6 +23,7 @@ class RenderManager(val viewManager: ViewManager) : ITickeable {
         this.timer = timer
         guiRenderer = GuiRenderer(viewManager.root, window.id)
         modelRenderer = ModelRenderer(resourceManager)
+        GLStateMachine.clearColor = Color(0.73f, 0.9f, 1f)
     }
 
     override fun preTick() {
@@ -31,9 +33,9 @@ class RenderManager(val viewManager: ViewManager) : ITickeable {
 
     override fun tick() {
         GLStateMachine.clear()
-        guiRenderer.render()
         viewManager.sceneController.scenes.forEach {
             it.render(this)
         }
+        guiRenderer.render()
     }
 }

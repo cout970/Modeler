@@ -102,11 +102,11 @@ class ModelSelector(val scene: Scene, val controller: SceneController) {
                     val new = direction.project(newMouse * viewport)
 
                     if (Config.keyBindings.disableGridMotion.check(controller.keyboard)) {
-                        offset = Math.round((new - old).toFloat() * (0.00125f * scene.camera.zoom.toFloat()) * 16).toFloat() / 16
+                        offset = Math.round((new - old).toFloat() * (0.000625f * scene.camera.zoom.toFloat()) * 16).toFloat() / 16
                     } else if (Config.keyBindings.disablePixelGridMotion.check(controller.keyboard)) {
-                        offset = Math.round((new - old).toFloat() * (0.00125f * scene.camera.zoom.toFloat()) * 4).toFloat() / 4
+                        offset = Math.round((new - old).toFloat() * (0.000625f * scene.camera.zoom.toFloat()) * 4).toFloat() / 4
                     } else {
-                        offset = Math.round((new - old).toFloat() * (0.00125f * scene.camera.zoom.toFloat())).toFloat()
+                        offset = Math.round((new - old).toFloat() * (0.000625f * scene.camera.zoom.toFloat())).toFloat()
                     }
                     if (lastOffset != offset) {
                         lastOffset = offset

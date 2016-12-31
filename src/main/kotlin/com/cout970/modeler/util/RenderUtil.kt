@@ -15,7 +15,7 @@ import org.joml.Vector3d
  */
 object RenderUtil {
 
-    fun renderBar(tessellator: Tessellator, a_: IVector3, b_: IVector3, d: Double = 0.015675, col: IVector3 = vec3Of(1, 1, 0)) {
+    fun renderBar(tessellator: Tessellator, a_: IVector3, b_: IVector3, d: Double = 0.1, col: IVector3 = vec3Of(1, 1, 0)) {
 
         val a = a_
         val b = b_

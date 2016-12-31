@@ -55,6 +55,7 @@ class Scene(val sceneController: SceneController) : Panel() {
                 renderCursor()
             }
             stop()
+            setViewport(vec2Of(0, 0), sceneController.viewManager.getSize())
         }
     }
 
