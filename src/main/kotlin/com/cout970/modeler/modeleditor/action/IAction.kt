@@ -1,4 +1,4 @@
-package com.cout970.modeler.modelcontrol.action
+package com.cout970.modeler.modeleditor.action
 
 /**
  * Created by cout970 on 2016/12/07.

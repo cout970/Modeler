@@ -1,4 +1,4 @@
-package com.cout970.modeler.modelcontrol.selection
+package com.cout970.modeler.modeleditor.selection
 
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.util.middle
@@ -38,7 +38,7 @@ data class SelectionGroup(val group: List<ModelPath>) : Selection() {
 
 data class SelectionComponent(val components: List<ModelPath>) : Selection() {
 
-    override val mode: SelectionMode = SelectionMode.COMPONENT
+    override val mode: SelectionMode = SelectionMode.MESH
     override val paths: List<ModelPath> get() = components
 
 }

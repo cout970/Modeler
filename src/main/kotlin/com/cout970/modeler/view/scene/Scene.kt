@@ -3,7 +3,7 @@ package com.cout970.modeler.view.scene
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.times
 import com.cout970.modeler.config.Config
-import com.cout970.modeler.modelcontrol.selection.SelectionNone
+import com.cout970.modeler.modeleditor.selection.SelectionNone
 import com.cout970.modeler.util.toIMatrix
 import com.cout970.modeler.view.controller.ModelSelector
 import com.cout970.modeler.view.controller.SceneController

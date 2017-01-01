@@ -1,10 +1,8 @@
-package com.cout970.modeler.modelcontrol
+package com.cout970.modeler.modeleditor
 
 import com.cout970.modeler.event.EventController
 import com.cout970.modeler.model.Model
-import com.cout970.modeler.modelcontrol.action.HistoricalRecord
-import com.cout970.modeler.modelcontrol.action.HistoryLog
-import com.cout970.modeler.modelcontrol.selection.SelectionManager
+import com.cout970.modeler.modeleditor.selection.SelectionManager
 import com.cout970.modeler.util.ITickeable
 import java.util.*
 

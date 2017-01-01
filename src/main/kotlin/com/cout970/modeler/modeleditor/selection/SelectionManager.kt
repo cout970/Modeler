@@ -1,9 +1,10 @@
-package com.cout970.modeler.modelcontrol.selection
+package com.cout970.modeler.modeleditor.selection
 
 import com.cout970.glutilities.device.Keyboard
+import com.cout970.modeler.config.Config
 import com.cout970.modeler.model.Vertex
-import com.cout970.modeler.modelcontrol.ModelController
-import com.cout970.modeler.modelcontrol.action.ActionChangeSelection
+import com.cout970.modeler.modeleditor.ModelController
+import com.cout970.modeler.modeleditor.action.ActionChangeSelection
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
 import com.cout970.raytrace.RayTraceUtil
@@ -14,15 +15,15 @@ import com.cout970.vector.extensions.*
  */
 class SelectionManager(val modelController: ModelController) {
 
-    var selectionMode: SelectionMode = SelectionMode.COMPONENT
+    var selectionMode: SelectionMode = SelectionMode.MESH
     var selection: Selection = SelectionNone
 
     fun getMouseHit(ray: Ray): RayTraceResult? {
         val hits = mutableListOf<Pair<RayTraceResult, ModelPath>>()
         val model = modelController.model
 
-        model.getPaths(ModelPath.Level.COMPONENTS).forEach { path ->
-            path.getMesh(model)!!.rayTrace(path.getComponentMatrix(model), ray)?.let {
+        model.getPaths(ModelPath.Level.MESH).forEach { path ->
+            path.getMesh(model)!!.rayTrace(path.getMeshMatrix(model), ray)?.let {
                 hits += it to ModelPath(path.obj, path.group)
             }
         }
@@ -40,38 +41,38 @@ class SelectionManager(val modelController: ModelController) {
         val model = modelController.model
 
         if (selectionMode == SelectionMode.GROUP) {
-            model.getPaths(ModelPath.Level.COMPONENTS).forEach { path ->
-                path.getMesh(model)!!.rayTrace(path.getComponentMatrix(model), ray)?.let {
+            model.getPaths(ModelPath.Level.MESH).forEach { path ->
+                path.getMesh(model)!!.rayTrace(path.getMeshMatrix(model), ray)?.let {
                     hits += it to ModelPath(path.obj, path.group)
                 }
             }
-        } else if (selectionMode == SelectionMode.COMPONENT) {
-            model.getPaths(ModelPath.Level.COMPONENTS).forEach { path ->
-                path.getMesh(model)!!.rayTrace(path.getComponentMatrix(model), ray)?.let {
+        } else if (selectionMode == SelectionMode.MESH) {
+            model.getPaths(ModelPath.Level.MESH).forEach { path ->
+                path.getMesh(model)!!.rayTrace(path.getMeshMatrix(model), ray)?.let {
                     hits += it to path
                 }
             }
         } else if (selectionMode == SelectionMode.QUAD) {
-            model.getPaths(ModelPath.Level.COMPONENTS).forEach { path ->
-                val comp = path.getMesh(model)!!
-                val matrix = path.getComponentMatrix(model)
-                comp.getQuads().map { it.transform(matrix) }.forEachIndexed { quadIndex, quad ->
-                    RayTraceUtil.rayTraceQuad(ray, comp, quad.a.pos, quad.b.pos, quad.c.pos, quad.d.pos)?.let {
+            model.getPaths(ModelPath.Level.MESH).forEach { path ->
+                val mesh = path.getMesh(model)!!
+                val matrix = path.getMeshMatrix(model)
+                mesh.getQuads().map { it.transform(matrix) }.forEachIndexed { quadIndex, quad ->
+                    RayTraceUtil.rayTraceQuad(ray, mesh, quad.a.pos, quad.b.pos, quad.c.pos, quad.d.pos)?.let {
                         hits += it to ModelPath(path.obj, path.group, path.mesh, quadIndex)
                     }
                 }
             }
         } else if (selectionMode == SelectionMode.VERTEX) {
-            model.getPaths(ModelPath.Level.COMPONENTS).forEach { path ->
-                val comp = path.getMesh(model)!!
-                val matrix = path.getComponentMatrix(model)
-                comp.indices.forEachIndexed { quadIndex, quadI ->
-                    val quad = quadI.toQuad(comp.positions, comp.textures).transform(matrix)
+            model.getPaths(ModelPath.Level.MESH).forEach { path ->
+                val mesh = path.getMesh(model)!!
+                val matrix = path.getMeshMatrix(model)
+                mesh.indices.forEachIndexed { quadIndex, quadI ->
+                    val quad = quadI.toQuad(mesh.positions, mesh.textures).transform(matrix)
 
                     fun rayTraceVertex(vertex: Vertex, index: Int) {
                         val start = vertex.pos - vec3Of(0.125) * zoom / 10
                         val end = vertex.pos + vec3Of(0.125) * zoom / 10
-                        RayTraceUtil.rayTraceBox3(start, end, ray, comp)?.let {
+                        RayTraceUtil.rayTraceBox3(start, end, ray, mesh)?.let {
                             hits += it to ModelPath(path.obj, path.group, path.mesh, quadIndex, index)
                         }
                     }
@@ -89,12 +90,16 @@ class SelectionManager(val modelController: ModelController) {
 
         if (hit != null) {
             val sel = handleSelection(hit.second)
-            modelController.historyRecord.doAction(ActionChangeSelection(selection, sel, modelController))
+            updateSelection(sel)
         } else {
             if (!modelController.eventController.keyboard.isKeyPressed(Keyboard.KEY_LEFT_CONTROL)) {
-                modelController.historyRecord.doAction(ActionChangeSelection(selection, SelectionNone, modelController))
+                updateSelection(SelectionNone)
             }
         }
+    }
+
+    fun updateSelection(sel: Selection) {
+        modelController.historyRecord.doAction(ActionChangeSelection(selection, sel, modelController))
     }
 
     fun handleSelection(path: ModelPath): Selection {
@@ -105,7 +110,8 @@ class SelectionManager(val modelController: ModelController) {
 
     private fun makeSelection(path: ModelPath): Selection? {
         if (selectionMode == SelectionMode.GROUP) {
-            if (modelController.eventController.keyboard.isKeyPressed(Keyboard.KEY_LEFT_CONTROL) && selection.mode == SelectionMode.COMPONENT) {
+            if (Config.keyBindings.multipleSelection.check(
+                    modelController.eventController.keyboard) && selection.mode == SelectionMode.MESH) {
                 if (path in selection.paths) {
                     return SelectionGroup(selection.paths - path)
                 } else {
@@ -118,8 +124,9 @@ class SelectionManager(val modelController: ModelController) {
                     return SelectionGroup(listOf(path))
                 }
             }
-        } else if (selectionMode == SelectionMode.COMPONENT) {
-            if (modelController.eventController.keyboard.isKeyPressed(Keyboard.KEY_LEFT_CONTROL) && selection.mode == SelectionMode.COMPONENT) {
+        } else if (selectionMode == SelectionMode.MESH) {
+            if (Config.keyBindings.multipleSelection.check(
+                    modelController.eventController.keyboard) && selection.mode == SelectionMode.MESH) {
                 if (path in selection.paths) {
                     return SelectionComponent(selection.paths - path)
                 } else {
@@ -133,7 +140,8 @@ class SelectionManager(val modelController: ModelController) {
                 }
             }
         } else if (selectionMode == SelectionMode.QUAD) {
-            if (modelController.eventController.keyboard.isKeyPressed(Keyboard.KEY_LEFT_CONTROL) && selection.mode == SelectionMode.QUAD) {
+            if (Config.keyBindings.multipleSelection.check(
+                    modelController.eventController.keyboard) && selection.mode == SelectionMode.QUAD) {
                 if (path in selection.paths) {
                     return SelectionQuad(selection.paths - path)
                 } else {
@@ -147,7 +155,8 @@ class SelectionManager(val modelController: ModelController) {
                 }
             }
         } else if (selectionMode == SelectionMode.VERTEX) {
-            if (modelController.eventController.keyboard.isKeyPressed(Keyboard.KEY_LEFT_CONTROL) && selection.mode == SelectionMode.VERTEX) {
+            if (Config.keyBindings.multipleSelection.check(
+                    modelController.eventController.keyboard) && selection.mode == SelectionMode.VERTEX) {
                 if (path in selection.paths) {
                     return SelectionVertex(selection.paths - path)
                 } else {

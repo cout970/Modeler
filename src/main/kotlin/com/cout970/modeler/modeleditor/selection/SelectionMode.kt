@@ -1,11 +1,11 @@
-package com.cout970.modeler.modelcontrol.selection
+package com.cout970.modeler.modeleditor.selection
 
 /**
  * Created by cout970 on 2016/12/07.
  */
 enum class SelectionMode {
     GROUP,
-    COMPONENT,
+    MESH,
     QUAD,
     VERTEX
 }

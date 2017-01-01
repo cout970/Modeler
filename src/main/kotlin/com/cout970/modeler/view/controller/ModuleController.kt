@@ -5,11 +5,11 @@ import com.cout970.glutilities.event.EnumKeyState
 import com.cout970.glutilities.event.EventKeyUpdate
 import com.cout970.modeler.event.EventController
 import com.cout970.modeler.event.IEventListener
-import com.cout970.modeler.modelcontrol.ModelController
-import com.cout970.modeler.modelcontrol.action.ActionCreateCube
-import com.cout970.modeler.modelcontrol.action.ActionCreatePlane
-import com.cout970.modeler.modelcontrol.action.ActionDelete
-import com.cout970.modeler.modelcontrol.selection.SelectionMode
+import com.cout970.modeler.modeleditor.ModelController
+import com.cout970.modeler.modeleditor.action.ActionCreateCube
+import com.cout970.modeler.modeleditor.action.ActionCreatePlane
+import com.cout970.modeler.modeleditor.action.ActionDelete
+import com.cout970.modeler.modeleditor.selection.SelectionMode
 import com.cout970.modeler.view.ViewManager
 
 /**
@@ -53,7 +53,7 @@ class ModuleController(val viewManager: ViewManager, val modelController: ModelC
     fun onButtonPress(id: Int) {
         when (id) {
             0 -> modelController.selectionManager.selectionMode = SelectionMode.GROUP
-            1 -> modelController.selectionManager.selectionMode = SelectionMode.COMPONENT
+            1 -> modelController.selectionManager.selectionMode = SelectionMode.MESH
             2 -> modelController.selectionManager.selectionMode = SelectionMode.QUAD
             3 -> modelController.selectionManager.selectionMode = SelectionMode.VERTEX
             4 -> modelController.historyRecord.doAction(ActionCreateCube(modelController))

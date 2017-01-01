@@ -6,10 +6,10 @@ import com.cout970.modeler.config.Config
 import com.cout970.modeler.event.EventController
 import com.cout970.modeler.event.IEventListener
 import com.cout970.modeler.model.Model
-import com.cout970.modeler.modelcontrol.ModelController
-import com.cout970.modeler.modelcontrol.action.ActionTranslate
-import com.cout970.modeler.modelcontrol.selection.SelectionNone
-import com.cout970.modeler.modelcontrol.translate
+import com.cout970.modeler.modeleditor.ModelController
+import com.cout970.modeler.modeleditor.action.ActionTranslate
+import com.cout970.modeler.modeleditor.selection.SelectionNone
+import com.cout970.modeler.modeleditor.translate
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.scene.Scene
 import com.cout970.raytrace.Ray

@@ -1,7 +1,7 @@
-package com.cout970.modeler.modelcontrol.action
+package com.cout970.modeler.modeleditor.action
 
 import com.cout970.modeler.model.Model
-import com.cout970.modeler.modelcontrol.ModelController
+import com.cout970.modeler.modeleditor.ModelController
 
 /**
  * Created by cout970 on 2016/12/10.

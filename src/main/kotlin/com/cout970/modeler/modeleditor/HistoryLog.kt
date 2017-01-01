@@ -1,7 +1,8 @@
-package com.cout970.modeler.modelcontrol.action
+package com.cout970.modeler.modeleditor
 
 import com.cout970.modeler.log.Level
 import com.cout970.modeler.model.Model
+import com.cout970.modeler.modeleditor.action.IAction
 import java.util.*
 import com.cout970.modeler.log.log as logger
 
@@ -14,17 +15,17 @@ class HistoryLog {
 
     fun onDo(action: IAction) {
         log += Type.DO to action
-        logger(Level.FINEST) { "${Type.DO} -> $action" }
+        com.cout970.modeler.log.log(Level.FINEST) { "${Type.DO} -> $action" }
     }
 
     fun onUndo(action: IAction) {
         log += Type.UNDO to action
-        logger(Level.FINEST) { "${Type.UNDO} -> $action" }
+        com.cout970.modeler.log.log(Level.FINEST) { "${Type.UNDO} -> $action" }
     }
 
     fun onRedo(action: IAction) {
         log += Type.REDO to action
-        logger(Level.FINEST) { "${Type.REDO} -> $action" }
+        com.cout970.modeler.log.log(Level.FINEST) { "${Type.REDO} -> $action" }
     }
 
     enum class Type {
@@ -37,6 +38,6 @@ class HistoryLog {
 
     fun onModelChange(newModel: Model, oldModel: Model) {
         log += Type.MODEL_CHANGE to Pair(newModel, oldModel)
-        logger(Level.FINEST) { "${Type.MODEL_CHANGE} -> ${Pair(newModel, oldModel)}" }
+        com.cout970.modeler.log.log(Level.FINEST) { "${Type.MODEL_CHANGE} -> ${Pair(newModel, oldModel)}" }
     }
 }

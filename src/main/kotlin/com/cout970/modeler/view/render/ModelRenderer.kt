@@ -13,10 +13,10 @@ import com.cout970.matrix.extensions.mat4Of
 import com.cout970.matrix.extensions.times
 import com.cout970.modeler.ResourceManager
 import com.cout970.modeler.model.Model
-import com.cout970.modeler.modelcontrol.selection.ModelPath
-import com.cout970.modeler.modelcontrol.selection.Selection
-import com.cout970.modeler.modelcontrol.selection.SelectionMode
-import com.cout970.modeler.modelcontrol.selection.SelectionNone
+import com.cout970.modeler.modeleditor.selection.ModelPath
+import com.cout970.modeler.modeleditor.selection.Selection
+import com.cout970.modeler.modeleditor.selection.SelectionMode
+import com.cout970.modeler.modeleditor.selection.SelectionNone
 import com.cout970.modeler.util.Cache
 import com.cout970.modeler.util.RenderUtil
 import com.cout970.modeler.view.controller.ModelSelector
@@ -210,10 +210,10 @@ class ModelRenderer(resourceManager: ResourceManager) {
                         }
                     }
                 } else {
-                    model.getPaths(ModelPath.Level.COMPONENTS).forEach { compPath ->
-                        val paths = selection.paths.filter { it.compareLevel(compPath, ModelPath.Level.COMPONENTS) }
+                    model.getPaths(ModelPath.Level.MESH).forEach { compPath ->
+                        val paths = selection.paths.filter { it.compareLevel(compPath, ModelPath.Level.MESH) }
                         if (paths.isNotEmpty()) {
-                            val matrix = compPath.getComponentMatrix(model)
+                            val matrix = compPath.getMeshMatrix(model)
                             paths.map { it.getVertex(model)!! }.map { matrix * it.toVector4(1.0) }.forEach {
                                 RenderUtil.renderBar(tessellator, it, it, 0.125)
                             }

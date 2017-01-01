@@ -1,6 +1,6 @@
-package com.cout970.modeler.modelcontrol.action
+package com.cout970.modeler.modeleditor
 
-import com.cout970.modeler.modelcontrol.ModelController
+import com.cout970.modeler.modeleditor.action.IAction
 import java.util.*
 
 /**

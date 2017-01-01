@@ -19,7 +19,7 @@ data class Mesh(
         val textures: List<IVector2>,
         val indices: List<QuadIndices>,
         val transform: Transformation = Transformation.IDENTITY
-) : IRayObstacle {
+               ) : IRayObstacle {
 
     fun getQuads(): List<Quad> = indices.map { it.toQuad(positions, textures) }
 
@@ -55,7 +55,7 @@ data class Mesh(
                 listOf(vec2Of(0, 0), vec2Of(1, 0), vec2Of(1, 1), vec2Of(0, 1)),
                 listOf(QuadIndices(0, 0, 1, 1, 2, 2, 3, 3)),
                 transform
-        )
+                                                                                                   )
 
         fun quadsToMesh(quads: List<Quad>, transform: Transformation = Transformation.IDENTITY): Mesh {
             val positions = quads.flatMap(Quad::vertex).map(Vertex::pos).distinct()
@@ -70,7 +70,8 @@ data class Mesh(
             return Mesh(positions, textures, indices, transform)
         }
 
-        fun createCube(size: IVector3, offset: IVector3 = vec3Of(0), centered: Boolean = false, transform: Transformation = Transformation.IDENTITY): Mesh {
+        fun createCube(size: IVector3, offset: IVector3 = vec3Of(0), centered: Boolean = false,
+                       transform: Transformation = Transformation.IDENTITY): Mesh {
             val n: IVector3
             val p: IVector3
             if (centered) {
@@ -83,26 +84,36 @@ data class Mesh(
 
             return quadsToMesh(listOf(
                     //negX
-                    Quad.create(vec3Of(n.x, n.y, p.z), vec3Of(n.x, p.y, p.z), vec3Of(n.x, p.y, n.z), vec3Of(n.x, n.y, n.z)),
+                    Quad.create(vec3Of(n.x, n.y, p.z), vec3Of(n.x, p.y, p.z), vec3Of(n.x, p.y, n.z),
+                                vec3Of(n.x, n.y, n.z)),
                     //posX
-                    Quad.create(vec3Of(p.x, p.y, n.z), vec3Of(p.x, p.y, p.z), vec3Of(p.x, n.y, p.z), vec3Of(p.x, n.y, n.z)),
+                    Quad.create(vec3Of(p.x, p.y, n.z), vec3Of(p.x, p.y, p.z), vec3Of(p.x, n.y, p.z),
+                                vec3Of(p.x, n.y, n.z)),
                     //negY
-                    Quad.create(vec3Of(p.x, n.y, n.z), vec3Of(p.x, n.y, p.z), vec3Of(n.x, n.y, p.z), vec3Of(n.x, n.y, n.z)),
+                    Quad.create(vec3Of(p.x, n.y, n.z), vec3Of(p.x, n.y, p.z), vec3Of(n.x, n.y, p.z),
+                                vec3Of(n.x, n.y, n.z)),
                     //posY
-                    Quad.create(vec3Of(n.x, p.y, p.z), vec3Of(p.x, p.y, p.z), vec3Of(p.x, p.y, n.z), vec3Of(n.x, p.y, n.z)),
+                    Quad.create(vec3Of(n.x, p.y, p.z), vec3Of(p.x, p.y, p.z), vec3Of(p.x, p.y, n.z),
+                                vec3Of(n.x, p.y, n.z)),
                     //negZ
-                    Quad.create(vec3Of(n.x, p.y, n.z), vec3Of(p.x, p.y, n.z), vec3Of(p.x, n.y, n.z), vec3Of(n.x, n.y, n.z)),
+                    Quad.create(vec3Of(n.x, p.y, n.z), vec3Of(p.x, p.y, n.z), vec3Of(p.x, n.y, n.z),
+                                vec3Of(n.x, n.y, n.z)),
                     //posZ
-                    Quad.create(vec3Of(p.x, n.y, p.z), vec3Of(p.x, p.y, p.z), vec3Of(n.x, p.y, p.z), vec3Of(n.x, n.y, p.z))
-            ), transform)
+                    Quad.create(vec3Of(p.x, n.y, p.z), vec3Of(p.x, p.y, p.z), vec3Of(n.x, p.y, p.z),
+                                vec3Of(n.x, n.y, p.z))
+                                     ), transform)
         }
     }
 }
 
-data class QuadIndices(val aP: Int, val aT: Int, val bP: Int, val bT: Int, val cP: Int, val cT: Int, val dP: Int, val dT: Int) {
+data class QuadIndices(val aP: Int, val aT: Int, val bP: Int, val bT: Int, val cP: Int, val cT: Int, val dP: Int,
+                       val dT: Int) {
     fun toQuad(pos: List<IVector3>, tex: List<IVector2>): Quad = Quad(
             Vertex(pos[aP], tex[aT]),
             Vertex(pos[bP], tex[bT]),
             Vertex(pos[cP], tex[cT]),
             Vertex(pos[dP], tex[dT]))
+
+    val positions: List<Int> get() = listOf(aP, bP, cP, dP)
+    val textureCoords: List<Int> get() = listOf(aT, bT, cT, dT)
 }

@@ -1,14 +1,11 @@
 package com.cout970.modeler.view
 
 import com.cout970.modeler.WindowController
-import com.cout970.modeler.modelcontrol.ModelController
+import com.cout970.modeler.modeleditor.ModelController
 import com.cout970.modeler.util.ITickeable
 import com.cout970.modeler.view.controller.ModuleController
 import com.cout970.modeler.view.controller.SceneController
-import com.cout970.modeler.view.module.ModuleAddElement
-import com.cout970.modeler.view.module.ModuleHistoric
-import com.cout970.modeler.view.module.ModuleSelectionType
-import com.cout970.modeler.view.module.ModuleTransform
+import com.cout970.modeler.view.module.*
 import com.cout970.modeler.view.render.RenderManager
 import com.cout970.modeler.view.scene.Scene
 import com.cout970.vector.api.IVector2
@@ -25,6 +22,8 @@ class ViewManager : ITickeable {
     lateinit var sceneController: SceneController
     lateinit var moduleController: ModuleController
 
+    lateinit var moduleStructure: ModuleStructure
+
     fun init(renderManager: RenderManager, modelController: ModelController, windowController: WindowController) {
         this.renderManager = renderManager
         this.windowController = windowController
@@ -32,7 +31,10 @@ class ViewManager : ITickeable {
         sceneController.scenes += Scene(sceneController)
         moduleController = ModuleController(this, modelController)
 
-        val modules = listOf(ModuleAddElement(moduleController), ModuleSelectionType(moduleController), ModuleTransform(moduleController), ModuleHistoric(moduleController))
+        moduleStructure = ModuleStructure(moduleController)
+        val modules = listOf(ModuleAddElement(moduleController), ModuleSelectionType(moduleController),
+                             ModuleTransform(moduleController), ModuleHistoric(moduleController), moduleStructure)
+
         modules.forEach {
             root.leftBar.container.addComponent(it)
         }
@@ -49,6 +51,7 @@ class ViewManager : ITickeable {
     }
 
     override fun tick() {
+        moduleStructure.update()
         sceneController.update()
     }
 

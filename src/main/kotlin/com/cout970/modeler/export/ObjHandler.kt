@@ -155,60 +155,60 @@ class ObjImporter {
         var material = "noTexture"
 
         for (line in input.reader().readLines()) {
-            val p = line.split(" ")
+            val lineSpliced = line.split(" ")
 
             if (line.startsWith(sVertex)) { //vertex
 
                 //reads a vertex
-                vertices.add(vec3Of(p[startIndex].toFloat(),
-                        p[startIndex + 1].toFloat(),
-                        p[startIndex + 2].toFloat()))
+                vertices.add(vec3Of(lineSpliced[startIndex].toFloat(),
+                                    lineSpliced[startIndex + 1].toFloat(),
+                                    lineSpliced[startIndex + 2].toFloat()))
 
             } else if (line.startsWith(sNormal)) { //normals
 
                 hasNormals = true
                 //read normals
-                normals.add(vec3Of(p[startIndex].toFloat(),
-                        p[startIndex + 1].toFloat(),
-                        p[startIndex + 2].toFloat()))
+                normals.add(vec3Of(lineSpliced[startIndex].toFloat(),
+                                   lineSpliced[startIndex + 1].toFloat(),
+                                   lineSpliced[startIndex + 2].toFloat()))
             } else if (line.startsWith(sTexture)) { //textures
 
                 hasTextures = true
                 //reads a texture coords
-                texCoords.add(vec2Of(p[startIndex].toFloat(),
-                        p[startIndex + 1].toFloat()))
+                texCoords.add(vec2Of(lineSpliced[startIndex].toFloat(),
+                                     lineSpliced[startIndex + 1].toFloat()))
 
             } else if (line.startsWith(sFace)) { //faces
                 val quad = ObjQuad()
                 for (i in 1..4) {
-                    val chunk = p[i]
-                    val comp = chunk.split(separator)
+                    val textVertex = lineSpliced[i]
+                    val index = textVertex.split(separator)
 
-                    quad.vertexIndices[i - 1] = comp[0].toInt() - 1
+                    quad.vertexIndices[i - 1] = index[0].toInt() - 1
                     if (hasTextures) {
-                        quad.textureIndices[i - 1] = comp[1].toInt() - 1
+                        quad.textureIndices[i - 1] = index[1].toInt() - 1
                         if (hasNormals) {
-                            quad.normalIndices[i - 1] = comp[2].toInt() - 1
+                            quad.normalIndices[i - 1] = index[2].toInt() - 1
                         }
                     } else {
                         if (hasNormals) {
-                            quad.normalIndices[i - 1] = comp[1].toInt() - 1
+                            quad.normalIndices[i - 1] = index[1].toInt() - 1
                         }
                     }
                 }
                 quads.add(quad)
             } else if (line.startsWith(sGroup)) {
-                val newGroup = ObjGroup(p[1], mutableListOf())
+                val newGroup = ObjGroup(lineSpliced[1], mutableListOf())
                 quads = newGroup.quads
                 groups.add(newGroup)
 
             } else if (line.startsWith(sObject)) {
-                val newObj = ObjObject(p[1], material, mutableListOf())
+                val newObj = ObjObject(lineSpliced[1], material, mutableListOf())
                 groups = newObj.groups
                 objects.add(newObj)
 
             } else if (line.startsWith(sMaterial)) {
-                material = p[1]
+                material = lineSpliced[1]
             } else if (!line.startsWith(sComment) && !line.isEmpty()) {
                 println("Ignoring line: '$line'\n")
             }

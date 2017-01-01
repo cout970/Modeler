@@ -10,9 +10,9 @@ import com.cout970.vector.extensions.*
  * Created by cout970 on 2016/11/29.
  */
 data class Transformation(
-        val position: IVector3,
-        val rotation: IQuaternion,
-        val scale: IVector3
+        val position: IVector3 = vec3Of(0),
+        val rotation: IQuaternion = Quaternion.IDENTITY,
+        val scale: IVector3 = vec3Of(1)
 ) {
 
     companion object {

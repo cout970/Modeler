@@ -1,8 +1,9 @@
 package com.cout970.modeler.model
 
-import com.cout970.modeler.modelcontrol.selection.ModelPath
-import com.cout970.modeler.modelcontrol.selection.Selection
-import com.cout970.modeler.modelcontrol.selection.SelectionMode
+import com.cout970.modeler.modeleditor.selection.ModelPath
+import com.cout970.modeler.modeleditor.selection.Selection
+import com.cout970.modeler.modeleditor.selection.SelectionMode
+import com.cout970.modeler.util.flatMapIndexed
 
 /**
  * Created by cout970 on 2016/11/29.
@@ -13,8 +14,8 @@ private var modelIds = 0
 data class Model(val objects: List<ModelObject>, val id: Int = modelIds++) {
 
     val quads: List<Quad> by lazy {
-        getPaths(ModelPath.Level.COMPONENTS).flatMap { path ->
-            path.getMesh(this)!!.getQuads().map { it.transform(path.getComponentMatrix(this)) }
+        getPaths(ModelPath.Level.MESH).flatMap { path ->
+            path.getMesh(this)!!.getQuads().map { it.transform(path.getMeshMatrix(this)) }
         }
     }
 
@@ -24,36 +25,44 @@ data class Model(val objects: List<ModelObject>, val id: Int = modelIds++) {
 
     fun getGroups() = objects.map { it.groups }.flatten()
 
-    fun getComponents() = objects.flatMap { it.getComponents() }
+    fun getMeshes() = objects.flatMap { it.getMeshes() }
 
     fun getPaths(level: ModelPath.Level): List<ModelPath> {
         return when (level) {
-            ModelPath.Level.OBJECTS -> objects.map { ModelPath.of(this, it) }
+            ModelPath.Level.OBJECTS -> objects.mapIndexed { index, _ -> ModelPath(index) }
 
-            ModelPath.Level.GROUPS -> objects.flatMap { obj -> obj.groups.map { ModelPath.of(this, obj, it) } }
-
-            ModelPath.Level.COMPONENTS -> objects.flatMap { obj ->
-                obj.groups.flatMap { group ->
-                    group.meshes.map { ModelPath.of(this, obj, group, it) }
+            ModelPath.Level.GROUPS -> objects.flatMapIndexed { objIndex, obj ->
+                obj.groups.mapIndexed { groupIndex, _ ->
+                    ModelPath(objIndex, groupIndex)
                 }
             }
 
-            ModelPath.Level.QUADS -> objects.flatMap { obj ->
-                obj.groups.flatMap { group ->
-                    group.meshes.flatMap { comp -> comp.getQuads().mapIndexed { i, quad -> ModelPath.of(this, obj, group, comp, i) } }
+            ModelPath.Level.MESH -> objects.flatMapIndexed { objIndex, obj ->
+                obj.groups.flatMapIndexed { groupIndex, group ->
+                    group.meshes.mapIndexed { meshIndex, _ -> ModelPath(objIndex, groupIndex, meshIndex) }
                 }
             }
 
-            ModelPath.Level.VERTEX -> objects.flatMap { obj ->
-                obj.groups.flatMap { group ->
-                    group.meshes.flatMap { comp ->
+            ModelPath.Level.QUADS -> objects.flatMapIndexed { objIndex, obj ->
+                obj.groups.flatMapIndexed { groupIndex, group ->
+                    group.meshes.flatMapIndexed { meshIndex, mesh ->
+                        mesh.getQuads().mapIndexed { quadIndex, quad ->
+                            ModelPath(objIndex, groupIndex, meshIndex, quadIndex)
+                        }
+                    }
+                }
+            }
+
+            ModelPath.Level.VERTEX -> objects.flatMapIndexed { objIndex, obj ->
+                obj.groups.flatMapIndexed { groupIndex, group ->
+                    group.meshes.flatMapIndexed { meshIndex, mesh ->
                         var quadIndex = 0
-                        comp.indices.flatMap { quad ->
+                        mesh.indices.flatMap { quad ->
                             quadIndex++
-                            listOf(ModelPath.of(this, obj, group, comp, quadIndex, quad.aP),
-                                    ModelPath.of(this, obj, group, comp, quadIndex, quad.bP),
-                                    ModelPath.of(this, obj, group, comp, quadIndex, quad.cP),
-                                    ModelPath.of(this, obj, group, comp, quadIndex, quad.dP))
+                            listOf(ModelPath(objIndex, groupIndex, meshIndex, quadIndex, quad.aP),
+                                   ModelPath(objIndex, groupIndex, meshIndex, quadIndex, quad.bP),
+                                   ModelPath(objIndex, groupIndex, meshIndex, quadIndex, quad.cP),
+                                   ModelPath(objIndex, groupIndex, meshIndex, quadIndex, quad.dP))
                         }
                     }
                 }
@@ -65,18 +74,22 @@ data class Model(val objects: List<ModelObject>, val id: Int = modelIds++) {
 
     fun getQuadsOptimized(selection: Selection, func: (Quad) -> Unit) {
         when (selection.mode) {
-            SelectionMode.GROUP -> getPaths(ModelPath.Level.GROUPS).filter { selection.isSelected(it) }.flatMap { group ->
+            SelectionMode.GROUP -> getPaths(ModelPath.Level.GROUPS).filter {
+                selection.isSelected(it)
+            }.flatMap { group ->
                 group.getSubPaths(this)
             }.flatMap { path ->
-                path.getMesh(this)!!.getQuads().map { it.transform(path.getComponentMatrix(this)) }
+                path.getMesh(this)!!.getQuads().map { it.transform(path.getMeshMatrix(this)) }
             }
-            SelectionMode.COMPONENT -> getPaths(ModelPath.Level.COMPONENTS).filter { selection.isSelected(it) }.flatMap { path ->
-                path.getMesh(this)!!.getQuads().map { it.transform(path.getComponentMatrix(this)) }
+            SelectionMode.MESH -> getPaths(ModelPath.Level.MESH).filter { selection.isSelected(it) }.flatMap { path ->
+                path.getMesh(this)!!.getQuads().map { it.transform(path.getMeshMatrix(this)) }
             }
             SelectionMode.QUAD -> {
-                getPaths(ModelPath.Level.COMPONENTS).filter { selection.containsSelectedElements(it) }.flatMap { comp ->
-                    val matrix = comp.getComponentMatrix(this)
-                    comp.getSubPaths(this).filter { selection.isSelected(it) }.map { it.getQuad(this)!!.transform(matrix) }
+                getPaths(ModelPath.Level.MESH).filter { selection.containsSelectedElements(it) }.flatMap { mesh ->
+                    val matrix = mesh.getMeshMatrix(this)
+                    mesh.getSubPaths(this).filter { selection.isSelected(it) }.map {
+                        it.getQuad(this)!!.transform(matrix)
+                    }
                 }
             }
             else -> {
@@ -86,18 +99,23 @@ data class Model(val objects: List<ModelObject>, val id: Int = modelIds++) {
     }
 }
 
-data class ModelObject(val groups: List<ModelGroup>, val transform: Transformation, val name: String, val material: Material) {
+data class ModelObject(val groups: List<ModelGroup>, val transform: Transformation, val name: String,
+                       val material: Material) {
 
-    fun getComponents() = groups.map { it.meshes }.flatten()
+    fun getMeshes() = groups.map { it.meshes }.flatten()
 
     fun add(group: ModelGroup): ModelObject = copy(groups + group)
+
+    fun addAll(groups: List<ModelGroup>): ModelObject = copy(groups + groups)
 }
 
 data class ModelGroup(val meshes: List<Mesh>, val transform: Transformation, val name: String) {
 
     fun getQuads() = meshes.flatMap(Mesh::getQuads)
 
-    fun add(comp: Mesh): ModelGroup = copy(meshes + comp)
+    fun add(mesh: Mesh): ModelGroup = copy(meshes + mesh)
+
+    fun addAll(meshes: List<Mesh>): ModelGroup = copy(this.meshes + meshes)
 }
 
 sealed class Material(val name: String) {

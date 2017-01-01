@@ -7,7 +7,7 @@ import com.cout970.modeler.config.Config
 import com.cout970.modeler.event.EventController
 import com.cout970.modeler.event.IEventListener
 import com.cout970.modeler.model.Model
-import com.cout970.modeler.modelcontrol.ModelController
+import com.cout970.modeler.modeleditor.ModelController
 import com.cout970.modeler.util.absolutePosition
 import com.cout970.modeler.util.inside
 import com.cout970.modeler.util.toIVector

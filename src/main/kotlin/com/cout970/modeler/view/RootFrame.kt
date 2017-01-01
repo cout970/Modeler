@@ -1,6 +1,6 @@
 package com.cout970.modeler.view
 
-import com.cout970.modeler.modelcontrol.action.ActionDelete
+import com.cout970.modeler.modeleditor.action.ActionDelete
 import com.cout970.modeler.util.inside
 import com.cout970.modeler.util.onClick
 import com.cout970.modeler.util.toIVector

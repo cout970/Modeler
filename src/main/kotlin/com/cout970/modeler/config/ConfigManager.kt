@@ -1,6 +1,6 @@
 package com.cout970.modeler.config
 
-import com.cout970.modeler.util.createIfNeeced
+import com.cout970.modeler.util.createIfNeeded
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
@@ -15,7 +15,7 @@ object ConfigManager {
         val file = File("config.json")
         if (file.exists()) {
             val gson = GsonBuilder().setLenient().setPrettyPrinting().create()
-            val json = JsonParser().parse(file.createIfNeeced().reader()).asJsonObject
+            val json = JsonParser().parse(file.createIfNeeded().reader()).asJsonObject
 
             Config::class.java.declaredFields.filter { it.name != "INSTANCE" }.forEach { field ->
                 field.isAccessible = true

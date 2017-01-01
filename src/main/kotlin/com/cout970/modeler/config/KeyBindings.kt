@@ -14,6 +14,7 @@ class KeyBindings {
     var selectModelControls = MouseKeyBind(Mouse.BUTTON_LEFT)
     var jumpCameraToCursor = MouseKeyBind(Mouse.BUTTON_RIGHT)
 
+    var multipleSelection = KeyBind(Keyboard.KEY_LEFT_CONTROL)
     var disableGridMotion = KeyBind(Keyboard.KEY_LEFT_CONTROL)
     var disablePixelGridMotion = KeyBind(Keyboard.KEY_LEFT_SHIFT)
 }

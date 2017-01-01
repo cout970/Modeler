@@ -1,11 +1,11 @@
-package com.cout970.modeler.modelcontrol
+package com.cout970.modeler.modeleditor
 
 import com.cout970.modeler.model.Model
-import com.cout970.modeler.modelcontrol.action.ActionDelete
-import com.cout970.modeler.modelcontrol.action.ActionPaste
-import com.cout970.modeler.modelcontrol.selection.Selection
-import com.cout970.modeler.modelcontrol.selection.SelectionMode
-import com.cout970.modeler.modelcontrol.selection.SelectionNone
+import com.cout970.modeler.modeleditor.action.ActionDelete
+import com.cout970.modeler.modeleditor.action.ActionPaste
+import com.cout970.modeler.modeleditor.selection.Selection
+import com.cout970.modeler.modeleditor.selection.SelectionMode
+import com.cout970.modeler.modeleditor.selection.SelectionNone
 
 /**
  * Created by cout970 on 2016/12/08.

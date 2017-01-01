@@ -6,7 +6,7 @@ import com.cout970.modeler.event.EventController
 import com.cout970.modeler.log.Level
 import com.cout970.modeler.log.log
 import com.cout970.modeler.model.Mesh
-import com.cout970.modeler.modelcontrol.ModelController
+import com.cout970.modeler.modeleditor.ModelController
 import com.cout970.modeler.view.ViewManager
 import com.cout970.modeler.view.render.RenderManager
 import com.cout970.vector.extensions.vec3Of
