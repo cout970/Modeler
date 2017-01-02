@@ -22,15 +22,15 @@ data class Quad(
         if (vec.xd.isNaN()) {
             val bc = c.pos - b.pos
             val bd = d.pos - b.pos
-            vec = -(bc cross bd).normalize()
+            vec = (bc cross bd).normalize()
             if (vec.xd.isNaN()) {
                 val cd = d.pos - c.pos
                 val ca = a.pos - c.pos
-                vec = -(cd cross ca).normalize()
+                vec = (cd cross ca).normalize()
                 if (vec.xd.isNaN()) {
                     val da = a.pos - d.pos
                     val db = b.pos - d.pos
-                    vec = -(da cross db).normalize()
+                    vec = (da cross db).normalize()
                     if (vec.xd.isNaN()) {
                         vec3Of(0)
                     } else {

@@ -1,11 +1,12 @@
 package com.cout970.modeler.view
 
-import com.cout970.modeler.modeleditor.action.ActionDelete
 import com.cout970.modeler.util.inside
 import com.cout970.modeler.util.onClick
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.util.toJoml2f
 import com.cout970.modeler.view.popup.Missing
+import com.cout970.modeler.view.popup.showExportModelPopup
+import com.cout970.modeler.view.popup.showImportModelPopup
 import com.cout970.vector.extensions.minus
 import com.cout970.vector.extensions.plus
 import com.cout970.vector.extensions.vec2Of
@@ -145,8 +146,8 @@ class RootFrame(val viewManager: ViewManager) : Frame() {
                 1 -> Missing("open project")
                 2 -> Missing("save project")
                 3 -> Missing("save as")
-                4 -> Missing("import model")
-                5 -> Missing("export model")
+                4 -> showImportModelPopup(modelController)
+                5 -> showExportModelPopup(modelController)
                 6 -> Missing("settings")
                 7 -> root.viewManager.windowController.stop()
 
@@ -155,7 +156,7 @@ class RootFrame(val viewManager: ViewManager) : Frame() {
                 10 -> modelController.clipboard.cut()
                 11 -> modelController.clipboard.copy()
                 12 -> modelController.clipboard.paste()
-                13 -> modelController.historyRecord.doAction(ActionDelete(modelController.selectionManager.selection, modelController))
+                13 -> modelController.delete()
 
                 14 -> root.leftBar.isEnabled = !root.leftBar.isEnabled
                 15 -> root.rightBar.isEnabled = !root.rightBar.isEnabled

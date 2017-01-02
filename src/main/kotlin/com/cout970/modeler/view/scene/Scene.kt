@@ -27,6 +27,7 @@ class Scene(val sceneController: SceneController) : Panel() {
 
         renderManager.modelRenderer.run {
             matrixP = Matrix4d().setPerspective(Math.toRadians(60.0), (size.x / size.y).toDouble(), 0.1, 1000.0).toIMatrix()
+//            matrixP = Matrix4d().setOrtho(-1.0, 1.0, -1.0, 1.0, 0.1, 1000.0).toIMatrix()
             matrixV = camera.matrix
 
             val selector = modelSelector
@@ -50,7 +51,8 @@ class Scene(val sceneController: SceneController) : Panel() {
             if (selection != SelectionNone && selector.transformationMode != TransformationMode.NONE) {
                 renderTranslation(selector.center, selector, selection, camera)
             }
-            if (Config.keyBindings.moveCamera.check(sceneController.mouse) || Config.keyBindings.rotateCamera.check(sceneController.mouse)) {
+            if (Config.keyBindings.moveCamera.check(sceneController.mouse) || Config.keyBindings.rotateCamera.check(
+                    sceneController.mouse)) {
                 startPlane(vec2Of(size.x, size.y))
                 renderCursor()
             }
@@ -60,6 +62,7 @@ class Scene(val sceneController: SceneController) : Panel() {
     }
 
     fun getMatrixMVP(): IMatrix4 {
-        return Matrix4d().setPerspective(Math.toRadians(60.0), (size.x / size.y).toDouble(), 0.1, 1000.0).toIMatrix() * camera.matrix
+        return Matrix4d().setPerspective(Math.toRadians(60.0), (size.x / size.y).toDouble(), 0.1,
+                1000.0).toIMatrix() * camera.matrix
     }
 }

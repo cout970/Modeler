@@ -1,5 +1,6 @@
 package com.cout970.modeler
 
+import com.cout970.glutilities.structure.Timer
 import com.cout970.glutilities.window.GLFWWindow
 import com.cout970.glutilities.window.WindowBuilder
 import com.cout970.modeler.util.ITickeable
@@ -15,12 +16,14 @@ class WindowController : ITickeable {
 
     lateinit var stop: () -> Unit
     lateinit var window: GLFWWindow
+    lateinit var timer: Timer
 
     fun show() {
         window = WindowBuilder.build {
             title = WINDOW_TITLE
             size = vec2Of(800, 600)
         }
+        window.setVSync(false)
         window.center()
         window.show()
     }
@@ -31,5 +34,6 @@ class WindowController : ITickeable {
         }
         window.swapBuffers()
         GL11.glViewport(0, 0, window.size.xi, window.size.yi)
+        window.setTitle("[${timer.fps} FPS]")
     }
 }

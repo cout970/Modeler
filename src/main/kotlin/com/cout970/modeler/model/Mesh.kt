@@ -13,13 +13,12 @@ import com.cout970.vector.extensions.*
  * Created by cout970 on 2016/11/29.
  */
 
-//this class and subclasses must be immutable
+//this class must be immutable
 data class Mesh(
         val positions: List<IVector3>,
         val textures: List<IVector2>,
         val indices: List<QuadIndices>,
-        val transform: Transformation = Transformation.IDENTITY
-               ) : IRayObstacle {
+        val transform: Transformation = Transformation.IDENTITY) : IRayObstacle {
 
     fun getQuads(): List<Quad> = indices.map { it.toQuad(positions, textures) }
 
@@ -54,8 +53,7 @@ data class Mesh(
                 listOf(vec3Of(0, 0, 0), vec3Of(0, 0, 1), vec3Of(1, 0, 1), vec3Of(1, 0, 0)),
                 listOf(vec2Of(0, 0), vec2Of(1, 0), vec2Of(1, 1), vec2Of(0, 1)),
                 listOf(QuadIndices(0, 0, 1, 1, 2, 2, 3, 3)),
-                transform
-                                                                                                   )
+                transform)
 
         fun quadsToMesh(quads: List<Quad>, transform: Transformation = Transformation.IDENTITY): Mesh {
             val positions = quads.flatMap(Quad::vertex).map(Vertex::pos).distinct()
@@ -100,8 +98,7 @@ data class Mesh(
                                 vec3Of(n.x, n.y, n.z)),
                     //posZ
                     Quad.create(vec3Of(p.x, n.y, p.z), vec3Of(p.x, p.y, p.z), vec3Of(n.x, p.y, p.z),
-                                vec3Of(n.x, n.y, p.z))
-                                     ), transform)
+                            vec3Of(n.x, n.y, p.z))), transform)
         }
     }
 }

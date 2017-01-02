@@ -1,6 +1,8 @@
 package com.cout970.modeler.modeleditor
 
 import com.cout970.modeler.model.*
+import com.cout970.modeler.modeleditor.action.ActionCreateCube
+import com.cout970.modeler.modeleditor.action.ActionCreatePlane
 import com.cout970.modeler.modeleditor.selection.ModelPath
 import com.cout970.modeler.modeleditor.selection.SelectionGroup
 import com.cout970.modeler.util.replaceSelected
@@ -52,5 +54,13 @@ class ModelInserter(val modelController: ModelController) {
         modelController.apply {
             updateModel(model.add(obj))
         }
+    }
+
+    fun addCube() {
+        modelController.historyRecord.doAction(ActionCreateCube(modelController))
+    }
+
+    fun addPlane() {
+        modelController.historyRecord.doAction(ActionCreatePlane(modelController))
     }
 }

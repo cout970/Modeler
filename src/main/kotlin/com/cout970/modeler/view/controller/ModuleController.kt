@@ -5,10 +5,9 @@ import com.cout970.glutilities.event.EnumKeyState
 import com.cout970.glutilities.event.EventKeyUpdate
 import com.cout970.modeler.event.EventController
 import com.cout970.modeler.event.IEventListener
+import com.cout970.modeler.log.Level
+import com.cout970.modeler.log.log
 import com.cout970.modeler.modeleditor.ModelController
-import com.cout970.modeler.modeleditor.action.ActionCreateCube
-import com.cout970.modeler.modeleditor.action.ActionCreatePlane
-import com.cout970.modeler.modeleditor.action.ActionDelete
 import com.cout970.modeler.modeleditor.selection.SelectionMode
 import com.cout970.modeler.view.ViewManager
 
@@ -25,8 +24,7 @@ class ModuleController(val viewManager: ViewManager, val modelController: ModelC
             override fun onEvent(e: EventKeyUpdate): Boolean {
                 if (e.keyState != EnumKeyState.RELEASE) {
                     when (e.keycode) {
-                        Keyboard.KEY_DELETE -> modelController.historyRecord
-                                .doAction(ActionDelete(modelController.selectionManager.selection, modelController))
+                        Keyboard.KEY_DELETE -> modelController.delete()
 
                         Keyboard.KEY_Z -> if (keyboard.isKeyPressed(Keyboard.KEY_LEFT_CONTROL)) {
                             modelController.historyRecord.undo()
@@ -56,14 +54,15 @@ class ModuleController(val viewManager: ViewManager, val modelController: ModelC
             1 -> modelController.selectionManager.selectionMode = SelectionMode.MESH
             2 -> modelController.selectionManager.selectionMode = SelectionMode.QUAD
             3 -> modelController.selectionManager.selectionMode = SelectionMode.VERTEX
-            4 -> modelController.historyRecord.doAction(ActionCreateCube(modelController))
-            5 -> modelController.historyRecord.doAction(ActionCreatePlane(modelController))
+            4 -> modelController.inserter.addCube()
+            5 -> modelController.inserter.addPlane()
+        //6-7
             8 -> modelController.historyRecord.undo()
             9 -> modelController.historyRecord.redo()
             10 -> modelController.clipboard.copy()
             11 -> modelController.clipboard.cut()
             12 -> modelController.clipboard.paste()
-            else -> println("unregistered button ID: $id")
+            else -> log(Level.NORMAL) { "unregistered button ID: $id" }
         }
     }
 }

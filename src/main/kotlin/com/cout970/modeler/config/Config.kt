@@ -8,10 +8,10 @@ import com.cout970.modeler.log.Level
 object Config {
 
     var keyBindings = KeyBindings()
-    var mouseTranslateSpeedX: Float = 3f
-    var mouseTranslateSpeedY: Float = 3f
-    var mouseRotationSpeedX: Float = 0.25f
-    var mouseRotationSpeedY: Float = 0.25f
+    var mouseTranslateSpeedX: Float = 5f
+    var mouseTranslateSpeedY: Float = 5f
+    var mouseRotationSpeedX: Float = 0.5f
+    var mouseRotationSpeedY: Float = 0.5f
     var cameraScrollSpeed: Float = 4f
     var logLevel: Level = Level.FINE
 }

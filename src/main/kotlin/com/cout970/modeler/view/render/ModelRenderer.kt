@@ -83,22 +83,28 @@ class ModelRenderer(resourceManager: ResourceManager) {
 
     init {
         modelShader = ShaderBuilder.build {
-            compile(GL20.GL_VERTEX_SHADER, resourceManager.readResource("assets/shaders/scene_vertex.glsl").reader().readText())
-            compile(GL20.GL_FRAGMENT_SHADER, resourceManager.readResource("assets/shaders/scene_fragment.glsl").reader().readText())
+            compile(GL20.GL_VERTEX_SHADER,
+                    resourceManager.readResource("assets/shaders/scene_vertex.glsl").reader().readText())
+            compile(GL20.GL_FRAGMENT_SHADER,
+                    resourceManager.readResource("assets/shaders/scene_fragment.glsl").reader().readText())
             bindAttribute(0, "in_position")
             bindAttribute(1, "in_texture")
             bindAttribute(2, "in_normal")
         }
         plainColorShader = ShaderBuilder.build {
-            compile(GL20.GL_VERTEX_SHADER, resourceManager.readResource("assets/shaders/plain_color_vertex.glsl").reader().readText())
-            compile(GL20.GL_FRAGMENT_SHADER, resourceManager.readResource("assets/shaders/plain_color_fragment.glsl").reader().readText())
+            compile(GL20.GL_VERTEX_SHADER,
+                    resourceManager.readResource("assets/shaders/plain_color_vertex.glsl").reader().readText())
+            compile(GL20.GL_FRAGMENT_SHADER,
+                    resourceManager.readResource("assets/shaders/plain_color_fragment.glsl").reader().readText())
             bindAttribute(0, "in_position")
             bindAttribute(1, "in_color")
         }
 
         planeShader = ShaderBuilder.build {
-            compile(GL20.GL_VERTEX_SHADER, resourceManager.readResource("assets/shaders/plane_vertex.glsl").reader().readText())
-            compile(GL20.GL_FRAGMENT_SHADER, resourceManager.readResource("assets/shaders/plane_fragment.glsl").reader().readText())
+            compile(GL20.GL_VERTEX_SHADER,
+                    resourceManager.readResource("assets/shaders/plane_vertex.glsl").reader().readText())
+            compile(GL20.GL_FRAGMENT_SHADER,
+                    resourceManager.readResource("assets/shaders/plane_fragment.glsl").reader().readText())
             bindAttribute(0, "in_position")
             bindAttribute(1, "in_texture")
         }
@@ -142,8 +148,8 @@ class ModelRenderer(resourceManager: ResourceManager) {
         projectionMatrix.setMatrix4(matrixP)
         viewMatrix.setMatrix4(matrixV)
         transformationMatrix.setMatrix4(matrixM)
-        lightPositionA.setVector3(vec3Of(150, 75, 100))
-        lightPositionB.setVector3(vec3Of(-150, -75, -100))
+        lightPositionA.setVector3(vec3Of(500, 1000, 750))
+        lightPositionB.setVector3(vec3Of(-500, -1000, -750))
         lightColorA.setVector3(vec3Of(1))
         lightColorB.setVector3(vec3Of(1))
         shineDamper.setFloat(1f)
@@ -241,9 +247,12 @@ class ModelRenderer(resourceManager: ResourceManager) {
             if (selection.mode != SelectionMode.VERTEX) {
                 RenderUtil.renderBar(tessellator, center, center, size * 1.5, vec3Of(1, 1, 1))
             }
-            RenderUtil.renderBar(tessellator, center + vec3Of(start, 0, 0), center + vec3Of(end, 0, 0), if (selX) size * 1.5 else size, col = vec3Of(1, 0, 0))
-            RenderUtil.renderBar(tessellator, center + vec3Of(0, start, 0), center + vec3Of(0, end, 0), if (selY) size * 1.5 else size, col = vec3Of(0, 1, 0))
-            RenderUtil.renderBar(tessellator, center + vec3Of(0, 0, start), center + vec3Of(0, 0, end), if (selZ) size * 1.5 else size, col = vec3Of(0, 0, 1))
+            RenderUtil.renderBar(tessellator, center + vec3Of(start, 0, 0), center + vec3Of(end, 0, 0),
+                    if (selX) size * 1.5 else size, col = vec3Of(1, 0, 0))
+            RenderUtil.renderBar(tessellator, center + vec3Of(0, start, 0), center + vec3Of(0, end, 0),
+                    if (selY) size * 1.5 else size, col = vec3Of(0, 1, 0))
+            RenderUtil.renderBar(tessellator, center + vec3Of(0, 0, start), center + vec3Of(0, 0, end),
+                    if (selZ) size * 1.5 else size, col = vec3Of(0, 0, 1))
         }
     }
 
@@ -280,6 +289,10 @@ class ModelRenderer(resourceManager: ResourceManager) {
                 set(0, -16, 0, z).set(1, 0.5, 0.5, 0.5).endVertex()
                 set(0, 32, 0, z).set(1, 0.5, 0.5, 0.5).endVertex()
             }
+        }
+        tessellator.draw(GL11.GL_QUADS, formatPC, consumer) {
+            RenderUtil.renderBar(tessellator, vec3Of(50, 100, 75), vec3Of(50, 100, 75), 2.0)
+            RenderUtil.renderBar(tessellator, -vec3Of(50, 100, 75), -vec3Of(50, 100, 75), 2.0)
         }
     }
 

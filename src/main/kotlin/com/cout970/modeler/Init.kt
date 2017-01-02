@@ -49,6 +49,7 @@ class Init {
         mainLoop = LoopController(listOf(renderManager, viewManager, eventController, modelController, windowController))
 
         windowController.stop = { mainLoop.stop = true }
+        windowController.timer = mainLoop.timer
         log(Level.FINEST) { "Registering listeners for modelController" }
         modelController.registerListeners(eventController)
 

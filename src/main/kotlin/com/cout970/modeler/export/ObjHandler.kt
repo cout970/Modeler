@@ -91,11 +91,11 @@ class ObjExporter {
 
         writer.write("mtllib $mtllib.mtl\n")
 
-        for (a in vertex) {
+        for (a in vertex.map { it * 0.0625 }) {
             writer.write(String.format("v %s %s %s\n", format.format(a.xd), format.format(a.yd), format.format(a.zd)))
         }
         writer.append('\n')
-        for (a in texCoords) {
+        for (a in texCoords.map { it * 0.0625 }) {
             writer.write(String.format("vt %s %s\n", format.format(a.xd), format.format(a.yd)))
         }
         writer.append('\n')
@@ -154,29 +154,32 @@ class ObjImporter {
         var quads = noGroup.quads
         var material = "noTexture"
 
-        for (line in input.reader().readLines()) {
+        val lines = input.reader().readLines()
+        val hasGroups = lines.any { it.startsWith(sGroup) }
+
+        for (line in lines) {
             val lineSpliced = line.split(" ")
 
             if (line.startsWith(sVertex)) { //vertex
 
                 //reads a vertex
                 vertices.add(vec3Of(lineSpliced[startIndex].toFloat(),
-                                    lineSpliced[startIndex + 1].toFloat(),
-                                    lineSpliced[startIndex + 2].toFloat()))
+                        lineSpliced[startIndex + 1].toFloat(),
+                        lineSpliced[startIndex + 2].toFloat()))
 
             } else if (line.startsWith(sNormal)) { //normals
 
                 hasNormals = true
                 //read normals
                 normals.add(vec3Of(lineSpliced[startIndex].toFloat(),
-                                   lineSpliced[startIndex + 1].toFloat(),
-                                   lineSpliced[startIndex + 2].toFloat()))
+                        lineSpliced[startIndex + 1].toFloat(),
+                        lineSpliced[startIndex + 2].toFloat()))
             } else if (line.startsWith(sTexture)) { //textures
 
                 hasTextures = true
                 //reads a texture coords
                 texCoords.add(vec2Of(lineSpliced[startIndex].toFloat(),
-                                     lineSpliced[startIndex + 1].toFloat()))
+                        lineSpliced[startIndex + 1].toFloat()))
 
             } else if (line.startsWith(sFace)) { //faces
                 val quad = ObjQuad()
@@ -207,6 +210,11 @@ class ObjImporter {
                 groups = newObj.groups
                 objects.add(newObj)
 
+                if (!hasGroups) {
+                    val newGroup = ObjGroup(lineSpliced[1], mutableListOf())
+                    quads = newGroup.quads
+                    groups.add(newGroup)
+                }
             } else if (line.startsWith(sMaterial)) {
                 material = lineSpliced[1]
             } else if (!line.startsWith(sComment) && !line.isEmpty()) {
@@ -222,17 +230,20 @@ class ObjImporter {
 
         return Model(
                 objects.map { obj ->
-                    ModelObject(name = obj.name, material = Material.TexturedMaterial(obj.material), groups = obj.groups.map { group ->
-                        ModelGroup(name = group.name, transform = Transformation.IDENTITY, meshes = listOf(Mesh(
-                                vertices, texCoords, quads.map {
-                            QuadIndices(
-                                    it.vertexIndices[0], it.textureIndices[0],
-                                    it.vertexIndices[1], it.textureIndices[1],
-                                    it.vertexIndices[2], it.textureIndices[2],
-                                    it.vertexIndices[3], it.textureIndices[3])
-                        }
-                        )))
-                    }, transform = Transformation.IDENTITY)
+                    ModelObject(name = obj.name, material = Material.TexturedMaterial(obj.material),
+                            groups = obj.groups.map { group ->
+                                ModelGroup(name = group.name, transform = Transformation.IDENTITY, meshes = listOf(Mesh(
+                                        vertices.map { it * 16 },
+                                        texCoords.map { it * 16 },
+                                        group.quads.map {
+                                            QuadIndices(
+                                                    it.vertexIndices[0], it.textureIndices[0],
+                                                    it.vertexIndices[1], it.textureIndices[1],
+                                                    it.vertexIndices[2], it.textureIndices[2],
+                                                    it.vertexIndices[3], it.textureIndices[3])
+                                        }
+                                )))
+                            }, transform = Transformation.IDENTITY)
                 }
         )
     }
@@ -254,7 +265,6 @@ private class ObjQuad {
         internal set
     var textureIndices: IntArray
         internal set
-
     var normalIndices: IntArray
         internal set
 

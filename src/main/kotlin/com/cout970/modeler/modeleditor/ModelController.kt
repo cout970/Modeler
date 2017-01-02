@@ -1,7 +1,9 @@
 package com.cout970.modeler.modeleditor
 
 import com.cout970.modeler.event.EventController
+import com.cout970.modeler.export.ExportManager
 import com.cout970.modeler.model.Model
+import com.cout970.modeler.modeleditor.action.ActionDelete
 import com.cout970.modeler.modeleditor.selection.SelectionManager
 import com.cout970.modeler.util.ITickeable
 import java.util.*
@@ -22,6 +24,7 @@ class ModelController : ITickeable {
     val clipboard = ModelClipboard(this)
     val historyLog = HistoryLog()
     val historyRecord = HistoricalRecord(historyLog, this)
+    val exportManager = ExportManager(this)
     val inserter = ModelInserter(this)
 
     fun registerListeners(eventController: EventController) {
@@ -45,4 +48,8 @@ class ModelController : ITickeable {
     }
 
     override fun tick() = Unit
+
+    fun delete() {
+        historyRecord.doAction(ActionDelete(selectionManager.selection, this))
+    }
 }
