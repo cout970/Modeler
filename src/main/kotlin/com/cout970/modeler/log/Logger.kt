@@ -2,6 +2,7 @@ package com.cout970.modeler.log
 
 import com.cout970.modeler.config.Config
 import java.io.File
+import java.io.PrintStream
 import java.util.*
 
 /**
@@ -10,23 +11,24 @@ import java.util.*
 
 object Logger {
 
+    val DEBUG = false
     var level = Config.logLevel
-    val stream = System.out//object : PrintStream(File(getFileName())) {
-//        override fun println() {
-//            super.println()
-//            System.out.println()
-//        }
-//
-//        override fun println(any: Any?) {
-//            super.println(any)
-//            System.out.println(any)
-//        }
-//
-//        override fun println(any: String?) {
-//            super.println(any)
-//            System.out.println(any)
-//        }
-//    }
+    val stream = (if (DEBUG) System.out else object : PrintStream(File(getFileName())) {
+        override fun println() {
+            super.println()
+            System.out.println()
+        }
+
+        override fun println(any: Any?) {
+            super.println(any)
+            System.out.println(any)
+        }
+
+        override fun println(any: String?) {
+            super.println(any)
+            System.out.println(any)
+        }
+    })!!
 
     private fun getFileName(): String {
         val time = Calendar.getInstance()

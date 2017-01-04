@@ -2,22 +2,22 @@ package com.cout970.modeler.view.controller
 
 import com.cout970.glutilities.device.Keyboard
 import com.cout970.glutilities.device.Mouse
+import com.cout970.glutilities.event.EnumKeyState
+import com.cout970.glutilities.event.EventKeyUpdate
+import com.cout970.glutilities.event.EventMouseClick
 import com.cout970.glutilities.event.EventMouseScroll
+import com.cout970.glutilities.tessellator.VAO
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.event.EventController
 import com.cout970.modeler.event.IEventListener
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.modeleditor.ModelController
-import com.cout970.modeler.util.absolutePosition
-import com.cout970.modeler.util.inside
-import com.cout970.modeler.util.toIVector
-import com.cout970.modeler.util.toRads
+import com.cout970.modeler.util.*
 import com.cout970.modeler.view.ViewManager
 import com.cout970.modeler.view.scene.Scene
+import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
 import org.joml.Vector2f
-import org.joml.Vector4f
-import java.util.*
 
 /**
  * Created by cout970 on 2016/12/27.
@@ -26,13 +26,19 @@ import java.util.*
 class SceneController(val viewManager: ViewManager, val modelController: ModelController) {
 
     val scenes = mutableListOf<Scene>()
-    val selectedScene: Scene get() = scenes.first()
+    lateinit var selectedScene: Scene
+
+    var cursorCenter: IVector3 = vec3Of(0)
     var tmpModel: Model? = null
+
+    val modelCache = Cache<Int, VAO>(1).apply { onRemove = { _, v -> v.close() } }
+    val selectionCache = Cache<Int, VAO>(1).apply { onRemove = { _, v -> v.close() } }
 
     lateinit var mouse: Mouse
     lateinit var keyboard: Keyboard
 
-    init {
+    fun init() {
+        selectedScene = scenes.first()
         viewManager.root.contentPanel.apply {
             for (scene in scenes) {
                 addComponent(scene)
@@ -63,18 +69,55 @@ class SceneController(val viewManager: ViewManager, val modelController: ModelCo
                 copy(angleX = angleX + mouse.getMousePosDiff().yd * viewManager.renderManager.timer.delta * Config.mouseRotationSpeedY)
             }
         }
-        scenes.map(Scene::modelSelector).forEach(ModelSelector::update)
-        if (scenes.size == 1) {
-            scenes[0].apply {
-                size = viewManager.root.contentPanel.size
-                position = viewManager.root.contentPanel.position
+
+        scenes.forEach(Scene::update)
+        val contentPanel = viewManager.root.contentPanel
+        when (scenes.size) {
+            1 -> scenes[0].apply {
+                size = contentPanel.size
+                position = contentPanel.position
             }
-        } else {
-            scenes.forEachIndexed { i, scene ->
-                scene.size = Vector2f(viewManager.root.contentPanel.size.x / 2f, viewManager.root.contentPanel.size.y / 2f)
-                scene.position = Vector2f((i % 2) * scene.size.x, (i / 2) * -scene.size.y).add(viewManager.root.contentPanel.position)
-                val r = Random()
-                scene.backgroundColor = Vector4f(r.nextFloat(), r.nextFloat(), r.nextFloat(), 1f)
+            2 -> {
+                scenes[0].apply {
+                    size = contentPanel.size.run { Vector2f(x / 2, y) }
+                    position = Vector2f(0f, 0f)
+                }
+                scenes[1].apply {
+                    size = contentPanel.size.run { Vector2f(x / 2, y) }
+                    position = Vector2f(contentPanel.size.x / 2f, 0f)
+                }
+            }
+            3 -> {
+                scenes[0].apply {
+                    size = contentPanel.size.run { Vector2f(x / 2, y) }
+                    position = Vector2f(0f, 0f)
+                }
+                scenes[1].apply {
+                    size = contentPanel.size.run { Vector2f(x / 2, y / 2) }
+                    position = Vector2f(contentPanel.size.x / 2f, 0f)
+                }
+                scenes[2].apply {
+                    size = contentPanel.size.run { Vector2f(x / 2, y / 2) }
+                    position = Vector2f(contentPanel.size.x / 2f, contentPanel.size.y / 2f)
+                }
+            }
+            4 -> {
+                scenes[0].apply {
+                    size = contentPanel.size.run { Vector2f(x / 2, y / 2) }
+                    position = Vector2f(0f, 0f)
+                }
+                scenes[1].apply {
+                    size = contentPanel.size.run { Vector2f(x / 2, y / 2) }
+                    position = Vector2f(contentPanel.size.x / 2f, 0f)
+                }
+                scenes[2].apply {
+                    size = contentPanel.size.run { Vector2f(x / 2, y / 2) }
+                    position = Vector2f(0f, contentPanel.size.y / 2f)
+                }
+                scenes[3].apply {
+                    size = contentPanel.size.run { Vector2f(x / 2, y / 2) }
+                    position = Vector2f(contentPanel.size.x / 2f, contentPanel.size.y / 2f)
+                }
             }
         }
     }
@@ -85,27 +128,67 @@ class SceneController(val viewManager: ViewManager, val modelController: ModelCo
 
         eventController.addListener(EventMouseScroll::class.java, object : IEventListener<EventMouseScroll> {
             override fun onEvent(e: EventMouseScroll): Boolean {
-                if (inside(mouse.getMousePos(), selectedScene.absolutePosition, selectedScene.size.toIVector())) {
-                    selectedScene.run {
-                        val scroll = -e.offsetY * Config.cameraScrollSpeed
-                        if (camera.zoom <= 10) {
-                            if (camera.zoom <= 3) {
-                                if (camera.zoom + scroll / 8 > 0.5) {
-                                    camera = camera.copy(zoom = camera.zoom + scroll / 8)
+                scenes.forEach { scene ->
+                    if (inside(mouse.getMousePos(), scene.absolutePosition, scene.size.toIVector())) {
+                        scene.run {
+                            val scroll = -e.offsetY * Config.cameraScrollSpeed
+                            if (camera.zoom <= 10) {
+                                if (camera.zoom <= 3) {
+                                    if (camera.zoom + scroll / 8 > 0.5) {
+                                        camera = camera.copy(zoom = camera.zoom + scroll / 8)
+                                    }
+                                } else {
+                                    camera = camera.copy(zoom = camera.zoom + scroll / 4)
                                 }
                             } else {
-                                camera = camera.copy(zoom = camera.zoom + scroll / 4)
+                                camera = camera.copy(zoom = camera.zoom + scroll)
                             }
-                        } else {
-                            camera = camera.copy(zoom = camera.zoom + scroll)
                         }
                     }
                 }
                 return true
             }
         })
-        scenes.map(Scene::modelSelector).forEach {
+        eventController.addListener(EventMouseClick::class.java, object : IEventListener<EventMouseClick> {
+            override fun onEvent(e: EventMouseClick): Boolean {
+                scenes.forEach {
+                    if (inside(mouse.getMousePos(), it.absolutePosition, it.size.toIVector())) {
+                        selectedScene = it
+                    }
+                }
+                return false
+            }
+        })
+        scenes.forEach {
             it.registerListeners(eventController)
         }
+        var lastOption = 0
+        eventController.addListener(EventKeyUpdate::class.java, object : IEventListener<EventKeyUpdate> {
+            override fun onEvent(e: EventKeyUpdate): Boolean {
+                if (e.keyState == EnumKeyState.PRESS) {
+                    if (Config.keyBindings.switchCameraAxis.keycode == e.keycode) {
+                        when (lastOption) {
+                            0 -> selectedScene.camera = selectedScene.camera.copy(angleX = 0.0, angleY = 0.0)
+                            1 -> selectedScene.camera = selectedScene.camera.copy(angleX = 0.0, angleY = -90.toRads())
+                            2 -> selectedScene.camera = selectedScene.camera.copy(angleX = 90.toRads(), angleY = 0.0)
+                            3 -> selectedScene.camera = selectedScene.camera.copy(angleX = 45.toRads(),
+                                    angleY = -45.toRads())
+                        }
+                        lastOption++
+                        if (lastOption > 3) {
+                            lastOption = 0
+                        }
+                    }
+                }
+                return false
+            }
+        })
+    }
+
+    fun getModel(model: Model): Model {
+        if (tmpModel != null) {
+            return tmpModel!!
+        }
+        return model
     }
 }

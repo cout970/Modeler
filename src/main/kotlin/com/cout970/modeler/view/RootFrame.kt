@@ -4,9 +4,7 @@ import com.cout970.modeler.util.inside
 import com.cout970.modeler.util.onClick
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.util.toJoml2f
-import com.cout970.modeler.view.popup.Missing
-import com.cout970.modeler.view.popup.showExportModelPopup
-import com.cout970.modeler.view.popup.showImportModelPopup
+import com.cout970.modeler.view.popup.*
 import com.cout970.vector.extensions.minus
 import com.cout970.vector.extensions.plus
 import com.cout970.vector.extensions.vec2Of
@@ -144,8 +142,8 @@ class RootFrame(val viewManager: ViewManager) : Frame() {
             when (id) {
                 0 -> Missing("new project")
                 1 -> Missing("open project")
-                2 -> Missing("save project")
-                3 -> Missing("save as")
+                2 -> saveProject(modelController)
+                3 -> saveProjectAs(modelController)
                 4 -> showImportModelPopup(modelController)
                 5 -> showExportModelPopup(modelController)
                 6 -> Missing("settings")

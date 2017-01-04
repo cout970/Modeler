@@ -95,7 +95,7 @@ class ObjExporter {
             writer.write(String.format("v %s %s %s\n", format.format(a.xd), format.format(a.yd), format.format(a.zd)))
         }
         writer.append('\n')
-        for (a in texCoords.map { it * 0.0625 }) {
+        for (a in texCoords) {
             writer.write(String.format("vt %s %s\n", format.format(a.xd), format.format(a.yd)))
         }
         writer.append('\n')
@@ -206,11 +206,11 @@ class ObjImporter {
                 groups.add(newGroup)
 
             } else if (line.startsWith(sObject)) {
-                val newObj = ObjObject(lineSpliced[1], material, mutableListOf())
-                groups = newObj.groups
-                objects.add(newObj)
-
-                if (!hasGroups) {
+                if (hasGroups) {
+                    val newObj = ObjObject(lineSpliced[1], material, mutableListOf())
+                    groups = newObj.groups
+                    objects.add(newObj)
+                } else {
                     val newGroup = ObjGroup(lineSpliced[1], mutableListOf())
                     quads = newGroup.quads
                     groups.add(newGroup)
@@ -234,7 +234,7 @@ class ObjImporter {
                             groups = obj.groups.map { group ->
                                 ModelGroup(name = group.name, transform = Transformation.IDENTITY, meshes = listOf(Mesh(
                                         vertices.map { it * 16 },
-                                        texCoords.map { it * 16 },
+                                        texCoords,
                                         group.quads.map {
                                             QuadIndices(
                                                     it.vertexIndices[0], it.textureIndices[0],

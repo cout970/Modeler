@@ -20,11 +20,13 @@ object ConfigManager {
             Config::class.java.declaredFields.filter { it.name != "INSTANCE" }.forEach { field ->
                 field.isAccessible = true
                 val value = json.get(field.name)
-                field.set(null, gson.fromJson(value, field.genericType))
+                val jsonValue: Any? = gson.fromJson(value, field.genericType)
+                if (jsonValue != null) {
+                    field.set(null, jsonValue)
+                }
             }
-        } else {
-            saveConfig()
         }
+        saveConfig()
     }
 
     fun saveConfig() {

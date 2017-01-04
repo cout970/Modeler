@@ -12,6 +12,7 @@ import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.mat4Of
 import com.cout970.matrix.extensions.times
 import com.cout970.modeler.ResourceManager
+import com.cout970.modeler.config.Config
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.modeleditor.selection.ModelPath
 import com.cout970.modeler.modeleditor.selection.Selection
@@ -36,9 +37,6 @@ class ModelRenderer(resourceManager: ResourceManager) {
 
     val tessellator = Tessellator()
     var consumer: Consumer<VAO>
-    //cache
-    val modelCache = Cache<Int, VAO>(1).apply { onRemove = { _, v -> v.close() } }
-    val selectionCache = Cache<Int, VAO>(1).apply { onRemove = { _, v -> v.close() } }
     //vao formats
     val formatPC = FormatPC()
     val formatPTN = FormatPTN()
@@ -81,6 +79,11 @@ class ModelRenderer(resourceManager: ResourceManager) {
     val modelTexture: Texture
     val cursorTexture: Texture
 
+    //uv shader
+    val uvShader: ShaderProgram
+
+    val uvMatrix: UniformVariable
+
     init {
         modelShader = ShaderBuilder.build {
             compile(GL20.GL_VERTEX_SHADER,
@@ -99,7 +102,6 @@ class ModelRenderer(resourceManager: ResourceManager) {
             bindAttribute(0, "in_position")
             bindAttribute(1, "in_color")
         }
-
         planeShader = ShaderBuilder.build {
             compile(GL20.GL_VERTEX_SHADER,
                     resourceManager.readResource("assets/shaders/plane_vertex.glsl").reader().readText())
@@ -108,6 +110,16 @@ class ModelRenderer(resourceManager: ResourceManager) {
             bindAttribute(0, "in_position")
             bindAttribute(1, "in_texture")
         }
+        uvShader = ShaderBuilder.build {
+            compile(GL20.GL_VERTEX_SHADER,
+                    resourceManager.readResource("assets/shaders/uv_vertex.glsl").reader().readText())
+            compile(GL20.GL_FRAGMENT_SHADER,
+                    resourceManager.readResource("assets/shaders/uv_fragment.glsl").reader().readText())
+            bindAttribute(0, "in_position")
+            bindAttribute(1, "in_color")
+        }
+
+        uvMatrix = uvShader.createUniformVariable("matrix")
 
         viewport = planeShader.createUniformVariable("viewport")
 
@@ -180,7 +192,7 @@ class ModelRenderer(resourceManager: ResourceManager) {
         plainColorShader.stop()
     }
 
-    fun renderModel(model: Model) {
+    fun renderModel(model: Model, modelCache: Cache<Int, VAO>) {
         consumer.accept(modelCache.getOrCompute(model.hashCode()) {
             tessellator.compile(GL11.GL_QUADS, formatPTN) {
                 model.quads.forEach { quad ->
@@ -193,19 +205,20 @@ class ModelRenderer(resourceManager: ResourceManager) {
         })
     }
 
-    fun renderModelSelection(model: Model, selection: Selection, camera: Camera) {
+    fun renderModelSelection(model: Model, selection: Selection, selectionCache: Cache<Int, VAO>) {
         if (selection == SelectionNone) {
             return
         }
 
         consumer.accept(selectionCache.getOrCompute(model.hashCode() xor selection.hashCode()) {
+            val size = Config.selectionThickness.toDouble()
             tessellator.compile(GL11.GL_QUADS, formatPC) {
                 if (selection.mode != SelectionMode.VERTEX) {
                     model.getQuadsOptimized(selection) { quad ->
-                        RenderUtil.renderBar(tessellator, quad.a.pos, quad.b.pos)
-                        RenderUtil.renderBar(tessellator, quad.b.pos, quad.c.pos)
-                        RenderUtil.renderBar(tessellator, quad.c.pos, quad.d.pos)
-                        RenderUtil.renderBar(tessellator, quad.d.pos, quad.a.pos)
+                        RenderUtil.renderBar(tessellator, quad.a.pos, quad.b.pos, size)
+                        RenderUtil.renderBar(tessellator, quad.b.pos, quad.c.pos, size)
+                        RenderUtil.renderBar(tessellator, quad.c.pos, quad.d.pos, size)
+                        RenderUtil.renderBar(tessellator, quad.d.pos, quad.a.pos, size)
                         if (selection.mode == SelectionMode.QUAD) {
                             quad.vertex.forEach { (pos, _) ->
                                 set(0, pos.xd + 0.005, pos.yd + 0.005, pos.zd + 0.005).set(1, 0.5, 0.5, 0.4).endVertex()
@@ -221,7 +234,7 @@ class ModelRenderer(resourceManager: ResourceManager) {
                         if (paths.isNotEmpty()) {
                             val matrix = compPath.getMeshMatrix(model)
                             paths.map { it.getVertex(model)!! }.map { matrix * it.toVector4(1.0) }.forEach {
-                                RenderUtil.renderBar(tessellator, it, it, 0.125)
+                                RenderUtil.renderBar(tessellator, it, it, size)
                             }
                         }
                     }
@@ -239,9 +252,9 @@ class ModelRenderer(resourceManager: ResourceManager) {
         val selZ = selector.selectedAxis == SelectionAxis.Z || selector.phantomSelectedAxis == SelectionAxis.Z
 
         tessellator.draw(GL11.GL_QUADS, formatPC, consumer) {
-            val scale = camera.zoom / 10
-            val start = 0.8f * scale
-            val end = 1f * scale
+            val scale = camera.zoom / 10 * Config.cursorArrowsScale
+            val start = 0.8f * scale * Config.cursorArrowsDispersion
+            val end = 1f * scale * Config.cursorArrowsDispersion
             val size = 0.0625 * scale
 
             if (selection.mode != SelectionMode.VERTEX) {
@@ -261,10 +274,10 @@ class ModelRenderer(resourceManager: ResourceManager) {
         GLStateMachine.blend.enable()
         cursorTexture.bind()
         tessellator.draw(GL11.GL_QUADS, formatPT, consumer) {
-            set(0, -size.xd / 2, -size.yd / 2, 0).set(1, 0, 0).endVertex()
-            set(0, -size.xd / 2, +size.yd / 2, 0).set(1, 1, 0).endVertex()
-            set(0, +size.xd / 2, +size.yd / 2, 0).set(1, 1, 1).endVertex()
-            set(0, +size.xd / 2, -size.yd / 2, 0).set(1, 0, 1).endVertex()
+            set(0, -size.xd / 2, -size.yd / 2, 0.0).set(1, 0, 0).endVertex()
+            set(0, -size.xd / 2, +size.yd / 2, 0.0).set(1, 1, 0).endVertex()
+            set(0, +size.xd / 2, +size.yd / 2, 0.0).set(1, 1, 1).endVertex()
+            set(0, +size.xd / 2, -size.yd / 2, 0.0).set(1, 0, 1).endVertex()
         }
         GLStateMachine.blend.disable()
     }
@@ -290,10 +303,72 @@ class ModelRenderer(resourceManager: ResourceManager) {
                 set(0, 32, 0, z).set(1, 0.5, 0.5, 0.5).endVertex()
             }
         }
-        tessellator.draw(GL11.GL_QUADS, formatPC, consumer) {
-            RenderUtil.renderBar(tessellator, vec3Of(50, 100, 75), vec3Of(50, 100, 75), 2.0)
-            RenderUtil.renderBar(tessellator, -vec3Of(50, 100, 75), -vec3Of(50, 100, 75), 2.0)
+//        tessellator.draw(GL11.GL_QUADS, formatPC, consumer) {
+//            RenderUtil.renderBar(tessellator, vec3Of(50, 100, 75), vec3Of(50, 100, 75), 2.0)
+//            RenderUtil.renderBar(tessellator, -vec3Of(50, 100, 75), -vec3Of(50, 100, 75), 2.0)
+//        }
+    }
+
+
+    fun renderTextureGrid() {
+        GLStateMachine.blend.enable()
+        modelTexture.bind()
+        tessellator.draw(GL11.GL_LINES, formatPC, consumer) {
+            for (x in 0..16) {
+                set(0, x, 0, 0).set(1, 0.5, 0.5, 0.5).endVertex()
+                set(0, x, 16, 0).set(1, 0.5, 0.5, 0.5).endVertex()
+            }
+
+            for (z in 0..16) {
+                set(0, 0, z, 0).set(1, 0.5, 0.5, 0.5).endVertex()
+                set(0, 16, z, 0).set(1, 0.5, 0.5, 0.5).endVertex()
+            }
         }
+        GLStateMachine.blend.disable()
+    }
+
+    fun renderUVs(model: Model, selection: Selection) {
+        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE)
+        GL11.glLineWidth(2f)
+        tessellator.draw(GL11.GL_QUADS, formatPC, consumer) {
+            selection.paths.forEach { path ->
+                when (path.level) {
+                    ModelPath.Level.GROUPS -> {
+                        path.getSubPaths(model).forEach { meshPath ->
+                            meshPath.getSubPaths(model).forEach { quadPath ->
+                                val quad = quadPath.getQuad(model)!!
+                                quad.vertex
+                                        .map { it.tex }
+                                        .forEach { set(0, it.x, it.yd, 0).set(1, 1, 0, 0).endVertex() }
+                            }
+                        }
+                    }
+                    ModelPath.Level.MESH -> {
+                        path.getSubPaths(model).forEach { quadPath ->
+                            val quad = quadPath.getQuad(model)!!
+                            quad.vertex
+                                    .map { it.tex }
+                                    .forEach { set(0, it.x, it.yd, 0).set(1, 1, 0, 0).endVertex() }
+                        }
+                    }
+                    ModelPath.Level.QUADS -> {
+                        val quad = path.getQuad(model)!!
+                        quad.vertex
+                                .map { it.tex }
+                                .forEach { set(0, it.x, it.yd, 0).set(1, 1, 0, 0).endVertex() }
+                    }
+                    else -> {
+                    }
+                }
+            }
+        }
+        GL11.glLineWidth(1f)
+        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL)
+    }
+
+    fun startUV() {
+        uvShader.start()
+        uvMatrix.setMatrix4(matrixP * matrixV)
     }
 
     class FormatPC : IFormat {

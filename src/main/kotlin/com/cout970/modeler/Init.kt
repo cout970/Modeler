@@ -5,16 +5,18 @@ import com.cout970.modeler.config.ConfigManager
 import com.cout970.modeler.event.EventController
 import com.cout970.modeler.log.Level
 import com.cout970.modeler.log.log
+import com.cout970.modeler.log.print
 import com.cout970.modeler.model.Mesh
 import com.cout970.modeler.modeleditor.ModelController
 import com.cout970.modeler.view.ViewManager
 import com.cout970.modeler.view.render.RenderManager
 import com.cout970.vector.extensions.vec3Of
+import java.io.File
 
 /**
  * Created by cout970 on 2016/11/29.
  */
-class Init {
+class Init(val programArguments: List<String>) {
 
     lateinit var windowController: WindowController
     lateinit var resourceManager: ResourceManager
@@ -46,7 +48,8 @@ class Init {
         log(Level.FINEST) { "Creating RenderManager" }
         renderManager = RenderManager(viewManager)
         log(Level.FINEST) { "Creating LoopController" }
-        mainLoop = LoopController(listOf(renderManager, viewManager, eventController, modelController, windowController))
+        mainLoop = LoopController(
+                listOf(renderManager, viewManager, eventController, modelController, windowController))
 
         windowController.stop = { mainLoop.stop = true }
         windowController.timer = mainLoop.timer
@@ -56,6 +59,22 @@ class Init {
         log(Level.FINE) { "Loading config" }
         ConfigManager.loadConfig()
         log(Level.FINE) { "Config loaded" }
+
+        if (programArguments.isNotEmpty()) {
+            if (File(programArguments[0]).exists()) {
+                try {
+                    log(Level.NORMAL) { "Loading Project at '${programArguments[0]}'" }
+                    val project = modelController.exportManager.loadProject(programArguments[0])
+                    log(Level.NORMAL) { "Project loaded" }
+                    modelController.project = project
+                } catch (e: Exception) {
+                    log(Level.ERROR) { "Unable to load project file at '${programArguments[0]}'" }
+                    e.print()
+                }
+            } else {
+                log(Level.ERROR) { "Invalid program argument: '${programArguments[0]}' is not a valid path to a save file" }
+            }
+        }
 
         log(Level.FINE) { "Starting GLFW" }
         GLFWLoader.init()

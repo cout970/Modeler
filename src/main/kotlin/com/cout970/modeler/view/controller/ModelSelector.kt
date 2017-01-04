@@ -5,13 +5,12 @@ import com.cout970.glutilities.event.EventMouseClick
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.event.EventController
 import com.cout970.modeler.event.IEventListener
-import com.cout970.modeler.model.Model
 import com.cout970.modeler.modeleditor.ModelController
 import com.cout970.modeler.modeleditor.action.ActionTranslate
 import com.cout970.modeler.modeleditor.selection.SelectionNone
 import com.cout970.modeler.modeleditor.translate
 import com.cout970.modeler.util.*
-import com.cout970.modeler.view.scene.Scene
+import com.cout970.modeler.view.scene.ModelScene
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
 import com.cout970.raytrace.RayTraceUtil
@@ -24,11 +23,10 @@ import org.joml.Vector3d
 /**
  * Created by cout970 on 2016/12/17.
  */
-class ModelSelector(val scene: Scene, val controller: SceneController) {
+class ModelSelector(val scene: ModelScene, val controller: SceneController) {
 
     val modelController: ModelController get() = controller.modelController
     val selectionCenter: IVector3 get() = modelController.selectionManager.selection.getCenter(controller.modelController.model)
-    val center: IVector3 get() = selectionCenter + selectedAxis.axis * offset
 
     var mouseRay: Ray = Ray(vec3Of(0), vec3Of(0))
     var transformationMode = TransformationMode.ROTATION
@@ -37,10 +35,14 @@ class ModelSelector(val scene: Scene, val controller: SceneController) {
     var blockMouse = false
     var blockMousePos = vec2Of(0)
     var offset = 0f
-    var tmpModel: Model? = null
     var lastOffset = 0f
 
     fun update() {
+
+        if (controller.selectedScene === scene && modelController.selectionManager.selection != SelectionNone) {
+            controller.cursorCenter = selectionCenter + selectedAxis.axis * offset
+        }
+
         val matrixMVP = scene.getMatrixMVP()
         val matrix = matrixMVP.toJOML()
         val mousePos = controller.mouse.getMousePos() - scene.absolutePosition
@@ -55,9 +57,9 @@ class ModelSelector(val scene: Scene, val controller: SceneController) {
 
             if (!blockMouse) {
                 val center = selectionCenter
-                val scale = scene.camera.zoom / 10
-                val start = 0.8f * scale
-                val end = 1f * scale
+                val scale = scene.camera.zoom / 10 * Config.cursorArrowsScale
+                val start = 0.8f * scale * Config.cursorArrowsDispersion
+                val end = 1f * scale * Config.cursorArrowsDispersion
                 val size = vec3Of(0.0625) * scale
 
                 val resX = RayTraceUtil.rayTraceBox3(center + vec3Of(start, 0, 0) - size, center + vec3Of(end, 0, 0) + size, mouseRay, FakeRayObstacle)
@@ -84,13 +86,13 @@ class ModelSelector(val scene: Scene, val controller: SceneController) {
             } else {
                 if (!Config.keyBindings.selectModelControls.check(controller.mouse)) {
                     blockMouse = false
-                    tmpModel?.let {
+                    controller.tmpModel?.let {
                         modelController.historyRecord.doAction(ActionTranslate(modelController, it))
                     }
                     selectedAxis = SelectionAxis.NONE
                     offset = 0f
                     lastOffset = 0f
-                    tmpModel = null
+                    controller.tmpModel = null
                 } else {
                     val diff = projectAxis(matrix)
                     val direction = (diff.second - diff.first)
@@ -110,7 +112,8 @@ class ModelSelector(val scene: Scene, val controller: SceneController) {
                     }
                     if (lastOffset != offset) {
                         lastOffset = offset
-                        tmpModel = modelController.model.translate(modelController.selectionManager.selection, selectedAxis, offset)
+                        controller.tmpModel = modelController.model.translate(
+                                modelController.selectionManager.selection, selectedAxis, offset)
                     }
                 }
             }
@@ -159,12 +162,5 @@ class ModelSelector(val scene: Scene, val controller: SceneController) {
                 return false
             }
         })
-    }
-
-    fun getModel(model: Model): Model {
-        if (tmpModel != null) {
-            return tmpModel!!
-        }
-        return model
     }
 }

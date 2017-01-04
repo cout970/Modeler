@@ -8,6 +8,7 @@ import com.cout970.raytrace.RayTraceUtil
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
+import com.google.gson.annotations.Expose
 
 /**
  * Created by cout970 on 2016/11/29.
@@ -15,10 +16,10 @@ import com.cout970.vector.extensions.*
 
 //this class must be immutable
 data class Mesh(
-        val positions: List<IVector3>,
-        val textures: List<IVector2>,
-        val indices: List<QuadIndices>,
-        val transform: Transformation = Transformation.IDENTITY) : IRayObstacle {
+        @Expose val positions: List<IVector3>,
+        @Expose val textures: List<IVector2>,
+        @Expose val indices: List<QuadIndices>,
+        @Expose val transform: Transformation = Transformation.IDENTITY) : IRayObstacle {
 
     fun getQuads(): List<Quad> = indices.map { it.toQuad(positions, textures) }
 
@@ -83,28 +84,35 @@ data class Mesh(
             return quadsToMesh(listOf(
                     //negX
                     Quad.create(vec3Of(n.x, n.y, p.z), vec3Of(n.x, p.y, p.z), vec3Of(n.x, p.y, n.z),
-                                vec3Of(n.x, n.y, n.z)),
+                            vec3Of(n.x, n.y, n.z), 0),
                     //posX
                     Quad.create(vec3Of(p.x, p.y, n.z), vec3Of(p.x, p.y, p.z), vec3Of(p.x, n.y, p.z),
-                                vec3Of(p.x, n.y, n.z)),
+                            vec3Of(p.x, n.y, n.z), 1),
                     //negY
                     Quad.create(vec3Of(p.x, n.y, n.z), vec3Of(p.x, n.y, p.z), vec3Of(n.x, n.y, p.z),
-                                vec3Of(n.x, n.y, n.z)),
+                            vec3Of(n.x, n.y, n.z), 2),
                     //posY
                     Quad.create(vec3Of(n.x, p.y, p.z), vec3Of(p.x, p.y, p.z), vec3Of(p.x, p.y, n.z),
-                                vec3Of(n.x, p.y, n.z)),
+                            vec3Of(n.x, p.y, n.z), 3),
                     //negZ
                     Quad.create(vec3Of(n.x, p.y, n.z), vec3Of(p.x, p.y, n.z), vec3Of(p.x, n.y, n.z),
-                                vec3Of(n.x, n.y, n.z)),
+                            vec3Of(n.x, n.y, n.z), 4),
                     //posZ
                     Quad.create(vec3Of(p.x, n.y, p.z), vec3Of(p.x, p.y, p.z), vec3Of(n.x, p.y, p.z),
-                            vec3Of(n.x, n.y, p.z))), transform)
+                            vec3Of(n.x, n.y, p.z), 5)), transform)
         }
     }
 }
 
-data class QuadIndices(val aP: Int, val aT: Int, val bP: Int, val bT: Int, val cP: Int, val cT: Int, val dP: Int,
-                       val dT: Int) {
+data class QuadIndices(@Expose val aP: Int,
+                       @Expose val aT: Int,
+                       @Expose val bP: Int,
+                       @Expose val bT: Int,
+                       @Expose val cP: Int,
+                       @Expose val cT: Int,
+                       @Expose val dP: Int,
+                       @Expose val dT: Int) {
+
     fun toQuad(pos: List<IVector3>, tex: List<IVector2>): Quad = Quad(
             Vertex(pos[aP], tex[aT]),
             Vertex(pos[bP], tex[bT]),

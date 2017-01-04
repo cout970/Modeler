@@ -4,14 +4,16 @@ import com.cout970.modeler.modeleditor.selection.ModelPath
 import com.cout970.modeler.modeleditor.selection.Selection
 import com.cout970.modeler.modeleditor.selection.SelectionMode
 import com.cout970.modeler.util.flatMapIndexed
+import com.google.gson.annotations.Expose
 
 /**
  * Created by cout970 on 2016/11/29.
  */
 
+// the id is used to get a different hashCode for every model, so this can be used to detect changes
 private var modelIds = 0
 
-data class Model(val objects: List<ModelObject>, val id: Int = modelIds++) {
+data class Model(@Expose val objects: List<ModelObject>, val id: Int = modelIds++) {
 
     val quads: List<Quad> by lazy {
         getPaths(ModelPath.Level.MESH).flatMap { path ->
@@ -99,8 +101,9 @@ data class Model(val objects: List<ModelObject>, val id: Int = modelIds++) {
     }
 }
 
-data class ModelObject(val groups: List<ModelGroup>, val transform: Transformation, val name: String,
-                       val material: Material) {
+data class ModelObject(@Expose val groups: List<ModelGroup>, @Expose val transform: Transformation,
+                       @Expose val name: String,
+                       @Expose val material: Material) {
 
     fun getMeshes() = groups.map { it.meshes }.flatten()
 
@@ -109,7 +112,7 @@ data class ModelObject(val groups: List<ModelGroup>, val transform: Transformati
     fun addAll(groups: List<ModelGroup>): ModelObject = copy(groups + groups)
 }
 
-data class ModelGroup(val meshes: List<Mesh>, val transform: Transformation, val name: String) {
+data class ModelGroup(@Expose val meshes: List<Mesh>, @Expose val transform: Transformation, @Expose val name: String) {
 
     fun getQuads() = meshes.flatMap(Mesh::getQuads)
 
@@ -118,7 +121,7 @@ data class ModelGroup(val meshes: List<Mesh>, val transform: Transformation, val
     fun addAll(meshes: List<Mesh>): ModelGroup = copy(this.meshes + meshes)
 }
 
-sealed class Material(val name: String) {
+sealed class Material(@Expose val name: String) {
 
     class TexturedMaterial(texture: String) : Material(texture)
 

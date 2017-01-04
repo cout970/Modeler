@@ -10,8 +10,9 @@ import com.cout970.modeler.log.print
 
 fun main(args: Array<String>) {
     log(Level.NORMAL) { "Start of log" }
+    log(Level.NORMAL) { "Program arguments: '${args.joinToString()}'" }
     try {
-        Init().run()
+        Init(args.toList()).run()
     } catch (e: Exception) {
         e.print()
     } finally {

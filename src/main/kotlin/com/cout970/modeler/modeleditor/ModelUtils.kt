@@ -77,3 +77,31 @@ fun Model.translate(selection: Selection, axis: SelectionAxis, offset: Float): M
         else -> this
     }
 }
+
+//fun updateTextures(): Mesh {
+//    val mapIndexes = mutableMapOf<Int, Int>()
+//    var index = 0
+//    val textures = indices.flatMap { quad ->
+//        val rayQuad = quad.toQuad(positions, textures)
+//        val size = Math.max(rayQuad.a.pos distance rayQuad.b.pos, Math.max(rayQuad.b.pos distance rayQuad.c.pos,
+//                Math.max(rayQuad.c.pos distance rayQuad.d.pos, rayQuad.d.pos distance rayQuad.a.pos)))
+//
+//        mapIndexes += quad.aT to index
+//        mapIndexes += quad.bT to index + 1
+//        mapIndexes += quad.cT to index + 2
+//        mapIndexes += quad.dT to index + 3
+//        index += 4
+//        listOf(vec2Of(0, 0) * size,
+//                vec2Of(1, 0) * size,
+//                vec2Of(1, 1) * size,
+//                vec2Of(0, 1) * size)
+//
+//    }
+//    return Mesh(positions, textures, indices.map {
+//        QuadIndices(
+//                it.aP, mapIndexes[it.aT]!!,
+//                it.bP, mapIndexes[it.bT]!!,
+//                it.cP, mapIndexes[it.cT]!!,
+//                it.dP, mapIndexes[it.dT]!!)
+//    })
+//}

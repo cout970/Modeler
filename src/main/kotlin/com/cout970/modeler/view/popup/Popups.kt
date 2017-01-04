@@ -2,6 +2,7 @@ package com.cout970.modeler.view.popup
 
 import com.cout970.modeler.export.ExportFormat
 import com.cout970.modeler.modeleditor.ModelController
+import com.cout970.modeler.project.Project
 import org.lwjgl.PointerBuffer
 import org.lwjgl.system.MemoryUtil
 import java.awt.Point
@@ -34,8 +35,24 @@ private val exportExtensionsObj: PointerBuffer = MemoryUtil.memAllocPointer(1).a
     flip()
 }
 
-fun getExportFileExtensions(format: ExportFormat): PointerBuffer {
-    return exportExtensionsObj
+private var lastSaveFile: String? = null
+
+fun saveProject(modelController: ModelController) {
+    if (lastSaveFile == null) {
+        saveProjectAs(modelController)
+    } else {
+        saveProject(modelController, modelController.project)
+    }
+}
+
+fun saveProjectAs(modelController: ModelController) {
+    //TODO
+    lastSaveFile = "I:/newWorkspace/Proyectos/Java_Kotlin/Modeler/out/artifacts/modeler_main_jar2/project2.tcnx"
+    saveProject(modelController, modelController.project)
+}
+
+private fun saveProject(modelController: ModelController, project: Project) {
+    modelController.exportManager.saveProject(lastSaveFile!!, modelController.project)
 }
 
 fun showImportModelPopup(modelController: ModelController) {
@@ -56,6 +73,10 @@ fun showExportModelPopup(modelController: ModelController) {
 
 fun Missing(thing: String) {
     JOptionPane.showMessageDialog(null, "Operation not implemented yet: $thing")
+}
+
+fun getExportFileExtensions(format: ExportFormat): PointerBuffer {
+    return exportExtensionsObj
 }
 
 fun JDialog.center() {

@@ -14,4 +14,8 @@ object Config {
     var mouseRotationSpeedY: Float = 0.5f
     var cameraScrollSpeed: Float = 4f
     var logLevel: Level = Level.FINE
+    var cursorArrowsDispersion: Float = 1f
+    var cursorArrowsScale: Float = 1.0f
+    var selectionThickness: Float = 0.2f
+    var perspectiveFov: Float = 45f
 }

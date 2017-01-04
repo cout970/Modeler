@@ -1,6 +1,7 @@
 package com.cout970.modeler.view.scene
 
 import com.cout970.modeler.util.toIMatrix
+import com.cout970.modeler.util.toRads
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.xd
@@ -19,15 +20,34 @@ data class Camera(
 ) {
 
     companion object {
-        val DEFAULT = Camera(Vector3.ORIGIN, 0.0, 0.0, 32.0)
+        val DEFAULT = Camera(Vector3.ORIGIN, 45.0.toRads(), -45.0.toRads(), 64.0)
     }
 
-    val matrix by lazy {
+    val matrixForPerspective by lazy {
         Matrix4d().apply {
             translate(0.0, 0.0, -zoom)
             rotate(angleX, 1.0, 0.0, 0.0)
             rotate(angleY, 0.0, 1.0, 0.0)
+            scale(0.5)
             translate(position.xd, position.yd, position.zd)
+        }.toIMatrix()
+    }
+
+    val matrixForOrtho by lazy {
+        Matrix4d().apply {
+            translate(0.0, 0.0, -64.0)
+            rotate(angleX, 1.0, 0.0, 0.0)
+            rotate(angleY, 0.0, 1.0, 0.0)
+            scale(2 / zoom)
+            translate(position.xd, position.yd, position.zd)
+        }.toIMatrix()
+    }
+
+    val matrixForUV by lazy {
+        Matrix4d().apply {
+            translate(0.0, 0.0, -64.0)
+            scale(2 / zoom)
+            translate(position.xd, position.yd, 0.0)
         }.toIMatrix()
     }
 }
