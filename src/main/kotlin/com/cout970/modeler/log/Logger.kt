@@ -11,7 +11,7 @@ import java.util.*
 
 object Logger {
 
-    val DEBUG = false
+    val DEBUG = true
     var level = Config.logLevel
     val stream = (if (DEBUG) System.out else object : PrintStream(File(getFileName())) {
         override fun println() {

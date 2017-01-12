@@ -244,6 +244,57 @@ class ModelRenderer(resourceManager: ResourceManager) {
         })
     }
 
+    fun renderRotation(center: IVector3, selector: ModelSelector, selection: Selection, camera: Camera) {
+
+        GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
+        val selX = selector.selectedAxis == SelectionAxis.X || selector.phantomSelectedAxis == SelectionAxis.X
+        val selY = selector.selectedAxis == SelectionAxis.Y || selector.phantomSelectedAxis == SelectionAxis.Y
+        val selZ = selector.selectedAxis == SelectionAxis.Z || selector.phantomSelectedAxis == SelectionAxis.Z
+
+        tessellator.draw(GL11.GL_QUADS, formatPC, consumer) {
+            val scale = camera.zoom / 10 * Config.cursorArrowsScale
+            val start = 1.0f * scale * Config.cursorArrowsDispersion
+            val end = 1.0f * scale * Config.cursorArrowsDispersion
+            val size = 0.0625 * scale
+
+            if (selection.mode != SelectionMode.VERTEX) {
+                RenderUtil.renderBar(tessellator, center, center, size * 1.5, vec3Of(1, 1, 1))
+            }
+
+            val tmp = scale * 0.15
+
+            if (selector.selectedAxis == SelectionAxis.X) {
+                RenderUtil.renderBar(tessellator, center + vec3Of(start, 0, tmp), center + vec3Of(end, 0, -tmp), size,
+                        color = vec3Of(1, 0, 0))
+
+            } else if (selector.selectedAxis == SelectionAxis.Y) {
+                RenderUtil.renderBar(tessellator, center + vec3Of(tmp, start, 0), center + vec3Of(-tmp, end, 0), size,
+                        color = vec3Of(0, 1, 0))
+
+            } else if (selector.selectedAxis == SelectionAxis.Z) {
+                RenderUtil.renderBar(tessellator, center + vec3Of(0, tmp, start), center + vec3Of(0, -tmp, end), size,
+                        color = vec3Of(0, 0, 1))
+
+            } else {
+                RenderUtil.renderBar(tessellator, center + vec3Of(start, 0, tmp), center + vec3Of(end, 0, -tmp),
+                        if (selX) size * 1.5 else size, color = vec3Of(1, 0, 0))
+                RenderUtil.renderBar(tessellator, center + vec3Of(tmp, start, 0), center + vec3Of(-tmp, end, 0),
+                        if (selY) size * 1.5 else size, color = vec3Of(0, 1, 0))
+                RenderUtil.renderBar(tessellator, center + vec3Of(0, tmp, start), center + vec3Of(0, -tmp, end),
+                        if (selZ) size * 1.5 else size, color = vec3Of(0, 0, 1))
+            }
+            if (selX || selY || selZ) {
+                val axis = when {
+                    selX -> SelectionAxis.X
+                    selY -> SelectionAxis.Y
+                    selZ -> SelectionAxis.Z
+                    else -> SelectionAxis.NONE
+                }
+                RenderUtil.renderCircle(tessellator, center, axis, scale, scale / 16)
+            }
+        }
+    }
+
     fun renderTranslation(center: IVector3, selector: ModelSelector, selection: Selection, camera: Camera) {
 
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
@@ -261,11 +312,11 @@ class ModelRenderer(resourceManager: ResourceManager) {
                 RenderUtil.renderBar(tessellator, center, center, size * 1.5, vec3Of(1, 1, 1))
             }
             RenderUtil.renderBar(tessellator, center + vec3Of(start, 0, 0), center + vec3Of(end, 0, 0),
-                    if (selX) size * 1.5 else size, col = vec3Of(1, 0, 0))
+                    if (selX) size * 1.5 else size, color = vec3Of(1, 0, 0))
             RenderUtil.renderBar(tessellator, center + vec3Of(0, start, 0), center + vec3Of(0, end, 0),
-                    if (selY) size * 1.5 else size, col = vec3Of(0, 1, 0))
+                    if (selY) size * 1.5 else size, color = vec3Of(0, 1, 0))
             RenderUtil.renderBar(tessellator, center + vec3Of(0, 0, start), center + vec3Of(0, 0, end),
-                    if (selZ) size * 1.5 else size, col = vec3Of(0, 0, 1))
+                    if (selZ) size * 1.5 else size, color = vec3Of(0, 0, 1))
         }
     }
 
@@ -303,12 +354,7 @@ class ModelRenderer(resourceManager: ResourceManager) {
                 set(0, 32, 0, z).set(1, 0.5, 0.5, 0.5).endVertex()
             }
         }
-//        tessellator.draw(GL11.GL_QUADS, formatPC, consumer) {
-//            RenderUtil.renderBar(tessellator, vec3Of(50, 100, 75), vec3Of(50, 100, 75), 2.0)
-//            RenderUtil.renderBar(tessellator, -vec3Of(50, 100, 75), -vec3Of(50, 100, 75), 2.0)
-//        }
     }
-
 
     fun renderTextureGrid() {
         GLStateMachine.blend.enable()
@@ -373,8 +419,8 @@ class ModelRenderer(resourceManager: ResourceManager) {
 
     class FormatPC : IFormat {
 
-        var bufferPos = Buffer(IBuffer.BufferType.FLOAT, 524288, 3)
-        var bufferCol = Buffer(IBuffer.BufferType.FLOAT, 524288, 3)
+        var bufferPos = Buffer(IBuffer.BufferType.FLOAT, 524288 * 16, 3)
+        var bufferCol = Buffer(IBuffer.BufferType.FLOAT, 524288 * 16, 3)
 
         override fun getBuffers(): List<IBuffer> = listOf(bufferPos, bufferCol)
 

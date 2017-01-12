@@ -75,7 +75,7 @@ class SceneController(val viewManager: ViewManager, val modelController: ModelCo
         when (scenes.size) {
             1 -> scenes[0].apply {
                 size = contentPanel.size
-                position = contentPanel.position
+                position = Vector2f(0f, 0f)
             }
             2 -> {
                 scenes[0].apply {

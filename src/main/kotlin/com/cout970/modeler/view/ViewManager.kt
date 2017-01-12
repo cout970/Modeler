@@ -8,7 +8,6 @@ import com.cout970.modeler.view.controller.SceneController
 import com.cout970.modeler.view.module.*
 import com.cout970.modeler.view.render.RenderManager
 import com.cout970.modeler.view.scene.ModelScene
-import com.cout970.modeler.view.scene.TextureScene
 import com.cout970.vector.api.IVector2
 
 /**
@@ -31,7 +30,7 @@ class ViewManager : ITickeable {
 
         sceneController = SceneController(this, modelController)
         sceneController.scenes += ModelScene(sceneController)
-        sceneController.scenes += TextureScene(sceneController)
+//        sceneController.scenes += TextureScene(sceneController)
         sceneController.init()
 
         moduleController = ModuleController(this, modelController)

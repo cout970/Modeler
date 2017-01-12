@@ -4,6 +4,7 @@ import com.cout970.glutilities.tessellator.Tessellator
 import com.cout970.modeler.model.Mesh
 import com.cout970.modeler.model.Quad
 import com.cout970.modeler.model.Transformation
+import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
@@ -15,7 +16,8 @@ import org.joml.Vector3d
  */
 object RenderUtil {
 
-    fun renderBar(tessellator: Tessellator, a_: IVector3, b_: IVector3, d: Double = 0.1, col: IVector3 = vec3Of(1, 1, 0)) {
+    fun renderBar(tessellator: Tessellator, a_: IVector3, b_: IVector3, size: Double = 0.1,
+                  color: IVector3 = vec3Of(1, 1, 0)) {
 
         val a = a_
         val b = b_
@@ -26,12 +28,39 @@ object RenderUtil {
         val rot: IQuaternion = if (b != a) quatOf(q.x, q.y, q.z, q.w) else Quaternion.IDENTITY
 
         val matrix = Transformation(a, rot, vec3Of(1)).matrix
-        val mesh = Mesh.createCube(vec3Of(a.distance(b) + d, d, d), offset = vec3Of(-d / 2), centered = false)
+        val mesh = Mesh.createCube(vec3Of(a.distance(b) + size, size, size), offset = vec3Of(-size / 2),
+                centered = false)
 
         tessellator.apply {
             for ((pos) in mesh.getQuads().map { it.transform(matrix) }.flatMap(Quad::vertex)) {
-                set(0, pos.x, pos.y, pos.z).set(1, col.x, col.y, col.z).endVertex()
+                set(0, pos.x, pos.y, pos.z).set(1, color.x, color.y, color.z).endVertex()
             }
+        }
+    }
+
+    fun renderCircle(t: Tessellator, center: IVector3, axis: SelectionAxis, radius: Double, size: Double = 0.05,
+                     color: IVector3 = vec3Of(1, 1, 1)) {
+        for (i in 0..90) {
+            val angle0 = Math.toRadians(i.toDouble() * 4)
+            val angle1 = Math.toRadians(i.toDouble() * 4 + 4)
+
+            val start = if (axis == SelectionAxis.Y) {
+                vec3Of(Math.sin(angle0), Math.cos(angle0), 0)
+            } else if (axis == SelectionAxis.Z) {
+                vec3Of(0, Math.sin(angle0), Math.cos(angle0))
+            } else {
+                vec3Of(Math.sin(angle0), 0, Math.cos(angle0))
+            }
+
+            val end = if (axis == SelectionAxis.Y) {
+                vec3Of(Math.sin(angle1), Math.cos(angle1), 0)
+            } else if (axis == SelectionAxis.Z) {
+                vec3Of(0, Math.sin(angle1), Math.cos(angle1))
+            } else {
+                vec3Of(Math.sin(angle1), 0, Math.cos(angle1))
+            }
+
+            renderBar(t, start * radius + center, end * radius + center, size, color)
         }
     }
 }

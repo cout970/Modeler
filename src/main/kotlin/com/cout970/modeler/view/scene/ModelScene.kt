@@ -56,6 +56,7 @@ class ModelScene(sceneController: SceneController) : Scene(sceneController) {
             renderExtras()
             if (selection != SelectionNone && selector.transformationMode != TransformationMode.NONE) {
                 renderTranslation(sceneController.cursorCenter, selector, selection, camera)
+//                renderRotation(sceneController.cursorCenter, selector, selection, camera)
             }
             if (Config.keyBindings.moveCamera.check(sceneController.mouse) || Config.keyBindings.rotateCamera.check(
                     sceneController.mouse)) {

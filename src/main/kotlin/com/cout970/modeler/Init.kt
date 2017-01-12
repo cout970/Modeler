@@ -6,11 +6,10 @@ import com.cout970.modeler.event.EventController
 import com.cout970.modeler.log.Level
 import com.cout970.modeler.log.log
 import com.cout970.modeler.log.print
-import com.cout970.modeler.model.Mesh
 import com.cout970.modeler.modeleditor.ModelController
+import com.cout970.modeler.project.ProjectManager
 import com.cout970.modeler.view.ViewManager
 import com.cout970.modeler.view.render.RenderManager
-import com.cout970.vector.extensions.vec3Of
 import java.io.File
 
 /**
@@ -18,23 +17,16 @@ import java.io.File
  */
 class Init(val programArguments: List<String>) {
 
-    lateinit var windowController: WindowController
-    lateinit var resourceManager: ResourceManager
-    lateinit var modelController: ModelController
-    lateinit var eventController: EventController
-    lateinit var viewManager: ViewManager
-    lateinit var renderManager: RenderManager
-    lateinit var mainLoop: LoopController
+    val windowController: WindowController
+    val resourceManager: ResourceManager
+    val modelController: ModelController
+    val eventController: EventController
+    val viewManager: ViewManager
+    val renderManager: RenderManager
+    val mainLoop: LoopController
+    val projectManager: ProjectManager
 
-    fun run() {
-        start()
-        log(Level.FINE) { "Starting loop" }
-        mainLoop.run()
-        log(Level.FINE) { "Ending loop" }
-        stop()
-    }
-
-    private fun start() {
+    init {
         log(Level.FINEST) { "Creating WindowController" }
         windowController = WindowController()
         log(Level.FINEST) { "Creating ResourceManager" }
@@ -47,6 +39,7 @@ class Init(val programArguments: List<String>) {
         viewManager = ViewManager()
         log(Level.FINEST) { "Creating RenderManager" }
         renderManager = RenderManager(viewManager)
+        projectManager = ProjectManager()
         log(Level.FINEST) { "Creating LoopController" }
         mainLoop = LoopController(
                 listOf(renderManager, viewManager, eventController, modelController, windowController))
@@ -92,8 +85,15 @@ class Init(val programArguments: List<String>) {
         log(Level.FINEST) { "Registering listeners for moduleController" }
         viewManager.moduleController.registerListeners(eventController)
 
-        log(Level.FINE) { "Adding placeholder cube" }
-        modelController.inserter.insertComponent(Mesh.createCube(vec3Of(16, 16, 16)))
+//        log(Level.FINE) { "Adding placeholder cube" }
+//        modelController.inserter.insertComponent(Mesh.createCube(vec3Of(16, 16, 16)))
+    }
+
+    fun run() {
+        log(Level.FINE) { "Starting loop" }
+        mainLoop.run()
+        log(Level.FINE) { "Ending loop" }
+        stop()
     }
 
     private fun stop() {
