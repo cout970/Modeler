@@ -50,7 +50,7 @@ class TextureScene(controller: SceneController) : Scene(controller) {
     }
 
     override fun update() {
-
+        super.update()
     }
 
     override fun registerListeners(eventController: EventController) {

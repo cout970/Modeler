@@ -353,6 +353,16 @@ class ModelRenderer(resourceManager: ResourceManager) {
                 set(0, -16, 0, z).set(1, 0.5, 0.5, 0.5).endVertex()
                 set(0, 32, 0, z).set(1, 0.5, 0.5, 0.5).endVertex()
             }
+
+            for (x in -7..8) {
+                set(0, x * 16, 0, -7 * 16).set(1, 1.0, 0.0, 0.0).endVertex()
+                set(0, x * 16, 0, 8 * 16).set(1, 1.0, 0.0, 0.0).endVertex()
+            }
+
+            for (z in -7..8) {
+                set(0, -7 * 16, 0, z * 16).set(1, 1.0, 0.0, 0.0).endVertex()
+                set(0, 8 * 16, 0, z * 16).set(1, 1.0, 0.0, 0.0).endVertex()
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 package com.cout970.modeler.config
 
+import com.cout970.modeler.log.Logger
 import com.cout970.modeler.util.createIfNeeded
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
@@ -13,7 +14,7 @@ object ConfigManager {
 
     fun loadConfig() {
         val file = File("config.json")
-        if (file.exists()) {
+        if (file.exists() && !Logger.DEBUG) {
             val gson = GsonBuilder().setLenient().setPrettyPrinting().create()
             val json = JsonParser().parse(file.createIfNeeded().reader()).asJsonObject
 

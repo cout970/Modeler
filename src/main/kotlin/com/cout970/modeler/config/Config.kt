@@ -12,7 +12,7 @@ object Config {
     var mouseTranslateSpeedY: Float = 5f
     var mouseRotationSpeedX: Float = 0.5f
     var mouseRotationSpeedY: Float = 0.5f
-    var cameraScrollSpeed: Float = 4f
+    var cameraScrollSpeed: Float = 10f
     var logLevel: Level = Level.FINE
     var cursorArrowsDispersion: Float = 1f
     var cursorArrowsScale: Float = 1.0f

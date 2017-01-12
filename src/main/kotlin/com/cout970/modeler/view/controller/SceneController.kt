@@ -14,6 +14,7 @@ import com.cout970.modeler.model.Model
 import com.cout970.modeler.modeleditor.ModelController
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.ViewManager
+import com.cout970.modeler.view.scene.ModelScene
 import com.cout970.modeler.view.scene.Scene
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
@@ -27,6 +28,7 @@ class SceneController(val viewManager: ViewManager, val modelController: ModelCo
 
     val scenes = mutableListOf<Scene>()
     lateinit var selectedScene: Scene
+    val timer get() = viewManager.renderManager.timer
 
     var cursorCenter: IVector3 = vec3Of(0)
     var tmpModel: Model? = null
@@ -48,27 +50,34 @@ class SceneController(val viewManager: ViewManager, val modelController: ModelCo
 
     fun update() {
         mouse.update()
+        val time = 1 / 60.0
 
         if (Config.keyBindings.moveCamera.check(mouse)) {
-            val rotations = vec2Of(selectedScene.camera.angleY, selectedScene.camera.angleX).toDegrees()
+            val camera = selectedScene.camera
+            val rotations = vec2Of(camera.angleY, camera.angleX).toDegrees()
             val axisX = vec2Of(Math.cos(rotations.x.toRads()), Math.sin(rotations.x.toRads()))
             var axisY = vec2Of(Math.cos((rotations.xd - 90).toRads()), Math.sin((rotations.xd - 90).toRads()))
             axisY *= Math.sin(rotations.y.toRads())
             var a = vec3Of(axisX.x, 0.0, axisX.y)
             var b = vec3Of(axisY.x, Math.cos(rotations.y.toRads()), axisY.y)
+            val diff = mouse.getMousePosDiff()
 
-            a = a.normalize() * (mouse.getMousePosDiff().xd * viewManager.renderManager.timer.delta * Config.mouseTranslateSpeedX)
-            b = b.normalize() * (-mouse.getMousePosDiff().yd * viewManager.renderManager.timer.delta * Config.mouseTranslateSpeedY)
+            a = a.normalize() * (diff.xd * Config.mouseTranslateSpeedX * time * Math.sqrt(camera.zoom))
+            b = b.normalize() * (-diff.yd * Config.mouseTranslateSpeedY * time * Math.sqrt(camera.zoom))
 
             selectedScene.camera = selectedScene.camera.run { copy(position = position + a + b) }
         } else if (Config.keyBindings.rotateCamera.check(mouse)) {
-            selectedScene.camera = selectedScene.camera.run {
-                copy(angleY = angleY + mouse.getMousePosDiff().xd * viewManager.renderManager.timer.delta * Config.mouseRotationSpeedX)
-            }
-            selectedScene.camera = selectedScene.camera.run {
-                copy(angleX = angleX + mouse.getMousePosDiff().yd * viewManager.renderManager.timer.delta * Config.mouseRotationSpeedY)
+            selectedScene.apply {
+                val diff = mouse.getMousePosDiff()
+                camera = camera.run {
+                    copy(angleY = angleY + diff.xd * Config.mouseRotationSpeedX * time)
+                }
+                camera = camera.run {
+                    copy(angleX = angleX + diff.yd * Config.mouseRotationSpeedY * time)
+                }
             }
         }
+
 
         scenes.forEach(Scene::update)
         val contentPanel = viewManager.root.contentPanel
@@ -134,14 +143,14 @@ class SceneController(val viewManager: ViewManager, val modelController: ModelCo
                             val scroll = -e.offsetY * Config.cameraScrollSpeed
                             if (camera.zoom <= 10) {
                                 if (camera.zoom <= 3) {
-                                    if (camera.zoom + scroll / 8 > 0.5) {
-                                        camera = camera.copy(zoom = camera.zoom + scroll / 8)
+                                    if (camera.zoom + scroll / 20 > 0.5) {
+                                        desiredZoom = camera.zoom + scroll / 20
                                     }
                                 } else {
-                                    camera = camera.copy(zoom = camera.zoom + scroll / 4)
+                                    desiredZoom = camera.zoom + scroll / 10
                                 }
                             } else {
-                                camera = camera.copy(zoom = camera.zoom + scroll)
+                                desiredZoom = camera.zoom + scroll
                             }
                         }
                     }
@@ -177,6 +186,10 @@ class SceneController(val viewManager: ViewManager, val modelController: ModelCo
                         lastOption++
                         if (lastOption > 3) {
                             lastOption = 0
+                        }
+                    } else if (Config.keyBindings.switchOrthoProjection.keycode == e.keycode) {
+                        (selectedScene as? ModelScene)?.apply {
+                            perspective = !perspective
                         }
                     }
                 }

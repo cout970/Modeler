@@ -12,9 +12,17 @@ import org.liquidengine.legui.util.ColorConstants
 abstract class Scene(val sceneController: SceneController) : Panel() {
 
     var camera = Camera.DEFAULT
+    var desiredZoom = camera.zoom
 
     abstract fun render(renderManager: RenderManager)
-    abstract fun update()
+
+    open fun update() {
+        if (Math.abs(desiredZoom - camera.zoom) > 0.01) {
+            camera = camera.copy(
+                    zoom = camera.zoom + (desiredZoom - camera.zoom) * Math.min(1.0, sceneController.timer.delta * 20))
+        }
+    }
+
     abstract fun registerListeners(eventController: EventController)
 
     init {

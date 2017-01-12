@@ -18,4 +18,5 @@ class KeyBindings {
     var disableGridMotion = KeyBind(Keyboard.KEY_LEFT_CONTROL)
     var disablePixelGridMotion = KeyBind(Keyboard.KEY_LEFT_SHIFT)
     var switchCameraAxis = KeyBind(Keyboard.KEY_P)
+    var switchOrthoProjection = KeyBind(Keyboard.KEY_O)
 }

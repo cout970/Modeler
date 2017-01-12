@@ -24,6 +24,7 @@ class ModelScene(sceneController: SceneController) : Scene(sceneController) {
     var perspective = true
 
     override fun update() {
+        super.update()
         modelSelector.update()
     }
 
