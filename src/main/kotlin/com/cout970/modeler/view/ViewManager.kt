@@ -30,8 +30,11 @@ class ViewManager : ITickeable {
 
         sceneController = SceneController(this, modelController)
         sceneController.scenes += ModelScene(sceneController)
+        sceneController.scenes += ModelScene(sceneController)
+        sceneController.scenes += ModelScene(sceneController)
+        sceneController.scenes += ModelScene(sceneController)
 //        sceneController.scenes += TextureScene(sceneController)
-        sceneController.init()
+        sceneController.refreshScenes()
 
         moduleController = ModuleController(this, modelController)
 

@@ -39,9 +39,10 @@ class SceneController(val viewManager: ViewManager, val modelController: ModelCo
     lateinit var mouse: Mouse
     lateinit var keyboard: Keyboard
 
-    fun init() {
+    fun refreshScenes() {
         selectedScene = scenes.first()
         viewManager.root.contentPanel.apply {
+            clearComponents()
             for (scene in scenes) {
                 addComponent(scene)
             }

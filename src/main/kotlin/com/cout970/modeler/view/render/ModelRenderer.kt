@@ -322,6 +322,7 @@ class ModelRenderer(resourceManager: ResourceManager) {
 
     fun renderCursor() {
         val size = vec2Of(100)
+        GLStateMachine.depthTest.disable()
         GLStateMachine.blend.enable()
         cursorTexture.bind()
         tessellator.draw(GL11.GL_QUADS, formatPT, consumer) {
@@ -331,6 +332,7 @@ class ModelRenderer(resourceManager: ResourceManager) {
             set(0, +size.xd / 2, -size.yd / 2, 0.0).set(1, 0, 1).endVertex()
         }
         GLStateMachine.blend.disable()
+        GLStateMachine.depthTest.enable()
     }
 
     fun renderExtras() {
