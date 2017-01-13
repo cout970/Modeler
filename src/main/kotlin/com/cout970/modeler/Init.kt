@@ -88,7 +88,7 @@ class Init(val programArguments: List<String>) {
         viewManager.moduleController.registerListeners(eventController)
 
         log(Level.FINE) { "Adding placeholder cube" }
-        modelController.inserter.insertComponent(Mesh.createCube(vec3Of(16, 16, 16)))
+        modelController.inserter.insertMesh(Mesh.createCube(vec3Of(16, 16, 16)))
     }
 
     fun run() {

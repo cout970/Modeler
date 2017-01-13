@@ -3,7 +3,9 @@ package com.cout970.modeler.export
 import com.cout970.modeler.log.Level
 import com.cout970.modeler.log.log
 import com.cout970.modeler.log.print
-import com.cout970.modeler.model.*
+import com.cout970.modeler.model.Mesh
+import com.cout970.modeler.model.Model
+import com.cout970.modeler.model.ModelGroup
 import com.cout970.modeler.modeleditor.rotatePointAroundPivot
 import com.cout970.vector.extensions.*
 import org.w3c.dom.Node
@@ -83,8 +85,7 @@ class TcnImporter {
                     e.print()
                 }
             }
-            val groups = listOf(ModelGroup(meshes, name = "Group_1"))
-            Model(listOf(ModelObject(groups, name = "Tcn_model", material = MaterialNone)))
+            Model(listOf(ModelGroup(meshes, name = "TcnModel")))
         }
     }
 

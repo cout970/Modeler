@@ -1,8 +1,8 @@
 package com.cout970.modeler.util
 
 import com.cout970.modeler.model.Mesh
+import com.cout970.modeler.model.Model
 import com.cout970.modeler.model.ModelGroup
-import com.cout970.modeler.model.ModelObject
 import com.cout970.modeler.modeleditor.selection.ModelPath
 import com.cout970.modeler.modeleditor.selection.Selection
 import java.io.File
@@ -49,21 +49,10 @@ inline fun <T> Iterable<T>.filterNotIndexed(predicate: (index: Int, T) -> Boolea
     return destination
 }
 
-inline fun List<ModelObject>.replaceSelected(sel: Selection,
-                                             func: (objIndex: Int, ModelObject) -> ModelObject): List<ModelObject> {
-    return this.mapIndexed { index, modelObject ->
-        if (sel.containsSelectedElements(ModelPath(index))) {
-            func(index, modelObject)
-        } else {
-            modelObject
-        }
-    }
-}
-
-inline fun List<ModelGroup>.replaceSelected(sel: Selection, objIndex: Int,
+inline fun List<ModelGroup>.replaceSelected(sel: Selection,
                                             func: (groupIndex: Int, ModelGroup) -> ModelGroup): List<ModelGroup> {
     return this.mapIndexed { index, modelGroup ->
-        if (sel.containsSelectedElements(ModelPath(objIndex, index))) {
+        if (sel.containsSelectedElements(ModelPath(index))) {
             func(index, modelGroup)
         } else {
             modelGroup
@@ -71,13 +60,27 @@ inline fun List<ModelGroup>.replaceSelected(sel: Selection, objIndex: Int,
     }
 }
 
-inline fun List<Mesh>.replaceSelected(sel: Selection, objIndex: Int, groupIndex: Int,
+inline fun List<Mesh>.replaceSelected(sel: Selection, groupIndex: Int,
                                       func: (groupIndex: Int, Mesh) -> Mesh): List<Mesh> {
     return this.mapIndexed { index, mesh ->
-        if (sel.containsSelectedElements(ModelPath(objIndex, groupIndex, index))) {
+        if (sel.containsSelectedElements(ModelPath(groupIndex, index))) {
             func(index, mesh)
         } else {
             mesh
         }
     }
+}
+
+fun Model.applyGroup(selection: Selection, groupFunc: (ModelGroup) -> ModelGroup): Model {
+    return copy(groups.replaceSelected(selection) { _, group ->
+        groupFunc(group)
+    })
+}
+
+fun Model.applyMesh(selection: Selection, meshFunc: (Mesh) -> Mesh): Model {
+    return copy(groups.replaceSelected(selection) { groupIndex, group ->
+        group.copy(group.meshes.replaceSelected(selection, groupIndex) { _, mesh ->
+            meshFunc(mesh)
+        })
+    })
 }

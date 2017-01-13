@@ -21,50 +21,42 @@ class ActionPaste(val selection: Selection, val copiedModel: Model, val modelCon
     override fun run() {
         when (selection.mode) {
             SelectionMode.GROUP -> {
-                val groups = copiedModel.objects.flatMapIndexed { objIndex, (groups) ->
+                val groups = copiedModel.groups.flatMapIndexed { groupIndex, (groups) ->
                     groups.filterIndexed { groupIndex, _ ->
-                        selection.isSelected(ModelPath(objIndex, groupIndex))
+                        selection.isSelected(ModelPath(groupIndex, groupIndex))
                     }
                 }
-                val insertSelection = SelectionGroup(listOf(modelController.inserter.insertPath))
-                val newModel = model.copy(model.objects.replaceSelected(insertSelection, { _, obj ->
-                    obj.addAll(groups)
+                val insertSelection = SelectionGroup(listOf(ModelPath(modelController.inserter.insertPath)))
+                val newModel = model.copy(model.groups.replaceSelected(insertSelection, { _, group ->
+                    group.addAll(groups)
                 }))
                 modelController.updateModel(newModel)
             }
             SelectionMode.MESH -> {
-                val meshes = copiedModel.objects.flatMapIndexed { objIndex, obj ->
-                    obj.groups.flatMapIndexed { groupIndex, group ->
-                        group.meshes.filterIndexed { meshIndex, mesh ->
-                            selection.isSelected(ModelPath(objIndex, groupIndex, meshIndex))
-                        }
+                val meshes = copiedModel.groups.flatMapIndexed { groupIndex, group ->
+                    group.meshes.filterIndexed { meshIndex, mesh ->
+                        selection.isSelected(ModelPath(groupIndex, meshIndex))
                     }
                 }
-                val insertSelection = SelectionGroup(listOf(modelController.inserter.insertPath))
-                val newModel = model.copy(model.objects.replaceSelected(insertSelection) { objIndex, obj ->
-                    obj.copy(obj.groups.replaceSelected(insertSelection, objIndex) { _, group ->
-                        group.addAll(meshes)
-                    })
+                val insertSelection = SelectionGroup(listOf(ModelPath(modelController.inserter.insertPath)))
+                val newModel = model.copy(model.groups.replaceSelected(insertSelection) { _, group ->
+                    group.addAll(meshes)
                 })
                 modelController.updateModel(newModel)
             }
             SelectionMode.QUAD -> {
-                val quadMeshPairs = copiedModel.objects.flatMapIndexed { objIndex, obj ->
-                    obj.groups.flatMapIndexed { groupIndex, group ->
-                        group.meshes.flatMapIndexed { meshIndex, mesh ->
-                            mesh.getQuads().filterIndexed { quadIndex, quad ->
-                                selection.isSelected(ModelPath(objIndex, groupIndex, meshIndex, quadIndex))
-                            }
+                val quadMeshPairs = copiedModel.groups.flatMapIndexed { groupIndex, group ->
+                    group.meshes.flatMapIndexed { meshIndex, mesh ->
+                        mesh.getQuads().filterIndexed { quadIndex, quad ->
+                            selection.isSelected(ModelPath(groupIndex, meshIndex, quadIndex))
                         }
                     }
                 }
                 val meshes = quadMeshPairs.map { quad -> Mesh.quadsToMesh(listOf(quad)) }
 
-                val insertSelection = SelectionGroup(listOf(modelController.inserter.insertPath))
-                val newModel = model.copy(model.objects.replaceSelected(insertSelection) { objIndex, obj ->
-                    obj.copy(obj.groups.replaceSelected(insertSelection, objIndex) { _, group ->
-                        group.addAll(meshes)
-                    })
+                val insertSelection = SelectionGroup(listOf(ModelPath(modelController.inserter.insertPath)))
+                val newModel = model.copy(model.groups.replaceSelected(insertSelection) { _, group ->
+                    group.addAll(meshes)
                 })
                 modelController.updateModel(newModel)
             }

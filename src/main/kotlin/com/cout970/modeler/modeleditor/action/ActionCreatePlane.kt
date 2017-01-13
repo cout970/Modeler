@@ -13,7 +13,7 @@ data class ActionCreatePlane(val modelController: ModelController) : IAction {
     val plane = Mesh.createPlane(vec2Of(1))
 
     override fun run() {
-        modelController.inserter.insertComponent(plane.translate(modelController.inserter.insertPosition))
+        modelController.inserter.insertMesh(plane.translate(modelController.inserter.insertPosition))
     }
 
     override fun undo() {

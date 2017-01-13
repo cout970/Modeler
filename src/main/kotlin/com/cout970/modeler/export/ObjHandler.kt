@@ -1,6 +1,5 @@
 package com.cout970.modeler.export
 
-import com.cout970.matrix.extensions.times
 import com.cout970.modeler.model.*
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -30,56 +29,50 @@ class ObjExporter {
         val objects: MutableList<ObjObject> = mutableListOf()
 
         // begin model conversion
-        for (obj in model.objects) {
-            val groups = mutableListOf<ObjGroup>()
-
-            for (group in obj.groups) {
-
+        for (group in model.groups) {
+            val groupsInObj = mutableListOf<ObjGroup>()
+            for ((meshIndex, mesh) in group.meshes.withIndex()) {
                 val quads = mutableListOf<ObjQuad>()
+                val matrix = group.transform.matrix
+                val rawQuads = mesh.getQuads().map { it.transform(matrix) }
 
-                for (mesh in group.meshes) {
+                for (rawQuad in rawQuads) {
+                    val objQuad = ObjQuad()
 
-                    val matrix = obj.transform.matrix * group.transform.matrix
-                    val rawQuads = mesh.getQuads().map { it.transform(matrix) }
+                    for ((i, vertex1) in rawQuad.vertex.withIndex()) {
+                        val vertPos = vertex1.pos
 
-                    for (rawQuad in rawQuads) {
-                        val objQuad = ObjQuad()
-
-                        for ((i, vertex1) in rawQuad.vertex.withIndex()) {
-                            val vertPos = vertex1.pos
-
-                            if (vertexMap.contains(vertPos)) {
-                                objQuad.vertexIndices[i] = vertex.indexOf(vertPos) + 1
-                            } else {
-                                objQuad.vertexIndices[i] = vertex.size + 1
-                                vertex.add(vertPos)
-                                vertexMap.add(vertPos)
-                            }
-
-                            val vertTex = vertex1.tex
-                            if (texCoordsMap.contains(vertTex)) {
-                                objQuad.textureIndices[i] = texCoords.indexOf(vertTex) + 1
-                            } else {
-                                objQuad.textureIndices[i] = texCoords.size + 1
-                                texCoords.add(vertTex)
-                                texCoordsMap.add(vertTex)
-                            }
-
-                            val vertNorm = rawQuad.normal
-                            if (normalsMap.contains(vertNorm)) {
-                                objQuad.normalIndices[i] = normals.indexOf(vertNorm) + 1
-                            } else {
-                                objQuad.normalIndices[i] = normals.size + 1
-                                normals.add(vertNorm)
-                                normalsMap.add(vertNorm)
-                            }
+                        if (vertexMap.contains(vertPos)) {
+                            objQuad.vertexIndices[i] = vertex.indexOf(vertPos) + 1
+                        } else {
+                            objQuad.vertexIndices[i] = vertex.size + 1
+                            vertex.add(vertPos)
+                            vertexMap.add(vertPos)
                         }
-                        quads += objQuad
+
+                        val vertTex = vertex1.tex
+                        if (texCoordsMap.contains(vertTex)) {
+                            objQuad.textureIndices[i] = texCoords.indexOf(vertTex) + 1
+                        } else {
+                            objQuad.textureIndices[i] = texCoords.size + 1
+                            texCoords.add(vertTex)
+                            texCoordsMap.add(vertTex)
+                        }
+
+                        val vertNorm = rawQuad.normal
+                        if (normalsMap.contains(vertNorm)) {
+                            objQuad.normalIndices[i] = normals.indexOf(vertNorm) + 1
+                        } else {
+                            objQuad.normalIndices[i] = normals.size + 1
+                            normals.add(vertNorm)
+                            normalsMap.add(vertNorm)
+                        }
                     }
+                    quads += objQuad
                 }
-                groups += ObjGroup(group.name, quads)
+                groupsInObj += ObjGroup("Mesh_$meshIndex", quads)
             }
-            objects += ObjObject(obj.name, obj.material.name, groups)
+            objects += ObjObject(group.name, group.material.name, groupsInObj)
         }
         //end of model conversion
 
@@ -228,24 +221,16 @@ class ObjImporter {
             objects.add(noObj)
         }
 
-        return Model(
-                objects.map { obj ->
-                    ModelObject(name = obj.name, material = TexturedMaterial(obj.material),
-                            groups = obj.groups.map { group ->
-                                ModelGroup(name = group.name, transform = Transformation.IDENTITY, meshes = listOf(Mesh(
-                                        vertices.map { it * 16 },
-                                        texCoords,
-                                        group.quads.map {
-                                            QuadIndices(
-                                                    it.vertexIndices[0], it.textureIndices[0],
-                                                    it.vertexIndices[1], it.textureIndices[1],
-                                                    it.vertexIndices[2], it.textureIndices[2],
-                                                    it.vertexIndices[3], it.textureIndices[3])
-                                        }
-                                )))
-                            }, transform = Transformation.IDENTITY)
-                }
-        )
+        return Model(objects.map { obj ->
+            ModelGroup(name = obj.name, material = TexturedMaterial(obj.material), meshes = obj.groups.map { group ->
+                Mesh(vertices.map { it * 16 }, texCoords, group.quads.map {
+                    QuadIndices(it.vertexIndices[0], it.textureIndices[0],
+                            it.vertexIndices[1], it.textureIndices[1],
+                            it.vertexIndices[2], it.textureIndices[2],
+                            it.vertexIndices[3], it.textureIndices[3])
+                })
+            })
+        })
     }
 }
 

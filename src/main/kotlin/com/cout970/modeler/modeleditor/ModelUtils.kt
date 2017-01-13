@@ -1,15 +1,10 @@
 package com.cout970.modeler.modeleditor
 
-import com.cout970.modeler.model.Mesh
 import com.cout970.modeler.model.Model
-import com.cout970.modeler.model.ModelGroup
 import com.cout970.modeler.model.Quad
 import com.cout970.modeler.modeleditor.selection.Selection
 import com.cout970.modeler.modeleditor.selection.SelectionMode
-import com.cout970.modeler.util.replace
-import com.cout970.modeler.util.replaceSelected
-import com.cout970.modeler.util.toIVector
-import com.cout970.modeler.util.toJoml3d
+import com.cout970.modeler.util.*
 import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
@@ -119,25 +114,6 @@ fun Model.rotate(selection: Selection, axis: SelectionAxis, offset: Float): Mode
         else -> this
     }
 }
-
-fun Model.applyGroup(selection: Selection, groupFunc: (ModelGroup) -> ModelGroup): Model {
-    return copy(objects.replaceSelected(selection) { objIndex, obj ->
-        obj.copy(obj.groups.replaceSelected(selection, objIndex) { _, group ->
-            groupFunc(group)
-        })
-    })
-}
-
-fun Model.applyMesh(selection: Selection, meshFunc: (Mesh) -> Mesh): Model {
-    return copy(objects.replaceSelected(selection) { objIndex, obj ->
-        obj.copy(obj.groups.replaceSelected(selection, objIndex) { groupIndex, group ->
-            group.copy(group.meshes.replaceSelected(selection, objIndex, groupIndex) { _, mesh ->
-                meshFunc(mesh)
-            })
-        })
-    })
-}
-
 fun rotatePointAroundPivot(point: IVector3, pivot: IVector3, angles: IVector3): IVector3 {
     var dir: IVector3 = point - pivot // get point direction relative to pivot
     dir = Quaterniond().rotateXYZ(angles.xd, angles.yd, angles.zd).transform(dir.toJoml3d()).toIVector() // rotate it

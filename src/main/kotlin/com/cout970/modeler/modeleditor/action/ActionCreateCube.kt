@@ -13,7 +13,7 @@ data class ActionCreateCube(val modelController: ModelController) : IAction {
     val cube = Mesh.createCube(vec3Of(1, 1, 1))
 
     override fun run() {
-        modelController.inserter.insertComponent(cube.translate(modelController.inserter.insertPosition))
+        modelController.inserter.insertMesh(cube.translate(modelController.inserter.insertPosition))
     }
 
     override fun undo() {

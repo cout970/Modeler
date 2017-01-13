@@ -24,7 +24,7 @@ class SelectionManager(val modelController: ModelController) {
 
         model.getPaths(ModelPath.Level.MESH).forEach { path ->
             path.getMesh(model)!!.rayTrace(path.getMeshMatrix(model), ray)?.let {
-                hits += it to ModelPath(path.obj, path.group)
+                hits += it to ModelPath(path.group)
             }
         }
 
@@ -43,7 +43,7 @@ class SelectionManager(val modelController: ModelController) {
         if (selectionMode == SelectionMode.GROUP) {
             model.getPaths(ModelPath.Level.MESH).forEach { path ->
                 path.getMesh(model)!!.rayTrace(path.getMeshMatrix(model), ray)?.let {
-                    hits += it to ModelPath(path.obj, path.group)
+                    hits += it to ModelPath(path.group)
                 }
             }
         } else if (selectionMode == SelectionMode.MESH) {
@@ -58,7 +58,7 @@ class SelectionManager(val modelController: ModelController) {
                 val matrix = path.getMeshMatrix(model)
                 mesh.getQuads().map { it.transform(matrix) }.forEachIndexed { quadIndex, quad ->
                     RayTraceUtil.rayTraceQuad(ray, mesh, quad.a.pos, quad.b.pos, quad.c.pos, quad.d.pos)?.let {
-                        hits += it to ModelPath(path.obj, path.group, path.mesh, quadIndex)
+                        hits += it to ModelPath(path.group, path.mesh, quadIndex)
                     }
                 }
             }
@@ -73,7 +73,7 @@ class SelectionManager(val modelController: ModelController) {
                         val start = vertex.pos - vec3Of(0.125) * zoom / 10
                         val end = vertex.pos + vec3Of(0.125) * zoom / 10
                         RayTraceUtil.rayTraceBox3(start, end, ray, mesh)?.let {
-                            hits += it to ModelPath(path.obj, path.group, path.mesh, quadIndex, index)
+                            hits += it to ModelPath(path.group, path.mesh, quadIndex, index)
                         }
                     }
                     rayTraceVertex(quad.a, quadI.aP)

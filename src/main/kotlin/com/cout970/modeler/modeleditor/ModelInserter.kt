@@ -1,11 +1,13 @@
 package com.cout970.modeler.modeleditor
 
-import com.cout970.modeler.model.*
+import com.cout970.modeler.model.Mesh
+import com.cout970.modeler.model.ModelGroup
+import com.cout970.modeler.model.Transformation
 import com.cout970.modeler.modeleditor.action.ActionCreateCube
 import com.cout970.modeler.modeleditor.action.ActionCreatePlane
 import com.cout970.modeler.modeleditor.selection.ModelPath
 import com.cout970.modeler.modeleditor.selection.SelectionGroup
-import com.cout970.modeler.util.replaceSelected
+import com.cout970.modeler.util.applyGroup
 import com.cout970.vector.extensions.vec3Of
 
 /**
@@ -14,45 +16,24 @@ import com.cout970.vector.extensions.vec3Of
 class ModelInserter(val modelController: ModelController) {
 
     var groupCount = 0
-    var objCount = 0
-
-    var insertPath = ModelPath(-1, -1)
-
+    var insertPath = 0
     var insertPosition = vec3Of(0, 0, 0)
 
-    fun insertComponent(comp: Mesh) {
-        if (insertPath.group == -1) {
-            insertGroup()
-            insertPath = insertPath.copy(group = 0)
-        }
+    fun insertMesh(mesh: Mesh) {
         modelController.apply {
-            val insertSelection = SelectionGroup(listOf(insertPath))
-            updateModel(model.copy(model.objects.replaceSelected(insertSelection) { objIndex, obj ->
-                obj.copy(obj.groups.replaceSelected(insertSelection, objIndex) { groupIndex, group ->
-                    group.add(comp)
-                })
-            }))
+            if (model.groups.isEmpty()) {
+                insertGroup()
+            }
+            val insertSelection = SelectionGroup(listOf(ModelPath(insertPath)))
+            updateModel(model.applyGroup(insertSelection) { group ->
+                group.add(mesh)
+            })
         }
     }
 
-    fun insertGroup(group: ModelGroup = ModelGroup(listOf(), Transformation(insertPosition), "Group${groupCount++}")) {
-        if (insertPath.obj == -1) {
-            insertObject()
-            insertPath = insertPath.copy(0)
-        }
+    fun insertGroup(group: ModelGroup = ModelGroup(listOf(), Transformation(insertPosition), "Group_${groupCount++}")) {
         modelController.apply {
-            //there is no object selection so this is a workaround
-            val insertSelection = SelectionGroup(listOf(insertPath))
-            updateModel(model.copy(model.objects.replaceSelected(insertSelection) { _, obj ->
-                obj.add(group)
-            }))
-        }
-    }
-
-    fun insertObject(obj: ModelObject = ModelObject(listOf(), Transformation(insertPosition), "Object${objCount++}",
-            MaterialNone)) {
-        modelController.apply {
-            updateModel(model.add(obj))
+            updateModel(model.copy(groups = model.groups + group))
         }
     }
 
