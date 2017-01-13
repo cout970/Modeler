@@ -29,7 +29,7 @@ class ModelSelector(val scene: ModelScene, val controller: SceneController) {
     val selectionCenter: IVector3 get() = modelController.selectionManager.selection.getCenter(controller.modelController.model)
 
     var mouseRay: Ray = Ray(vec3Of(0), vec3Of(0))
-    var transformationMode = TransformationMode.ROTATION
+    var transformationMode = TransformationMode.TRANSLATION
     var selectedAxis = SelectionAxis.NONE
     var phantomSelectedAxis = SelectionAxis.NONE
     var blockMouse = false

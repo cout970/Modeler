@@ -55,3 +55,5 @@ fun IMatrix4.toJOML(): Matrix4d = Matrix4d(
 fun IQuaternion.toJOML(): Quaterniond {
     return Quaterniond(xd, yd, zd, wd)
 }
+
+fun Quaterniond.toIQuaternion(): IQuaternion = quatOf(x, y, z, w)

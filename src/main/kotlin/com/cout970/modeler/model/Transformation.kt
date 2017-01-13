@@ -1,6 +1,8 @@
 package com.cout970.modeler.model
 
 import com.cout970.matrix.extensions.*
+import com.cout970.modeler.util.toIQuaternion
+import com.cout970.modeler.util.toJOML
 import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
@@ -35,5 +37,11 @@ data class Transformation(
     fun move(axis: SelectionAxis, offset: Float): Transformation {
         val direction = axis.axis * offset
         return copy(position = position + direction)
+    }
+
+    fun rotate(axis: SelectionAxis, offset: Float): Transformation {
+        val rotAxis = axis.axis
+        return copy(rotation = rotation.toJOML().rotateAxis(offset.toDouble(), rotAxis.xd, rotAxis.yd,
+                rotAxis.zd).toIQuaternion())
     }
 }

@@ -82,3 +82,16 @@ fun Iterable<IVector3>.middle(): IVector3 {
     if (sum == null) return vec3Of(0)
     return sum / count
 }
+
+fun getSide(side: Int, size: IVector3 = vec3Of(1), offset: IVector3 = vec3Of(0)): List<IVector3> {
+    val n: IVector3 = offset
+    val p: IVector3 = size + offset
+    return when (side) {
+        0 -> listOf(vec3Of(n.x, n.y, p.z), vec3Of(n.x, p.y, p.z), vec3Of(n.x, p.y, n.z), vec3Of(n.x, n.y, n.z))//negX
+        1 -> listOf(vec3Of(p.x, p.y, n.z), vec3Of(p.x, p.y, p.z), vec3Of(p.x, n.y, p.z), vec3Of(p.x, n.y, n.z))//posX
+        2 -> listOf(vec3Of(p.x, n.y, n.z), vec3Of(p.x, n.y, p.z), vec3Of(n.x, n.y, p.z), vec3Of(n.x, n.y, n.z))//negY
+        3 -> listOf(vec3Of(n.x, p.y, p.z), vec3Of(p.x, p.y, p.z), vec3Of(p.x, p.y, n.z), vec3Of(n.x, p.y, n.z))//posY
+        4 -> listOf(vec3Of(n.x, p.y, n.z), vec3Of(p.x, p.y, n.z), vec3Of(p.x, n.y, n.z), vec3Of(n.x, n.y, n.z))//negZ
+        else -> listOf(vec3Of(p.x, n.y, p.z), vec3Of(p.x, p.y, p.z), vec3Of(n.x, p.y, p.z), vec3Of(n.x, n.y, p.z))//posZ
+    }
+}

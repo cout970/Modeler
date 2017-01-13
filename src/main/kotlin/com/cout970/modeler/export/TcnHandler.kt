@@ -4,6 +4,7 @@ import com.cout970.modeler.log.Level
 import com.cout970.modeler.log.log
 import com.cout970.modeler.log.print
 import com.cout970.modeler.model.*
+import com.cout970.modeler.modeleditor.rotatePointAroundPivot
 import com.cout970.vector.extensions.*
 import org.w3c.dom.Node
 import java.awt.Dimension
@@ -129,7 +130,7 @@ class TcnImporter {
         val rOffset = vOffset * vec3Of(1, -1, 1)
         val rPos = vPos * vec3Of(1, -1, 1) - vec3Of(0, vSize.y, 0)
         val rTexture = vTexture
-        val rRotation = vRotation * vec3Of(-1, 1, -1)
+        val rRotation = vRotation.toRadians() * vec3Of(-1, 1, -1)
         val rRotPoint = vPos * vec3Of(1, -1, 1) + vec3Of(8, 24, 8)
 
         val fOffset = rPos + rOffset + vec3Of(8, 24, 8)
@@ -139,6 +140,10 @@ class TcnImporter {
 //          cube.textureOffset.set(cubeTextureOffset)
 //          cube.flipUV = mirrored
 
-        return Mesh.createCube(size = rSize, offset = fOffset)
+        val cube = Mesh.createCube(size = rSize, offset = fOffset)
+        if (rRotation.lengthSq() == 0.0) return cube
+        return cube.copy(cube.positions.map {
+            rotatePointAroundPivot(it, rRotPoint, rRotation)
+        })
     }
 }
