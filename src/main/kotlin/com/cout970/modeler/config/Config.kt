@@ -16,6 +16,7 @@ object Config {
     var logLevel: Level = Level.FINE
     var cursorArrowsDispersion: Float = 1.5f
     var cursorArrowsScale: Float = 1.0f
+    val cursorArrowsSpeed: Float = 900f
     var selectionThickness: Float = 0.2f
     var perspectiveFov: Float = 45f
 }

@@ -35,9 +35,11 @@ data class Camera(
     }
 
     private var matrixForOrthoCache: IMatrix4? = null
+    private var aspectRatio = 0f
 
     fun getMatrixForOrtho(aspectRatio: Float): IMatrix4 {
-        if (matrixForOrthoCache == null) {
+        if (matrixForOrthoCache == null || aspectRatio != this.aspectRatio) {
+            this.aspectRatio = aspectRatio
             matrixForOrthoCache = Matrix4d().apply {
                 translate(0.0, 0.0, -64.0)
                 rotate(angleX, 1.0, 0.0, 0.0)

@@ -50,7 +50,7 @@ class ModuleStructure(controller: ModuleController) : Module(controller, "Struct
                     border.isEnabled = false
                     textState.horizontalAlign = HorizontalAlign.LEFT
                 }.onClick(0) {
-                    if (controller.modelController.selectionManager.selectionMode == SelectionMode.MESH)
+                    if (controller.modelController.selectionManager.selectionMode == SelectionMode.GROUP)
                         controller.modelController.selectionManager.run {
                             updateSelection(handleSelection(groupPath))
                         }

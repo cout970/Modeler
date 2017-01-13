@@ -26,7 +26,8 @@ import org.joml.Vector3d
 class ModelSelector(val scene: ModelScene, val controller: SceneController) {
 
     val modelController: ModelController get() = controller.modelController
-    val selectionCenter: IVector3 get() = modelController.selectionManager.selection.getCenter(controller.modelController.model)
+    val selectionCenter: IVector3 get() = modelController.selectionManager.selection.getCenter(
+            controller.modelController.model)
 
     var mouseRay: Ray = Ray(vec3Of(0), vec3Of(0))
     var transformationMode = TransformationMode.TRANSLATION
@@ -48,8 +49,10 @@ class ModelSelector(val scene: ModelScene, val controller: SceneController) {
         val mousePos = controller.mouse.getMousePos() - scene.absolutePosition
         val viewport = scene.size.toIVector()
 
-        val a = matrix.unproject(vec3Of(mousePos.x, viewport.yd - mousePos.yd, 0.0).toJoml3d(), intArrayOf(0, 0, viewport.xi, viewport.yi), Vector3d()).toIVector()
-        val b = matrix.unproject(vec3Of(mousePos.x, viewport.yd - mousePos.yd, 1.0).toJoml3d(), intArrayOf(0, 0, viewport.xi, viewport.yi), Vector3d()).toIVector()
+        val a = matrix.unproject(vec3Of(mousePos.x, viewport.yd - mousePos.yd, 0.0).toJoml3d(),
+                intArrayOf(0, 0, viewport.xi, viewport.yi), Vector3d()).toIVector()
+        val b = matrix.unproject(vec3Of(mousePos.x, viewport.yd - mousePos.yd, 1.0).toJoml3d(),
+                intArrayOf(0, 0, viewport.xi, viewport.yi), Vector3d()).toIVector()
 
         mouseRay = Ray(a, b)
 
@@ -62,9 +65,12 @@ class ModelSelector(val scene: ModelScene, val controller: SceneController) {
                 val end = 1f * scale * Config.cursorArrowsDispersion
                 val size = vec3Of(0.0625) * scale
 
-                val resX = RayTraceUtil.rayTraceBox3(center + vec3Of(start, 0, 0) - size, center + vec3Of(end, 0, 0) + size, mouseRay, FakeRayObstacle)
-                val resY = RayTraceUtil.rayTraceBox3(center + vec3Of(0, start, 0) - size, center + vec3Of(0, end, 0) + size, mouseRay, FakeRayObstacle)
-                val resZ = RayTraceUtil.rayTraceBox3(center + vec3Of(0, 0, start) - size, center + vec3Of(0, 0, end) + size, mouseRay, FakeRayObstacle)
+                val resX = RayTraceUtil.rayTraceBox3(center + vec3Of(start, 0, 0) - size,
+                        center + vec3Of(end, 0, 0) + size, mouseRay, FakeRayObstacle)
+                val resY = RayTraceUtil.rayTraceBox3(center + vec3Of(0, start, 0) - size,
+                        center + vec3Of(0, end, 0) + size, mouseRay, FakeRayObstacle)
+                val resZ = RayTraceUtil.rayTraceBox3(center + vec3Of(0, 0, start) - size,
+                        center + vec3Of(0, 0, end) + size, mouseRay, FakeRayObstacle)
 
                 val list = mutableListOf<Pair<RayTraceResult, SelectionAxis>>()
                 resX?.let { list += it to SelectionAxis.X }
@@ -77,7 +83,8 @@ class ModelSelector(val scene: ModelScene, val controller: SceneController) {
                 } else {
                     phantomSelectedAxis = SelectionAxis.NONE
                 }
-                if (phantomSelectedAxis != SelectionAxis.NONE && Config.keyBindings.selectModelControls.check(controller.mouse)) {
+                if (phantomSelectedAxis != SelectionAxis.NONE && Config.keyBindings.selectModelControls.check(
+                        controller.mouse)) {
                     blockMouse = true
                     blockMousePos = mousePos
                     selectedAxis = phantomSelectedAxis
@@ -103,12 +110,14 @@ class ModelSelector(val scene: ModelScene, val controller: SceneController) {
                     val old = direction.project(oldMouse * viewport)
                     val new = direction.project(newMouse * viewport)
 
+                    val move = (new - old) * scene.camera.zoom / Config.cursorArrowsSpeed
+
                     if (Config.keyBindings.disableGridMotion.check(controller.keyboard)) {
-                        offset = Math.round((new - old).toFloat() * (0.000625f * scene.camera.zoom.toFloat()) * 16).toFloat() / 16
+                        offset = Math.round(move * 16) / 16f
                     } else if (Config.keyBindings.disablePixelGridMotion.check(controller.keyboard)) {
-                        offset = Math.round((new - old).toFloat() * (0.000625f * scene.camera.zoom.toFloat()) * 4).toFloat() / 4
+                        offset = Math.round(move * 4) / 4f
                     } else {
-                        offset = Math.round((new - old).toFloat() * (0.000625f * scene.camera.zoom.toFloat())).toFloat()
+                        offset = Math.round(move).toFloat()
                     }
                     if (lastOffset != offset) {
                         lastOffset = offset
@@ -142,7 +151,8 @@ class ModelSelector(val scene: ModelScene, val controller: SceneController) {
                 if (Config.keyBindings.selectModel.keycode == e.button) {
                     if (inside(controller.mouse.getMousePos(), scene.absolutePosition, scene.size.toIVector())) {
                         if (phantomSelectedAxis == SelectionAxis.NONE && selectedAxis == SelectionAxis.NONE) {
-                            modelController.selectionManager.mouseTrySelect(mouseRay, controller.selectedScene.camera.zoom.toFloat())
+                            modelController.selectionManager.mouseTrySelect(mouseRay,
+                                    controller.selectedScene.camera.zoom.toFloat())
                             return true
                         }
                     }
