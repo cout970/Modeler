@@ -49,9 +49,11 @@ data class ModelPath(
             Level.OBJECTS -> getObject(model)!!.transform.position
             Level.GROUPS -> getObject(model)!!.transform.position + getGroup(model)!!.transform.position
             Level.MESH -> getObject(model)!!.transform.position + getGroup(model)!!.transform.position + getMesh(
-                    model)!!.transform.position + getMesh(model)!!.getQuads().map(Quad::center).middle()
-            Level.QUADS -> getObject(model)!!.transform.position + getGroup(model)!!.transform.position + getMesh(model)!!.transform.position + getQuad(model)!!.center()
-            Level.VERTEX -> getObject(model)!!.transform.position + getGroup(model)!!.transform.position + getMesh(model)!!.transform.position + getVertex(model)!!
+                    model)!!.getQuads().map(Quad::center).middle()
+            Level.QUADS -> getObject(model)!!.transform.position + getGroup(model)!!.transform.position + getQuad(
+                    model)!!.center()
+            Level.VERTEX -> getObject(model)!!.transform.position + getGroup(model)!!.transform.position + getVertex(
+                    model)!!
             else -> vec3Of(0)
         }
     }
@@ -69,7 +71,7 @@ data class ModelPath(
     }
 
     fun getMeshMatrix(model: Model): IMatrix4 {
-        return getObject(model)!!.transform.matrix * getGroup(model)!!.transform.matrix * getMesh(model)!!.transform.matrix
+        return getObject(model)!!.transform.matrix * getGroup(model)!!.transform.matrix
     }
 
     fun getSubPaths(model: Model): List<ModelPath> {

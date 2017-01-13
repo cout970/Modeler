@@ -39,7 +39,7 @@ class ObjExporter {
 
                 for (mesh in group.meshes) {
 
-                    val matrix = obj.transform.matrix * group.transform.matrix * mesh.transform.matrix
+                    val matrix = obj.transform.matrix * group.transform.matrix
                     val rawQuads = mesh.getQuads().map { it.transform(matrix) }
 
                     for (rawQuad in rawQuads) {

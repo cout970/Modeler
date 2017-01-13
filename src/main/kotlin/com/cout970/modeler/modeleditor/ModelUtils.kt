@@ -30,7 +30,7 @@ fun Model.translate(selection: Selection, axis: SelectionAxis, offset: Float): M
 
         SelectionMode.MESH -> {
             applyMesh(selection) { mesh ->
-                mesh.copy(transform = mesh.transform.move(axis, offset))
+                mesh.translate(axis.axis * offset)
             }
         }
         SelectionMode.QUAD -> {
@@ -77,8 +77,11 @@ fun Model.rotate(selection: Selection, axis: SelectionAxis, offset: Float): Mode
         }
 
         SelectionMode.MESH -> {
+            val center = selection.getCenter(this)
             applyMesh(selection) { mesh ->
-                mesh.copy(transform = mesh.transform.rotate(axis, offset))
+                mesh.copy(positions = mesh.positions.map { pos ->
+                    rotatePointAroundPivot(pos, center, axis.axis * offset)
+                })
             }
         }
         SelectionMode.QUAD -> {

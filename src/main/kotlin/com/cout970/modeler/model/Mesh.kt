@@ -18,8 +18,7 @@ import com.google.gson.annotations.Expose
 data class Mesh(
         @Expose val positions: List<IVector3>,
         @Expose val textures: List<IVector2>,
-        @Expose val indices: List<QuadIndices>,
-        @Expose val transform: Transformation = Transformation.IDENTITY) : IRayObstacle {
+        @Expose val indices: List<QuadIndices>) : IRayObstacle {
 
     fun getQuads(): List<Quad> = indices.map { it.toQuad(positions, textures) }
 
@@ -46,17 +45,16 @@ data class Mesh(
     }
 
     override fun toString(): String {
-        return "Mesh(transform=$transform)"
+        return "Mesh(${indices.size} quads, ${positions.size} vertex, ${textures.size} uvCoords)"
     }
 
     companion object {
-        fun createPlane(size: IVector2, transform: Transformation = Transformation.IDENTITY) = Mesh(
+        fun createPlane(size: IVector2) = Mesh(
                 listOf(vec3Of(0, 0, 0), vec3Of(0, 0, 1), vec3Of(1, 0, 1), vec3Of(1, 0, 0)),
                 listOf(vec2Of(0, 0), vec2Of(1, 0), vec2Of(1, 1), vec2Of(0, 1)),
-                listOf(QuadIndices(0, 0, 1, 1, 2, 2, 3, 3)),
-                transform)
+                listOf(QuadIndices(0, 0, 1, 1, 2, 2, 3, 3)))
 
-        fun quadsToMesh(quads: List<Quad>, transform: Transformation = Transformation.IDENTITY): Mesh {
+        fun quadsToMesh(quads: List<Quad>): Mesh {
             val positions = quads.flatMap(Quad::vertex).map(Vertex::pos).distinct()
             val textures = quads.flatMap(Quad::vertex).map(Vertex::tex).distinct()
             val indices = quads.map {
@@ -66,11 +64,10 @@ data class Mesh(
                         positions.indexOf(it.c.pos), textures.indexOf(it.c.tex),
                         positions.indexOf(it.d.pos), textures.indexOf(it.d.tex))
             }
-            return Mesh(positions, textures, indices, transform)
+            return Mesh(positions, textures, indices)
         }
 
-        fun createCube(size: IVector3, offset: IVector3 = vec3Of(0), centered: Boolean = false,
-                       transform: Transformation = Transformation.IDENTITY): Mesh {
+        fun createCube(size: IVector3, offset: IVector3 = vec3Of(0), centered: Boolean = false): Mesh {
             val n: IVector3
             val p: IVector3
             if (centered) {
@@ -99,8 +96,12 @@ data class Mesh(
                             vec3Of(n.x, n.y, n.z), 4),
                     //posZ
                     Quad.create(vec3Of(p.x, n.y, p.z), vec3Of(p.x, p.y, p.z), vec3Of(n.x, p.y, p.z),
-                            vec3Of(n.x, n.y, p.z), 5)), transform)
+                            vec3Of(n.x, n.y, p.z), 5)))
         }
+    }
+
+    fun translate(offset: IVector3): Mesh {
+        return copy(positions.map { it + offset })
     }
 }
 

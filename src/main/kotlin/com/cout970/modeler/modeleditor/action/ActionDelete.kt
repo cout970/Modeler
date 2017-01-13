@@ -71,7 +71,7 @@ data class ActionDelete(val selection: Selection, val modelController: ModelCont
                                                     posIndexMap[dP]!!, texIndexMap[dT]!!)
                                         }
                                         //return a new mesh, if only some parts of the component are removed, but not all
-                                        Mesh(positions, textureCoords, indices, mesh.transform)
+                                        Mesh(positions, textureCoords, indices)
                                     } else {
                                         // the resulting mesh is empty
                                         null
