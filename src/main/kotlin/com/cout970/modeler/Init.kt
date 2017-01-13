@@ -6,10 +6,12 @@ import com.cout970.modeler.event.EventController
 import com.cout970.modeler.log.Level
 import com.cout970.modeler.log.log
 import com.cout970.modeler.log.print
+import com.cout970.modeler.model.Mesh
 import com.cout970.modeler.modeleditor.ModelController
 import com.cout970.modeler.project.ProjectManager
 import com.cout970.modeler.view.ViewManager
 import com.cout970.modeler.view.render.RenderManager
+import com.cout970.vector.extensions.vec3Of
 import java.io.File
 
 /**
@@ -85,8 +87,8 @@ class Init(val programArguments: List<String>) {
         log(Level.FINEST) { "Registering listeners for moduleController" }
         viewManager.moduleController.registerListeners(eventController)
 
-//        log(Level.FINE) { "Adding placeholder cube" }
-//        modelController.inserter.insertComponent(Mesh.createCube(vec3Of(16, 16, 16)))
+        log(Level.FINE) { "Adding placeholder cube" }
+        modelController.inserter.insertComponent(Mesh.createCube(vec3Of(16, 16, 16)))
     }
 
     fun run() {

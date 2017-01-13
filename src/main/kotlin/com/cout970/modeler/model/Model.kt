@@ -101,7 +101,8 @@ data class Model(@Expose val objects: List<ModelObject>, val id: Int = modelIds+
     }
 }
 
-data class ModelObject(@Expose val groups: List<ModelGroup>, @Expose val transform: Transformation,
+data class ModelObject(@Expose val groups: List<ModelGroup>,
+                       @Expose val transform: Transformation = Transformation.IDENTITY,
                        @Expose val name: String,
                        @Expose val material: Material) {
 
@@ -112,7 +113,8 @@ data class ModelObject(@Expose val groups: List<ModelGroup>, @Expose val transfo
     fun addAll(groups: List<ModelGroup>): ModelObject = copy(groups + groups)
 }
 
-data class ModelGroup(@Expose val meshes: List<Mesh>, @Expose val transform: Transformation, @Expose val name: String) {
+data class ModelGroup(@Expose val meshes: List<Mesh>, @Expose val transform: Transformation = Transformation.IDENTITY,
+                      @Expose val name: String) {
 
     fun getQuads() = meshes.flatMap(Mesh::getQuads)
 

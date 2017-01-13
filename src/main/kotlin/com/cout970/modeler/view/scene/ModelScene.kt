@@ -7,25 +7,24 @@ import com.cout970.modeler.event.EventController
 import com.cout970.modeler.modeleditor.selection.SelectionNone
 import com.cout970.modeler.util.absolutePosition
 import com.cout970.modeler.util.toIMatrix
-import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.util.toRads
 import com.cout970.modeler.view.controller.ModelSelector
 import com.cout970.modeler.view.controller.SceneController
 import com.cout970.modeler.view.controller.TransformationMode
 import com.cout970.modeler.view.render.RenderManager
 import com.cout970.vector.extensions.vec2Of
-import com.cout970.vector.extensions.xd
-import com.cout970.vector.extensions.yd
 import org.joml.Matrix4d
 
 class ModelScene(sceneController: SceneController) : Scene(sceneController) {
 
     val modelSelector = ModelSelector(this, sceneController)
     var perspective = true
+    var aspectRatio = 1f
 
     override fun update() {
         super.update()
         modelSelector.update()
+        aspectRatio = (size.y / size.x)
     }
 
     override fun render(renderManager: RenderManager) {
@@ -56,8 +55,14 @@ class ModelScene(sceneController: SceneController) : Scene(sceneController) {
             renderModelSelection(sceneController.getModel(model), selection, sceneController.selectionCache)
             renderExtras()
             if (selection != SelectionNone && selector.transformationMode != TransformationMode.NONE) {
-                renderTranslation(sceneController.cursorCenter, selector, selection, camera)
-//                renderRotation(sceneController.cursorCenter, selector, selection, camera)
+                when (selector.transformationMode) {
+                    TransformationMode.TRANSLATION -> renderTranslation(sceneController.cursorCenter, selector,
+                            selection, camera)
+                    TransformationMode.ROTATION -> renderRotation(sceneController.cursorCenter, selector, selection,
+                            camera)
+                    else -> {
+                    }
+                }
             }
             if (Config.keyBindings.moveCamera.check(sceneController.mouse) || Config.keyBindings.rotateCamera.check(
                     sceneController.mouse)) {
@@ -78,8 +83,6 @@ class ModelScene(sceneController: SceneController) : Scene(sceneController) {
             return Matrix4d().setPerspective(Config.perspectiveFov.toRads(), (size.x / size.y).toDouble(), 0.1,
                     1000.0).toIMatrix()
         } else {
-            val size = size.toIVector()
-            val aspectRatio = (size.yd / size.xd)
             return Matrix4d().setOrtho(-1.0, 1.0, -1.0 * aspectRatio, 1.0 * aspectRatio, 0.1, 1000.0).toIMatrix()
         }
     }
@@ -88,7 +91,7 @@ class ModelScene(sceneController: SceneController) : Scene(sceneController) {
         if (perspective) {
             return camera.matrixForPerspective
         } else {
-            return camera.matrixForOrtho
+            return camera.getMatrixForOrtho(aspectRatio)
         }
     }
 

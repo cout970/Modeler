@@ -34,7 +34,7 @@ uniform float enableLight;
 uniform float textureSize;
 
 //ambient light
-const float ambient = 0.25;
+const float ambient = 0.1;
 
 vec3 getLight(vec3 color, vec3 lcolor, vec3 toLight, vec3 normal, vec3 toCamera);
 
@@ -85,6 +85,6 @@ vec3 getLight(vec3 color, vec3 lcolor, vec3 toLight, vec3 normal, vec3 toCamera)
     I = normal;
     return vec3(I.x+0.5, I.y+0.5, I.z+0.5);// very cool effect
     */
-    return color * min(I * 1.2, 1.0);
+    return pow(color * I, vec3(1.0/2.2));
 }
 

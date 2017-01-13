@@ -51,34 +51,37 @@ class SceneController(val viewManager: ViewManager, val modelController: ModelCo
 
     fun update() {
         mouse.update()
-        val time = 1 / 60.0
+        val move = Config.keyBindings.moveCamera.check(mouse)
+        val rotate = Config.keyBindings.rotateCamera.check(mouse)
+        if (move || rotate) {
+            val speed = 1 / 60.0 * if (Config.keyBindings.slowCameraMovements.check(keyboard)) 1 / 10f else 1f
 
-        if (Config.keyBindings.moveCamera.check(mouse)) {
-            val camera = selectedScene.camera
-            val rotations = vec2Of(camera.angleY, camera.angleX).toDegrees()
-            val axisX = vec2Of(Math.cos(rotations.x.toRads()), Math.sin(rotations.x.toRads()))
-            var axisY = vec2Of(Math.cos((rotations.xd - 90).toRads()), Math.sin((rotations.xd - 90).toRads()))
-            axisY *= Math.sin(rotations.y.toRads())
-            var a = vec3Of(axisX.x, 0.0, axisX.y)
-            var b = vec3Of(axisY.x, Math.cos(rotations.y.toRads()), axisY.y)
-            val diff = mouse.getMousePosDiff()
-
-            a = a.normalize() * (diff.xd * Config.mouseTranslateSpeedX * time * Math.sqrt(camera.zoom))
-            b = b.normalize() * (-diff.yd * Config.mouseTranslateSpeedY * time * Math.sqrt(camera.zoom))
-
-            selectedScene.camera = selectedScene.camera.run { copy(position = position + a + b) }
-        } else if (Config.keyBindings.rotateCamera.check(mouse)) {
-            selectedScene.apply {
+            if (move) {
+                val camera = selectedScene.camera
+                val rotations = vec2Of(camera.angleY, camera.angleX).toDegrees()
+                val axisX = vec2Of(Math.cos(rotations.x.toRads()), Math.sin(rotations.x.toRads()))
+                var axisY = vec2Of(Math.cos((rotations.xd - 90).toRads()), Math.sin((rotations.xd - 90).toRads()))
+                axisY *= Math.sin(rotations.y.toRads())
+                var a = vec3Of(axisX.x, 0.0, axisX.y)
+                var b = vec3Of(axisY.x, Math.cos(rotations.y.toRads()), axisY.y)
                 val diff = mouse.getMousePosDiff()
-                camera = camera.run {
-                    copy(angleY = angleY + diff.xd * Config.mouseRotationSpeedX * time)
-                }
-                camera = camera.run {
-                    copy(angleX = angleX + diff.yd * Config.mouseRotationSpeedY * time)
+
+                a = a.normalize() * (diff.xd * Config.mouseTranslateSpeedX * speed * Math.sqrt(camera.zoom))
+                b = b.normalize() * (-diff.yd * Config.mouseTranslateSpeedY * speed * Math.sqrt(camera.zoom))
+
+                selectedScene.camera = selectedScene.camera.run { copy(position = position + a + b) }
+            } else if (rotate) {
+                selectedScene.apply {
+                    val diff = mouse.getMousePosDiff()
+                    camera = camera.run {
+                        copy(angleY = angleY + diff.xd * Config.mouseRotationSpeedX * speed)
+                    }
+                    camera = camera.run {
+                        copy(angleX = angleX + diff.yd * Config.mouseRotationSpeedY * speed)
+                    }
                 }
             }
         }
-
 
         scenes.forEach(Scene::update)
         val contentPanel = viewManager.root.contentPanel

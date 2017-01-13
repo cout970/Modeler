@@ -40,9 +40,10 @@ object RenderUtil {
 
     fun renderCircle(t: Tessellator, center: IVector3, axis: SelectionAxis, radius: Double, size: Double = 0.05,
                      color: IVector3 = vec3Of(1, 1, 1)) {
-        for (i in 0..90) {
-            val angle0 = Math.toRadians(i.toDouble() * 4)
-            val angle1 = Math.toRadians(i.toDouble() * 4 + 4)
+        val quality = 16
+        for (i in 0..360 / quality) {
+            val angle0 = Math.toRadians(i.toDouble() * quality)
+            val angle1 = Math.toRadians((i.toDouble() + 1) * quality)
 
             val start = if (axis == SelectionAxis.Y) {
                 vec3Of(Math.sin(angle0), Math.cos(angle0), 0)

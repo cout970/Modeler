@@ -30,9 +30,9 @@ class ViewManager : ITickeable {
 
         sceneController = SceneController(this, modelController)
         sceneController.scenes += ModelScene(sceneController)
-        sceneController.scenes += ModelScene(sceneController)
-        sceneController.scenes += ModelScene(sceneController)
-        sceneController.scenes += ModelScene(sceneController)
+//        sceneController.scenes += ModelScene(sceneController).apply { perspective = false; camera = camera.copy(angleX = 0.0, angleY = 0.0)  }
+//        sceneController.scenes += ModelScene(sceneController).apply { perspective = false; camera = camera.copy(angleX = 0.0, angleY = -90.toRads())  }
+//        sceneController.scenes += ModelScene(sceneController).apply { perspective = false; camera = camera.copy(angleX = 90.toRads(), angleY = 0.0)  }
 //        sceneController.scenes += TextureScene(sceneController)
         sceneController.refreshScenes()
 

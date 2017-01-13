@@ -290,7 +290,7 @@ class ModelRenderer(resourceManager: ResourceManager) {
                     selZ -> SelectionAxis.Z
                     else -> SelectionAxis.NONE
                 }
-                RenderUtil.renderCircle(tessellator, center, axis, scale, scale / 16)
+                RenderUtil.renderCircle(tessellator, center, axis, scale * Config.cursorArrowsDispersion, scale / 24)
             }
         }
     }
@@ -346,14 +346,36 @@ class ModelRenderer(resourceManager: ResourceManager) {
             set(0, 0, 0, -10).set(1, 0, 0, 1).endVertex()
             set(0, 0, 0, 10).set(1, 0, 0, 1).endVertex()
 
-            for (x in -16..32) {
-                set(0, x, 0, -16).set(1, 0.5, 0.5, 0.5).endVertex()
-                set(0, x, 0, 32).set(1, 0.5, 0.5, 0.5).endVertex()
+            val dist = -1024 * 16
+
+            //y
+            for (x in -160..160) {
+                set(0, x, dist, -160).set(1, 0.5, 0.5, 0.5).endVertex()
+                set(0, x, dist, 160).set(1, 0.5, 0.5, 0.5).endVertex()
+            }
+            for (z in -160..160) {
+                set(0, -160, dist, z).set(1, 0.5, 0.5, 0.5).endVertex()
+                set(0, 160, dist, z).set(1, 0.5, 0.5, 0.5).endVertex()
             }
 
-            for (z in -16..32) {
-                set(0, -16, 0, z).set(1, 0.5, 0.5, 0.5).endVertex()
-                set(0, 32, 0, z).set(1, 0.5, 0.5, 0.5).endVertex()
+            //x
+            for (x in -160..160) {
+                set(0, dist, x, -160).set(1, 0.5, 0.5, 0.5).endVertex()
+                set(0, dist, x, 160).set(1, 0.5, 0.5, 0.5).endVertex()
+            }
+            for (z in -160..160) {
+                set(0, dist, -160, z).set(1, 0.5, 0.5, 0.5).endVertex()
+                set(0, dist, 160, z).set(1, 0.5, 0.5, 0.5).endVertex()
+            }
+
+            //z
+            for (z in -160..160) {
+                set(0, -160, z, dist).set(1, 0.5, 0.5, 0.5).endVertex()
+                set(0, 160, z, dist).set(1, 0.5, 0.5, 0.5).endVertex()
+            }
+            for (x in -160..160) {
+                set(0, x, -160, dist).set(1, 0.5, 0.5, 0.5).endVertex()
+                set(0, x, 160, dist).set(1, 0.5, 0.5, 0.5).endVertex()
             }
 
             for (x in -7..8) {
