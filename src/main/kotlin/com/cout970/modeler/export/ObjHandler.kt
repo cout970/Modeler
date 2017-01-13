@@ -230,7 +230,7 @@ class ObjImporter {
 
         return Model(
                 objects.map { obj ->
-                    ModelObject(name = obj.name, material = Material.TexturedMaterial(obj.material),
+                    ModelObject(name = obj.name, material = TexturedMaterial(obj.material),
                             groups = obj.groups.map { group ->
                                 ModelGroup(name = group.name, transform = Transformation.IDENTITY, meshes = listOf(Mesh(
                                         vertices.map { it * 16 },

@@ -50,7 +50,7 @@ class ModelInserter(val modelController: ModelController) {
     }
 
     fun insertObject(obj: ModelObject = ModelObject(listOf(), Transformation(insertPosition), "Object${objCount++}",
-                                                    Material.MaterialNone)) {
+            MaterialNone)) {
         modelController.apply {
             updateModel(model.add(obj))
         }

@@ -1,6 +1,8 @@
 package com.cout970.modeler.export
 
 import com.cout970.modeler.model.Material
+import com.cout970.modeler.model.MaterialNone
+import com.cout970.modeler.model.TexturedMaterial
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -72,7 +74,7 @@ class MaterialSerializer : JsonSerializer<Material>, JsonDeserializer<Material> 
 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Material {
         val obj = json.asJsonObject
-        return if (obj["name"].asString == "noTexture") Material.MaterialNone else Material.TexturedMaterial(
+        return if (obj["name"].asString == "noTexture") MaterialNone else TexturedMaterial(
                 obj["name"].asString)
     }
 }

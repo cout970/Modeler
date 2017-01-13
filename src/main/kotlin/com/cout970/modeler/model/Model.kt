@@ -113,19 +113,14 @@ data class ModelObject(@Expose val groups: List<ModelGroup>,
     fun addAll(groups: List<ModelGroup>): ModelObject = copy(groups + groups)
 }
 
-data class ModelGroup(@Expose val meshes: List<Mesh>, @Expose val transform: Transformation = Transformation.IDENTITY,
-                      @Expose val name: String) {
+data class ModelGroup(@Expose val meshes: List<Mesh>,
+                      @Expose val transform: Transformation = Transformation.IDENTITY,
+                      @Expose val name: String,
+                      @Expose val material: Material = MaterialNone) {
 
     fun getQuads() = meshes.flatMap(Mesh::getQuads)
 
     fun add(mesh: Mesh): ModelGroup = copy(meshes + mesh)
 
     fun addAll(meshes: List<Mesh>): ModelGroup = copy(this.meshes + meshes)
-}
-
-sealed class Material(@Expose val name: String) {
-
-    class TexturedMaterial(texture: String) : Material(texture)
-
-    object MaterialNone : Material("noTexture")
 }

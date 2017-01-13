@@ -84,7 +84,7 @@ class TcnImporter {
                 }
             }
             val groups = listOf(ModelGroup(meshes, name = "Group_1"))
-            Model(listOf(ModelObject(groups, name = "Tcn_model", material = Material.MaterialNone)))
+            Model(listOf(ModelObject(groups, name = "Tcn_model", material = MaterialNone)))
         }
     }
 
