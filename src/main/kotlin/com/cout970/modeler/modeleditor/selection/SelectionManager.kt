@@ -128,15 +128,15 @@ class SelectionManager(val modelController: ModelController) {
             if (Config.keyBindings.multipleSelection.check(
                     modelController.eventController.keyboard) && selection.mode == SelectionMode.MESH) {
                 if (path in selection.paths) {
-                    return SelectionComponent(selection.paths - path)
+                    return SelectionMesh(selection.paths - path)
                 } else {
-                    return SelectionComponent(selection.paths + path)
+                    return SelectionMesh(selection.paths + path)
                 }
             } else {
                 if (path in selection.paths) {
                     return SelectionNone
                 } else {
-                    return SelectionComponent(listOf(path))
+                    return SelectionMesh(listOf(path))
                 }
             }
         } else if (selectionMode == SelectionMode.QUAD) {

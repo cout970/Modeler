@@ -37,3 +37,6 @@ class Quaternion(
         override val z: Double,
         override val w: Double
 ) : Quaterniond(x, y, z, w), IQuaternion
+
+operator fun IVector2.component1() = x
+operator fun IVector2.component2() = y

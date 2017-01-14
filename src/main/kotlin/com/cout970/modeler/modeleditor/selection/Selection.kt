@@ -36,10 +36,10 @@ data class SelectionGroup(val group: List<ModelPath>) : Selection() {
 
 }
 
-data class SelectionComponent(val components: List<ModelPath>) : Selection() {
+data class SelectionMesh(val meshes: List<ModelPath>) : Selection() {
 
     override val mode: SelectionMode = SelectionMode.MESH
-    override val paths: List<ModelPath> get() = components
+    override val paths: List<ModelPath> get() = meshes
 
 }
 

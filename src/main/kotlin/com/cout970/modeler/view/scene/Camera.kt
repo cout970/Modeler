@@ -1,6 +1,5 @@
 package com.cout970.modeler.view.scene
 
-import com.cout970.matrix.api.IMatrix4
 import com.cout970.modeler.util.toIMatrix
 import com.cout970.modeler.util.toRads
 import com.cout970.vector.api.IVector3
@@ -34,27 +33,20 @@ data class Camera(
         }.toIMatrix()
     }
 
-    private var matrixForOrthoCache: IMatrix4? = null
-    private var aspectRatio = 0f
-
-    fun getMatrixForOrtho(aspectRatio: Float): IMatrix4 {
-        if (matrixForOrthoCache == null || aspectRatio != this.aspectRatio) {
-            this.aspectRatio = aspectRatio
-            matrixForOrthoCache = Matrix4d().apply {
-                translate(0.0, 0.0, -64.0)
-                rotate(angleX, 1.0, 0.0, 0.0)
-                rotate(angleY, 0.0, 1.0, 0.0)
-                scale(aspectRatio / zoom)
-                translate(position.xd, position.yd, position.zd)
-            }.toIMatrix()
-        }
-        return matrixForOrthoCache!!
+    val matrixForOrtho by lazy {
+        Matrix4d().apply {
+            translate(0.0, 0.0, -32.0)
+            rotate(angleX, 1.0, 0.0, 0.0)
+            rotate(angleY, 0.0, 1.0, 0.0)
+            scale(1 / zoom)
+            translate(position.xd, position.yd, position.zd)
+        }.toIMatrix()
     }
 
     val matrixForUV by lazy {
         Matrix4d().apply {
             translate(0.0, 0.0, -64.0)
-            scale(2 / zoom)
+            scale(1 / zoom)
             translate(position.xd, position.yd, 0.0)
         }.toIMatrix()
     }

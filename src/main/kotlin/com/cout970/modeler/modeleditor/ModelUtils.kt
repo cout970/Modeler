@@ -63,11 +63,17 @@ fun Model.translate(selection: Selection, axis: SelectionAxis, offset: Float): M
 }
 
 fun Model.rotate(selection: Selection, axis: SelectionAxis, offset: Float): Model {
+    val axisDir = when (axis) {
+        SelectionAxis.X -> SelectionAxis.Y
+        SelectionAxis.Y -> SelectionAxis.Z
+        SelectionAxis.Z -> SelectionAxis.X
+        else -> SelectionAxis.NONE
+    }
     return when (selection.mode) {
 
         SelectionMode.GROUP -> {
             applyGroup(selection) { group ->
-                group.copy(transform = group.transform.rotate(axis, offset))
+                group.copy(transform = group.transform.rotate(axisDir, offset))
             }
         }
 
@@ -75,7 +81,7 @@ fun Model.rotate(selection: Selection, axis: SelectionAxis, offset: Float): Mode
             val center = selection.getCenter(this)
             applyMesh(selection) { mesh ->
                 mesh.copy(positions = mesh.positions.map { pos ->
-                    rotatePointAroundPivot(pos, center, axis.axis * offset)
+                    rotatePointAroundPivot(pos, center, axisDir.axis * offset)
                 })
             }
         }
@@ -91,7 +97,7 @@ fun Model.rotate(selection: Selection, axis: SelectionAxis, offset: Float): Mode
                         .distinct()
 
                 mesh.copy(positions = mesh.positions.replace({ pos -> pos in selectedPositions }, { pos ->
-                    rotatePointAroundPivot(pos, center, axis.axis * offset)
+                    rotatePointAroundPivot(pos, center, axisDir.axis * offset)
                 }))
             }
         }
@@ -104,7 +110,7 @@ fun Model.rotate(selection: Selection, axis: SelectionAxis, offset: Float): Mode
 
                 mesh.copy(positions = mesh.positions.mapIndexed { i, pos ->
                     if (i in selectedIndices) {
-                        rotatePointAroundPivot(pos, center, axis.axis * offset)
+                        rotatePointAroundPivot(pos, center, axisDir.axis * offset)
                     } else {
                         pos
                     }
@@ -114,6 +120,7 @@ fun Model.rotate(selection: Selection, axis: SelectionAxis, offset: Float): Mode
         else -> this
     }
 }
+
 fun rotatePointAroundPivot(point: IVector3, pivot: IVector3, angles: IVector3): IVector3 {
     var dir: IVector3 = point - pivot // get point direction relative to pivot
     dir = Quaterniond().rotateXYZ(angles.xd, angles.yd, angles.zd).transform(dir.toJoml3d()).toIVector() // rotate it

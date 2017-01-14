@@ -14,9 +14,12 @@ object Config {
     var mouseRotationSpeedY: Float = 0.5f
     var cameraScrollSpeed: Float = 10f
     var logLevel: Level = Level.FINE
-    var cursorArrowsDispersion: Float = 1.5f
+    var cursorArrowsDispersion: Float = 2f
     var cursorArrowsScale: Float = 1.0f
     val cursorArrowsSpeed: Float = 900f
+    var cursorRotationSpeed: Float = 1f
     var selectionThickness: Float = 0.2f
     var perspectiveFov: Float = 45f
+    var cursorLinesSize: Float = 0.5f
+    var enableHelperGrid: Boolean = true
 }

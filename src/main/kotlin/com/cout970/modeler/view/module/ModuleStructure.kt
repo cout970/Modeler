@@ -1,6 +1,7 @@
 package com.cout970.modeler.view.module
 
 import com.cout970.modeler.modeleditor.selection.ModelPath
+import com.cout970.modeler.modeleditor.selection.SelectionMesh
 import com.cout970.modeler.modeleditor.selection.SelectionMode
 import com.cout970.modeler.util.onClick
 import com.cout970.modeler.view.controller.ModuleController
@@ -50,10 +51,15 @@ class ModuleStructure(controller: ModuleController) : Module(controller, "Struct
                     border.isEnabled = false
                     textState.horizontalAlign = HorizontalAlign.LEFT
                 }.onClick(0) {
-                    if (controller.modelController.selectionManager.selectionMode == SelectionMode.GROUP)
+                    if (controller.modelController.selectionManager.selectionMode == SelectionMode.GROUP) {
                         controller.modelController.selectionManager.run {
                             updateSelection(handleSelection(groupPath))
                         }
+                    } else if (controller.modelController.selectionManager.selectionMode == SelectionMode.MESH) {
+                        controller.modelController.selectionManager.run {
+                            updateSelection(SelectionMesh(model.getPaths(ModelPath.Level.MESH)))
+                        }
+                    }
                 })
                 addSubComponent(Button(155f, index, 20f, 20f, if (openObject) "O" else "o").apply {
                     border.isEnabled = false

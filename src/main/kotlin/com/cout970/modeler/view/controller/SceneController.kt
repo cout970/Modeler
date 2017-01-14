@@ -36,21 +36,21 @@ class SceneController(val viewManager: ViewManager, val modelController: ModelCo
     val modelCache = Cache<Int, VAO>(1).apply { onRemove = { _, v -> v.close() } }
     val selectionCache = Cache<Int, VAO>(1).apply { onRemove = { _, v -> v.close() } }
 
+    var transformationMode = TransformationMode.TRANSLATION
+    var selectedAxis = SelectionAxis.NONE
+    var hoveredAxis = SelectionAxis.NONE
+
     lateinit var mouse: Mouse
     lateinit var keyboard: Keyboard
 
-    fun refreshScenes() {
-        selectedScene = scenes.first()
-        viewManager.root.contentPanel.apply {
-            clearComponents()
-            for (scene in scenes) {
-                addComponent(scene)
-            }
-        }
+    fun update() {
+        scaleScenes()
+        mouse.update()
+        updateCamera()
+        scenes.forEach(Scene::update)
     }
 
-    fun update() {
-        mouse.update()
+    fun updateCamera() {
         val move = Config.keyBindings.moveCamera.check(mouse)
         val rotate = Config.keyBindings.rotateCamera.check(mouse)
         if (move || rotate) {
@@ -79,57 +79,6 @@ class SceneController(val viewManager: ViewManager, val modelController: ModelCo
                     camera = camera.run {
                         copy(angleX = angleX + diff.yd * Config.mouseRotationSpeedY * speed)
                     }
-                }
-            }
-        }
-
-        scenes.forEach(Scene::update)
-        val contentPanel = viewManager.root.contentPanel
-        when (scenes.size) {
-            1 -> scenes[0].apply {
-                size = contentPanel.size
-                position = Vector2f(0f, 0f)
-            }
-            2 -> {
-                scenes[0].apply {
-                    size = contentPanel.size.run { Vector2f(x / 2, y) }
-                    position = Vector2f(0f, 0f)
-                }
-                scenes[1].apply {
-                    size = contentPanel.size.run { Vector2f(x / 2, y) }
-                    position = Vector2f(contentPanel.size.x / 2f, 0f)
-                }
-            }
-            3 -> {
-                scenes[0].apply {
-                    size = contentPanel.size.run { Vector2f(x / 2, y) }
-                    position = Vector2f(0f, 0f)
-                }
-                scenes[1].apply {
-                    size = contentPanel.size.run { Vector2f(x / 2, y / 2) }
-                    position = Vector2f(contentPanel.size.x / 2f, 0f)
-                }
-                scenes[2].apply {
-                    size = contentPanel.size.run { Vector2f(x / 2, y / 2) }
-                    position = Vector2f(contentPanel.size.x / 2f, contentPanel.size.y / 2f)
-                }
-            }
-            4 -> {
-                scenes[0].apply {
-                    size = contentPanel.size.run { Vector2f(x / 2, y / 2) }
-                    position = Vector2f(0f, 0f)
-                }
-                scenes[1].apply {
-                    size = contentPanel.size.run { Vector2f(x / 2, y / 2) }
-                    position = Vector2f(contentPanel.size.x / 2f, 0f)
-                }
-                scenes[2].apply {
-                    size = contentPanel.size.run { Vector2f(x / 2, y / 2) }
-                    position = Vector2f(0f, contentPanel.size.y / 2f)
-                }
-                scenes[3].apply {
-                    size = contentPanel.size.run { Vector2f(x / 2, y / 2) }
-                    position = Vector2f(contentPanel.size.x / 2f, contentPanel.size.y / 2f)
                 }
             }
         }
@@ -195,6 +144,10 @@ class SceneController(val viewManager: ViewManager, val modelController: ModelCo
                         (selectedScene as? ModelScene)?.apply {
                             perspective = !perspective
                         }
+                    } else if (Config.keyBindings.moveCameraToCursor.keycode == e.keycode) {
+                        selectedScene.apply {
+                            camera = camera.copy(position = -cursorCenter)
+                        }
                     }
                 }
                 return false
@@ -207,5 +160,67 @@ class SceneController(val viewManager: ViewManager, val modelController: ModelCo
             return tmpModel!!
         }
         return model
+    }
+
+    fun refreshScenes() {
+        selectedScene = scenes.first()
+        viewManager.root.contentPanel.apply {
+            clearComponents()
+            for (scene in scenes) {
+                addComponent(scene)
+            }
+        }
+    }
+
+    fun scaleScenes() {
+        val contentPanel = viewManager.root.contentPanel
+        when (scenes.size) {
+            1 -> scenes[0].apply {
+                size = contentPanel.size
+                position = Vector2f(0f, 0f)
+            }
+            2 -> {
+                scenes[0].apply {
+                    size = contentPanel.size.run { Vector2f(x / 2, y) }
+                    position = Vector2f(0f, 0f)
+                }
+                scenes[1].apply {
+                    size = contentPanel.size.run { Vector2f(x / 2, y) }
+                    position = Vector2f(contentPanel.size.x / 2f, 0f)
+                }
+            }
+            3 -> {
+                scenes[0].apply {
+                    size = contentPanel.size.run { Vector2f(x / 2, y) }
+                    position = Vector2f(0f, 0f)
+                }
+                scenes[1].apply {
+                    size = contentPanel.size.run { Vector2f(x / 2, y / 2) }
+                    position = Vector2f(contentPanel.size.x / 2f, 0f)
+                }
+                scenes[2].apply {
+                    size = contentPanel.size.run { Vector2f(x / 2, y / 2) }
+                    position = Vector2f(contentPanel.size.x / 2f, contentPanel.size.y / 2f)
+                }
+            }
+            4 -> {
+                scenes[0].apply {
+                    size = contentPanel.size.run { Vector2f(x / 2, y / 2) }
+                    position = Vector2f(0f, 0f)
+                }
+                scenes[1].apply {
+                    size = contentPanel.size.run { Vector2f(x / 2, y / 2) }
+                    position = Vector2f(contentPanel.size.x / 2f, 0f)
+                }
+                scenes[2].apply {
+                    size = contentPanel.size.run { Vector2f(x / 2, y / 2) }
+                    position = Vector2f(0f, contentPanel.size.y / 2f)
+                }
+                scenes[3].apply {
+                    size = contentPanel.size.run { Vector2f(x / 2, y / 2) }
+                    position = Vector2f(contentPanel.size.x / 2f, contentPanel.size.y / 2f)
+                }
+            }
+        }
     }
 }

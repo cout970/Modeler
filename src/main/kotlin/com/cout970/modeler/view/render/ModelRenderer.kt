@@ -247,70 +247,91 @@ class ModelRenderer(resourceManager: ResourceManager) {
     fun renderRotation(center: IVector3, selector: ModelSelector, selection: Selection, camera: Camera) {
 
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
-        val selX = selector.selectedAxis == SelectionAxis.X || selector.phantomSelectedAxis == SelectionAxis.X
-        val selY = selector.selectedAxis == SelectionAxis.Y || selector.phantomSelectedAxis == SelectionAxis.Y
-        val selZ = selector.selectedAxis == SelectionAxis.Z || selector.phantomSelectedAxis == SelectionAxis.Z
+        val controller = selector.controller
+        val selX = controller.selectedAxis == SelectionAxis.X || controller.hoveredAxis == SelectionAxis.X
+        val selY = controller.selectedAxis == SelectionAxis.Y || controller.hoveredAxis == SelectionAxis.Y
+        val selZ = controller.selectedAxis == SelectionAxis.Z || controller.hoveredAxis == SelectionAxis.Z
 
         tessellator.draw(GL11.GL_QUADS, formatPC, consumer) {
-            val scale = camera.zoom / 10 * Config.cursorArrowsScale
-            val start = 1.0f * scale * Config.cursorArrowsDispersion
-            val end = 1.0f * scale * Config.cursorArrowsDispersion
-            val size = 0.0625 * scale
+            val (scale, radius, size) = selector.getArrowProperties(camera.zoom)
 
             if (selection.mode != SelectionMode.VERTEX) {
                 RenderUtil.renderBar(tessellator, center, center, size * 1.5, vec3Of(1, 1, 1))
             }
 
-            val tmp = scale * 0.15
+            //if one of the axis is selected
+            if (controller.selectedAxis != SelectionAxis.NONE) {
 
-            if (selector.selectedAxis == SelectionAxis.X) {
-                RenderUtil.renderBar(tessellator, center + vec3Of(start, 0, tmp), center + vec3Of(end, 0, -tmp), size,
-                        color = vec3Of(1, 0, 0))
-
-            } else if (selector.selectedAxis == SelectionAxis.Y) {
-                RenderUtil.renderBar(tessellator, center + vec3Of(tmp, start, 0), center + vec3Of(-tmp, end, 0), size,
-                        color = vec3Of(0, 1, 0))
-
-            } else if (selector.selectedAxis == SelectionAxis.Z) {
-                RenderUtil.renderBar(tessellator, center + vec3Of(0, tmp, start), center + vec3Of(0, -tmp, end), size,
-                        color = vec3Of(0, 0, 1))
+                val axis = controller.selectedAxis
+                RenderUtil.renderCircle(tessellator, center, axis,
+                        radius, Config.cursorLinesSize * scale * 0.03125, axis.axis)
 
             } else {
-                RenderUtil.renderBar(tessellator, center + vec3Of(start, 0, tmp), center + vec3Of(end, 0, -tmp),
-                        if (selX) size * 1.5 else size, color = vec3Of(1, 0, 0))
-                RenderUtil.renderBar(tessellator, center + vec3Of(tmp, start, 0), center + vec3Of(-tmp, end, 0),
-                        if (selY) size * 1.5 else size, color = vec3Of(0, 1, 0))
-                RenderUtil.renderBar(tessellator, center + vec3Of(0, tmp, start), center + vec3Of(0, -tmp, end),
-                        if (selZ) size * 1.5 else size, color = vec3Of(0, 0, 1))
-            }
-            if (selX || selY || selZ) {
-                val axis = when {
-                    selX -> SelectionAxis.X
-                    selY -> SelectionAxis.Y
-                    selZ -> SelectionAxis.Z
-                    else -> SelectionAxis.NONE
+                for (axis in SelectionAxis.selectedValues) {
+                    RenderUtil.renderCircle(tessellator, center, axis,
+                            radius, Config.cursorLinesSize * scale * 0.03125, axis.axis)
                 }
-                RenderUtil.renderCircle(tessellator, center, axis, scale * Config.cursorArrowsDispersion, scale / 24)
+
+                RenderUtil.renderBar(tessellator, center + vec3Of(radius, 0, -0.2 * scale),
+                        center + vec3Of(radius, 0, 0.2 * scale), if (selX) size * 1.5 else size, color = vec3Of(1))
+
+                RenderUtil.renderBar(tessellator, center + vec3Of(-0.2 * scale, radius, 0),
+                        center + vec3Of(0.2 * scale, radius, 0), if (selY) size * 1.5 else size, color = vec3Of(1))
+
+                RenderUtil.renderBar(tessellator, center + vec3Of(0, -0.2 * scale, radius),
+                        center + vec3Of(0, 0.2 * scale, radius), if (selZ) size * 1.5 else size, color = vec3Of(1))
             }
         }
     }
 
     fun renderTranslation(center: IVector3, selector: ModelSelector, selection: Selection, camera: Camera) {
 
-        GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
-        val selX = selector.selectedAxis == SelectionAxis.X || selector.phantomSelectedAxis == SelectionAxis.X
-        val selY = selector.selectedAxis == SelectionAxis.Y || selector.phantomSelectedAxis == SelectionAxis.Y
-        val selZ = selector.selectedAxis == SelectionAxis.Z || selector.phantomSelectedAxis == SelectionAxis.Z
+        val controller = selector.controller
+        val selX = controller.selectedAxis == SelectionAxis.X || controller.hoveredAxis == SelectionAxis.X
+        val selY = controller.selectedAxis == SelectionAxis.Y || controller.hoveredAxis == SelectionAxis.Y
+        val selZ = controller.selectedAxis == SelectionAxis.Z || controller.hoveredAxis == SelectionAxis.Z
 
+        if (Config.enableHelperGrid && selector.scene.perspective && controller.selectedAxis != SelectionAxis.NONE) {
+            tessellator.draw(GL11.GL_LINES, formatPC, consumer) {
+                val grey = vec3Of(0.5)
+                val red = vec3Of(1, 0, 0)
+                var col = grey
+                if (selX || selZ) {
+                    for (x in -160..160) {
+                        col = if (x % 16 == 0) red else grey
+                        set(0, x, center.y, -160).set(1, col.x, col.y, col.z).endVertex()
+                        set(0, x, center.y, 160).set(1, col.x, col.y, col.z).endVertex()
+                    }
+                    for (z in -160..160) {
+                        col = if (z % 16 == 0) red else grey
+                        set(0, -160, center.y, z).set(1, col.x, col.y, col.z).endVertex()
+                        set(0, 160, center.y, z).set(1, col.x, col.y, col.z).endVertex()
+                    }
+                } else if (selY) {
+                    for (z in -160..160) {
+                        col = if (z % 16 == 0) red else grey
+                        set(0, -160, z, center.z).set(1, col.x, col.y, col.z).endVertex()
+                        set(0, 160, z, center.z).set(1, col.x, col.y, col.z).endVertex()
+                    }
+                    for (x in -160..160) {
+                        col = if (x % 16 == 0) red else grey
+                        set(0, x, -160, center.z).set(1, col.x, col.y, col.z).endVertex()
+                        set(0, x, 160, center.z).set(1, col.x, col.y, col.z).endVertex()
+                    }
+                }
+            }
+        }
+        GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
         tessellator.draw(GL11.GL_QUADS, formatPC, consumer) {
-            val scale = camera.zoom / 10 * Config.cursorArrowsScale
-            val start = 0.8f * scale * Config.cursorArrowsDispersion
-            val end = 1f * scale * Config.cursorArrowsDispersion
-            val size = 0.0625 * scale
+
+            val (scale, radius, size) = selector.getArrowProperties(camera.zoom)
+            val start = radius - 0.2 * scale
+            val end = radius + 0.2 * scale
 
             if (selection.mode != SelectionMode.VERTEX) {
                 RenderUtil.renderBar(tessellator, center, center, size * 1.5, vec3Of(1, 1, 1))
             }
+
             RenderUtil.renderBar(tessellator, center + vec3Of(start, 0, 0), center + vec3Of(end, 0, 0),
                     if (selX) size * 1.5 else size, color = vec3Of(1, 0, 0))
             RenderUtil.renderBar(tessellator, center + vec3Of(0, start, 0), center + vec3Of(0, end, 0),
@@ -346,7 +367,7 @@ class ModelRenderer(resourceManager: ResourceManager) {
             set(0, 0, 0, -10).set(1, 0, 0, 1).endVertex()
             set(0, 0, 0, 10).set(1, 0, 0, 1).endVertex()
 
-            val dist = -1024 * 16
+            val dist = -1024 * 15
 
             //y
             for (x in -160..160) {

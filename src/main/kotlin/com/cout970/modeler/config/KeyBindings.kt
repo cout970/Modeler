@@ -20,4 +20,5 @@ class KeyBindings {
     var switchCameraAxis = KeyBind(Keyboard.KEY_P)
     var switchOrthoProjection = KeyBind(Keyboard.KEY_O)
     var slowCameraMovements = KeyBind(Keyboard.KEY_LEFT_SHIFT)
+    var moveCameraToCursor = KeyBind(Keyboard.KEY_C)
 }

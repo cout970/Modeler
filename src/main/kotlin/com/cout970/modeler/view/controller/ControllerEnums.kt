@@ -12,6 +12,10 @@ enum class SelectionAxis(val axis: IVector3) {
     Y(vec3Of(0, 1, 0)),
     Z(vec3Of(0, 0, 1)),
     NONE(vec3Of(0));
+
+    companion object {
+        val selectedValues = listOf(X, Y, Z)
+    }
 }
 
 enum class TransformationMode {

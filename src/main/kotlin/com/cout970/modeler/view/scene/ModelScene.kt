@@ -19,12 +19,13 @@ class ModelScene(sceneController: SceneController) : Scene(sceneController) {
 
     val modelSelector = ModelSelector(this, sceneController)
     var perspective = true
-    var aspectRatio = 1f
 
     override fun update() {
         super.update()
         modelSelector.update()
-        aspectRatio = (size.y / size.x)
+        if (sceneController.selectedScene === this) {
+            modelSelector.updateUserInput()
+        }
     }
 
     override fun render(renderManager: RenderManager) {
@@ -56,10 +57,12 @@ class ModelScene(sceneController: SceneController) : Scene(sceneController) {
             renderExtras()
             if (selection != SelectionNone && selector.transformationMode != TransformationMode.NONE) {
                 when (selector.transformationMode) {
-                    TransformationMode.TRANSLATION -> renderTranslation(sceneController.cursorCenter, selector,
-                            selection, camera)
-                    TransformationMode.ROTATION -> renderRotation(sceneController.cursorCenter, selector, selection,
-                            camera)
+                    TransformationMode.TRANSLATION -> {
+                        renderTranslation(sceneController.cursorCenter, selector, selection, camera)
+                    }
+                    TransformationMode.ROTATION -> {
+                        renderRotation(selection.getCenter(model), selector, selection, camera)
+                    }
                     else -> {
                     }
                 }
@@ -83,7 +86,8 @@ class ModelScene(sceneController: SceneController) : Scene(sceneController) {
             return Matrix4d().setPerspective(Config.perspectiveFov.toRads(), (size.x / size.y).toDouble(), 0.1,
                     1000.0).toIMatrix()
         } else {
-            return Matrix4d().setOrtho(-1.0, 1.0, -1.0 * aspectRatio, 1.0 * aspectRatio, 0.1, 1000.0).toIMatrix()
+            val aspectRatio = (size.y / size.x)
+            return Matrix4d().setOrtho(-1.0 / aspectRatio, 1.0 / aspectRatio, -1.0, 1.0, 0.1, 1000.0).toIMatrix()
         }
     }
 
@@ -91,7 +95,7 @@ class ModelScene(sceneController: SceneController) : Scene(sceneController) {
         if (perspective) {
             return camera.matrixForPerspective
         } else {
-            return camera.getMatrixForOrtho(aspectRatio)
+            return camera.matrixForOrtho
         }
     }
 

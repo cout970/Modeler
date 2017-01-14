@@ -62,6 +62,9 @@ class ModuleController(val viewManager: ViewManager, val modelController: ModelC
             10 -> modelController.clipboard.copy()
             11 -> modelController.clipboard.cut()
             12 -> modelController.clipboard.paste()
+            13 -> viewManager.sceneController.transformationMode = TransformationMode.TRANSLATION
+            14 -> viewManager.sceneController.transformationMode = TransformationMode.ROTATION
+            15 -> viewManager.sceneController.transformationMode = TransformationMode.SCALE
             else -> log(Level.NORMAL) { "unregistered button ID: $id" }
         }
     }

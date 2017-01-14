@@ -5,6 +5,8 @@ import com.cout970.modeler.model.Model
 import com.cout970.modeler.model.ModelGroup
 import com.cout970.modeler.modeleditor.selection.ModelPath
 import com.cout970.modeler.modeleditor.selection.Selection
+import com.cout970.vector.api.IVector3
+import com.cout970.vector.extensions.*
 import java.io.File
 
 /**
@@ -83,4 +85,26 @@ fun Model.applyMesh(selection: Selection, meshFunc: (Mesh) -> Mesh): Model {
             meshFunc(mesh)
         })
     })
+}
+
+/**
+ * http://stackoverflow.com/questions/3120357/get-closest-point-to-a-line
+ * Port to C# made by N.Schilke using the code of Justin L.
+ */
+fun getClosestPointOnLineSegment(A: IVector3, B: IVector3, P: IVector3): IVector3 {
+    val AP = P - A       //Vector from A to P
+    val AB = B - A       //Vector from A to B
+
+    val magnitudeAB = AB.lengthSq()          //Magnitude of AB vector (it's length squared)
+    val ABAPproduct = AP dot AB              //The DOT product of a_to_p and a_to_b
+    val distance = ABAPproduct / magnitudeAB //The normalized "distance" from a to your closest point
+
+    //Check if P projection is over vectorAB
+    if (distance < 0) {
+        return A
+    } else if (distance > 1) {
+        return B
+    } else {
+        return A + AB * distance
+    }
 }
