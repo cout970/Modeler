@@ -1,11 +1,11 @@
 package com.cout970.modeler.modeleditor
 
+import com.cout970.modeler.config.Config
 import com.cout970.modeler.event.EventController
 import com.cout970.modeler.export.ExportManager
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.modeleditor.action.ActionDelete
 import com.cout970.modeler.modeleditor.selection.SelectionManager
-import com.cout970.modeler.project.Author
 import com.cout970.modeler.project.Project
 import com.cout970.modeler.util.ITickeable
 import java.util.*
@@ -15,7 +15,8 @@ import java.util.*
  */
 class ModelController : ITickeable {
 
-    var project = Project(Author("Anonymous", ""), "Unnamed")
+    var project = Project(Config.user, "Unnamed")
+
     val model get() = project.model
 
     var modelChange = true

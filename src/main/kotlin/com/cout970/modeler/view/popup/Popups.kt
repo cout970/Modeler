@@ -1,10 +1,12 @@
 package com.cout970.modeler.view.popup
 
 import com.cout970.modeler.export.ExportFormat
+import com.cout970.modeler.log.print
 import com.cout970.modeler.modeleditor.ModelController
 import com.cout970.modeler.project.Project
 import org.lwjgl.PointerBuffer
 import org.lwjgl.system.MemoryUtil
+import org.lwjgl.util.tinyfd.TinyFileDialogs
 import java.awt.Point
 import java.awt.Toolkit
 import java.awt.image.BufferedImage
@@ -35,6 +37,11 @@ private val exportExtensionsObj: PointerBuffer = MemoryUtil.memAllocPointer(1).a
     flip()
 }
 
+private val saveFileExtension: PointerBuffer = MemoryUtil.memAllocPointer(1).apply {
+    put(MemoryUtil.memUTF8("*.pff"))
+    flip()
+}
+
 private var lastSaveFile: String? = null
 
 fun saveProject(modelController: ModelController) {
@@ -46,9 +53,38 @@ fun saveProject(modelController: ModelController) {
 }
 
 fun saveProjectAs(modelController: ModelController) {
-    //TODO
-    lastSaveFile = "I:/newWorkspace/Proyectos/Java_Kotlin/Modeler/out/artifacts/modeler_main_jar2/project2.tcnx"
-    saveProject(modelController, modelController.project)
+    val file = TinyFileDialogs.tinyfd_saveFileDialog("Save As", "", saveFileExtension, "Project File Format (*.pff)")
+    if (file != null) {
+        lastSaveFile = if (file.endsWith(".pff")) file else file + ".pff"
+        saveProject(modelController, modelController.project)
+    }
+}
+
+fun newProject(modelController: ModelController) {
+    val res = JOptionPane.showConfirmDialog(null,
+            "Do you want to create a new project? \nAll unsaved changes will be lost!")
+    if (res != JOptionPane.OK_OPTION) return
+    modelController.project = Project(modelController.project.owner, "Unnamed")
+    modelController.selectionManager.clearSelection()
+}
+
+fun loadProject(modelController: ModelController) {
+    val res = JOptionPane.showConfirmDialog(null,
+            "Do you want to load a new project? \nAll unsaved changes will be lost!")
+    if (res != JOptionPane.OK_OPTION) return
+
+    val file = TinyFileDialogs.tinyfd_openFileDialog("Load", "", saveFileExtension, "Project File Format (*.pff)",
+            false)
+    if (file != null) {
+        lastSaveFile = file
+        try {
+            val project = modelController.exportManager.loadProject(lastSaveFile!!)
+            project.model = project.model.copy()
+            modelController.project = project
+        } catch (e: Exception) {
+            e.print()
+        }
+    }
 }
 
 private fun saveProject(modelController: ModelController, project: Project) {

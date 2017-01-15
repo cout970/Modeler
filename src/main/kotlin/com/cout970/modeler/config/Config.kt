@@ -1,6 +1,7 @@
 package com.cout970.modeler.config
 
 import com.cout970.modeler.log.Level
+import com.cout970.modeler.project.Author
 
 /**
  * Created by cout970 on 2016/12/27.
@@ -8,6 +9,7 @@ import com.cout970.modeler.log.Level
 object Config {
 
     var keyBindings = KeyBindings()
+    val user: Author = Author()
     var mouseTranslateSpeedX: Float = 5f
     var mouseTranslateSpeedY: Float = 5f
     var mouseRotationSpeedX: Float = 0.5f

@@ -140,8 +140,8 @@ class RootFrame(val viewManager: ViewManager) : Frame() {
         fun onClickDropdown(id: Int) {
             val modelController = root.viewManager.sceneController.modelController
             when (id) {
-                0 -> Missing("new project")
-                1 -> Missing("open project")
+                0 -> newProject(modelController)
+                1 -> loadProject(modelController)
                 2 -> saveProject(modelController)
                 3 -> saveProjectAs(modelController)
                 4 -> showImportModelPopup(modelController)
