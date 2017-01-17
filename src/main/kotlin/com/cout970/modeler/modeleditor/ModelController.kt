@@ -1,5 +1,6 @@
 package com.cout970.modeler.modeleditor
 
+import com.cout970.modeler.ResourceManager
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.event.EventController
 import com.cout970.modeler.export.ExportManager
@@ -27,8 +28,12 @@ class ModelController : ITickeable {
     val clipboard = ModelClipboard(this)
     val historyLog = HistoryLog()
     val historyRecord = HistoricalRecord(historyLog, this)
-    val exportManager = ExportManager(this)
+    lateinit var exportManager: ExportManager
     val inserter = ModelInserter(this)
+
+    fun init(resourceManager: ResourceManager) {
+        exportManager = ExportManager(this, resourceManager)
+    }
 
     fun registerListeners(eventController: EventController) {
         this.eventController = eventController

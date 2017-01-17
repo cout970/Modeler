@@ -11,6 +11,8 @@ import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.vec3Of
 import com.google.gson.*
 import java.lang.reflect.Type
+import java.net.URI
+import java.nio.file.Paths
 
 /**
  * Created by cout970 on 2017/01/04.
@@ -69,12 +71,15 @@ class MaterialSerializer : JsonSerializer<Material>, JsonDeserializer<Material> 
     override fun serialize(src: Material, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
         return JsonObject().apply {
             addProperty("name", src.name)
+            if (src is TexturedMaterial) {
+                addProperty("path", src.path.toUri().toString())
+            }
         }
     }
 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Material {
         val obj = json.asJsonObject
         return if (obj["name"].asString == "noTexture") MaterialNone else TexturedMaterial(
-                obj["name"].asString)
+                obj["name"].asString, Paths.get(URI(obj["path"].asString)))
     }
 }

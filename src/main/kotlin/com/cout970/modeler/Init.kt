@@ -49,6 +49,7 @@ class Init(val programArguments: List<String>) {
         windowController.stop = { mainLoop.stop = true }
         windowController.timer = mainLoop.timer
         log(Level.FINEST) { "Registering listeners for modelController" }
+        modelController.init(resourceManager)
         modelController.registerListeners(eventController)
 
         log(Level.FINE) { "Loading config" }

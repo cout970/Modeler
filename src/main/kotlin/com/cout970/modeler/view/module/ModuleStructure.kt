@@ -50,6 +50,9 @@ class ModuleStructure(controller: ModuleController) : Module(controller, "Struct
                 addSubComponent(Button(25f, index, 130f, 20f, " ${group.name}").apply {
                     border.isEnabled = false
                     textState.horizontalAlign = HorizontalAlign.LEFT
+                    if (selection.isSelected(groupPath)) {
+                        backgroundColor.set(0f, 0.5f, 1f, 1f)
+                    }
                 }.onClick(0) {
                     if (controller.modelController.selectionManager.selectionMode == SelectionMode.GROUP) {
                         controller.modelController.selectionManager.run {

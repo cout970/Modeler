@@ -6,14 +6,9 @@ import com.cout970.glutilities.event.EventKeyUpdate
 import com.cout970.modeler.event.EventController
 import com.cout970.modeler.event.IEventListener
 import com.cout970.modeler.util.absolutePosition
-import com.cout970.modeler.util.toIMatrix
-import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.view.controller.SceneController
 import com.cout970.modeler.view.render.RenderManager
 import com.cout970.vector.extensions.vec2Of
-import com.cout970.vector.extensions.xd
-import com.cout970.vector.extensions.yd
-import org.joml.Matrix4d
 
 /**
  * Created by cout970 on 2017/01/02.
@@ -30,11 +25,7 @@ class TextureScene(controller: SceneController) : Scene(controller) {
         renderManager.modelRenderer.run {
             val model = sceneController.modelController.model
             val selection = sceneController.modelController.selectionManager.selection
-            val viewport = size.toIVector()
-            val aspectRatio = (viewport.yd / viewport.xd)
-            val orthoMatrix = Matrix4d().setOrtho(-1.0, 1.0, -1.0 * aspectRatio, 1.0 * aspectRatio, 0.1,
-                    1000.0).toIMatrix()
-            matrixP = orthoMatrix
+            matrixP = createOrthoMatrix()
             matrixV = camera.matrixForUV
 
             val y = parent.size.y - (position.y + size.y)

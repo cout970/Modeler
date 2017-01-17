@@ -18,4 +18,9 @@ class ResourceManager {
         val aux = TextureLoader.loadTexture(readResource(name))
         return TextureLoader.uploadTexture2D(aux)
     }
+
+    fun getTexture(stream: InputStream): Texture {
+        val aux = TextureLoader.loadTexture(stream)
+        return TextureLoader.uploadTexture2D(aux)
+    }
 }

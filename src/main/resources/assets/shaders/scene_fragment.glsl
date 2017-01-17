@@ -41,7 +41,7 @@ vec3 getLight(vec3 color, vec3 lcolor, vec3 toLight, vec3 normal, vec3 toCamera)
 void main(void){
 
     //color of the texture pixel
-    vec4 color = texture(textureSampler, pass_texture / textureSize);
+    vec4 color = texture(textureSampler, pass_texture);
 
     if(!gl_FrontFacing){
         color = vec4(1.0, 0.5, 0.5, 1.0);
@@ -85,6 +85,6 @@ vec3 getLight(vec3 color, vec3 lcolor, vec3 toLight, vec3 normal, vec3 toCamera)
     I = normal;
     return vec3(I.x+0.5, I.y+0.5, I.z+0.5);// very cool effect
     */
-    return pow(color * I, vec3(1.0/2.2));
+    return color * I * 2;//pow(color * I * 2, vec3(1.0/2.2));
 }
 

@@ -11,9 +11,11 @@ import com.cout970.glutilities.texture.Texture
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.mat4Of
 import com.cout970.matrix.extensions.times
+import com.cout970.matrix.extensions.transpose
 import com.cout970.modeler.ResourceManager
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.model.Model
+import com.cout970.modeler.model.TexturedMaterial
 import com.cout970.modeler.modeleditor.selection.ModelPath
 import com.cout970.modeler.modeleditor.selection.Selection
 import com.cout970.modeler.modeleditor.selection.SelectionMode
@@ -169,8 +171,6 @@ class ModelRenderer(resourceManager: ResourceManager) {
         enableLight.setBoolean(true)
         textureSize.setVector2(vec2Of(1, 1))
 
-        modelTexture.bind()
-
         GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, mode)
     }
 
@@ -193,16 +193,26 @@ class ModelRenderer(resourceManager: ResourceManager) {
     }
 
     fun renderModel(model: Model, modelCache: Cache<Int, VAO>) {
-        consumer.accept(modelCache.getOrCompute(model.hashCode()) {
-            tessellator.compile(GL11.GL_QUADS, formatPTN) {
-                model.quads.forEach { quad ->
-                    val norm = quad.normal
-                    quad.vertex.forEach { (pos, tex) ->
-                        set(0, pos.x, pos.y, pos.z).set(1, tex.x, tex.y).set(2, norm.x, norm.y, norm.z).endVertex()
+        for (group in model.groups) {
+            if (group.material is TexturedMaterial) {
+                group.material.texture?.bind() ?: modelTexture.bind()
+            } else {
+                modelTexture.bind()
+            }
+            transformationMatrix.setMatrix4(group.transform.matrix.transpose())
+            consumer.accept(modelCache.getOrCompute(model.hashCode()) {
+                tessellator.compile(GL11.GL_QUADS, formatPTN) {
+                    group.getQuads().forEach { quad ->
+                        val norm = quad.normal
+                        quad.vertex.forEach { (pos, tex) ->
+                            set(0, pos.x, pos.y, pos.z).set(1, tex.xd, tex.yd).set(2, norm.x, norm.y,
+                                    norm.z).endVertex()
+                        }
                     }
                 }
-            }
-        })
+            })
+        }
+        transformationMatrix.setMatrix4(matrixM)
     }
 
     fun renderModelSelection(model: Model, selection: Selection, selectionCache: Cache<Int, VAO>) {
@@ -439,7 +449,7 @@ class ModelRenderer(resourceManager: ResourceManager) {
                             meshPath.getSubPaths(model).forEach { quadPath ->
                                 val quad = quadPath.getQuad(model)!!
                                 quad.vertex
-                                        .map { it.tex }
+                                        .map { it.tex * 16 }
                                         .forEach { set(0, it.x, it.yd, 0).set(1, 1, 0, 0).endVertex() }
                             }
                         }
@@ -448,14 +458,14 @@ class ModelRenderer(resourceManager: ResourceManager) {
                         path.getSubPaths(model).forEach { quadPath ->
                             val quad = quadPath.getQuad(model)!!
                             quad.vertex
-                                    .map { it.tex }
+                                    .map { it.tex * 16 }
                                     .forEach { set(0, it.x, it.yd, 0).set(1, 1, 0, 0).endVertex() }
                         }
                     }
                     ModelPath.Level.QUADS -> {
                         val quad = path.getQuad(model)!!
                         quad.vertex
-                                .map { it.tex }
+                                .map { it.tex * 16 }
                                 .forEach { set(0, it.x, it.yd, 0).set(1, 1, 0, 0).endVertex() }
                     }
                     else -> {

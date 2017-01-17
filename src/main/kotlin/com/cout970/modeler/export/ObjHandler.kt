@@ -1,11 +1,15 @@
 package com.cout970.modeler.export
 
+import com.cout970.modeler.log.Level
+import com.cout970.modeler.log.log
+import com.cout970.modeler.log.print
 import com.cout970.modeler.model.*
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
-import java.io.InputStream
+import java.io.File
 import java.io.OutputStream
+import java.nio.file.Path
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
@@ -129,11 +133,16 @@ class ObjImporter {
     internal val sGroup = "g "
     internal val sObject = "o "
     internal val sMaterial = "usemtl "
+    internal val sLib = "mtllib "
+    internal val sNewMaterial = "newmtl "
+    internal val sMap_Ka = "map_Ka "
+    internal val sMap_Kd = "map_Kd "
     internal val sComment = "#"
     internal val startIndex = 1 //index after label
 
-    fun import(input: InputStream): Model {
+    fun import(path: Path, flipUvs: Boolean): Model {
 
+        val input = path.toUri().toURL().openStream()
         val vertices = mutableListOf<IVector3>()
         val texCoords = mutableListOf<IVector2>()
         val normals = mutableListOf<IVector3>()
@@ -145,7 +154,8 @@ class ObjImporter {
         val objects = mutableListOf<ObjObject>()
         var groups = noObj.groups
         var quads = noGroup.quads
-        var material = "noTexture"
+        var currentMaterial = "material"
+        val materials = mutableListOf<ObjMaterial>()
 
         val lines = input.reader().readLines()
         val hasGroups = lines.any { it.startsWith(sGroup) }
@@ -172,7 +182,10 @@ class ObjImporter {
                 hasTextures = true
                 //reads a texture coords
                 texCoords.add(vec2Of(lineSpliced[startIndex].toFloat(),
-                        lineSpliced[startIndex + 1].toFloat()))
+                        if (flipUvs)
+                            1 - lineSpliced[startIndex + 1].toFloat()
+                        else
+                            lineSpliced[startIndex + 1].toFloat()))
 
             } else if (line.startsWith(sFace)) { //faces
                 val quad = ObjQuad()
@@ -200,18 +213,23 @@ class ObjImporter {
 
             } else if (line.startsWith(sObject)) {
                 if (hasGroups) {
-                    val newObj = ObjObject(lineSpliced[1], material, mutableListOf())
+                    val newObj = ObjObject(lineSpliced[1], currentMaterial, mutableListOf())
                     groups = newObj.groups
                     objects.add(newObj)
                 } else {
+                    noObj.material = currentMaterial
                     val newGroup = ObjGroup(lineSpliced[1], mutableListOf())
                     quads = newGroup.quads
                     groups.add(newGroup)
                 }
             } else if (line.startsWith(sMaterial)) {
-                material = lineSpliced[1]
+                currentMaterial = lineSpliced[1]
+                noObj.material = currentMaterial
+            } else if (line.startsWith(sLib)) {
+                materials.addAll(parseMaterialLib(path.parent, lineSpliced[1]))
+
             } else if (!line.startsWith(sComment) && !line.isEmpty()) {
-                println("Ignoring line: '$line'\n")
+                log(Level.NORMAL) { "Ignoring line: '$line'" }
             }
         }
         if (noGroup.quads.isNotEmpty()) {
@@ -220,23 +238,64 @@ class ObjImporter {
         if (noObj.groups.isNotEmpty()) {
             objects.add(noObj)
         }
-
         return Model(objects.map { obj ->
-            ModelGroup(name = obj.name, material = TexturedMaterial(obj.material), meshes = obj.groups.map { group ->
-                Mesh(vertices.map { it * 16 }, texCoords, group.quads.map {
-                    QuadIndices(it.vertexIndices[0], it.textureIndices[0],
-                            it.vertexIndices[1], it.textureIndices[1],
-                            it.vertexIndices[2], it.textureIndices[2],
-                            it.vertexIndices[3], it.textureIndices[3])
-                })
-            })
+            ModelGroup(name = obj.name,
+                    material = materials.firstOrNull { it.name == obj.material }?.toMaterial() ?: MaterialNone,
+                    meshes = obj.groups.map { group ->
+                        Mesh(vertices.map { it * 16 }, texCoords, group.quads.map {
+                            QuadIndices(it.vertexIndices[0], it.textureIndices[0],
+                                    it.vertexIndices[1], it.textureIndices[1],
+                                    it.vertexIndices[2], it.textureIndices[2],
+                                    it.vertexIndices[3], it.textureIndices[3])
+                        })
+                    })
         })
     }
+
+    private fun parseMaterialLib(resource: Path, name: String): List<ObjMaterial> {
+        val text = resource.resolve(name).toUri().toURL().readText().splitToSequence('\n')
+
+        val materialList = mutableListOf<ObjMaterial>()
+        var material: ObjMaterial? = null
+        for (line_ in text.asSequence()) {
+            val line = line_.replace("\r", "")
+            val lineSpliced = line.split(" ")
+
+            if (line.startsWith(sNewMaterial)) {
+                material?.let { materialList += it }
+                material = ObjMaterial(lineSpliced[1])
+            } else if (line.startsWith(sMap_Ka) || line.startsWith(sMap_Kd)) {
+                try {
+                    val subPath: String
+                    if (lineSpliced[1].contains(":")) {
+                        val slash = lineSpliced[1].substringAfter("/")
+                        subPath = "textures/" + (if (slash.isEmpty()) lineSpliced[1].substringAfter(
+                                ":") else slash) + ".png"
+                    } else {
+                        subPath = lineSpliced[1] + ".png"
+                    }
+                    material!!.map_Ka = resource.resolve(subPath).toString()
+                } catch (e: Exception) {
+                    e.print()
+                }
+            } else if (!line.startsWith(sComment) && !line.isEmpty()) {
+                log(Level.NORMAL) { "Ignoring line: '$line'" }
+            }
+        }
+        material?.let { materialList += it }
+        return materialList
+    }
+}
+
+private class ObjMaterial(val name: String) {
+    var map_Ka: String = ""
+
+    fun toMaterial(): Material = TexturedMaterial(name, File(map_Ka).toPath())
 }
 
 private class ObjObject(
         val name: String,
-        val material: String,
+        var material: String,
         val groups: MutableList<ObjGroup>
 )
 

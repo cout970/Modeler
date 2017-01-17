@@ -86,8 +86,7 @@ class ModelScene(sceneController: SceneController) : Scene(sceneController) {
             return Matrix4d().setPerspective(Config.perspectiveFov.toRads(), (size.x / size.y).toDouble(), 0.1,
                     1000.0).toIMatrix()
         } else {
-            val aspectRatio = (size.y / size.x)
-            return Matrix4d().setOrtho(-1.0 / aspectRatio, 1.0 / aspectRatio, -1.0, 1.0, 0.1, 1000.0).toIMatrix()
+            return createOrthoMatrix()
         }
     }
 

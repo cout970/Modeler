@@ -1,5 +1,6 @@
 package com.cout970.modeler.export
 
+import com.cout970.modeler.ResourceManager
 import com.cout970.modeler.model.Material
 import com.cout970.modeler.modeleditor.ModelController
 import com.cout970.modeler.modeleditor.action.ActionImportModel
@@ -18,7 +19,7 @@ import java.util.zip.ZipOutputStream
 /**
  * Created by cout970 on 2017/01/02.
  */
-class ExportManager(val modelController: ModelController) {
+class ExportManager(val modelController: ModelController, val resourceManager: ResourceManager) {
 
     val objImporter = ObjImporter()
     val objExporter = ObjExporter()
@@ -56,12 +57,12 @@ class ExportManager(val modelController: ModelController) {
         val file = File(path)
         when (format) {
             ImportFormat.OBJ -> {
-                modelController.historyRecord.doAction(ActionImportModel(modelController, path) {
-                    objImporter.import(file.inputStream())
+                modelController.historyRecord.doAction(ActionImportModel(modelController, resourceManager, path) {
+                    objImporter.import(file.toPath(), true)
                 })
             }
             ImportFormat.TCN -> {
-                modelController.historyRecord.doAction(ActionImportModel(modelController, path) {
+                modelController.historyRecord.doAction(ActionImportModel(modelController, resourceManager, path) {
                     tcnImporter.import(file.inputStream())
                 })
             }
