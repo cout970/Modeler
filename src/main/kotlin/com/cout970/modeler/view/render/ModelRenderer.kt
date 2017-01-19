@@ -14,8 +14,8 @@ import com.cout970.matrix.extensions.times
 import com.cout970.matrix.extensions.transpose
 import com.cout970.modeler.ResourceManager
 import com.cout970.modeler.config.Config
+import com.cout970.modeler.model.MaterialNone
 import com.cout970.modeler.model.Model
-import com.cout970.modeler.model.TexturedMaterial
 import com.cout970.modeler.modeleditor.selection.ModelPath
 import com.cout970.modeler.modeleditor.selection.Selection
 import com.cout970.modeler.modeleditor.selection.SelectionMode
@@ -43,6 +43,7 @@ class ModelRenderer(resourceManager: ResourceManager) {
     val formatPC = FormatPC()
     val formatPTN = FormatPTN()
     val formatPT = FormatPT()
+    val formatPCT = FormatPCT()
     //Model, View, Projection matrices
     var matrixM: IMatrix4 = mat4Of(1)
     var matrixV: IMatrix4 = mat4Of(1)
@@ -78,12 +79,12 @@ class ModelRenderer(resourceManager: ResourceManager) {
     //vertex shader variables
     val viewport: UniformVariable
 
-    val modelTexture: Texture
     val cursorTexture: Texture
 
     //uv shader
     val uvShader: ShaderProgram
 
+    val uvUseColor: UniformVariable
     val uvMatrix: UniformVariable
 
     init {
@@ -119,9 +120,11 @@ class ModelRenderer(resourceManager: ResourceManager) {
                     resourceManager.readResource("assets/shaders/uv_fragment.glsl").reader().readText())
             bindAttribute(0, "in_position")
             bindAttribute(1, "in_color")
+            bindAttribute(2, "in_texture")
         }
 
         uvMatrix = uvShader.createUniformVariable("matrix")
+        uvUseColor = uvShader.createUniformVariable("useColor")
 
         viewport = planeShader.createUniformVariable("viewport")
 
@@ -141,7 +144,6 @@ class ModelRenderer(resourceManager: ResourceManager) {
         enableLight = modelShader.createUniformVariable("enableLight")
         textureSize = modelShader.createUniformVariable("textureSize")
 
-        modelTexture = resourceManager.getTexture("assets/textures/debug.png")
         cursorTexture = resourceManager.getTexture("assets/textures/cursor.png")
 
         consumer = Consumer<VAO> {
@@ -151,6 +153,8 @@ class ModelRenderer(resourceManager: ResourceManager) {
             it.unbindAttrib()
             VAO.Companion.unbind()
         }
+
+        MaterialNone.loadTexture(resourceManager)
     }
 
     fun setViewport(pos: IVector2, size: IVector2) {
@@ -194,11 +198,7 @@ class ModelRenderer(resourceManager: ResourceManager) {
 
     fun renderModel(model: Model, modelCache: Cache<Int, VAO>) {
         for (group in model.groups) {
-            if (group.material is TexturedMaterial) {
-                group.material.texture?.bind() ?: modelTexture.bind()
-            } else {
-                modelTexture.bind()
-            }
+            group.material.bind()
             transformationMatrix.setMatrix4(group.transform.matrix.transpose())
             consumer.accept(modelCache.getOrCompute(model.hashCode()) {
                 tessellator.compile(GL11.GL_QUADS, formatPTN) {
@@ -305,7 +305,7 @@ class ModelRenderer(resourceManager: ResourceManager) {
             tessellator.draw(GL11.GL_LINES, formatPC, consumer) {
                 val grey = vec3Of(0.5)
                 val red = vec3Of(1, 0, 0)
-                var col = grey
+                var col: IVector3
                 if (selX || selZ) {
                     for (x in -160..160) {
                         col = if (x % 16 == 0) red else grey
@@ -421,27 +421,44 @@ class ModelRenderer(resourceManager: ResourceManager) {
         }
     }
 
-    fun renderTextureGrid() {
-        GLStateMachine.blend.enable()
-        modelTexture.bind()
-        tessellator.draw(GL11.GL_LINES, formatPC, consumer) {
-            for (x in 0..16) {
-                set(0, x, 0, 0).set(1, 0.5, 0.5, 0.5).endVertex()
-                set(0, x, 16, 0).set(1, 0.5, 0.5, 0.5).endVertex()
+    fun renderUV(model: Model, selection: Selection) {
+        val texture = model.groups.find { it.material != MaterialNone }?.material ?: MaterialNone
+        val scale = 16.0
+        val divs = 128
+
+        GLStateMachine.depthTest.disable()
+        uvShader.start()
+        uvMatrix.setMatrix4(matrixP * matrixV)
+
+        uvUseColor.setBoolean(true)
+        MaterialNone.bind()
+
+        tessellator.draw(GL11.GL_LINES, formatPCT, consumer) {
+            for (x in 0..divs) {
+                set(0, x * (scale / divs), 0, 0).set(1, 0.5, 0.5, 0.5).set(2, 0.0, 0.0).endVertex()
+                set(0, x * (scale / divs), scale, 0).set(1, 0.5, 0.5, 0.5).set(2, 0.0, 0.0).endVertex()
             }
 
-            for (z in 0..16) {
-                set(0, 0, z, 0).set(1, 0.5, 0.5, 0.5).endVertex()
-                set(0, 16, z, 0).set(1, 0.5, 0.5, 0.5).endVertex()
+            for (z in 0..divs) {
+                set(0, 0, z * (scale / divs), 0).set(1, 0.5, 0.5, 0.5).set(2, 0.0, 0.0).endVertex()
+                set(0, scale, z * (scale / divs), 0).set(1, 0.5, 0.5, 0.5).set(2, 0.0, 0.0).endVertex()
             }
         }
-        GLStateMachine.blend.disable()
-    }
 
-    fun renderUVs(model: Model, selection: Selection) {
+        uvUseColor.setBoolean(false)
+
+        texture.bind()
+        tessellator.draw(GL11.GL_QUADS, formatPCT, consumer) {
+            set(0, 0, 0, 0).set(1, 1, 1, 1).set(2, 0.0, 1.0).endVertex()
+            set(0, scale, 0, 0).set(1, 1, 1, 1).set(2, 1.0, 1.0).endVertex()
+            set(0, scale, scale, 0).set(1, 1, 1, 1).set(2, 1.0, 0.0).endVertex()
+            set(0, 0, scale, 0).set(1, 1, 1, 1).set(2, 0.0, 0.0).endVertex()
+        }
+
+        uvUseColor.setBoolean(true)
         GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE)
         GL11.glLineWidth(2f)
-        tessellator.draw(GL11.GL_QUADS, formatPC, consumer) {
+        tessellator.draw(GL11.GL_QUADS, formatPCT, consumer) {
             selection.paths.forEach { path ->
                 when (path.level) {
                     ModelPath.Level.GROUPS -> {
@@ -449,8 +466,9 @@ class ModelRenderer(resourceManager: ResourceManager) {
                             meshPath.getSubPaths(model).forEach { quadPath ->
                                 val quad = quadPath.getQuad(model)!!
                                 quad.vertex
-                                        .map { it.tex * 16 }
-                                        .forEach { set(0, it.x, it.yd, 0).set(1, 1, 0, 0).endVertex() }
+                                        .map { it.copy(tex = vec2Of(it.tex.x, 1 - it.tex.yd)) }
+                                        .map { it.tex * scale }
+                                        .forEach { set(0, it.x, it.yd, 0).set(1, 1, 0, 0).set(2, 0.0, 0.0).endVertex() }
                             }
                         }
                     }
@@ -458,15 +476,17 @@ class ModelRenderer(resourceManager: ResourceManager) {
                         path.getSubPaths(model).forEach { quadPath ->
                             val quad = quadPath.getQuad(model)!!
                             quad.vertex
-                                    .map { it.tex * 16 }
-                                    .forEach { set(0, it.x, it.yd, 0).set(1, 1, 0, 0).endVertex() }
+                                    .map { it.copy(tex = vec2Of(it.tex.x, 1 - it.tex.yd)) }
+                                    .map { it.tex * scale }
+                                    .forEach { set(0, it.x, it.yd, 0).set(1, 1, 0, 0).set(2, 0.0, 0.0).endVertex() }
                         }
                     }
                     ModelPath.Level.QUADS -> {
                         val quad = path.getQuad(model)!!
                         quad.vertex
-                                .map { it.tex * 16 }
-                                .forEach { set(0, it.x, it.yd, 0).set(1, 1, 0, 0).endVertex() }
+                                .map { it.copy(tex = vec2Of(it.tex.x, 1 - it.tex.yd)) }
+                                .map { it.tex * scale }
+                                .forEach { set(0, it.x, it.yd, 0).set(1, 1, 0, 0).set(2, 0.0, 0.0).endVertex() }
                     }
                     else -> {
                     }
@@ -475,11 +495,7 @@ class ModelRenderer(resourceManager: ResourceManager) {
         }
         GL11.glLineWidth(1f)
         GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL)
-    }
-
-    fun startUV() {
-        uvShader.start()
-        uvMatrix.setMatrix4(matrixP * matrixV)
+        GLStateMachine.depthTest.enable()
     }
 
     class FormatPC : IFormat {
@@ -497,6 +513,27 @@ class ModelRenderer(resourceManager: ResourceManager) {
         override fun reset() {
             bufferPos.getBase().clear()
             bufferCol.getBase().clear()
+        }
+    }
+
+    class FormatPCT : IFormat {
+
+        var bufferPos = Buffer(IBuffer.BufferType.FLOAT, 524288 * 16, 3)
+        var bufferCol = Buffer(IBuffer.BufferType.FLOAT, 524288 * 16, 3)
+        var bufferTex = Buffer(IBuffer.BufferType.FLOAT, 524288 * 16, 2)
+
+        override fun getBuffers(): List<IBuffer> = listOf(bufferPos, bufferCol, bufferTex)
+
+        override fun injectData(builder: VaoBuilder) {
+            builder.bindAttribf(0, bufferPos.getBase().apply { flip() }, 3)
+            builder.bindAttribf(1, bufferCol.getBase().apply { flip() }, 3)
+            builder.bindAttribf(2, bufferTex.getBase().apply { flip() }, 2)
+        }
+
+        override fun reset() {
+            bufferPos.getBase().clear()
+            bufferCol.getBase().clear()
+            bufferTex.getBase().clear()
         }
     }
 }

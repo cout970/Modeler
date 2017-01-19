@@ -32,10 +32,7 @@ class TextureScene(controller: SceneController) : Scene(controller) {
             setViewport(vec2Of(absolutePosition.x, y),
                     vec2Of(size.x, size.y))
 
-            startUV()
-            renderTextureGrid()
-            renderUVs(model, selection)
-            stop()
+            renderUV(model, selection)
             setViewport(vec2Of(0, 0), sceneController.viewManager.getSize())
         }
     }

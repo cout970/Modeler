@@ -5,6 +5,7 @@ import com.cout970.modeler.model.Material
 import com.cout970.modeler.modeleditor.ModelController
 import com.cout970.modeler.modeleditor.action.ActionImportModel
 import com.cout970.modeler.project.Project
+import com.cout970.modeler.util.createPath
 import com.cout970.modeler.view.popup.Missing
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
@@ -58,12 +59,12 @@ class ExportManager(val modelController: ModelController, val resourceManager: R
         when (format) {
             ImportFormat.OBJ -> {
                 modelController.historyRecord.doAction(ActionImportModel(modelController, resourceManager, path) {
-                    objImporter.import(file.toPath(), true)
+                    objImporter.import(file.createPath(), false)
                 })
             }
             ImportFormat.TCN -> {
                 modelController.historyRecord.doAction(ActionImportModel(modelController, resourceManager, path) {
-                    tcnImporter.import(file.inputStream())
+                    tcnImporter.import(file.createPath())
                 })
             }
             ImportFormat.JSON -> Missing("Not implemented Json model import")

@@ -3,6 +3,7 @@ package com.cout970.modeler.export
 import com.cout970.modeler.model.Material
 import com.cout970.modeler.model.MaterialNone
 import com.cout970.modeler.model.TexturedMaterial
+import com.cout970.modeler.util.ResourcePath
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -12,7 +13,6 @@ import com.cout970.vector.extensions.vec3Of
 import com.google.gson.*
 import java.lang.reflect.Type
 import java.net.URI
-import java.nio.file.Paths
 
 /**
  * Created by cout970 on 2017/01/04.
@@ -72,7 +72,7 @@ class MaterialSerializer : JsonSerializer<Material>, JsonDeserializer<Material> 
         return JsonObject().apply {
             addProperty("name", src.name)
             if (src is TexturedMaterial) {
-                addProperty("path", src.path.toUri().toString())
+                addProperty("path", src.path.uri.toString())
             }
         }
     }
@@ -80,6 +80,6 @@ class MaterialSerializer : JsonSerializer<Material>, JsonDeserializer<Material> 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Material {
         val obj = json.asJsonObject
         return if (obj["name"].asString == "noTexture") MaterialNone else TexturedMaterial(
-                obj["name"].asString, Paths.get(URI(obj["path"].asString)))
+                obj["name"].asString, ResourcePath(URI(obj["path"].asString)))
     }
 }

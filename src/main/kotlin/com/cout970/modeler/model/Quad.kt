@@ -51,10 +51,10 @@ data class Quad(
 
         fun create(a: IVector3, b: IVector3, c: IVector3, d: IVector3, index: Int = 0): Quad {
             return Quad(
-                    Vertex(a, vec2Of(0, 0 + index)),
-                    Vertex(b, vec2Of(1, 0 + index)),
-                    Vertex(c, vec2Of(1, 1 + index)),
-                    Vertex(d, vec2Of(0, 1 + index)))
+                    Vertex(a, vec2Of(0, 0)),
+                    Vertex(b, vec2Of(1, 0)),
+                    Vertex(c, vec2Of(1, 1)),
+                    Vertex(d, vec2Of(0, 1)))
         }
     }
 

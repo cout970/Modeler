@@ -5,8 +5,10 @@
 in vec3 in_position;
 //vertex texture coordinates
 in vec3 in_color;
+in vec2 in_texture;
 
 out vec3 pass_color;
+out vec2 pass_texture;
 
 uniform mat4 matrix;
 
@@ -16,4 +18,5 @@ void main(void){
 
     //values passed to openGL to interpoalte
     pass_color = in_color;
+    pass_texture = in_texture;
 }

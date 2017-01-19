@@ -4,12 +4,13 @@ import com.cout970.modeler.log.Level
 import com.cout970.modeler.log.log
 import com.cout970.modeler.log.print
 import com.cout970.modeler.model.*
+import com.cout970.modeler.util.ResourcePath
+import com.cout970.modeler.util.createPath
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
 import java.io.File
 import java.io.OutputStream
-import java.nio.file.Path
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
@@ -140,9 +141,9 @@ class ObjImporter {
     internal val sComment = "#"
     internal val startIndex = 1 //index after label
 
-    fun import(path: Path, flipUvs: Boolean): Model {
+    fun import(path: ResourcePath, flipUvs: Boolean): Model {
 
-        val input = path.toUri().toURL().openStream()
+        val input = path.inputStream()
         val vertices = mutableListOf<IVector3>()
         val texCoords = mutableListOf<IVector2>()
         val normals = mutableListOf<IVector3>()
@@ -226,7 +227,7 @@ class ObjImporter {
                 currentMaterial = lineSpliced[1]
                 noObj.material = currentMaterial
             } else if (line.startsWith(sLib)) {
-                materials.addAll(parseMaterialLib(path.parent, lineSpliced[1]))
+                materials.addAll(parseMaterialLib(path.parent!!, lineSpliced[1]))
 
             } else if (!line.startsWith(sComment) && !line.isEmpty()) {
                 log(Level.NORMAL) { "Ignoring line: '$line'" }
@@ -252,8 +253,8 @@ class ObjImporter {
         })
     }
 
-    private fun parseMaterialLib(resource: Path, name: String): List<ObjMaterial> {
-        val text = resource.resolve(name).toUri().toURL().readText().splitToSequence('\n')
+    private fun parseMaterialLib(resource: ResourcePath, name: String): List<ObjMaterial> {
+        val text = resource.resolve(name).inputStream().reader().readLines()
 
         val materialList = mutableListOf<ObjMaterial>()
         var material: ObjMaterial? = null
@@ -274,7 +275,7 @@ class ObjImporter {
                     } else {
                         subPath = lineSpliced[1] + ".png"
                     }
-                    material!!.map_Ka = resource.resolve(subPath).toString()
+                    material!!.map_Ka = resource.toPath().resolve(subPath).toString()
                 } catch (e: Exception) {
                     e.print()
                 }
@@ -290,7 +291,7 @@ class ObjImporter {
 private class ObjMaterial(val name: String) {
     var map_Ka: String = ""
 
-    fun toMaterial(): Material = TexturedMaterial(name, File(map_Ka).toPath())
+    fun toMaterial(): Material = TexturedMaterial(name, File(map_Ka).createPath())
 }
 
 private class ObjObject(
