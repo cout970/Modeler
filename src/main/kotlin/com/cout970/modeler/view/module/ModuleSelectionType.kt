@@ -1,7 +1,7 @@
 package com.cout970.modeler.view.module
 
 import com.cout970.modeler.view.controller.ModuleController
-import org.liquidengine.legui.component.Button
+import org.liquidengine.legui.component.ToggleButton
 import org.liquidengine.legui.event.component.MouseClickEvent
 
 /**
@@ -10,17 +10,31 @@ import org.liquidengine.legui.event.component.MouseClickEvent
 class ModuleSelectionType(controller: ModuleController) : Module(controller, "Selection Mode") {
 
     init {
-        addSubComponent(Button(10f, 0f, 40f, 40f, "").apply {
-            leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener(0))
+        addSubComponent(ToggleButton(13f, 0f, 32f, 32f).apply {
+            leguiEventListeners.addListener(MouseClickEvent::class.java, Wrapper("menu.select.group", 0))
         })
-        addSubComponent(Button(50f, 0f, 40f, 40f, "").apply {
-            leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener(1))
+        addSubComponent(ToggleButton(53f, 0f, 32f, 32f).apply {
+            leguiEventListeners.addListener(MouseClickEvent::class.java, Wrapper("menu.select.mesh", 1))
+            isToggled = true
         })
-        addSubComponent(Button(90f, 0f, 40f, 40f, "").apply {
-            leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener(2))
+        addSubComponent(ToggleButton(93f, 0f, 32f, 32f).apply {
+            leguiEventListeners.addListener(MouseClickEvent::class.java, Wrapper("menu.select.quad", 2))
         })
-        addSubComponent(Button(130f, 0f, 40f, 40f, "").apply {
-            leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener(3))
+        addSubComponent(ToggleButton(133f, 0f, 32f, 32f).apply {
+            leguiEventListeners.addListener(MouseClickEvent::class.java, Wrapper("menu.select.vertex", 3))
         })
+    }
+
+    inner class Wrapper(id: String, val pos: Int) : Listener(controller.viewManager.buttonController, id) {
+
+        override fun update(e: MouseClickEvent) {
+            super.update(e)
+            subPanel.components.forEachIndexed { i, it ->
+                if (it is ToggleButton) {
+                    it.isToggled = i == pos
+                }
+            }
+            this@ModuleSelectionType.controller.modelController.selectionManager.clearSelection()
+        }
     }
 }

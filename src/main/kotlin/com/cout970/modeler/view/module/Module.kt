@@ -1,5 +1,6 @@
 package com.cout970.modeler.view.module
 
+import com.cout970.modeler.view.controller.ButtonController
 import com.cout970.modeler.view.controller.ModuleController
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Button
@@ -13,6 +14,7 @@ import org.liquidengine.legui.listener.LeguiEventListener
 /**
  * Created by cout970 on 2016/12/27.
  */
+
 abstract class Module(val controller: ModuleController, val name: String) : Panel() {
 
     val label: Label
@@ -71,12 +73,12 @@ abstract class Module(val controller: ModuleController, val name: String) : Pane
         subPanel.addComponent(component)
     }
 
-    fun buttonListener(id: Int) = Listener(controller, id)
+    fun buttonListener(id: String) = Listener(controller.viewManager.buttonController, id)
 
-    class Listener(val controller: ModuleController, val id: Int) : LeguiEventListener<MouseClickEvent> {
+    open class Listener(val controller: ButtonController, val id: String) : LeguiEventListener<MouseClickEvent> {
         override fun update(e: MouseClickEvent) {
             if (e.action == MouseClickEvent.MouseClickAction.CLICK)
-                controller.onButtonPress(id)
+                controller.onClick(id)
         }
     }
 }

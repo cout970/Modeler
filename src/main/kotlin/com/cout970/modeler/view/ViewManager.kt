@@ -3,12 +3,12 @@ package com.cout970.modeler.view
 import com.cout970.modeler.WindowController
 import com.cout970.modeler.modeleditor.ModelController
 import com.cout970.modeler.util.ITickeable
+import com.cout970.modeler.view.controller.ButtonController
 import com.cout970.modeler.view.controller.ModuleController
 import com.cout970.modeler.view.controller.SceneController
 import com.cout970.modeler.view.module.*
 import com.cout970.modeler.view.render.RenderManager
 import com.cout970.modeler.view.scene.ModelScene
-import com.cout970.modeler.view.scene.TextureScene
 import com.cout970.vector.api.IVector2
 
 /**
@@ -22,6 +22,7 @@ class ViewManager : ITickeable {
     lateinit var windowController: WindowController
     lateinit var sceneController: SceneController
     lateinit var moduleController: ModuleController
+    lateinit var buttonController: ButtonController
 
     lateinit var moduleStructure: ModuleStructure
 
@@ -30,11 +31,12 @@ class ViewManager : ITickeable {
         this.windowController = windowController
 
         sceneController = SceneController(this, modelController)
+        buttonController = ButtonController(modelController, sceneController)
         sceneController.scenes += ModelScene(sceneController)
 //        sceneController.scenes += ModelScene(sceneController).apply { perspective = false; camera = camera.copy(angleX = 0.0, angleY = 0.0)  }
 //        sceneController.scenes += ModelScene(sceneController).apply { perspective = false; camera = camera.copy(angleX = 0.0, angleY = -90.toRads())  }
 //        sceneController.scenes += ModelScene(sceneController).apply { perspective = false; camera = camera.copy(angleX = 90.toRads(), angleY = 0.0)  }
-        sceneController.scenes += TextureScene(sceneController)
+//        sceneController.scenes += TextureScene(sceneController)
         sceneController.refreshScenes()
 
         moduleController = ModuleController(this, modelController)
