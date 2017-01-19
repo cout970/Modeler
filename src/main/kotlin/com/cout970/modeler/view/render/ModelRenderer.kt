@@ -16,6 +16,7 @@ import com.cout970.modeler.ResourceManager
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.model.MaterialNone
 import com.cout970.modeler.model.Model
+import com.cout970.modeler.model.Quad
 import com.cout970.modeler.modeleditor.selection.ModelPath
 import com.cout970.modeler.modeleditor.selection.Selection
 import com.cout970.modeler.modeleditor.selection.SelectionMode
@@ -29,7 +30,9 @@ import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
 import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL14
 import org.lwjgl.opengl.GL20
+import java.awt.Color
 import java.util.function.Consumer
 
 /**
@@ -161,7 +164,9 @@ class ModelRenderer(resourceManager: ResourceManager) {
         GL11.glViewport(pos.xi, pos.yi, size.xi, size.yi)
     }
 
-    fun startModel() {
+
+    fun renderModel(model: Model, modelCache: Cache<Int, VAO>, selection: Selection, selectionCache: Cache<Int, VAO>) {
+
         modelShader.start()
         projectionMatrix.setMatrix4(matrixP)
         viewMatrix.setMatrix4(matrixV)
@@ -176,27 +181,7 @@ class ModelRenderer(resourceManager: ResourceManager) {
         textureSize.setVector2(vec2Of(1, 1))
 
         GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, mode)
-    }
 
-    fun startPlane(size: IVector2) {
-        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL)
-        planeShader.start()
-        viewport.setVector2(size)
-    }
-
-    fun startSelection() {
-        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL)
-        plainColorShader.start()
-        selProjectionMatrix.setMatrix4(matrixP)
-        selViewMatrix.setMatrix4(matrixV)
-        selTransformationMatrix.setMatrix4(matrixM)
-    }
-
-    fun stop() {
-        plainColorShader.stop()
-    }
-
-    fun renderModel(model: Model, modelCache: Cache<Int, VAO>) {
         for (group in model.groups) {
             group.material.bind()
             transformationMatrix.setMatrix4(group.transform.matrix.transpose())
@@ -213,9 +198,13 @@ class ModelRenderer(resourceManager: ResourceManager) {
             })
         }
         transformationMatrix.setMatrix4(matrixM)
-    }
 
-    fun renderModelSelection(model: Model, selection: Selection, selectionCache: Cache<Int, VAO>) {
+        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL)
+        plainColorShader.start()
+        selProjectionMatrix.setMatrix4(matrixP)
+        selViewMatrix.setMatrix4(matrixV)
+        selTransformationMatrix.setMatrix4(matrixM)
+
         if (selection == SelectionNone) {
             return
         }
@@ -229,14 +218,6 @@ class ModelRenderer(resourceManager: ResourceManager) {
                         RenderUtil.renderBar(tessellator, quad.b.pos, quad.c.pos, size)
                         RenderUtil.renderBar(tessellator, quad.c.pos, quad.d.pos, size)
                         RenderUtil.renderBar(tessellator, quad.d.pos, quad.a.pos, size)
-                        if (selection.mode == SelectionMode.QUAD) {
-                            quad.vertex.forEach { (pos, _) ->
-                                set(0, pos.xd + 0.005, pos.yd + 0.005, pos.zd + 0.005).set(1, 0.5, 0.5, 0.4).endVertex()
-                            }
-                            quad.vertex.forEach { (pos, _) ->
-                                set(0, pos.xd - 0.005, pos.yd - 0.005, pos.zd - 0.005).set(1, 0.5, 0.5, 0.4).endVertex()
-                            }
-                        }
                     }
                 } else {
                     model.getPaths(ModelPath.Level.MESH).forEach { compPath ->
@@ -244,7 +225,7 @@ class ModelRenderer(resourceManager: ResourceManager) {
                         if (paths.isNotEmpty()) {
                             val matrix = compPath.getMeshMatrix(model)
                             paths.map { it.getVertex(model)!! }.map { matrix * it.toVector4(1.0) }.forEach {
-                                RenderUtil.renderBar(tessellator, it, it, size)
+                                RenderUtil.renderBar(tessellator, it, it, size * 4)
                             }
                         }
                     }
@@ -252,10 +233,30 @@ class ModelRenderer(resourceManager: ResourceManager) {
                 }
             }
         })
+        if (selection.mode == SelectionMode.QUAD) {
+            GLStateMachine.blend.enable()
+            GLStateMachine.blendFunc = GLStateMachine.BlendFunc.CONSTANT_ALPHA to GLStateMachine.BlendFunc.ONE_MINUS_CONSTANT_ALPHA
+
+            GL14.glBlendColor(1f, 1f, 1f, 0.5f)
+
+            consumer.accept(selectionCache.getOrCompute(model.hashCode() xor (selection.hashCode() + 1)) {
+                tessellator.compile(GL11.GL_QUADS, formatPC) {
+                    model.getQuadsOptimized(selection) { quad ->
+                        quad.vertex.forEach { (pos, _) ->
+                            set(0, pos.xd + 0.1, pos.yd + 0.1, pos.zd + 0.1).set(1, 0.5, 0.5, 0.4).endVertex()
+                        }
+                        quad.vertex.forEach { (pos, _) ->
+                            set(0, pos.xd - 0.1, pos.yd - 0.1, pos.zd - 0.1).set(1, 0.5, 0.5, 0.4).endVertex()
+                        }
+                    }
+                }
+            })
+            GLStateMachine.blendFunc = GLStateMachine.BlendFunc.SRC_ALPHA to GLStateMachine.BlendFunc.ONE_MINUS_SRC_ALPHA
+            GLStateMachine.blend.disable()
+        }
     }
 
     fun renderRotation(center: IVector3, selector: ModelSelector, selection: Selection, camera: Camera) {
-
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
         val controller = selector.controller
         val selX = controller.selectedAxis == SelectionAxis.X || controller.hoveredAxis == SelectionAxis.X
@@ -295,7 +296,6 @@ class ModelRenderer(resourceManager: ResourceManager) {
     }
 
     fun renderTranslation(center: IVector3, selector: ModelSelector, selection: Selection, camera: Camera) {
-
         val controller = selector.controller
         val selX = controller.selectedAxis == SelectionAxis.X || controller.hoveredAxis == SelectionAxis.X
         val selY = controller.selectedAxis == SelectionAxis.Y || controller.hoveredAxis == SelectionAxis.Y
@@ -351,7 +351,10 @@ class ModelRenderer(resourceManager: ResourceManager) {
         }
     }
 
-    fun renderCursor() {
+    fun renderCursor(size_: IVector2) {
+        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL)
+        planeShader.start()
+        viewport.setVector2(size_)
         val size = vec2Of(100)
         GLStateMachine.depthTest.disable()
         GLStateMachine.blend.enable()
@@ -364,9 +367,10 @@ class ModelRenderer(resourceManager: ResourceManager) {
         }
         GLStateMachine.blend.disable()
         GLStateMachine.depthTest.enable()
+        planeShader.stop()
     }
 
-    fun renderExtras() {
+    fun drawGrids() {
         tessellator.draw(GL11.GL_LINES, formatPC, consumer) {
             set(0, -10, 0, 0).set(1, 1, 0, 0).endVertex()
             set(0, 10, 0, 0).set(1, 1, 0, 0).endVertex()
@@ -423,8 +427,9 @@ class ModelRenderer(resourceManager: ResourceManager) {
 
     fun renderUV(model: Model, selection: Selection) {
         val texture = model.groups.find { it.material != MaterialNone }?.material ?: MaterialNone
-        val scale = 16.0
+        val scale = 64.0
         val divs = 128
+        val offset = scale / 2
 
         GLStateMachine.depthTest.disable()
         uvShader.start()
@@ -435,13 +440,15 @@ class ModelRenderer(resourceManager: ResourceManager) {
 
         tessellator.draw(GL11.GL_LINES, formatPCT, consumer) {
             for (x in 0..divs) {
-                set(0, x * (scale / divs), 0, 0).set(1, 0.5, 0.5, 0.5).set(2, 0.0, 0.0).endVertex()
-                set(0, x * (scale / divs), scale, 0).set(1, 0.5, 0.5, 0.5).set(2, 0.0, 0.0).endVertex()
+                set(0, -offset + x * (scale / divs), -offset, 0).set(1, 0.5, 0.5, 0.5).set(2, 0.0, 0.0).endVertex()
+                set(0, -offset + x * (scale / divs), scale - offset, 0).set(1, 0.5, 0.5, 0.5).set(2, 0.0,
+                        0.0).endVertex()
             }
 
             for (z in 0..divs) {
-                set(0, 0, z * (scale / divs), 0).set(1, 0.5, 0.5, 0.5).set(2, 0.0, 0.0).endVertex()
-                set(0, scale, z * (scale / divs), 0).set(1, 0.5, 0.5, 0.5).set(2, 0.0, 0.0).endVertex()
+                set(0, -offset, z * (scale / divs) - offset, 0).set(1, 0.5, 0.5, 0.5).set(2, 0.0, 0.0).endVertex()
+                set(0, -offset + scale, z * (scale / divs) - offset, 0).set(1, 0.5, 0.5, 0.5).set(2, 0.0,
+                        0.0).endVertex()
             }
         }
 
@@ -449,44 +456,44 @@ class ModelRenderer(resourceManager: ResourceManager) {
 
         texture.bind()
         tessellator.draw(GL11.GL_QUADS, formatPCT, consumer) {
-            set(0, 0, 0, 0).set(1, 1, 1, 1).set(2, 0.0, 1.0).endVertex()
-            set(0, scale, 0, 0).set(1, 1, 1, 1).set(2, 1.0, 1.0).endVertex()
-            set(0, scale, scale, 0).set(1, 1, 1, 1).set(2, 1.0, 0.0).endVertex()
-            set(0, 0, scale, 0).set(1, 1, 1, 1).set(2, 0.0, 0.0).endVertex()
+            set(0, -offset, -offset, 0).set(1, 1, 1, 1).set(2, 0.0, 1.0).endVertex()
+            set(0, -offset + scale, -offset, 0).set(1, 1, 1, 1).set(2, 1.0, 1.0).endVertex()
+            set(0, -offset + scale, scale - offset, 0).set(1, 1, 1, 1).set(2, 1.0, 0.0).endVertex()
+            set(0, -offset, scale - offset, 0).set(1, 1, 1, 1).set(2, 0.0, 0.0).endVertex()
         }
 
         uvUseColor.setBoolean(true)
         GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE)
         GL11.glLineWidth(2f)
+        val c = Color(Config.textureSelectionColor)
+        val color = vec3Of(c.red / 255f, c.green / 255f, c.blue / 255f)
+
+
+
         tessellator.draw(GL11.GL_QUADS, formatPCT, consumer) {
+            val renderQuad: (Quad) -> Unit = { quad ->
+                quad.vertex
+                        .map { it.copy(tex = vec2Of(it.tex.x, 1 - it.tex.yd)) }
+                        .map { (it.tex * scale) - offset }
+                        .forEach { set(0, it.x, it.yd, 0).setv(1, color).set(2, 0.0, 0.0).endVertex() }
+            }
+
             selection.paths.forEach { path ->
                 when (path.level) {
                     ModelPath.Level.GROUPS -> {
                         path.getSubPaths(model).forEach { meshPath ->
                             meshPath.getSubPaths(model).forEach { quadPath ->
-                                val quad = quadPath.getQuad(model)!!
-                                quad.vertex
-                                        .map { it.copy(tex = vec2Of(it.tex.x, 1 - it.tex.yd)) }
-                                        .map { it.tex * scale }
-                                        .forEach { set(0, it.x, it.yd, 0).set(1, 1, 0, 0).set(2, 0.0, 0.0).endVertex() }
+                                renderQuad(quadPath.getQuad(model)!!)
                             }
                         }
                     }
                     ModelPath.Level.MESH -> {
                         path.getSubPaths(model).forEach { quadPath ->
-                            val quad = quadPath.getQuad(model)!!
-                            quad.vertex
-                                    .map { it.copy(tex = vec2Of(it.tex.x, 1 - it.tex.yd)) }
-                                    .map { it.tex * scale }
-                                    .forEach { set(0, it.x, it.yd, 0).set(1, 1, 0, 0).set(2, 0.0, 0.0).endVertex() }
+                            renderQuad(quadPath.getQuad(model)!!)
                         }
                     }
                     ModelPath.Level.QUADS -> {
-                        val quad = path.getQuad(model)!!
-                        quad.vertex
-                                .map { it.copy(tex = vec2Of(it.tex.x, 1 - it.tex.yd)) }
-                                .map { it.tex * scale }
-                                .forEach { set(0, it.x, it.yd, 0).set(1, 1, 0, 0).set(2, 0.0, 0.0).endVertex() }
+                        renderQuad(path.getQuad(model)!!)
                     }
                     else -> {
                     }
@@ -535,5 +542,10 @@ class ModelRenderer(resourceManager: ResourceManager) {
             bufferCol.getBase().clear()
             bufferTex.getBase().clear()
         }
+    }
+
+    fun ITessellator.setv(slot: Int, color: IVector3): ITessellator {
+        set(slot, color.x, color.y, color.z)
+        return this
     }
 }

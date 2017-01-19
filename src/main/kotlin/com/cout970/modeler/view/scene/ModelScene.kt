@@ -49,12 +49,10 @@ class ModelScene(sceneController: SceneController) : Scene(sceneController) {
             setViewport(vec2Of(absolutePosition.x, y),
                     vec2Of(size.x, size.y))
 
-            startModel()
-            renderModel(sceneController.getModel(model), sceneController.modelCache)
+            renderModel(sceneController.getModel(model), sceneController.modelCache,
+                    selection, sceneController.selectionCache)
 
-            startSelection()
-            renderModelSelection(sceneController.getModel(model), selection, sceneController.selectionCache)
-            renderExtras()
+            drawGrids()
             if (selection != SelectionNone && selector.transformationMode != TransformationMode.NONE) {
                 when (selector.transformationMode) {
                     TransformationMode.TRANSLATION -> {
@@ -69,10 +67,8 @@ class ModelScene(sceneController: SceneController) : Scene(sceneController) {
             }
             if (Config.keyBindings.moveCamera.check(sceneController.mouse) || Config.keyBindings.rotateCamera.check(
                     sceneController.mouse)) {
-                startPlane(vec2Of(size.x, size.y))
-                renderCursor()
+                renderCursor(vec2Of(size.x, size.y))
             }
-            stop()
             setViewport(vec2Of(0, 0), sceneController.viewManager.getSize())
         }
     }

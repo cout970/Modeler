@@ -67,36 +67,101 @@ data class Mesh(
             return Mesh(positions, textures, indices)
         }
 
-        fun createCube(size: IVector3, offset: IVector3 = vec3Of(0), centered: Boolean = false): Mesh {
-            val n: IVector3
-            val p: IVector3
-            if (centered) {
-                n = -(size / 2) + offset
-                p = size / 2 + offset
-            } else {
-                n = vec3Of(0) + offset
-                p = size + offset
-            }
+        fun createCube(size: IVector3, offset: IVector3 = Vector3.ORIGIN, textureOffset: IVector2 = Vector2.ORIGIN,
+                       textureSize: IVector2 = vec2Of(64, 64)): Mesh {
+            val n: IVector3 = vec3Of(0) + offset
+            val p: IVector3 = size + offset
 
-            return quadsToMesh(listOf(
-                    //negX
-                    Quad.create(vec3Of(n.x, n.y, p.z), vec3Of(n.x, p.y, p.z), vec3Of(n.x, p.y, n.z),
-                            vec3Of(n.x, n.y, n.z), 0),
-                    //posX
-                    Quad.create(vec3Of(p.x, p.y, n.z), vec3Of(p.x, p.y, p.z), vec3Of(p.x, n.y, p.z),
-                            vec3Of(p.x, n.y, n.z), 1),
-                    //negY
-                    Quad.create(vec3Of(p.x, n.y, n.z), vec3Of(p.x, n.y, p.z), vec3Of(n.x, n.y, p.z),
-                            vec3Of(n.x, n.y, n.z), 2),
-                    //posY
-                    Quad.create(vec3Of(n.x, p.y, p.z), vec3Of(p.x, p.y, p.z), vec3Of(p.x, p.y, n.z),
-                            vec3Of(n.x, p.y, n.z), 3),
-                    //negZ
-                    Quad.create(vec3Of(n.x, p.y, n.z), vec3Of(p.x, p.y, n.z), vec3Of(p.x, n.y, n.z),
-                            vec3Of(n.x, n.y, n.z), 4),
-                    //posZ
-                    Quad.create(vec3Of(p.x, n.y, p.z), vec3Of(p.x, p.y, p.z), vec3Of(n.x, p.y, p.z),
-                            vec3Of(n.x, n.y, p.z), 5)))
+            val width = size.xd
+            val height = size.yd
+            val length = size.zd
+
+            val offsetX = textureOffset.xd
+            val offsetY = textureOffset.yd
+
+            val texelSize = vec2Of(1) / textureSize
+
+            val quads = listOf(
+                    //negX West
+                    Quad.create(
+                            vec3Of(n.x, n.y, p.z),
+                            vec3Of(n.x, p.y, p.z),
+                            vec3Of(n.x, p.y, n.z),
+                            vec3Of(n.x, n.y, n.z)
+                    ).setTexture1(
+                            vec2Of(offsetX + length + width + length, offsetY + length + height) * texelSize,
+                            vec2Of(offsetX + length + width, offsetY + length) * texelSize
+                    ),
+                    //posX East
+                    Quad.create(
+                            vec3Of(p.x, p.y, n.z),
+                            vec3Of(p.x, p.y, p.z),
+                            vec3Of(p.x, n.y, p.z),
+                            vec3Of(p.x, n.y, n.z)
+                    ).setTexture(
+                            vec2Of(offsetX + length, offsetY + length + height) * texelSize,
+                            vec2Of(offsetX, offsetY + length) * texelSize
+                    ),
+                    //negY Down
+                    Quad.create(
+                            vec3Of(p.x, n.y, n.z),
+                            vec3Of(p.x, n.y, p.z),
+                            vec3Of(n.x, n.y, p.z),
+                            vec3Of(n.x, n.y, n.z)
+                    ).setTexture1(
+                            vec2Of(offsetX + length + width + width, offsetY) * texelSize,
+                            vec2Of(offsetX + length + width, offsetY + length) * texelSize
+                    ),
+                    //posY Up
+                    Quad.create(
+                            vec3Of(n.x, p.y, p.z),
+                            vec3Of(p.x, p.y, p.z),
+                            vec3Of(p.x, p.y, n.z),
+                            vec3Of(n.x, p.y, n.z)
+                    ).setTexture(
+                            vec2Of(offsetX + length + width, offsetY + length) * texelSize,
+                            vec2Of(offsetX + length, offsetY) * texelSize
+                    ),
+                    //negZ North
+                    Quad.create(
+                            vec3Of(n.x, p.y, n.z),
+                            vec3Of(p.x, p.y, n.z),
+                            vec3Of(p.x, n.y, n.z),
+                            vec3Of(n.x, n.y, n.z)
+                    ).setTexture(
+                            vec2Of(offsetX + length + width, offsetY + length + height) * texelSize,
+                            vec2Of(offsetX + length, offsetY + length) * texelSize
+                    ),
+                    //posZ South
+                    Quad.create(
+                            vec3Of(p.x, n.y, p.z),
+                            vec3Of(p.x, p.y, p.z),
+                            vec3Of(n.x, p.y, p.z),
+                            vec3Of(n.x, n.y, p.z)
+                    ).setTexture1(
+                            vec2Of(offsetX + length + width + length, offsetY + length) * texelSize,
+                            vec2Of(offsetX + length + width + length + width, offsetY + length + height) * texelSize
+                    )
+            )
+            return Mesh.quadsToMesh(quads)
+        }
+
+        private fun Quad.setTexture(uv0: IVector2, uv1: IVector2): Quad {
+            return Quad(
+                    a.copy(tex = vec2Of(uv1.x, uv0.y)),
+                    b.copy(tex = vec2Of(uv0.x, uv0.y)),
+                    c.copy(tex = vec2Of(uv0.x, uv1.y)),
+                    d.copy(tex = vec2Of(uv1.x, uv1.y))
+            )
+        }
+
+        private fun Quad.setTexture1(uv0: IVector2, uv1: IVector2): Quad {
+            return Quad(
+                    a.copy(tex = vec2Of(uv1.x, uv1.y)),
+                    b.copy(tex = vec2Of(uv1.x, uv0.y)),
+                    c.copy(tex = vec2Of(uv0.x, uv0.y)),
+                    d.copy(tex = vec2Of(uv0.x, uv1.y))
+            )
         }
     }
 

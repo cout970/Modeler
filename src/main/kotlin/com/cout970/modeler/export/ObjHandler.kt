@@ -227,8 +227,11 @@ class ObjImporter {
                 currentMaterial = lineSpliced[1]
                 noObj.material = currentMaterial
             } else if (line.startsWith(sLib)) {
-                materials.addAll(parseMaterialLib(path.parent!!, lineSpliced[1]))
-
+                try {
+                    materials.addAll(parseMaterialLib(path.parent!!, lineSpliced[1]))
+                } catch (e: Exception) {
+                    log(Level.ERROR) { "Error reading the material library: ${e.message}" }
+                }
             } else if (!line.startsWith(sComment) && !line.isEmpty()) {
                 log(Level.NORMAL) { "Ignoring line: '$line'" }
             }

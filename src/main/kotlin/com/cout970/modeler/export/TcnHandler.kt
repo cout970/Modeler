@@ -140,7 +140,8 @@ class TcnImporter {
         })
     }
 
-    fun createCube(size: IVector3, offset: IVector3, textureOffset: IVector2, textureSize: IVector2): Mesh {
+    fun createCube(size: IVector3, offset: IVector3, textureOffset: IVector2 = Vector2.ORIGIN,
+                   textureSize: IVector2 = vec2Of(32, 32)): Mesh {
         val n: IVector3 = vec3Of(0) + offset
         val p: IVector3 = size + offset
 

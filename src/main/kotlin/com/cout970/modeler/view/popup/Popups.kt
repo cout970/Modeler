@@ -92,9 +92,9 @@ private fun saveProject(modelController: ModelController, project: Project) {
 }
 
 fun showImportModelPopup(modelController: ModelController) {
-    ImportDialog.show { (path, format) ->
-        if (path != null) {
-            modelController.exportManager.importModel(path, format!!)
+    ImportDialog.show { prop ->
+        if (prop != null) {
+            modelController.exportManager.importModel(prop)
         }
     }
 }

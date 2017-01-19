@@ -1,7 +1,7 @@
 package com.cout970.modeler.view.popup;
 
 import com.cout970.modeler.export.ImportFormat;
-import kotlin.Pair;
+import com.cout970.modeler.export.ImportProperties;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
@@ -18,10 +18,11 @@ public class ImportDialog {
     private JTextField textField1;
     private JButton selectButton;
     private JPanel root;
+    private JCheckBox flipUVCheckBox;
 
 
     @SuppressWarnings("unchecked")
-    public static void show(Function1<Pair<String, ImportFormat>, Unit> returnFun) {
+    public static void show(Function1<ImportProperties, Unit> returnFun) {
         JDialog frame = new JDialog();
         ImportDialog dialog = new ImportDialog();
         dialog.comboBox1.addItem("Obj (*.obj)");
@@ -29,18 +30,28 @@ public class ImportDialog {
         dialog.comboBox1.addItem("Minecraft (*.json)");
         //buttons
         dialog.cancelButton.addActionListener(e -> {
-            returnFun.invoke(new Pair(null, ImportFormat.OBJ));
+            returnFun.invoke(null);
             frame.setVisible(false);
         });
         dialog.importButton.addActionListener(e -> {
-            returnFun.invoke(new Pair(dialog.textField1.getText(),
-                    ImportFormat.values()[dialog.comboBox1.getSelectedIndex()]));
+            returnFun.invoke(new ImportProperties(dialog.textField1.getText(),
+                    ImportFormat.values()[dialog.comboBox1.getSelectedIndex()],
+                    dialog.flipUVCheckBox.isSelected()));
+
             frame.setVisible(false);
         });
         dialog.selectButton.addActionListener(e -> {
-            dialog.textField1.setText(TinyFileDialogs.tinyfd_openFileDialog("Import", "",
+            String file = TinyFileDialogs.tinyfd_openFileDialog("Import", "",
                     PopupsKt.getImportFileExtensions(), "Model Files (*.tcn, *.obj, *.json)",
-                    false));
+                    false);
+            if (file.endsWith(".obj")) {
+                dialog.comboBox1.setSelectedIndex(0);
+            } else if (file.endsWith(".zip") || file.endsWith(".tcn")) {
+                dialog.comboBox1.setSelectedIndex(1);
+            } else if (file.endsWith(".json")) {
+                dialog.comboBox1.setSelectedIndex(2);
+            }
+            dialog.textField1.setText(file);
         });
 
         frame.setContentPane(dialog.root);

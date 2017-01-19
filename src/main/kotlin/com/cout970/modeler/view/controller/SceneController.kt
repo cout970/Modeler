@@ -34,7 +34,7 @@ class SceneController(val viewManager: ViewManager, val modelController: ModelCo
     var tmpModel: Model? = null
 
     val modelCache = Cache<Int, VAO>(1).apply { onRemove = { _, v -> v.close() } }
-    val selectionCache = Cache<Int, VAO>(1).apply { onRemove = { _, v -> v.close() } }
+    val selectionCache = Cache<Int, VAO>(2).apply { onRemove = { _, v -> v.close() } }
 
     var transformationMode = TransformationMode.TRANSLATION
     var selectedAxis = SelectionAxis.NONE

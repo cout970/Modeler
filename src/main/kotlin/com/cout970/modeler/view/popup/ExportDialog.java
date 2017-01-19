@@ -35,9 +35,10 @@ public class ExportDialog {
             frame.setVisible(false);
         });
         dialog.selectButton.addActionListener(e -> {
-            dialog.textField1.setText(TinyFileDialogs.tinyfd_saveFileDialog("Export", "",
+            String file = TinyFileDialogs.tinyfd_saveFileDialog("Export", "model.obj",
                     PopupsKt.getExportFileExtensions(ExportFormat.values()[dialog.comboBox1.getSelectedIndex()]),
-                    (String) dialog.comboBox1.getSelectedItem()));
+                    (String) dialog.comboBox1.getSelectedItem());
+            dialog.textField1.setText(file);
         });
 
         frame.setContentPane(dialog.root);

@@ -54,16 +54,18 @@ class ExportManager(val modelController: ModelController, val resourceManager: R
         }
     }
 
-    fun importModel(path: String, format: ImportFormat) {
-        val file = File(path)
-        when (format) {
+    fun importModel(import: ImportProperties) {
+        val file = File(import.path)
+        when (import.format) {
             ImportFormat.OBJ -> {
-                modelController.historyRecord.doAction(ActionImportModel(modelController, resourceManager, path) {
-                    objImporter.import(file.createPath(), false)
+                modelController.historyRecord.doAction(
+                        ActionImportModel(modelController, resourceManager, import.path) {
+                            objImporter.import(file.createPath(), import.flipUV)
                 })
             }
             ImportFormat.TCN -> {
-                modelController.historyRecord.doAction(ActionImportModel(modelController, resourceManager, path) {
+                modelController.historyRecord.doAction(
+                        ActionImportModel(modelController, resourceManager, import.path) {
                     tcnImporter.import(file.createPath())
                 })
             }

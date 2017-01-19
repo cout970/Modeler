@@ -28,8 +28,7 @@ object RenderUtil {
         val rot: IQuaternion = if (b != a) quatOf(q.x, q.y, q.z, q.w) else Quaternion.IDENTITY
 
         val matrix = Transformation(a, rot, vec3Of(1)).matrix
-        val mesh = Mesh.createCube(vec3Of(a.distance(b) + size, size, size), offset = vec3Of(-size / 2),
-                centered = false)
+        val mesh = Mesh.createCube(vec3Of(a.distance(b) + size, size, size), offset = vec3Of(-size / 2))
 
         tessellator.apply {
             for ((pos) in mesh.getQuads().map { it.transform(matrix) }.flatMap(Quad::vertex)) {

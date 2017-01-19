@@ -24,4 +24,5 @@ object Config {
     var perspectiveFov: Float = 45f
     var cursorLinesSize: Float = 0.5f
     var enableHelperGrid: Boolean = true
+    var textureSelectionColor: Int = 0xFF_00_00 ///red
 }
