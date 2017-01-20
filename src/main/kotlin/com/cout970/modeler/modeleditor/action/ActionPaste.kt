@@ -2,7 +2,7 @@ package com.cout970.modeler.modeleditor.action
 
 import com.cout970.modeler.model.Mesh
 import com.cout970.modeler.model.Model
-import com.cout970.modeler.modeleditor.ModelController
+import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.modeleditor.selection.ModelPath
 import com.cout970.modeler.modeleditor.selection.Selection
 import com.cout970.modeler.modeleditor.selection.SelectionGroup
@@ -13,10 +13,10 @@ import com.cout970.modeler.util.replaceSelected
 /**
  * Created by cout970 on 2016/12/09.
  */
-class ActionPaste(val selection: Selection, val copiedModel: Model, val modelController: ModelController) : IAction {
+class ActionPaste(val selection: Selection, val copiedModel: Model, val modelEditor: ModelEditor) : IAction {
 
     //the model when the action is executed
-    val model = modelController.model
+    val model = modelEditor.model
 
     override fun run() {
         when (selection.mode) {
@@ -26,11 +26,11 @@ class ActionPaste(val selection: Selection, val copiedModel: Model, val modelCon
                         selection.isSelected(ModelPath(groupIndex, groupIndex))
                     }
                 }
-                val insertSelection = SelectionGroup(listOf(ModelPath(modelController.inserter.insertPath)))
+                val insertSelection = SelectionGroup(listOf(ModelPath(modelEditor.inserter.insertPath)))
                 val newModel = model.copy(model.groups.replaceSelected(insertSelection, { _, group ->
                     group.addAll(groups)
                 }))
-                modelController.updateModel(newModel)
+                modelEditor.updateModel(newModel)
             }
             SelectionMode.MESH -> {
                 val meshes = copiedModel.groups.flatMapIndexed { groupIndex, group ->
@@ -38,11 +38,11 @@ class ActionPaste(val selection: Selection, val copiedModel: Model, val modelCon
                         selection.isSelected(ModelPath(groupIndex, meshIndex))
                     }
                 }
-                val insertSelection = SelectionGroup(listOf(ModelPath(modelController.inserter.insertPath)))
+                val insertSelection = SelectionGroup(listOf(ModelPath(modelEditor.inserter.insertPath)))
                 val newModel = model.copy(model.groups.replaceSelected(insertSelection) { _, group ->
                     group.addAll(meshes)
                 })
-                modelController.updateModel(newModel)
+                modelEditor.updateModel(newModel)
             }
             SelectionMode.QUAD -> {
                 val quadMeshPairs = copiedModel.groups.flatMapIndexed { groupIndex, group ->
@@ -54,21 +54,21 @@ class ActionPaste(val selection: Selection, val copiedModel: Model, val modelCon
                 }
                 val meshes = quadMeshPairs.map { quad -> Mesh.quadsToMesh(listOf(quad)) }
 
-                val insertSelection = SelectionGroup(listOf(ModelPath(modelController.inserter.insertPath)))
+                val insertSelection = SelectionGroup(listOf(ModelPath(modelEditor.inserter.insertPath)))
                 val newModel = model.copy(model.groups.replaceSelected(insertSelection) { _, group ->
                     group.addAll(meshes)
                 })
-                modelController.updateModel(newModel)
+                modelEditor.updateModel(newModel)
             }
             SelectionMode.VERTEX -> IllegalStateException("Trying to paste vertex")
         }
     }
 
     override fun undo() {
-        modelController.updateModel(model)
+        modelEditor.updateModel(model)
     }
 
     override fun toString(): String {
-        return "ActionPaste(selection=$selection, model_when_copied=$copiedModel, model_when_pasted=$model, modelController=$modelController)"
+        return "ActionPaste(selection=$selection, model_when_copied=$copiedModel, model_when_pasted=$model, modelController=$modelEditor)"
     }
 }

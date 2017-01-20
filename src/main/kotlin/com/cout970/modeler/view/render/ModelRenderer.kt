@@ -12,7 +12,6 @@ import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.mat4Of
 import com.cout970.matrix.extensions.times
 import com.cout970.matrix.extensions.transpose
-import com.cout970.modeler.ResourceManager
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.model.MaterialNone
 import com.cout970.modeler.model.Model
@@ -21,6 +20,7 @@ import com.cout970.modeler.modeleditor.selection.ModelPath
 import com.cout970.modeler.modeleditor.selection.Selection
 import com.cout970.modeler.modeleditor.selection.SelectionMode
 import com.cout970.modeler.modeleditor.selection.SelectionNone
+import com.cout970.modeler.resource.ResourceLoader
 import com.cout970.modeler.util.Cache
 import com.cout970.modeler.util.RenderUtil
 import com.cout970.modeler.view.controller.ModelSelector
@@ -38,7 +38,7 @@ import java.util.function.Consumer
 /**
  * Created by cout970 on 2016/12/03.
  */
-class ModelRenderer(resourceManager: ResourceManager) {
+class ModelRenderer(resourceLoader: ResourceLoader) {
 
     val tessellator = Tessellator()
     var consumer: Consumer<VAO>
@@ -93,34 +93,34 @@ class ModelRenderer(resourceManager: ResourceManager) {
     init {
         modelShader = ShaderBuilder.build {
             compile(GL20.GL_VERTEX_SHADER,
-                    resourceManager.readResource("assets/shaders/scene_vertex.glsl").reader().readText())
+                    resourceLoader.readResource("assets/shaders/scene_vertex.glsl").reader().readText())
             compile(GL20.GL_FRAGMENT_SHADER,
-                    resourceManager.readResource("assets/shaders/scene_fragment.glsl").reader().readText())
+                    resourceLoader.readResource("assets/shaders/scene_fragment.glsl").reader().readText())
             bindAttribute(0, "in_position")
             bindAttribute(1, "in_texture")
             bindAttribute(2, "in_normal")
         }
         plainColorShader = ShaderBuilder.build {
             compile(GL20.GL_VERTEX_SHADER,
-                    resourceManager.readResource("assets/shaders/plain_color_vertex.glsl").reader().readText())
+                    resourceLoader.readResource("assets/shaders/plain_color_vertex.glsl").reader().readText())
             compile(GL20.GL_FRAGMENT_SHADER,
-                    resourceManager.readResource("assets/shaders/plain_color_fragment.glsl").reader().readText())
+                    resourceLoader.readResource("assets/shaders/plain_color_fragment.glsl").reader().readText())
             bindAttribute(0, "in_position")
             bindAttribute(1, "in_color")
         }
         planeShader = ShaderBuilder.build {
             compile(GL20.GL_VERTEX_SHADER,
-                    resourceManager.readResource("assets/shaders/plane_vertex.glsl").reader().readText())
+                    resourceLoader.readResource("assets/shaders/plane_vertex.glsl").reader().readText())
             compile(GL20.GL_FRAGMENT_SHADER,
-                    resourceManager.readResource("assets/shaders/plane_fragment.glsl").reader().readText())
+                    resourceLoader.readResource("assets/shaders/plane_fragment.glsl").reader().readText())
             bindAttribute(0, "in_position")
             bindAttribute(1, "in_texture")
         }
         uvShader = ShaderBuilder.build {
             compile(GL20.GL_VERTEX_SHADER,
-                    resourceManager.readResource("assets/shaders/uv_vertex.glsl").reader().readText())
+                    resourceLoader.readResource("assets/shaders/uv_vertex.glsl").reader().readText())
             compile(GL20.GL_FRAGMENT_SHADER,
-                    resourceManager.readResource("assets/shaders/uv_fragment.glsl").reader().readText())
+                    resourceLoader.readResource("assets/shaders/uv_fragment.glsl").reader().readText())
             bindAttribute(0, "in_position")
             bindAttribute(1, "in_color")
             bindAttribute(2, "in_texture")
@@ -147,7 +147,7 @@ class ModelRenderer(resourceManager: ResourceManager) {
         enableLight = modelShader.createUniformVariable("enableLight")
         textureSize = modelShader.createUniformVariable("textureSize")
 
-        cursorTexture = resourceManager.getTexture("assets/textures/cursor.png")
+        cursorTexture = resourceLoader.getTexture("assets/textures/cursor.png")
 
         consumer = Consumer<VAO> {
             it.bind()
@@ -157,13 +157,8 @@ class ModelRenderer(resourceManager: ResourceManager) {
             VAO.Companion.unbind()
         }
 
-        MaterialNone.loadTexture(resourceManager)
+        MaterialNone.loadTexture(resourceLoader)
     }
-
-    fun setViewport(pos: IVector2, size: IVector2) {
-        GL11.glViewport(pos.xi, pos.yi, size.xi, size.yi)
-    }
-
 
     fun renderModel(model: Model, modelCache: Cache<Int, VAO>, selection: Selection, selectionCache: Cache<Int, VAO>) {
 
@@ -213,11 +208,11 @@ class ModelRenderer(resourceManager: ResourceManager) {
             val size = Config.selectionThickness.toDouble()
             tessellator.compile(GL11.GL_QUADS, formatPC) {
                 if (selection.mode != SelectionMode.VERTEX) {
-                    model.getQuadsOptimized(selection) { quad ->
-                        RenderUtil.renderBar(tessellator, quad.a.pos, quad.b.pos, size)
-                        RenderUtil.renderBar(tessellator, quad.b.pos, quad.c.pos, size)
-                        RenderUtil.renderBar(tessellator, quad.c.pos, quad.d.pos, size)
-                        RenderUtil.renderBar(tessellator, quad.d.pos, quad.a.pos, size)
+                    model.getQuadsOptimized(selection) { (a, b, c, d) ->
+                        RenderUtil.renderBar(tessellator, a.pos, b.pos, size)
+                        RenderUtil.renderBar(tessellator, b.pos, c.pos, size)
+                        RenderUtil.renderBar(tessellator, c.pos, d.pos, size)
+                        RenderUtil.renderBar(tessellator, d.pos, a.pos, size)
                     }
                 } else {
                     model.getPaths(ModelPath.Level.MESH).forEach { compPath ->

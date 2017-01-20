@@ -12,7 +12,7 @@ fun main(args: Array<String>) {
     log(Level.NORMAL) { "Start of log" }
     log(Level.NORMAL) { "Program arguments: '${args.joinToString()}'" }
     try {
-        Init(args.toList()).run()
+        Initializer(args.toList()).start()
     } catch (e: Exception) {
         e.print()
     } finally {

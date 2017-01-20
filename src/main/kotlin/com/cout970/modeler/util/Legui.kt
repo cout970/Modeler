@@ -1,5 +1,6 @@
 package com.cout970.modeler.util
 
+import com.cout970.modeler.view.controller.ButtonController
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.plus
 import com.cout970.vector.extensions.xd
@@ -24,6 +25,15 @@ val Component.absolutePosition: IVector2 get() {
         parent = parent.parent
     }
     return sum
+}
+
+fun <T : Component> T.onClick(id: String, buttonController: ButtonController): T {
+    leguiEventListeners.addListener(MouseClickEvent::class.java, {
+        if (it.action == MouseClickEvent.MouseClickAction.PRESS) {
+            buttonController.onClick(id)
+        }
+    })
+    return this
 }
 
 inline fun <T : Component> T.onClick(id: Int, crossinline func: (Int) -> Unit): T {

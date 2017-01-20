@@ -1,9 +1,7 @@
 package com.cout970.modeler.modeleditor.selection
 
-import com.cout970.glutilities.device.Keyboard
-import com.cout970.modeler.config.Config
 import com.cout970.modeler.model.Vertex
-import com.cout970.modeler.modeleditor.ModelController
+import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.modeleditor.action.ActionChangeSelection
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
@@ -13,14 +11,14 @@ import com.cout970.vector.extensions.*
 /**
  * Created by cout970 on 2016/12/07.
  */
-class SelectionManager(val modelController: ModelController) {
+class SelectionManager(val modelEditor: ModelEditor) {
 
     var selectionMode: SelectionMode = SelectionMode.MESH
     var selection: Selection = SelectionNone
 
     fun getMouseHit(ray: Ray): RayTraceResult? {
         val hits = mutableListOf<Pair<RayTraceResult, ModelPath>>()
-        val model = modelController.model
+        val model = modelEditor.model
 
         model.getPaths(ModelPath.Level.MESH).forEach { path ->
             path.getMesh(model)!!.rayTrace(path.getMeshMatrix(model), ray)?.let {
@@ -35,10 +33,10 @@ class SelectionManager(val modelController: ModelController) {
         return hit?.first
     }
 
-    fun mouseTrySelect(ray: Ray, zoom: Float) {
+    fun mouseTrySelect(ray: Ray, zoom: Float, allowMultiSelection: Boolean) {
 
         val hits = mutableListOf<Pair<RayTraceResult, ModelPath>>()
-        val model = modelController.model
+        val model = modelEditor.model
 
         if (selectionMode == SelectionMode.GROUP) {
             model.getPaths(ModelPath.Level.MESH).forEach { path ->
@@ -89,29 +87,28 @@ class SelectionManager(val modelController: ModelController) {
         else hits.apply { sortBy { it.first.hit.distance(ray.start) } }.first()
 
         if (hit != null) {
-            val sel = handleSelection(hit.second)
+            val sel = handleSelection(hit.second, allowMultiSelection)
             updateSelection(sel)
         } else {
-            if (!modelController.eventController.keyboard.isKeyPressed(Keyboard.KEY_LEFT_CONTROL)) {
-                updateSelection(SelectionNone)
+            if (!allowMultiSelection) {
+                clearSelection()
             }
         }
     }
 
     fun updateSelection(sel: Selection) {
-        modelController.historyRecord.doAction(ActionChangeSelection(selection, sel, modelController))
+        modelEditor.historyRecord.doAction(ActionChangeSelection(selection, sel, modelEditor))
     }
 
-    fun handleSelection(path: ModelPath): Selection {
-        var sel = makeSelection(path)
+    fun handleSelection(path: ModelPath, allowMultiSelection: Boolean): Selection {
+        var sel = makeSelection(path, allowMultiSelection)
         if (sel == null || sel.paths.isEmpty()) sel = SelectionNone
         return sel
     }
 
-    private fun makeSelection(path: ModelPath): Selection? {
+    private fun makeSelection(path: ModelPath, allowMultiSelection: Boolean): Selection? {
         if (selectionMode == SelectionMode.GROUP) {
-            if (Config.keyBindings.multipleSelection.check(
-                    modelController.eventController.keyboard) && selection.mode == SelectionMode.MESH) {
+            if (allowMultiSelection && selection.mode == SelectionMode.MESH) {
                 if (path in selection.paths) {
                     return SelectionGroup(selection.paths - path)
                 } else {
@@ -125,8 +122,7 @@ class SelectionManager(val modelController: ModelController) {
                 }
             }
         } else if (selectionMode == SelectionMode.MESH) {
-            if (Config.keyBindings.multipleSelection.check(
-                    modelController.eventController.keyboard) && selection.mode == SelectionMode.MESH) {
+            if (allowMultiSelection && selection.mode == SelectionMode.MESH) {
                 if (path in selection.paths) {
                     return SelectionMesh(selection.paths - path)
                 } else {
@@ -140,8 +136,7 @@ class SelectionManager(val modelController: ModelController) {
                 }
             }
         } else if (selectionMode == SelectionMode.QUAD) {
-            if (Config.keyBindings.multipleSelection.check(
-                    modelController.eventController.keyboard) && selection.mode == SelectionMode.QUAD) {
+            if (allowMultiSelection && selection.mode == SelectionMode.QUAD) {
                 if (path in selection.paths) {
                     return SelectionQuad(selection.paths - path)
                 } else {
@@ -155,8 +150,7 @@ class SelectionManager(val modelController: ModelController) {
                 }
             }
         } else if (selectionMode == SelectionMode.VERTEX) {
-            if (Config.keyBindings.multipleSelection.check(
-                    modelController.eventController.keyboard) && selection.mode == SelectionMode.VERTEX) {
+            if (allowMultiSelection && selection.mode == SelectionMode.VERTEX) {
                 if (path in selection.paths) {
                     return SelectionVertex(selection.paths - path)
                 } else {

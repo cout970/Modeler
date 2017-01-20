@@ -13,14 +13,14 @@ import com.cout970.vector.extensions.vec3Of
 /**
  * Created by cout970 on 2016/12/09.
  */
-class ModelInserter(val modelController: ModelController) {
+class ModelInserter(val modelEditor: ModelEditor) {
 
     var groupCount = 0
     var insertPath = 0
     var insertPosition = vec3Of(0, 0, 0)
 
     fun insertMesh(mesh: Mesh) {
-        modelController.apply {
+        modelEditor.apply {
             if (model.groups.isEmpty()) {
                 insertGroup()
             }
@@ -32,16 +32,16 @@ class ModelInserter(val modelController: ModelController) {
     }
 
     fun insertGroup(group: ModelGroup = ModelGroup(listOf(), Transformation(insertPosition), "Group_${groupCount++}")) {
-        modelController.apply {
+        modelEditor.apply {
             updateModel(model.copy(groups = model.groups + group))
         }
     }
 
     fun addCube() {
-        modelController.historyRecord.doAction(ActionCreateCube(modelController))
+        modelEditor.historyRecord.doAction(ActionCreateCube(modelEditor))
     }
 
     fun addPlane() {
-        modelController.historyRecord.doAction(ActionCreatePlane(modelController))
+        modelEditor.historyRecord.doAction(ActionCreatePlane(modelEditor))
     }
 }

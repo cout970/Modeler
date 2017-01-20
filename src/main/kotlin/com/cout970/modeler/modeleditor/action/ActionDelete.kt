@@ -2,7 +2,7 @@ package com.cout970.modeler.modeleditor.action
 
 import com.cout970.modeler.model.Mesh
 import com.cout970.modeler.model.QuadIndices
-import com.cout970.modeler.modeleditor.ModelController
+import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.modeleditor.selection.ModelPath
 import com.cout970.modeler.modeleditor.selection.Selection
 import com.cout970.modeler.modeleditor.selection.SelectionMode
@@ -13,12 +13,12 @@ import com.cout970.vector.api.IVector3
 /**
  * Created by cout970 on 2016/12/08.
  */
-data class ActionDelete(val selection: Selection, val modelController: ModelController) : IAction {
+data class ActionDelete(val selection: Selection, val modelEditor: ModelEditor) : IAction {
 
-    val model = modelController.model
+    val model = modelEditor.model
 
     override fun run() {
-        modelController.apply {
+        modelEditor.apply {
             when (selection.mode) {
                 SelectionMode.GROUP -> {
                     updateModel(model.copy(model.groups.filterNotIndexed { groupIndex, group ->
@@ -78,12 +78,12 @@ data class ActionDelete(val selection: Selection, val modelController: ModelCont
                 SelectionMode.VERTEX -> Unit //you can't remove a vertex because everything needs to be made of quads
             }
         }
-        modelController.selectionManager.clearSelection()
+        modelEditor.selectionManager.clearSelection()
     }
 
     override fun undo() {
-        modelController.updateModel(model)
-        modelController.selectionManager.selection = selection
+        modelEditor.updateModel(model)
+        modelEditor.selectionManager.selection = selection
     }
 
     override fun toString(): String {

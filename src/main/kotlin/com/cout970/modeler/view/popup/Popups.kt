@@ -2,8 +2,8 @@ package com.cout970.modeler.view.popup
 
 import com.cout970.modeler.export.ExportFormat
 import com.cout970.modeler.log.print
-import com.cout970.modeler.modeleditor.ModelController
 import com.cout970.modeler.project.Project
+import com.cout970.modeler.project.ProjectManager
 import org.lwjgl.PointerBuffer
 import org.lwjgl.system.MemoryUtil
 import org.lwjgl.util.tinyfd.TinyFileDialogs
@@ -44,31 +44,31 @@ private val saveFileExtension: PointerBuffer = MemoryUtil.memAllocPointer(1).app
 
 private var lastSaveFile: String? = null
 
-fun saveProject(modelController: ModelController) {
+fun saveProject(projectManager: ProjectManager) {
     if (lastSaveFile == null) {
-        saveProjectAs(modelController)
+        saveProjectAs(projectManager)
     } else {
-        saveProject(modelController, modelController.project)
+        saveProject(projectManager, projectManager.project)
     }
 }
 
-fun saveProjectAs(modelController: ModelController) {
+fun saveProjectAs(projectManager: ProjectManager) {
     val file = TinyFileDialogs.tinyfd_saveFileDialog("Save As", "", saveFileExtension, "Project File Format (*.pff)")
     if (file != null) {
         lastSaveFile = if (file.endsWith(".pff")) file else file + ".pff"
-        saveProject(modelController, modelController.project)
+        saveProject(projectManager, projectManager.project)
     }
 }
 
-fun newProject(modelController: ModelController) {
+fun newProject(projectManager: ProjectManager) {
     val res = JOptionPane.showConfirmDialog(null,
             "Do you want to create a new project? \nAll unsaved changes will be lost!")
     if (res != JOptionPane.OK_OPTION) return
-    modelController.project = Project(modelController.project.owner, "Unnamed")
-    modelController.selectionManager.clearSelection()
+    projectManager.project = Project(projectManager.project.owner, "Unnamed")
+    projectManager.modelEditor.selectionManager.clearSelection()
 }
 
-fun loadProject(modelController: ModelController) {
+fun loadProject(projectManager: ProjectManager) {
     val res = JOptionPane.showConfirmDialog(null,
             "Do you want to load a new project? \nAll unsaved changes will be lost!")
     if (res != JOptionPane.OK_OPTION) return
@@ -78,31 +78,31 @@ fun loadProject(modelController: ModelController) {
     if (file != null) {
         lastSaveFile = file
         try {
-            val project = modelController.exportManager.loadProject(lastSaveFile!!)
+            val project = projectManager.exportManager.loadProject(lastSaveFile!!)
             project.model = project.model.copy()
-            modelController.project = project
+            projectManager.project = project
         } catch (e: Exception) {
             e.print()
         }
     }
 }
 
-private fun saveProject(modelController: ModelController, project: Project) {
-    modelController.exportManager.saveProject(lastSaveFile!!, modelController.project)
+private fun saveProject(projectManager: ProjectManager, project: Project) {
+    projectManager.exportManager.saveProject(lastSaveFile!!, project)
 }
 
-fun showImportModelPopup(modelController: ModelController) {
+fun showImportModelPopup(projectManager: ProjectManager) {
     ImportDialog.show { prop ->
         if (prop != null) {
-            modelController.exportManager.importModel(prop)
+            projectManager.exportManager.importModel(prop)
         }
     }
 }
 
-fun showExportModelPopup(modelController: ModelController) {
+fun showExportModelPopup(projectManager: ProjectManager) {
     ExportDialog.show { (path, format) ->
         if (path != null) {
-            modelController.exportManager.exportModel(path, format!!)
+            projectManager.exportManager.exportModel(path, format!!)
         }
     }
 }
@@ -111,6 +111,7 @@ fun Missing(thing: String) {
     JOptionPane.showMessageDialog(null, "Operation not implemented yet: $thing")
 }
 
+@Suppress("UNUSED_PARAMETER")
 fun getExportFileExtensions(format: ExportFormat): PointerBuffer {
     return exportExtensionsObj
 }

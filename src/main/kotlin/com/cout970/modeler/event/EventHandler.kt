@@ -10,13 +10,13 @@ import java.util.*
 /**
  * Created by cout970 on 2016/11/29.
  */
-class EventController : ITickeable, IEventController {
+class EventHandler : ITickeable, IEventController, IInput {
 
     private val listeners = mutableMapOf<Class<Event>, MutableList<IEventListener<Event>>>()
     private val lock = Any()
     private val eventQueue = Collections.synchronizedList(mutableListOf<() -> Unit>())
-    lateinit var keyboard: Keyboard
-    lateinit var mouse: Mouse
+    lateinit override var keyboard: Keyboard
+    lateinit override var mouse: Mouse
 
     init {
         EventManager.registerListener(this::onEvent)
@@ -41,6 +41,7 @@ class EventController : ITickeable, IEventController {
         EventManager.pollEvents()
         eventQueue.forEach { it() }
         eventQueue.clear()
+        mouse.update()
     }
 
     private fun onEvent(event: Event) {

@@ -1,11 +1,11 @@
 package com.cout970.modeler.export
 
-import com.cout970.modeler.ResourceManager
 import com.cout970.modeler.model.Material
-import com.cout970.modeler.modeleditor.ModelController
 import com.cout970.modeler.modeleditor.action.ActionImportModel
 import com.cout970.modeler.project.Project
-import com.cout970.modeler.util.createPath
+import com.cout970.modeler.project.ProjectManager
+import com.cout970.modeler.resource.ResourceLoader
+import com.cout970.modeler.resource.createPath
 import com.cout970.modeler.view.popup.Missing
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
@@ -20,7 +20,7 @@ import java.util.zip.ZipOutputStream
 /**
  * Created by cout970 on 2017/01/02.
  */
-class ExportManager(val modelController: ModelController, val resourceManager: ResourceManager) {
+class ExportManager(val projectManager: ProjectManager, val resourceLoader: ResourceLoader) {
 
     val objImporter = ObjImporter()
     val objExporter = ObjExporter()
@@ -34,6 +34,10 @@ class ExportManager(val modelController: ModelController, val resourceManager: R
             .registerTypeAdapter(IQuaternion::class.java, QuaternionSerializer())
             .registerTypeAdapter(Material::class.java, MaterialSerializer())
             .create()!!
+
+    init {
+        projectManager.exportManager = this
+    }
 
     fun loadProject(path: String): Project {
         val zip = ZipFile(path)
@@ -59,14 +63,14 @@ class ExportManager(val modelController: ModelController, val resourceManager: R
         val file = File(import.path)
         when (import.format) {
             ImportFormat.OBJ -> {
-                modelController.historyRecord.doAction(
-                        ActionImportModel(modelController, resourceManager, import.path) {
+                projectManager.modelEditor.historyRecord.doAction(
+                        ActionImportModel(projectManager.modelEditor, resourceLoader, import.path) {
                             objImporter.import(file.createPath(), import.flipUV)
                 })
             }
             ImportFormat.TCN -> {
-                modelController.historyRecord.doAction(
-                        ActionImportModel(modelController, resourceManager, import.path) {
+                projectManager.modelEditor.historyRecord.doAction(
+                        ActionImportModel(projectManager.modelEditor, resourceLoader, import.path) {
                     tcnImporter.import(file.createPath())
                 })
             }
@@ -78,8 +82,8 @@ class ExportManager(val modelController: ModelController, val resourceManager: R
         val file = File(path)
         when (format) {
             ExportFormat.OBJ -> {
-                modelController.addToQueue {
-                    objExporter.export(file.outputStream(), modelController.model, "materials")
+                projectManager.modelEditor.addToQueue {
+                    objExporter.export(file.outputStream(), projectManager.modelEditor.model, "materials")
                 }
             }
         }

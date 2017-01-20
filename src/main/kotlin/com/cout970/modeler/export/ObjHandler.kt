@@ -4,8 +4,8 @@ import com.cout970.modeler.log.Level
 import com.cout970.modeler.log.log
 import com.cout970.modeler.log.print
 import com.cout970.modeler.model.*
-import com.cout970.modeler.util.ResourcePath
-import com.cout970.modeler.util.createPath
+import com.cout970.modeler.resource.ResourcePath
+import com.cout970.modeler.resource.createPath
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*

@@ -40,12 +40,14 @@ abstract class Module(val controller: ModuleController, val name: String) : Pane
                 } else {
                     maximize()
                 }
-                controller.viewManager.recalculateModules()
+                controller.recalculateModules()
             }
         })
 
         maximize()
     }
+
+    open fun tick() {}
 
     fun minimize() {
         size = Vector2f(180f, 20f)
@@ -73,7 +75,7 @@ abstract class Module(val controller: ModuleController, val name: String) : Pane
         subPanel.addComponent(component)
     }
 
-    fun buttonListener(id: String) = Listener(controller.viewManager.buttonController, id)
+    fun buttonListener(id: String) = Listener(controller.buttonController, id)
 
     open class Listener(val controller: ButtonController, val id: String) : LeguiEventListener<MouseClickEvent> {
         override fun update(e: MouseClickEvent) {

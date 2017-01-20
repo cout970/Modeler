@@ -6,7 +6,7 @@ import java.util.*
 /**
  * Created by cout970 on 2016/12/08.
  */
-class HistoricalRecord(val historyLog: HistoryLog, val modelController: ModelController) {
+class HistoricalRecord(val historyLog: HistoryLog, val modelEditor: ModelEditor) {
 
     private val actionStack = Stack<IAction>()
     private val redoStack = Stack<IAction>()
@@ -14,7 +14,7 @@ class HistoricalRecord(val historyLog: HistoryLog, val modelController: ModelCon
     fun doAction(action: IAction) {
         actionStack += action
         redoStack.clear()
-        modelController.addToQueue {
+        modelEditor.addToQueue {
             action.run()
             historyLog.onDo(action)
         }
@@ -24,7 +24,7 @@ class HistoricalRecord(val historyLog: HistoryLog, val modelController: ModelCon
         if (actionStack.isEmpty()) return
         val action = actionStack.pop()
         redoStack += action
-        modelController.addToQueue {
+        modelEditor.addToQueue {
             action.undo()
             historyLog.onUndo(action)
         }
@@ -34,7 +34,7 @@ class HistoricalRecord(val historyLog: HistoryLog, val modelController: ModelCon
         if (redoStack.isEmpty()) return
         val action = redoStack.pop()
         actionStack += action
-        modelController.addToQueue {
+        modelEditor.addToQueue {
             action.run()
             historyLog.onRedo(action)
         }

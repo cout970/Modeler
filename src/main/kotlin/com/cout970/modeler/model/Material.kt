@@ -1,9 +1,9 @@
 package com.cout970.modeler.model
 
 import com.cout970.glutilities.texture.Texture
-import com.cout970.modeler.ResourceManager
 import com.cout970.modeler.log.print
-import com.cout970.modeler.util.ResourcePath
+import com.cout970.modeler.resource.ResourceLoader
+import com.cout970.modeler.resource.ResourcePath
 import com.cout970.vector.extensions.vec2Of
 import com.google.gson.annotations.Expose
 import org.lwjgl.opengl.GL11
@@ -11,15 +11,15 @@ import org.lwjgl.opengl.GL11
 sealed class Material(@Expose val name: String) {
 
     abstract fun bind()
-    abstract fun loadTexture(resourceManager: ResourceManager)
+    abstract fun loadTexture(resourceLoader: ResourceLoader)
 }
 
 class TexturedMaterial(name: String, val path: ResourcePath) : Material(name) {
     var texture: Texture? = null
 
-    override fun loadTexture(resourceManager: ResourceManager) {
+    override fun loadTexture(resourceLoader: ResourceLoader) {
         try {
-            texture = resourceManager.getTexture(path.inputStream()).apply {
+            texture = resourceLoader.getTexture(path.inputStream()).apply {
                 magFilter = Texture.PIXELATED
                 minFilter = Texture.PIXELATED
             }
@@ -57,8 +57,8 @@ object MaterialNone : Material("noTexture") {
     lateinit var whiteTexture: Texture
         private set
 
-    override fun loadTexture(resourceManager: ResourceManager) {
-        whiteTexture = resourceManager.getTexture("assets/textures/debug.png")
+    override fun loadTexture(resourceLoader: ResourceLoader) {
+        whiteTexture = resourceLoader.getTexture("assets/textures/debug.png")
     }
 
     override fun bind() {

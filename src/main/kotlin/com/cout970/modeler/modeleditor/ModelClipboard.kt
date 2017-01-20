@@ -10,26 +10,32 @@ import com.cout970.modeler.modeleditor.selection.SelectionNone
 /**
  * Created by cout970 on 2016/12/08.
  */
-class ModelClipboard(val modelController: ModelController) {
+class ModelClipboard(val modelEditor: ModelEditor) {
 
+    val selectionManager get() = modelEditor.selectionManager
+    val historyRecord get() = modelEditor.historyRecord
     var content: Pair<Selection, Model>? = null
 
     fun copy() {
-        if (modelController.selectionManager.selection.mode != SelectionMode.VERTEX && modelController.selectionManager.selection != SelectionNone) {
-            content = modelController.selectionManager.selection to modelController.model.copy()
+        if (selectionManager.selection.mode != SelectionMode.VERTEX && selectionManager.selection != SelectionNone) {
+            content = selectionManager.selection to modelEditor.model.copy()
         }
     }
 
     fun cut() {
-        if (modelController.selectionManager.selection.mode != SelectionMode.VERTEX && modelController.selectionManager.selection != SelectionNone) {
-            content = modelController.selectionManager.selection to modelController.model.copy()
-            modelController.historyRecord.doAction(ActionDelete(modelController.selectionManager.selection, modelController))
+        if (selectionManager.selection.mode != SelectionMode.VERTEX && selectionManager.selection != SelectionNone) {
+            content = selectionManager.selection to modelEditor.model.copy()
+            historyRecord.doAction(ActionDelete(selectionManager.selection, modelEditor))
         }
     }
 
     fun paste() {
         content?.let {
-            modelController.historyRecord.doAction(ActionPaste(it.first, it.second, modelController))
+            historyRecord.doAction(ActionPaste(it.first, it.second, modelEditor))
         }
+    }
+
+    fun delete() {
+        historyRecord.doAction(ActionDelete(selectionManager.selection, modelEditor))
     }
 }

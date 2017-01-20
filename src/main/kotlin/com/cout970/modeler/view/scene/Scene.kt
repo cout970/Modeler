@@ -1,10 +1,12 @@
 package com.cout970.modeler.view.scene
 
 import com.cout970.matrix.api.IMatrix4
-import com.cout970.modeler.event.EventController
+import com.cout970.modeler.event.IEventController
+import com.cout970.modeler.modeleditor.IModelProvider
 import com.cout970.modeler.util.toIMatrix
 import com.cout970.modeler.view.controller.SceneController
 import com.cout970.modeler.view.render.RenderManager
+import com.cout970.modeler.window.WindowHandler
 import org.joml.Matrix4d
 import org.liquidengine.legui.component.Panel
 import org.liquidengine.legui.util.ColorConstants
@@ -12,7 +14,8 @@ import org.liquidengine.legui.util.ColorConstants
 /**
  * Created by cout970 on 2016/12/27.
  */
-abstract class Scene(val sceneController: SceneController) : Panel() {
+abstract class Scene(val modelProvider: IModelProvider, val windowHandler: WindowHandler,
+                     val sceneController: SceneController) : Panel() {
 
     var camera = Camera.DEFAULT
     var desiredZoom = camera.zoom
@@ -31,7 +34,7 @@ abstract class Scene(val sceneController: SceneController) : Panel() {
         return Matrix4d().setOrtho(-1.0 / aspectRatio, 1.0 / aspectRatio, -1.0, 1.0, 0.1, 1000.0).toIMatrix()
     }
 
-    abstract fun registerListeners(eventController: EventController)
+    abstract fun registerListeners(eventHandler: IEventController)
 
     init {
         backgroundColor = ColorConstants.transparent()

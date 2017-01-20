@@ -50,7 +50,7 @@ object Logger {
     }
 }
 
-enum class Level(val priority: Int) { CRITICAL(1000), ERROR(500), NORMAL(250), FINE(100), FINEST(50) }
+enum class Level(val priority: Int) { DEBUG(10000), CRITICAL(1000), ERROR(500), NORMAL(250), FINE(100), FINEST(50) }
 
 
 inline fun log(level: Level, func: () -> String) {

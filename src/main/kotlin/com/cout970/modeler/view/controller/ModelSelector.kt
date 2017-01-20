@@ -3,9 +3,9 @@ package com.cout970.modeler.view.controller
 import com.cout970.glutilities.event.EnumKeyState
 import com.cout970.glutilities.event.EventMouseClick
 import com.cout970.modeler.config.Config
-import com.cout970.modeler.event.EventController
+import com.cout970.modeler.event.IEventController
 import com.cout970.modeler.event.IEventListener
-import com.cout970.modeler.modeleditor.ModelController
+import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.modeleditor.action.ActionTranslate
 import com.cout970.modeler.modeleditor.rotate
 import com.cout970.modeler.modeleditor.selection.SelectionNone
@@ -25,12 +25,11 @@ import org.joml.Vector3d
 /**
  * Created by cout970 on 2016/12/17.
  */
-class ModelSelector(val scene: ModelScene, val controller: SceneController) {
+class ModelSelector(val scene: ModelScene, val controller: SceneController, val modelEditor: ModelEditor) {
 
-    val modelController: ModelController get() = controller.modelController
     val transformationMode get() = controller.transformationMode
-    val selection get() = modelController.selectionManager.selection
-    val selectionCenter: IVector3 get() = selection.getCenter(controller.modelController.model)
+    val selection get() = modelEditor.selectionManager.selection
+    val selectionCenter: IVector3 get() = selection.getCenter(modelEditor.model)
 
     var offset = 0f
     var lastOffset = 0f
@@ -45,7 +44,7 @@ class ModelSelector(val scene: ModelScene, val controller: SceneController) {
 
     fun updateMouseRay() {
         matrix = scene.getMatrixMVP().toJOML()
-        val mousePos = controller.mouse.getMousePos() - scene.absolutePosition
+        val mousePos = controller.input.mouse.getMousePos() - scene.absolutePosition
         viewportSize = scene.size.toIVector()
         val viewport = intArrayOf(0, 0, viewportSize.xi, viewportSize.yi)
 
@@ -141,7 +140,7 @@ class ModelSelector(val scene: ModelScene, val controller: SceneController) {
             controller.hoveredAxis = getSelectedAxis(false)
 
             //if the mouse clicks
-            if (Config.keyBindings.selectModelControls.check(controller.mouse) &&
+            if (Config.keyBindings.selectModelControls.check(controller.input) &&
                 controller.hoveredAxis != SelectionAxis.NONE) {
 
                 capturedMouse = mouseSnapshot
@@ -150,7 +149,7 @@ class ModelSelector(val scene: ModelScene, val controller: SceneController) {
             }
         } else {
             //if the mouse button is pressed
-            if (Config.keyBindings.selectModelControls.check(controller.mouse)) {
+            if (Config.keyBindings.selectModelControls.check(controller.input)) {
 
                 val diff = projectAxis(matrix)
                 val direction = (diff.second - diff.first)
@@ -163,16 +162,16 @@ class ModelSelector(val scene: ModelScene, val controller: SceneController) {
 
                 val move = (new - old) * scene.camera.zoom / Config.cursorArrowsSpeed
 
-                if (Config.keyBindings.disableGridMotion.check(controller.keyboard)) {
+                if (Config.keyBindings.disableGridMotion.check(controller.input)) {
                     offset = Math.round(move * 16) / 16f
-                } else if (Config.keyBindings.disablePixelGridMotion.check(controller.keyboard)) {
+                } else if (Config.keyBindings.disablePixelGridMotion.check(controller.input)) {
                     offset = Math.round(move * 4) / 4f
                 } else {
                     offset = Math.round(move).toFloat()
                 }
                 if (lastOffset != offset) {
                     lastOffset = offset
-                    controller.tmpModel = modelController.model.translate(selection, controller.selectedAxis, offset)
+                    controller.tmpModel = modelEditor.model.translate(selection, controller.selectedAxis, offset)
                 }
             } else {
                 capturedMouse = null
@@ -181,7 +180,7 @@ class ModelSelector(val scene: ModelScene, val controller: SceneController) {
                 lastOffset = 0f
 
                 controller.tmpModel?.let {
-                    modelController.historyRecord.doAction(ActionTranslate(modelController, it))
+                    modelEditor.historyRecord.doAction(ActionTranslate(modelEditor, it))
                 }
                 controller.tmpModel = null
             }
@@ -193,7 +192,7 @@ class ModelSelector(val scene: ModelScene, val controller: SceneController) {
             controller.hoveredAxis = getSelectedAxis(true)
 
             //if the mouse clicks
-            if (Config.keyBindings.selectModelControls.check(controller.mouse) &&
+            if (Config.keyBindings.selectModelControls.check(controller.input) &&
                 controller.hoveredAxis != SelectionAxis.NONE) {
 
                 capturedMouse = mouseSnapshot
@@ -202,7 +201,7 @@ class ModelSelector(val scene: ModelScene, val controller: SceneController) {
             }
         } else {
             //if the mouse button is pressed
-            if (Config.keyBindings.selectModelControls.check(controller.mouse)) {
+            if (Config.keyBindings.selectModelControls.check(controller.input)) {
 
                 val func = { mouseRay: Ray ->
 
@@ -224,9 +223,9 @@ class ModelSelector(val scene: ModelScene, val controller: SceneController) {
 
                 val move = Math.toDegrees(change) / 360.0 * 32 * Config.cursorRotationSpeed
 
-                if (Config.keyBindings.disableGridMotion.check(controller.keyboard)) {
+                if (Config.keyBindings.disableGridMotion.check(controller.input)) {
                     offset = Math.round(move * 16) / 16f
-                } else if (Config.keyBindings.disablePixelGridMotion.check(controller.keyboard)) {
+                } else if (Config.keyBindings.disablePixelGridMotion.check(controller.input)) {
                     offset = Math.round(move * 4) / 4f
                 } else {
                     offset = Math.round(move).toFloat()
@@ -234,7 +233,7 @@ class ModelSelector(val scene: ModelScene, val controller: SceneController) {
                 offset = Math.toRadians(offset.toDouble() * 360.0 / 32).toFloat()
                 if (lastOffset != offset) {
                     lastOffset = offset
-                    controller.tmpModel = modelController.model.rotate(selection, controller.selectedAxis, offset)
+                    controller.tmpModel = modelEditor.model.rotate(selection, controller.selectedAxis, offset)
                 }
 
             } else {
@@ -244,7 +243,7 @@ class ModelSelector(val scene: ModelScene, val controller: SceneController) {
                 lastOffset = 0f
 
                 controller.tmpModel?.let {
-                    modelController.historyRecord.doAction(ActionTranslate(modelController, it))
+                    modelEditor.historyRecord.doAction(ActionTranslate(modelEditor, it))
                 }
                 controller.tmpModel = null
             }
@@ -267,25 +266,26 @@ class ModelSelector(val scene: ModelScene, val controller: SceneController) {
         return vec2Of(start.x, start.y) to vec2Of(end.x, end.y)
     }
 
-    fun registerListeners(eventController: EventController) {
+    fun registerListeners(eventHandler: IEventController) {
         var time: Long = 0L
-        eventController.addListener(EventMouseClick::class.java, object : IEventListener<EventMouseClick> {
+        eventHandler.addListener(EventMouseClick::class.java, object : IEventListener<EventMouseClick> {
             override fun onEvent(e: EventMouseClick): Boolean {
                 if (e.keyState != EnumKeyState.PRESS) return false
 
                 if (Config.keyBindings.selectModel.keycode == e.button) {
-                    if (inside(controller.mouse.getMousePos(), scene.absolutePosition, scene.size.toIVector())) {
+                    if (inside(controller.input.mouse.getMousePos(), scene.absolutePosition, scene.size.toIVector())) {
                         if (controller.hoveredAxis == SelectionAxis.NONE && controller.selectedAxis == SelectionAxis.NONE) {
-                            modelController.selectionManager.mouseTrySelect(mouseSnapshot.mouseRay,
-                                    controller.selectedScene.camera.zoom.toFloat())
+                            modelEditor.selectionManager.mouseTrySelect(mouseSnapshot.mouseRay,
+                                    controller.selectedScene.camera.zoom.toFloat(),
+                                    Config.keyBindings.multipleSelection.check(controller.input))
                             return true
                         }
                     }
                 }
                 if (Config.keyBindings.jumpCameraToCursor.keycode == e.button) {
-                    if (inside(controller.mouse.getMousePos(), scene.absolutePosition, scene.size.toIVector())) {
+                    if (inside(controller.input.mouse.getMousePos(), scene.absolutePosition, scene.size.toIVector())) {
                         if (System.currentTimeMillis() - time < 500) {
-                            val hit = modelController.selectionManager.getMouseHit(mouseSnapshot.mouseRay)
+                            val hit = modelEditor.selectionManager.getMouseHit(mouseSnapshot.mouseRay)
                             if (hit != null) {
                                 scene.camera = scene.camera.copy(position = -hit.hit)
                                 return true

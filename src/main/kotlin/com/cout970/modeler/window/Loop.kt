@@ -1,4 +1,4 @@
-package com.cout970.modeler
+package com.cout970.modeler.window
 
 import com.cout970.glutilities.structure.GameLoop
 import com.cout970.glutilities.structure.Timer
@@ -7,13 +7,7 @@ import com.cout970.modeler.util.ITickeable
 /**
  * Created by cout970 on 2016/11/29.
  */
-class LoopController(val tickeables: List<ITickeable>) {
-
-    val timer = Timer()
-    var stop = false
-        set(i) {
-            field = true
-        }
+class Loop(val tickeables: List<ITickeable>, val timer: Timer, val shouldClose: () -> Boolean) {
 
     fun run() {
         GameLoop(this::tick).start()
@@ -24,6 +18,6 @@ class LoopController(val tickeables: List<ITickeable>) {
         tickeables.forEach(ITickeable::preTick)
         tickeables.forEach(ITickeable::tick)
         tickeables.forEach(ITickeable::postTick)
-        if (stop) loop.stop()
+        if (shouldClose()) loop.stop()
     }
 }

@@ -3,7 +3,7 @@ package com.cout970.modeler.export
 import com.cout970.modeler.model.Material
 import com.cout970.modeler.model.MaterialNone
 import com.cout970.modeler.model.TexturedMaterial
-import com.cout970.modeler.util.ResourcePath
+import com.cout970.modeler.resource.ResourcePath
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3

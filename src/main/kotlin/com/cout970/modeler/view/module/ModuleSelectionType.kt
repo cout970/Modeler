@@ -25,7 +25,7 @@ class ModuleSelectionType(controller: ModuleController) : Module(controller, "Se
         })
     }
 
-    inner class Wrapper(id: String, val pos: Int) : Listener(controller.viewManager.buttonController, id) {
+    inner class Wrapper(id: String, val pos: Int) : Listener(controller.buttonController, id) {
 
         override fun update(e: MouseClickEvent) {
             super.update(e)
@@ -34,7 +34,7 @@ class ModuleSelectionType(controller: ModuleController) : Module(controller, "Se
                     it.isToggled = i == pos
                 }
             }
-            this@ModuleSelectionType.controller.modelController.selectionManager.clearSelection()
+            this@ModuleSelectionType.controller.modelProvider.selectionManager.clearSelection()
         }
     }
 }

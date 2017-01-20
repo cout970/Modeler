@@ -1,4 +1,4 @@
-package com.cout970.modeler
+package com.cout970.modeler.resource
 
 import com.cout970.glutilities.texture.Texture
 import com.cout970.glutilities.texture.TextureLoader
@@ -8,7 +8,7 @@ import java.io.InputStream
 /**
  * Created by cout970 on 2016/11/29.
  */
-class ResourceManager {
+class ResourceLoader {
 
     fun readResource(name: String): InputStream {
         return Thread.currentThread().contextClassLoader.getResourceAsStream(name) ?: throw FileNotFoundException(name)

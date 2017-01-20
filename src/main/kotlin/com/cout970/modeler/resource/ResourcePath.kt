@@ -1,7 +1,8 @@
-package com.cout970.modeler.util
+package com.cout970.modeler.resource
 
 import java.io.File
 import java.net.URI
+import java.nio.file.Path
 import java.nio.file.Paths
 
 /**
@@ -21,7 +22,7 @@ class ResourcePath(val uri: URI) {
         return uri.toString()
     }
 
-    fun toPath(): java.nio.file.Path = Paths.get(uri)
+    fun toPath(): Path = Paths.get(uri)
 }
 
 

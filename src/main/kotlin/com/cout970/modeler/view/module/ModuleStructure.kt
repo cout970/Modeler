@@ -1,5 +1,6 @@
 package com.cout970.modeler.view.module
 
+import com.cout970.modeler.config.Config
 import com.cout970.modeler.modeleditor.selection.ModelPath
 import com.cout970.modeler.modeleditor.selection.SelectionMesh
 import com.cout970.modeler.modeleditor.selection.SelectionMode
@@ -20,10 +21,11 @@ class ModuleStructure(controller: ModuleController) : Module(controller, "Struct
     init {
     }
 
-    fun update() {
-        val model = controller.modelController.model
-        val selection = controller.modelController.selectionManager.selection
+    override fun tick() {
+        val model = controller.modelProvider.model
+        val selection = controller.modelProvider.selectionManager.selection
         val tmpHash = model.hashCode() xor selection.hashCode()
+
         if (tmpHash != hash) {
             hash = tmpHash
             subPanel.clearComponents()
@@ -54,12 +56,13 @@ class ModuleStructure(controller: ModuleController) : Module(controller, "Struct
                         backgroundColor.set(0f, 0.5f, 1f, 1f)
                     }
                 }.onClick(0) {
-                    if (controller.modelController.selectionManager.selectionMode == SelectionMode.GROUP) {
-                        controller.modelController.selectionManager.run {
-                            updateSelection(handleSelection(groupPath))
+                    if (controller.modelProvider.selectionManager.selectionMode == SelectionMode.GROUP) {
+                        controller.modelProvider.selectionManager.run {
+                            updateSelection(handleSelection(groupPath,
+                                    Config.keyBindings.multipleSelection.check(controller.input)))
                         }
-                    } else if (controller.modelController.selectionManager.selectionMode == SelectionMode.MESH) {
-                        controller.modelController.selectionManager.run {
+                    } else if (controller.modelProvider.selectionManager.selectionMode == SelectionMode.MESH) {
+                        controller.modelProvider.selectionManager.run {
                             updateSelection(SelectionMesh(model.getPaths(ModelPath.Level.MESH)))
                         }
                     }
@@ -79,9 +82,10 @@ class ModuleStructure(controller: ModuleController) : Module(controller, "Struct
                                         backgroundColor.set(0f, 0.5f, 1f, 1f)
                                     }
                                 }.onClick(0) {
-                                    if (controller.modelController.selectionManager.selectionMode == SelectionMode.MESH)
-                                        controller.modelController.selectionManager.run {
-                                            updateSelection(handleSelection(meshPath))
+                                    if (controller.modelProvider.selectionManager.selectionMode == SelectionMode.MESH)
+                                        controller.modelProvider.selectionManager.run {
+                                            updateSelection(handleSelection(meshPath,
+                                                    Config.keyBindings.multipleSelection.check(controller.input)))
                                         }
                                 })
                         index += 20f
@@ -93,7 +97,7 @@ class ModuleStructure(controller: ModuleController) : Module(controller, "Struct
             } else {
                 minimize()
             }
+            controller.recalculateModules()
         }
-        controller.viewManager.recalculateModules()
     }
 }

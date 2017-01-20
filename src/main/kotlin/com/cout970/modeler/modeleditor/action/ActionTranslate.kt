@@ -1,22 +1,22 @@
 package com.cout970.modeler.modeleditor.action
 
 import com.cout970.modeler.model.Model
-import com.cout970.modeler.modeleditor.ModelController
+import com.cout970.modeler.modeleditor.ModelEditor
 
 /**
  * Created by cout970 on 2016/12/10.
  */
-data class ActionTranslate(val modelController: ModelController, val newModel: Model) : IAction {
+data class ActionTranslate(val modelEditor: ModelEditor, val newModel: Model) : IAction {
 
-    val model = modelController.model
-    val selection = modelController.selectionManager.selection
+    val model = modelEditor.model
+    val selection = modelEditor.selectionManager.selection
 
     override fun run() {
-        modelController.updateModel(newModel)
+        modelEditor.updateModel(newModel)
     }
 
     override fun undo() {
-        modelController.updateModel(model)
+        modelEditor.updateModel(model)
     }
 
     override fun toString(): String {
