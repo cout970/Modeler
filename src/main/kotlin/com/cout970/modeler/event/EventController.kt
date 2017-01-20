@@ -10,7 +10,7 @@ import java.util.*
 /**
  * Created by cout970 on 2016/11/29.
  */
-class EventController() : ITickeable, IEventController {
+class EventController : ITickeable, IEventController {
 
     private val listeners = mutableMapOf<Class<Event>, MutableList<IEventListener<Event>>>()
     private val lock = Any()

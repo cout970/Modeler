@@ -34,6 +34,6 @@ class WindowController : ITickeable {
         }
         window.swapBuffers()
         GL11.glViewport(0, 0, window.size.xi, window.size.yi)
-        window.setTitle("[${timer.fps} FPS]")
+        window.setTitle("$WINDOW_TITLE [${timer.fps} FPS]")
     }
 }
