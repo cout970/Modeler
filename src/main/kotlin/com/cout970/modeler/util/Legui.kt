@@ -26,7 +26,7 @@ val Component.absolutePosition: IVector2 get() {
     return sum
 }
 
-fun <T : Component> T.onClick(id: Int, func: (Int) -> Unit): T {
+inline fun <T : Component> T.onClick(id: Int, crossinline func: (Int) -> Unit): T {
     leguiEventListeners.addListener(MouseClickEvent::class.java, {
         if (it.action == MouseClickEvent.MouseClickAction.PRESS) {
             func(id)

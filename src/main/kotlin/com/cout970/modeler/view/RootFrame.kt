@@ -31,15 +31,16 @@ class RootFrame(val viewManager: ViewManager) : Frame() {
         addComponent(topBar)
         addComponent(leftBar)
         addComponent(contentPanel)
-        addComponent(rightBar)
         addComponent(dropdown)
+        addComponent(rightBar)
 
         leftBar.apply { backgroundColor = Vector4f(0.8f, 0.8f, 0.8f, 1f) }
         rightBar.apply { backgroundColor = Vector4f(0.8f, 0.8f, 0.8f, 1f) }
         leftBar.container.apply { backgroundColor = Vector4f(0.8f, 0.8f, 0.8f, 1f) }
         rightBar.container.apply { backgroundColor = Vector4f(0.8f, 0.8f, 0.8f, 1f) }
         contentPanel.apply { backgroundColor = Vector4f(0f, 0f, 0f, 0f) }
-        rightBar.isEnabled = false
+
+//        rightBar.isEnabled = false
         dropdown.isVisible = false
     }
 
