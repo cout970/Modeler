@@ -47,11 +47,12 @@ class ExportManager(val modelController: ModelController, val resourceManager: R
     fun saveProject(path: String, project: Project) {
         val zip = ZipOutputStream(File(path).outputStream())
         val json = gson.toJson(project)
-        zip.use {
+        zip.let {
             it.putNextEntry(ZipEntry("project.json"))
             it.write(json.toByteArray())
             it.closeEntry()
         }
+        zip.close()
     }
 
     fun importModel(import: ImportProperties) {
