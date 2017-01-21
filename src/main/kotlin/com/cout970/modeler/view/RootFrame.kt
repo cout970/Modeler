@@ -73,8 +73,7 @@ class RootFrame(val input: IInput, val windowHandler: WindowHandler, val buttonC
 
     class ContentPanel(val root: RootFrame) : Panel()
 
-    class SideBar(val root: RootFrame) : ScrollablePanel() {
-
+    data class SideBar(val root: RootFrame) : ScrollablePanel() {
         init {
             horizontalScrollBar.isVisible = false
         }
