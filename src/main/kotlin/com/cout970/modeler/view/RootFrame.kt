@@ -41,7 +41,7 @@ class RootFrame(val input: IInput, val windowHandler: WindowHandler, val buttonC
         leftBar.container.apply { backgroundColor = Vector4f(0.8f, 0.8f, 0.8f, 1f) }
         rightBar.container.apply { backgroundColor = Vector4f(0.8f, 0.8f, 0.8f, 1f) }
         contentPanel.apply { backgroundColor = Vector4f(0f, 0f, 0f, 0f) }
-        rightBar.isEnabled = true
+        rightBar.isEnabled = false
         dropdown.isVisible = false
     }
 
