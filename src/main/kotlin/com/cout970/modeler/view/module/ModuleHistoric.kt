@@ -10,19 +10,19 @@ import org.liquidengine.legui.event.component.MouseClickEvent
 class ModuleHistoric(controller: ModuleController) : Module(controller, "History") {
 
     init {
-        addSubComponent(Button(10f, 0f, 80f, 20f, "Undo").apply {
+        addSubComponent(Button("Undo", 10f, 0f, 80f, 20f).apply {
             leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.history.undo"))
         })
-        addSubComponent(Button(90f, 0f, 80f, 20f, "Redo").apply {
+        addSubComponent(Button("Redo", 90f, 0f, 80f, 20f).apply {
             leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.history.redo"))
         })
-        addSubComponent(Button(10f, 25f, 50f, 20f, "Copy").apply {
+        addSubComponent(Button("Copy", 10f, 25f, 50f, 20f).apply {
             leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.clipboard.copy"))
         })
-        addSubComponent(Button(65f, 25f, 50f, 20f, "Cut").apply {
+        addSubComponent(Button("Cut", 65f, 25f, 50f, 20f).apply {
             leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.clipboard.cut"))
         })
-        addSubComponent(Button(120f, 25f, 50f, 20f, "Paste").apply {
+        addSubComponent(Button("Paste", 120f, 25f, 50f, 20f).apply {
             leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.clipboard.paste"))
         })
     }

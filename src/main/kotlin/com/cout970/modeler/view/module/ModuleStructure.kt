@@ -30,7 +30,7 @@ class ModuleStructure(controller: ModuleController) : Module(controller, "Struct
             hash = tmpHash
             subPanel.clearComponents()
             subPanel.size.y = 0f
-            addSubComponent(Label(3f, 0f, 172f, 20f, " Model").apply {
+            addSubComponent(Label(" Model", 3f, 0f, 172f, 20f).apply {
                 textState.horizontalAlign = HorizontalAlign.LEFT
             })
             var index = 20f
@@ -44,12 +44,12 @@ class ModuleStructure(controller: ModuleController) : Module(controller, "Struct
                     false
                 }
 
-                addSubComponent(Button(3f, index, 20f, 20f, if (openObject) "V" else ">").apply {
+                addSubComponent(Button(if (openObject) "V" else ">", 3f, index, 20f, 20f).apply {
                     border.isEnabled = false
                 }.onClick(0) {
                     openSections[groupPath] = !openSections[groupPath]!!; hash = 0
                 })
-                addSubComponent(Button(25f, index, 130f, 20f, " ${group.name}").apply {
+                addSubComponent(Button(" ${group.name}", 25f, index, 130f, 20f).apply {
                     border.isEnabled = false
                     textState.horizontalAlign = HorizontalAlign.LEFT
                     if (selection.isSelected(groupPath)) {
@@ -67,7 +67,7 @@ class ModuleStructure(controller: ModuleController) : Module(controller, "Struct
                         }
                     }
                 })
-                addSubComponent(Button(155f, index, 20f, 20f, if (openObject) "O" else "o").apply {
+                addSubComponent(Button(if (openObject) "O" else "o", 155f, index, 20f, 20f).apply {
                     border.isEnabled = false
                 })
                 index += 20f
@@ -75,7 +75,7 @@ class ModuleStructure(controller: ModuleController) : Module(controller, "Struct
                     for (meshIndex in group.meshes.indices) {
                         val meshPath = ModelPath(groupIndex, meshIndex)
                         addSubComponent(
-                                Button(3f + desc * 2, index, 172f - desc * 2, 20f, " Mesh $meshIndex").apply {
+                                Button(" Mesh $meshIndex", 3f + desc * 2, index, 172f - desc * 2, 20f).apply {
                                     border.isEnabled = false
                                     textState.horizontalAlign = HorizontalAlign.LEFT
                                     if (selection.isSelected(meshPath)) {
