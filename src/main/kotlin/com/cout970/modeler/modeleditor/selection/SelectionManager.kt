@@ -168,6 +168,6 @@ class SelectionManager(val modelEditor: ModelEditor) {
     }
 
     fun clearSelection() {
-        selection = SelectionNone
+        updateSelection(SelectionNone)
     }
 }
