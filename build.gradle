@@ -3,7 +3,7 @@ version '1.0-SNAPSHOT'
 
 import org.gradle.internal.os.OperatingSystem
 
-switch ( OperatingSystem.current() ) {
+switch (OperatingSystem.current()) {
     case OperatingSystem.WINDOWS:
         project.ext.lwjglNatives = "natives-windows"
         break
@@ -21,7 +21,7 @@ buildscript {
 
     repositories {
         mavenCentral()
-        maven{
+        maven {
             name = "kotlin-eap"
             url = "https://dl.bintray.com/kotlin/kotlin-eap-1.1/"
         }
@@ -50,7 +50,7 @@ repositories {
         name = "Snapshots"
         url = "https://raw.github.com/LiquidEngine/repo/snapshots"
     }
-    maven{
+    maven {
         name = "kotlin-eap"
         url = "https://dl.bintray.com/kotlin/kotlin-eap-1.1/"
     }
@@ -58,13 +58,14 @@ repositories {
 }
 
 project.ext.lwjglVersion = "3.1.2-SNAPSHOT"
+project.ext.legui_version = "0.2.11-SNAPSHOT"
 
 dependencies {
     compile files("./lib/CollisionLib-0.0.1.jar", "./lib/GlUtilities-0.1.4.jar", "./lib/MatrixLib-0.1.0.jar",
             "./lib/ObjLib-0.0.1.jar", "./lib/RaytraceLib-0.0.1.jar", "./lib/VectorLib-0.0.1.jar")
 
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile "org.liquidengine:legui:0.2.5-SNAPSHOT"
+    compile "org.liquidengine:legui:$legui_version"
     testCompile group: 'junit', name: 'junit', version: '4.11'
 
     compile "org.lwjgl:lwjgl:${lwjglVersion}"

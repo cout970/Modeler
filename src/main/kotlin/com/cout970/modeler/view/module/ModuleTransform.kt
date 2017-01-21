@@ -10,13 +10,13 @@ import org.liquidengine.legui.event.component.MouseClickEvent
 class ModuleTransform(controller: ModuleController) : Module(controller, "Transform") {
 
     init {
-        addSubComponent(Button(10f, 0f, 160f, 20f, "Translate").apply {
+        addSubComponent(Button("Translate", 10f, 0f, 160f, 20f).apply {
             leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.cursor.translation"))
         })
-        addSubComponent(Button(10f, 20f, 160f, 20f, "Rotate").apply {
+        addSubComponent(Button("Rotate", 10f, 20f, 160f, 20f).apply {
             leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.cursor.rotation"))
         })
-        addSubComponent(Button(10f, 40f, 160f, 20f, "Scale").apply {
+        addSubComponent(Button("Scale", 10f, 40f, 160f, 20f).apply {
             leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.cursor.scale"))
         })
     }

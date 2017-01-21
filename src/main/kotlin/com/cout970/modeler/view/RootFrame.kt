@@ -25,8 +25,8 @@ class RootFrame(val input: IInput, val windowHandler: WindowHandler, val buttonC
 
     val dropdown = Panel(0f, 20f, 100f, 80f)
     val topBar = TopBar(this)
-    val leftBar = SideBar(this, true)
-    val rightBar = SideBar(this, false)
+    val leftBar = SideBar(this)
+    val rightBar = SideBar(this)
     val contentPanel = ContentPanel(this)
 
     init {
@@ -73,8 +73,7 @@ class RootFrame(val input: IInput, val windowHandler: WindowHandler, val buttonC
 
     class ContentPanel(val root: RootFrame) : Panel()
 
-    data class SideBar(val root: RootFrame, val left: Boolean) : ScrollablePanel() {
-
+    data class SideBar(val root: RootFrame) : ScrollablePanel() {
         init {
             horizontalScrollBar.isVisible = false
         }
@@ -86,11 +85,11 @@ class RootFrame(val input: IInput, val windowHandler: WindowHandler, val buttonC
 
         init {
             var i = 0
-            addComponent(Button(i++ * 60f, 0f, 60f, 20f, "File").onClick(0, this::onClickTopBar))
-            addComponent(Button(i++ * 60f, 0f, 60f, 20f, "Edit").onClick(1, this::onClickTopBar))
-            addComponent(Button(i++ * 60f, 0f, 60f, 20f, "View").onClick(2, this::onClickTopBar))
-            addComponent(Button(i++ * 60f, 0f, 60f, 20f, "Structure").onClick(3, this::onClickTopBar))
-            addComponent(Button(i * 60f, 0f, 60f, 20f, "Help").onClick(4, this::onClickTopBar))
+            addComponent(Button("File", i++ * 60f, 0f, 60f, 20f).onClick(0, this::onClickTopBar))
+            addComponent(Button("Edit", i++ * 60f, 0f, 60f, 20f).onClick(1, this::onClickTopBar))
+            addComponent(Button("View", i++ * 60f, 0f, 60f, 20f).onClick(2, this::onClickTopBar))
+            addComponent(Button("Structure", i++ * 60f, 0f, 60f, 20f).onClick(3, this::onClickTopBar))
+            addComponent(Button("Help", i * 60f, 0f, 60f, 20f).onClick(4, this::onClickTopBar))
         }
 
         fun load(id: Int) {
@@ -98,33 +97,33 @@ class RootFrame(val input: IInput, val windowHandler: WindowHandler, val buttonC
             if (id == 0) {
                 root.dropdown.apply {
                     clearComponents()
-                    addComponent(Button(0f, i++ * 25f, 100f, 25f, "New").onClick("top.file.add", controller))
-                    addComponent(Button(0f, i++ * 25f, 100f, 25f, "Open").onClick("top.file.open", controller))
-                    addComponent(Button(0f, i++ * 25f, 100f, 25f, "Save").onClick("top.file.save", controller))
-                    addComponent(Button(0f, i++ * 25f, 100f, 25f, "Save as").onClick("top.file.saveas", controller))
-                    addComponent(Button(0f, i++ * 25f, 100f, 25f, "Import").onClick("top.file.import", controller))
-                    addComponent(Button(0f, i++ * 25f, 100f, 25f, "Export").onClick("top.file.export", controller))
-                    addComponent(Button(0f, i++ * 25f, 100f, 25f, "Settings").onClick("top.file.settings", controller))
-                    addComponent(Button(0f, i++ * 25f, 100f, 25f, "Exit").onClick("top.file.exit", controller))
+                    addComponent(Button("New", 0f, i++ * 25f, 100f, 25f).onClick("top.file.add", controller))
+                    addComponent(Button("Open", 0f, i++ * 25f, 100f, 25f).onClick("top.file.open", controller))
+                    addComponent(Button("Save", 0f, i++ * 25f, 100f, 25f).onClick("top.file.save", controller))
+                    addComponent(Button("Save as", 0f, i++ * 25f, 100f, 25f).onClick("top.file.saveas", controller))
+                    addComponent(Button("Import", 0f, i++ * 25f, 100f, 25f).onClick("top.file.import", controller))
+                    addComponent(Button("Export", 0f, i++ * 25f, 100f, 25f).onClick("top.file.export", controller))
+                    addComponent(Button("Settings", 0f, i++ * 25f, 100f, 25f).onClick("top.file.settings", controller))
+                    addComponent(Button("Exit", 0f, i++ * 25f, 100f, 25f).onClick("top.file.exit", controller))
                     size.y = i * 25f
                 }
             } else if (id == 1) {
                 root.dropdown.apply {
                     clearComponents()
-                    addComponent(Button(0f, i++ * 25f, 100f, 25f, "Undo").onClick("top.edit.undo", controller))
-                    addComponent(Button(0f, i++ * 25f, 100f, 25f, "Redo").onClick("top.edit.redo", controller))
-                    addComponent(Button(0f, i++ * 25f, 100f, 25f, "Cut").onClick("top.edit.cut", controller))
-                    addComponent(Button(0f, i++ * 25f, 100f, 25f, "Copy").onClick("top.edit.copy", controller))
-                    addComponent(Button(0f, i++ * 25f, 100f, 25f, "Paste").onClick("top.edit.paste", controller))
-                    addComponent(Button(0f, i++ * 25f, 100f, 25f, "Delete").onClick("top.edit.delete", controller))
+                    addComponent(Button("Undo", 0f, i++ * 25f, 100f, 25f).onClick("top.edit.undo", controller))
+                    addComponent(Button("Redo", 0f, i++ * 25f, 100f, 25f).onClick("top.edit.redo", controller))
+                    addComponent(Button("Cut", 0f, i++ * 25f, 100f, 25f).onClick("top.edit.cut", controller))
+                    addComponent(Button("Copy", 0f, i++ * 25f, 100f, 25f).onClick("top.edit.copy", controller))
+                    addComponent(Button("Paste", 0f, i++ * 25f, 100f, 25f).onClick("top.edit.paste", controller))
+                    addComponent(Button("Delete", 0f, i++ * 25f, 100f, 25f).onClick("top.edit.delete", controller))
                     size.y = i * 25f
                 }
             } else if (id == 2) {
                 root.dropdown.apply {
                     clearComponents()
-                    addComponent(Button(0f, i++ * 25f, 100f, 25f, "Show/Hide Left Panel")
+                    addComponent(Button("Show/Hide Left Panel", 0f, i++ * 25f, 100f, 25f)
                             .onClick("top.view.showleft", controller))
-                    addComponent(Button(0f, i++ * 25f, 100f, 25f, "Show/Hide Right Panel")
+                    addComponent(Button("Show/Hide Right Panel", 0f, i++ * 25f, 100f, 25f)
                             .onClick("top.view.showright", controller))
                     size.y = i * 25f
                 }

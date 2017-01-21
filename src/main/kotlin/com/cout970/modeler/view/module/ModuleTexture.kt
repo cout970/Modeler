@@ -10,16 +10,16 @@ import org.liquidengine.legui.event.component.MouseClickEvent
 class ModuleTexture(controller: ModuleController) : Module(controller, "Texture") {
 
     init {
-        addSubComponent(Button(10f, 0f, 160f, 20f, "Import").apply {
+        addSubComponent(Button("Import", 10f, 0f, 160f, 20f).apply {
             leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.texture.import"))
         })
-        addSubComponent(Button(10f, 20f, 160f, 20f, "Size").apply {
+        addSubComponent(Button("Size", 10f, 20f, 160f, 20f).apply {
             leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.texture.size"))
         })
-        addSubComponent(Button(10f, 40f, 160f, 20f, "FlipX").apply {
+        addSubComponent(Button("FlipX", 10f, 40f, 160f, 20f).apply {
             leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.texture.flip.x"))
         })
-        addSubComponent(Button(10f, 60f, 160f, 20f, "FlipY").apply {
+        addSubComponent(Button("FlipY", 10f, 60f, 160f, 20f).apply {
             leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.texture.flip.y"))
         })
     }
