@@ -1,4 +1,4 @@
-package com.cout970.modeler.view
+package com.cout970.modeler.view.gui
 
 import com.cout970.modeler.event.IInput
 import com.cout970.modeler.util.inside
@@ -66,7 +66,7 @@ class RootFrame(val input: IInput, val windowHandler: WindowHandler, val buttonC
 
         val mouse = input.mouse.getMousePos()
         if (!inside(mouse, topBar.position.toIVector(), topBar.size.toIVector() + vec2Of(0, 20)) &&
-                !inside(mouse, dropdown.position.toIVector() - vec2Of(20, 0), dropdown.size.toIVector() + vec2Of(40, 20))) {
+            !inside(mouse, dropdown.position.toIVector() - vec2Of(20, 0), dropdown.size.toIVector() + vec2Of(40, 20))) {
             dropdown.isVisible = false
         }
     }

@@ -58,7 +58,7 @@ repositories {
 }
 
 project.ext.lwjglVersion = "3.1.2-SNAPSHOT"
-project.ext.legui_version = "0.2.11-SNAPSHOT"
+project.ext.legui_version = "0.2.12-SNAPSHOT"
 
 dependencies {
     compile files("./lib/CollisionLib-0.0.1.jar", "./lib/GlUtilities-0.1.4.jar", "./lib/MatrixLib-0.1.0.jar",

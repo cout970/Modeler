@@ -13,7 +13,7 @@ import com.cout970.modeler.event.IInput
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.modeleditor.IModelProvider
 import com.cout970.modeler.util.*
-import com.cout970.modeler.view.RootFrame
+import com.cout970.modeler.view.gui.RootFrame
 import com.cout970.modeler.view.scene.ModelScene
 import com.cout970.modeler.view.scene.Scene
 import com.cout970.vector.api.IVector3

@@ -7,7 +7,7 @@ import com.cout970.modeler.event.IEventController
 import com.cout970.modeler.event.IEventListener
 import com.cout970.modeler.event.IInput
 import com.cout970.modeler.modeleditor.IModelProvider
-import com.cout970.modeler.view.RootFrame
+import com.cout970.modeler.view.gui.RootFrame
 import com.cout970.modeler.view.module.*
 
 /**
@@ -36,7 +36,7 @@ class ModuleController(
 
     fun recalculateModules() {
         var last = 5f
-        rootFrame.leftBar.container.components.forEach {
+        modules.forEach {
             it.position.y = last
             last = it.position.y + it.size.y + 5f
         }

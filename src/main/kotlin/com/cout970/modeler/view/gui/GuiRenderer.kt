@@ -1,7 +1,7 @@
-package com.cout970.modeler.view.render
+package com.cout970.modeler.view.gui
 
 import com.cout970.modeler.event.CustomCallbackKeeper
-import com.cout970.modeler.view.RootFrame
+import org.liquidengine.legui.component.Frame
 import org.liquidengine.legui.context.ILeguiCallbackKeeper
 import org.liquidengine.legui.context.LeguiContext
 import org.liquidengine.legui.processor.LeguiEventProcessor
@@ -12,7 +12,7 @@ import org.liquidengine.legui.render.nvg.NvgLeguiRenderer
 /**
  * Created by cout970 on 2016/12/02.
  */
-class GuiRenderer(val rootFrame: RootFrame, window: Long) {
+class GuiRenderer(rootFrame: RootFrame, window: Long) {
 
     val context: LeguiContext
     val callbackKeeper: ILeguiCallbackKeeper
@@ -36,7 +36,7 @@ class GuiRenderer(val rootFrame: RootFrame, window: Long) {
         systemEventProcessor.processEvent()
     }
 
-    fun render() {
-        renderer.render(rootFrame)
+    fun render(frame: Frame) {
+        renderer.render(frame)
     }
 }

@@ -1,6 +1,6 @@
 package com.cout970.modeler.util
 
-import com.cout970.glutilities.tessellator.Tessellator
+import com.cout970.glutilities.tessellator.ITessellator
 import com.cout970.modeler.model.Mesh
 import com.cout970.modeler.model.Quad
 import com.cout970.modeler.model.Transformation
@@ -16,7 +16,7 @@ import org.joml.Vector3d
  */
 object RenderUtil {
 
-    fun renderBar(tessellator: Tessellator, a_: IVector3, b_: IVector3, size: Double = 0.1,
+    fun renderBar(tessellator: ITessellator, a_: IVector3, b_: IVector3, size: Double = 0.1,
                   color: IVector3 = vec3Of(1, 1, 0)) {
 
         val a = a_
@@ -37,7 +37,7 @@ object RenderUtil {
         }
     }
 
-    fun renderCircle(t: Tessellator, center: IVector3, axis: SelectionAxis, radius: Double, size: Double = 0.05,
+    fun renderCircle(t: ITessellator, center: IVector3, axis: SelectionAxis, radius: Double, size: Double = 0.05,
                      color: IVector3 = vec3Of(1, 1, 1)) {
         val quality = 16
         for (i in 0..360 / quality) {

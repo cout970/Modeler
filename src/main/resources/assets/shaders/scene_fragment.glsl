@@ -30,9 +30,6 @@ uniform float reflectivity;
 //used to render non-model stuff
 uniform float enableLight;
 
-//used to normalize texture coordinates
-uniform float textureSize;
-
 //ambient light
 const float ambient = 0.1;
 

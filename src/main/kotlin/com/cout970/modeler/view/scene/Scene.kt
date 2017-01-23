@@ -5,7 +5,6 @@ import com.cout970.modeler.event.IEventController
 import com.cout970.modeler.modeleditor.IModelProvider
 import com.cout970.modeler.util.toIMatrix
 import com.cout970.modeler.view.controller.SceneController
-import com.cout970.modeler.view.render.RenderManager
 import com.cout970.modeler.window.WindowHandler
 import org.joml.Matrix4d
 import org.liquidengine.legui.component.Panel
@@ -19,8 +18,6 @@ abstract class Scene(val modelProvider: IModelProvider, val windowHandler: Windo
 
     var camera = Camera.DEFAULT
     var desiredZoom = camera.zoom
-
-    abstract fun render(renderManager: RenderManager)
 
     open fun update() {
         if (Math.abs(desiredZoom - camera.zoom) > 0.01) {
