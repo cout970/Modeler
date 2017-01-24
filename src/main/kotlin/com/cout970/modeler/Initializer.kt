@@ -13,6 +13,7 @@ import com.cout970.modeler.project.ProjectManager
 import com.cout970.modeler.resource.ResourceLoader
 import com.cout970.modeler.view.RenderManager
 import com.cout970.modeler.view.UIManager
+import com.cout970.modeler.view.gui.TextureHandler
 import com.cout970.modeler.window.Loop
 import com.cout970.modeler.window.WindowHandler
 import com.cout970.vector.extensions.vec3Of
@@ -32,6 +33,7 @@ class Initializer(val programArguments: List<String>) {
     val renderManager: RenderManager
     val mainLoop: Loop
     val exportManager: ExportManager
+    val textureHandler: TextureHandler
 
     init {
         Debugger.initializer = this
@@ -72,6 +74,8 @@ class Initializer(val programArguments: List<String>) {
         windowHandler.create()
         log(Level.FINEST) { "Binding listeners and callbacks to window" }
         eventHandler.bindWindow(windowHandler.window)
+        log(Level.FINE) { "Loading Resources" }
+        textureHandler = TextureHandler(resourceLoader)
 
         log(Level.FINEST) { "Initializing renderers" }
         renderManager.initOpenGl(resourceLoader, mainLoop.timer, windowHandler.window)

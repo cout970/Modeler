@@ -7,10 +7,9 @@ import com.cout970.modeler.resource.ResourcePath
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.quatOf
-import com.cout970.vector.extensions.vec2Of
-import com.cout970.vector.extensions.vec3Of
+import com.cout970.vector.extensions.*
 import com.google.gson.*
+import java.awt.Color
 import java.lang.reflect.Type
 import java.net.URI
 
@@ -31,6 +30,22 @@ class Vector3Serializer : JsonSerializer<IVector3>, JsonDeserializer<IVector3> {
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IVector3 {
         val array = json.asJsonArray
         return vec3Of(array[0].asNumber, array[1].asNumber, array[2].asNumber)
+    }
+}
+
+class ColorSerializer : JsonSerializer<IVector3>, JsonDeserializer<IVector3> {
+
+    override fun serialize(src: IVector3, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+        val str = Integer.toHexString(Color(src.xf, src.yf, src.zf, 1f).rgb).run {
+            substring(2, length)
+        }
+        return JsonPrimitive(str)
+    }
+
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IVector3 {
+        val str = json.asString
+        val color = Color(str.toInt(16))
+        return vec3Of(color.red, color.green, color.blue) / 255f
     }
 }
 

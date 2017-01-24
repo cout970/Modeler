@@ -91,13 +91,14 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
                     // render selection
                     renderCache(selectionCache, model.hashCode() xor selection.hashCode()) {
                         val size = Config.selectionThickness.toDouble()
+                        val color = Config.colorPalette.modelSelectionColor
                         tessellator.compile(GL11.GL_QUADS, formatPC) {
                             if (selection.mode != SelectionMode.VERTEX) {
                                 model.getQuadsOptimized(selection) { (a, b, c, d) ->
-                                    RenderUtil.renderBar(tessellator, a.pos, b.pos, size)
-                                    RenderUtil.renderBar(tessellator, b.pos, c.pos, size)
-                                    RenderUtil.renderBar(tessellator, c.pos, d.pos, size)
-                                    RenderUtil.renderBar(tessellator, d.pos, a.pos, size)
+                                    RenderUtil.renderBar(tessellator, a.pos, b.pos, size, color)
+                                    RenderUtil.renderBar(tessellator, b.pos, c.pos, size, color)
+                                    RenderUtil.renderBar(tessellator, c.pos, d.pos, size, color)
+                                    RenderUtil.renderBar(tessellator, d.pos, a.pos, size, color)
                                 }
                             } else {
                                 model.getPaths(ModelPath.Level.MESH).forEach { compPath ->
@@ -107,7 +108,7 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
                                     if (paths.isNotEmpty()) {
                                         val matrix = compPath.getMeshMatrix(model)
                                         paths.map { it.getVertex(model)!! }.map { matrix * it.toVector4(1.0) }.forEach {
-                                            RenderUtil.renderBar(tessellator, it, it, size * 4)
+                                            RenderUtil.renderBar(tessellator, it, it, size * 4, color)
                                         }
                                     }
                                 }

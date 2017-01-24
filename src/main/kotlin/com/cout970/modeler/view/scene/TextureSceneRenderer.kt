@@ -9,9 +9,11 @@ import com.cout970.modeler.modeleditor.selection.ModelPath
 import com.cout970.modeler.util.absolutePosition
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.view.util.ShaderHandler
-import com.cout970.vector.extensions.*
+import com.cout970.vector.extensions.minus
+import com.cout970.vector.extensions.times
+import com.cout970.vector.extensions.vec2Of
+import com.cout970.vector.extensions.yd
 import org.lwjgl.opengl.GL11
-import java.awt.Color
 
 /**
  * Created by cout970 on 2017/01/23.
@@ -66,8 +68,7 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
                 GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE)
                 GL11.glLineWidth(2f)
 
-                val c = Color(Config.textureSelectionColor)
-                val color = vec3Of(c.red / 255f, c.green / 255f, c.blue / 255f)
+                val color = Config.colorPalette.textureSelectionColor
 
                 draw(GL11.GL_QUADS, formatPCT) {
                     val renderQuad: (Quad) -> Unit = { quad ->

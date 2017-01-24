@@ -3,6 +3,7 @@ package com.cout970.modeler.view
 import com.cout970.glutilities.structure.GLStateMachine
 import com.cout970.glutilities.structure.Timer
 import com.cout970.glutilities.window.GLFWWindow
+import com.cout970.modeler.config.Config
 import com.cout970.modeler.resource.ResourceLoader
 import com.cout970.modeler.util.ITickeable
 import com.cout970.modeler.view.gui.GuiRenderer
@@ -11,6 +12,9 @@ import com.cout970.modeler.view.scene.ModelSceneRenderer
 import com.cout970.modeler.view.scene.TextureScene
 import com.cout970.modeler.view.scene.TextureSceneRenderer
 import com.cout970.modeler.view.util.ShaderHandler
+import com.cout970.vector.extensions.xf
+import com.cout970.vector.extensions.yf
+import com.cout970.vector.extensions.zf
 import java.awt.Color
 
 /**
@@ -33,7 +37,8 @@ class RenderManager : ITickeable {
         shaderHandler = ShaderHandler(resourceLoader)
         modelSceneRenderer = ModelSceneRenderer(shaderHandler)
         textureSceneRenderer = TextureSceneRenderer(shaderHandler)
-        GLStateMachine.clearColor = Color(0.73f, 0.9f, 1f)
+        val c = Config.colorPalette.modelBackgroundColor
+        GLStateMachine.clearColor = Color(c.xf, c.yf, c.zf)
     }
 
     override fun preTick() {

@@ -35,10 +35,10 @@ class ModuleController(
     }
 
     fun recalculateModules() {
-        var last = 5f
+        var last = 0f
         modules.forEach {
             it.position.y = last
-            last = it.position.y + it.size.y + 5f
+            last = it.position.y + it.size.y
         }
         rootFrame.leftBar.container.size.y = last
     }
