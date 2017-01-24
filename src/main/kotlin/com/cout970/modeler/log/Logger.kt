@@ -13,7 +13,7 @@ object Logger {
 
     val DEBUG = false
     var level = Config.logLevel
-    val stream = (if (DEBUG) System.out else object : PrintStream(File(getFileName())) {
+    val stream = (if (DEBUG) System.out else object : PrintStream(File("logs/" + getFileName())) {
         override fun println() {
             super.println()
             System.out.println()

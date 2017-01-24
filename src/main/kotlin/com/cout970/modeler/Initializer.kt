@@ -38,6 +38,10 @@ class Initializer(val programArguments: List<String>) {
     init {
         Debugger.initializer = this
 
+        log(Level.FINE) { "Loading config" }
+        ConfigManager.loadConfig()
+        log(Level.FINE) { "Config loaded" }
+
         log(Level.FINEST) { "Creating ResourceLoader" }
         resourceLoader = ResourceLoader()
         log(Level.FINEST) { "Creating WindowHandler" }
@@ -61,10 +65,6 @@ class Initializer(val programArguments: List<String>) {
         log(Level.FINEST) { "Creating Loop" }
         mainLoop = Loop(listOf(renderManager, uiManager, eventHandler, modelEditor, windowHandler),
                 windowHandler.timer, windowHandler::shouldClose)
-
-        log(Level.FINE) { "Loading config" }
-        ConfigManager.loadConfig()
-        log(Level.FINE) { "Config loaded" }
 
         parseArgs()
 
