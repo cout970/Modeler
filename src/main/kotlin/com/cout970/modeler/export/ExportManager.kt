@@ -6,7 +6,6 @@ import com.cout970.modeler.project.Project
 import com.cout970.modeler.project.ProjectManager
 import com.cout970.modeler.resource.ResourceLoader
 import com.cout970.modeler.resource.createPath
-import com.cout970.modeler.view.popup.Missing
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -25,6 +24,7 @@ class ExportManager(val projectManager: ProjectManager, val resourceLoader: Reso
     val objImporter = ObjImporter()
     val objExporter = ObjExporter()
     val tcnImporter = TcnImporter()
+    val jsonImporter = JsonImporter()
 
     val gson = GsonBuilder()
             .excludeFieldsWithoutExposeAnnotation()
@@ -66,15 +66,20 @@ class ExportManager(val projectManager: ProjectManager, val resourceLoader: Reso
                 projectManager.modelEditor.historyRecord.doAction(
                         ActionImportModel(projectManager.modelEditor, resourceLoader, import.path) {
                             objImporter.import(file.createPath(), import.flipUV)
-                })
+                        })
             }
             ImportFormat.TCN -> {
                 projectManager.modelEditor.historyRecord.doAction(
                         ActionImportModel(projectManager.modelEditor, resourceLoader, import.path) {
-                    tcnImporter.import(file.createPath())
-                })
+                            tcnImporter.import(file.createPath())
+                        })
             }
-            ImportFormat.JSON -> Missing("Not implemented Json model import")
+            ImportFormat.JSON -> {
+                projectManager.modelEditor.historyRecord.doAction(
+                        ActionImportModel(projectManager.modelEditor, resourceLoader, import.path) {
+                            jsonImporter.import(file.createPath())
+                        })
+            }
         }
     }
 

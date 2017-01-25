@@ -7,6 +7,7 @@ import com.cout970.modeler.resource.ResourcePath
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
+import com.cout970.vector.api.IVector4
 import com.cout970.vector.extensions.*
 import com.google.gson.*
 import java.awt.Color
@@ -98,3 +99,11 @@ class MaterialSerializer : JsonSerializer<Material>, JsonDeserializer<Material> 
                 obj["name"].asString, ResourcePath(URI(obj["path"].asString)))
     }
 }
+
+fun JsonArray.toVector2(): IVector2 = vec2Of(this[0].asNumber, this[1].asNumber)
+fun JsonArray.toVector3(): IVector3 = vec3Of(this[0].asNumber, this[1].asNumber, this[2].asNumber)
+fun JsonArray.toVector4(): IVector4 = vec4Of(this[0].asNumber, this[1].asNumber, this[2].asNumber, this[3].asNumber)
+
+val JsonElement.asVector2: IVector2 get() = this.asJsonArray.toVector2()
+val JsonElement.asVector3: IVector3 get() = this.asJsonArray.toVector3()
+val JsonElement.asVector4: IVector4 get() = this.asJsonArray.toVector4()

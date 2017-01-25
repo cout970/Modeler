@@ -61,4 +61,13 @@ data class Quad(
     fun transform(matrix: IMatrix4): Quad {
         return Quad(a.transform(matrix), b.transform(matrix), c.transform(matrix), d.transform(matrix))
     }
+
+    fun flipUV(): Quad {
+        return Quad(
+                Vertex(a.pos, vec2Of(b.tex.x, a.tex.y)),
+                Vertex(b.pos, vec2Of(a.tex.x, b.tex.y)),
+                Vertex(c.pos, vec2Of(d.tex.x, c.tex.y)),
+                Vertex(d.pos, vec2Of(c.tex.x, d.tex.y))
+        )
+    }
 }

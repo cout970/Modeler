@@ -133,7 +133,9 @@ class TcnImporter {
 //          cube.textureOffset.set(cubeTextureOffset)
 //          cube.flipUV = mirrored
 
-        val cube = createCube(size = rSize, offset = fOffset, textureOffset = rTexture, textureSize = textureSize)
+        val cube = createCube(size = rSize, offset = fOffset, textureOffset = rTexture, textureSize = textureSize,
+                mirrored = mirrored)
+
         if (rRotation.lengthSq() == 0.0) return cube
         return cube.copy(cube.positions.map {
             rotatePointAroundPivot(it, rRotPoint, rRotation)
@@ -141,7 +143,7 @@ class TcnImporter {
     }
 
     fun createCube(size: IVector3, offset: IVector3, textureOffset: IVector2 = Vector2.ORIGIN,
-                   textureSize: IVector2 = vec2Of(32, 32)): Mesh {
+                   textureSize: IVector2 = vec2Of(32, 32), mirrored: Boolean): Mesh {
         val n: IVector3 = vec3Of(0) + offset
         val p: IVector3 = size + offset
 
@@ -216,7 +218,8 @@ class TcnImporter {
                         vec2Of(offsetX + length + width + length + width, offsetY + length + height) * texelSize
                 )
         )
-        return Mesh.quadsToMesh(quads)
+
+        return Mesh.quadsToMesh(if (mirrored) quads.map(Quad::flipUV) else quads)
     }
 
     fun Quad.setTexture(uv0: IVector2, uv1: IVector2): Quad {

@@ -4,9 +4,8 @@ import com.cout970.glutilities.texture.Texture
 import com.cout970.modeler.log.print
 import com.cout970.modeler.resource.ResourceLoader
 import com.cout970.modeler.resource.ResourcePath
-import com.cout970.vector.extensions.vec2Of
 import com.google.gson.annotations.Expose
-import org.lwjgl.opengl.GL11
+import javax.swing.JOptionPane
 
 sealed class Material(@Expose val name: String) {
 
@@ -25,7 +24,8 @@ class TexturedMaterial(name: String, val path: ResourcePath) : Material(name) {
             }
         } catch (e: Exception) {
             e.print()
-            texture = Texture(0, vec2Of(1), GL11.GL_TEXTURE_2D)
+            JOptionPane.showMessageDialog(null, "Error loading texture: Missing resource ($path)")
+            texture = null
         }
     }
 
