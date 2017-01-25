@@ -44,12 +44,14 @@ public class ImportDialog {
             String file = TinyFileDialogs.tinyfd_openFileDialog("Import", "",
                     PopupsKt.getImportFileExtensions(), "Model Files (*.tcn, *.obj, *.json)",
                     false);
-            if (file.endsWith(".obj")) {
-                dialog.comboBox1.setSelectedIndex(0);
-            } else if (file.endsWith(".zip") || file.endsWith(".tcn")) {
-                dialog.comboBox1.setSelectedIndex(1);
-            } else if (file.endsWith(".json")) {
-                dialog.comboBox1.setSelectedIndex(2);
+            if (file != null) {
+                if (file.endsWith(".obj")) {
+                    dialog.comboBox1.setSelectedIndex(0);
+                } else if (file.endsWith(".zip") || file.endsWith(".tcn")) {
+                    dialog.comboBox1.setSelectedIndex(1);
+                } else if (file.endsWith(".json")) {
+                    dialog.comboBox1.setSelectedIndex(2);
+                }
             }
             dialog.textField1.setText(file);
         });
@@ -57,7 +59,9 @@ public class ImportDialog {
         frame.setContentPane(dialog.root);
         frame.setIconImage(PopupsKt.getPopupImage());
         frame.pack();
+        frame.setTitle("Import");
         PopupsKt.center(frame);
         frame.setVisible(true);
+        frame.toFront();
     }
 }

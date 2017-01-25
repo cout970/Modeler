@@ -36,7 +36,7 @@ class WindowHandler : ITickeable {
             title = WINDOW_TITLE
             size = vec2Of(800, 600)
         }
-        window.setVSync(false)
+        window.setVSync(true)
         window.center()
         window.show()
         resetViewport()

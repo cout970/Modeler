@@ -44,7 +44,9 @@ public class ExportDialog {
         frame.setContentPane(dialog.root);
         frame.setIconImage(PopupsKt.getPopupImage());
         frame.pack();
+        frame.setTitle("Export");
         PopupsKt.center(frame);
         frame.setVisible(true);
+        frame.toFront();
     }
 }

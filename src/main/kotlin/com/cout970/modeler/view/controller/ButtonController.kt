@@ -47,7 +47,7 @@ class ButtonController(
             "menu.texture.flip.y"
          */
             "top.file.new" -> newProject(projectManager)
-            "top.file.load" -> loadProject(projectManager)
+            "top.file.open" -> loadProject(projectManager)
             "top.file.save" -> saveProject(projectManager)
             "top.file.saveas" -> saveProjectAs(projectManager)
             "top.file.import" -> showImportModelPopup(projectManager)

@@ -118,7 +118,7 @@ class RootFrame(val input: IInput,
             if (id == 0) {
                 root.dropdown.apply {
                     clearComponents()
-                    addComponent(CButton("New", 0f, i++ * 25f, 100f, 25f).onClick("top.file.add", controller))
+                    addComponent(CButton("New", 0f, i++ * 25f, 100f, 25f).onClick("top.file.new", controller))
                     addComponent(CButton("Open", 0f, i++ * 25f, 100f, 25f).onClick("top.file.open", controller))
                     addComponent(CButton("Save", 0f, i++ * 25f, 100f, 25f).onClick("top.file.save", controller))
                     addComponent(CButton("Save as", 0f, i++ * 25f, 100f, 25f).onClick("top.file.saveas", controller))
