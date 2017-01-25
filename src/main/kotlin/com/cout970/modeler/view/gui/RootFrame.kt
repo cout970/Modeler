@@ -19,7 +19,9 @@ import org.liquidengine.legui.component.ScrollablePanel
  * Created by cout970 on 2016/12/03.
  */
 
-class RootFrame(val input: IInput, val windowHandler: WindowHandler, val buttonController: ButtonController) : Frame() {
+class RootFrame(val input: IInput,
+                val windowHandler: WindowHandler,
+                val buttonController: ButtonController) : Frame() {
 
     val dropdown = Panel(0f, 20f, 100f, 80f)
     val topBar = TopBar(this)
@@ -36,9 +38,13 @@ class RootFrame(val input: IInput, val windowHandler: WindowHandler, val buttonC
 
         leftBar.apply { backgroundColor = Config.colorPalette.lightColor.toColor() }
         rightBar.apply { backgroundColor = Config.colorPalette.lightColor.toColor() }
+        topBar.apply { backgroundColor = Config.colorPalette.lightColor.toColor() }
+        dropdown.apply { backgroundColor = Config.colorPalette.lightColor.toColor() }
+
         leftBar.container.apply { backgroundColor = Config.colorPalette.lightColor.toColor() }
         rightBar.container.apply { backgroundColor = Config.colorPalette.lightColor.toColor() }
         contentPanel.apply { backgroundColor = Vector4f(0f, 0f, 0f, 0f) }
+
         rightBar.isEnabled = false
         dropdown.isVisible = false
 
@@ -66,7 +72,9 @@ class RootFrame(val input: IInput, val windowHandler: WindowHandler, val buttonC
         if (leftBar.container.size.y >= leftBar.size.y) {
             leftBar.verticalScrollBar.isVisible = true
         } else {
-            leftBar.size.x = 190f
+            if (leftBar.isEnabled) {
+                leftBar.size.x = 190f
+            }
             contentPanel.position
             leftBar.verticalScrollBar.isVisible = false
         }

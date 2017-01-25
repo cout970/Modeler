@@ -56,10 +56,13 @@ class Initializer(val programArguments: List<String>) {
         log(Level.FINEST) { "Creating ExportManager" }
         exportManager = ExportManager(projectManager, resourceLoader)
 
+        log(Level.FINE) { "Loading Resources" }
+        textureHandler = TextureHandler(resourceLoader)
+
         log(Level.FINEST) { "Creating RenderManager" }
         renderManager = RenderManager()
         log(Level.FINEST) { "Creating UIManager" }
-        uiManager = UIManager(windowHandler, eventHandler, renderManager, projectManager)
+        uiManager = UIManager(windowHandler, eventHandler, renderManager, textureHandler, projectManager)
 
 
         log(Level.FINEST) { "Creating Loop" }
@@ -74,8 +77,6 @@ class Initializer(val programArguments: List<String>) {
         windowHandler.create()
         log(Level.FINEST) { "Binding listeners and callbacks to window" }
         eventHandler.bindWindow(windowHandler.window)
-        log(Level.FINE) { "Loading Resources" }
-        textureHandler = TextureHandler(resourceLoader)
 
         log(Level.FINEST) { "Initializing renderers" }
         renderManager.initOpenGl(resourceLoader, mainLoop.timer, windowHandler.window)

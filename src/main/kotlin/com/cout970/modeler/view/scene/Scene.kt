@@ -5,6 +5,7 @@ import com.cout970.modeler.event.IEventController
 import com.cout970.modeler.modeleditor.IModelProvider
 import com.cout970.modeler.util.toIMatrix
 import com.cout970.modeler.view.controller.SceneController
+import com.cout970.modeler.view.gui.comp.CBorderRenderer
 import com.cout970.modeler.window.WindowHandler
 import org.joml.Matrix4d
 import org.liquidengine.legui.component.Panel
@@ -35,6 +36,7 @@ abstract class Scene(val modelProvider: IModelProvider, val windowHandler: Windo
 
     init {
         backgroundColor = ColorConstants.transparent()
+        border.renderer = CBorderRenderer
     }
 }
 

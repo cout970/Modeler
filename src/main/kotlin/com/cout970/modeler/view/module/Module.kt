@@ -5,11 +5,9 @@ import com.cout970.modeler.util.toColor
 import com.cout970.modeler.view.controller.ButtonController
 import com.cout970.modeler.view.controller.ModuleController
 import com.cout970.modeler.view.gui.comp.CBorderRenderer
-import com.cout970.modeler.view.gui.comp.CButton
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Component
-import org.liquidengine.legui.component.Label
-import org.liquidengine.legui.component.Panel
+import org.liquidengine.legui.component.Widget
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.event.component.MouseClickEvent
 import org.liquidengine.legui.listener.LeguiEventListener
@@ -18,25 +16,24 @@ import org.liquidengine.legui.listener.LeguiEventListener
  * Created by cout970 on 2016/12/27.
  */
 
-abstract class Module(val controller: ModuleController, val name: String) : Panel() {
-
-    val label: Label
-    val minimizeButton: CButton
-    val subPanel: Panel
+abstract class Module(val controller: ModuleController, val name: String) : Widget() {
 
     init {
-        label = Label(name).apply { this@Module.addComponent(this) }
-        minimizeButton = CButton("", 175f, 5f, 10, 10).apply { this@Module.addComponent(this) }
-        subPanel = Panel().apply { this@Module.addComponent(this); border.isEnabled = false }
-
+        title.textState.text = name
+        container.border.isEnabled = false
+        closeButton.isVisible = false
+        setDraggable(false)
         position = Vector2f(0f, 0f)
 
-        label.textState.horizontalAlign = HorizontalAlign.CENTER
-        label.size = Vector2f(190f, 20f)
+        title.textState.horizontalAlign = HorizontalAlign.CENTER
+        title.size = Vector2f(190f, 20f)
 
-        minimizeButton.leguiEventListeners.addListener(MouseClickEvent::class.java, LeguiEventListener {
+        minimizeButton.position = Vector2f(170f, 0f)
+        minimizeButton.size = Vector2f(16f, 16f)
+        minimizeButton.backgroundColor = Config.colorPalette.buttonColor.toColor()
+        minimizeButton.leguiEventListeners.addListener(MouseClickEvent::class.java, {
             if (it.action == MouseClickEvent.MouseClickAction.CLICK) {
-                if (subPanel.isEnabled) {
+                if (container.isEnabled) {
                     minimize()
                 } else {
                     maximize()
@@ -46,38 +43,39 @@ abstract class Module(val controller: ModuleController, val name: String) : Pane
         })
 
         border.renderer = CBorderRenderer
-        backgroundColor = Config.colorPalette.primaryColor.toColor()
-        subPanel.backgroundColor = Config.colorPalette.primaryColor.toColor()
-
-        maximize()
+        backgroundColor = Config.colorPalette.darkColor.toColor()
+        container.backgroundColor = Config.colorPalette.primaryColor.toColor()
+        title.textState.textColor = Config.colorPalette.textColor.toColor()
     }
 
     open fun tick() {}
 
     fun minimize() {
-        size = Vector2f(190f, 20f)
-        subPanel.isEnabled = false
-        minimizeButton.textState.text = ">"
+        container.isVisible = false
+        container.isEnabled = false
+        size = Vector2f(190f, 21f)
+        resize()
     }
 
     fun maximize() {
-        subPanel.isEnabled = true
-        minimizeButton.textState.text = "V"
-        size = Vector2f(190f, 20f)
+        container.isEnabled = true
+        container.isVisible = true
+        size = Vector2f(190f, 21f)
 
-        subPanel.position.y = 20f
-        subPanel.position.x = 1f
-        subPanel.size = Vector2f(178f, 0f)
-        for (component in subPanel.components) {
-            subPanel.size.y = Math.max(subPanel.size.y, component.position.y + component.size.y)
-            size.y = subPanel.size.y + 25f
+        container.position = Vector2f(0f, 21f)
+        container.size = Vector2f(190f, 0f)
+        if (container.components.isNotEmpty()) {
+            for (component in container.components) {
+                container.size.y = Math.max(container.size.y, component.position.y + component.size.y)
+            }
+            container.size.y += 10f
+            size.y = container.size.y + 15f
         }
+        resize()
     }
 
     fun addSubComponent(component: Component) {
-        subPanel.size.y = Math.max(subPanel.size.y, component.position.y + component.size.y)
-        size.y = subPanel.size.y + 25f
-        subPanel.addComponent(component)
+        container.addComponent(component)
     }
 
     fun buttonListener(id: String) = Listener(controller.buttonController, id)

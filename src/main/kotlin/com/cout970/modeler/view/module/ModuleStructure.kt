@@ -5,6 +5,7 @@ import com.cout970.modeler.modeleditor.selection.ModelPath
 import com.cout970.modeler.modeleditor.selection.SelectionMesh
 import com.cout970.modeler.modeleditor.selection.SelectionMode
 import com.cout970.modeler.util.onClick
+import com.cout970.modeler.util.toColor
 import com.cout970.modeler.view.controller.ModuleController
 import org.liquidengine.legui.component.Button
 import org.liquidengine.legui.component.Label
@@ -18,9 +19,6 @@ class ModuleStructure(controller: ModuleController) : Module(controller, "Struct
     var hash = 0
     var openSections = mutableMapOf<ModelPath, Boolean>()
 
-    init {
-    }
-
     override fun tick() {
         val model = controller.modelProvider.model
         val selection = controller.modelProvider.selectionManager.selection
@@ -28,10 +26,11 @@ class ModuleStructure(controller: ModuleController) : Module(controller, "Struct
 
         if (tmpHash != hash) {
             hash = tmpHash
-            subPanel.clearComponents()
-            subPanel.size.y = 0f
-            addSubComponent(Label(" Model", 3f, 0f, 172f, 20f).apply {
+            container.clearComponents()
+            container.size.y = 0f
+            addSubComponent(Label("Model", 3f, 0f, 172f, 20f).apply {
                 textState.horizontalAlign = HorizontalAlign.LEFT
+                textState.textColor = Config.colorPalette.textColor.toColor()
             })
             var index = 20f
             val desc = 15f
@@ -92,7 +91,7 @@ class ModuleStructure(controller: ModuleController) : Module(controller, "Struct
                     }
                 }
             }
-            if (subPanel.isEnabled) {
+            if (container.isEnabled) {
                 maximize()
             } else {
                 minimize()

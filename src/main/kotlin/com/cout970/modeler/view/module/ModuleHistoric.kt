@@ -25,5 +25,6 @@ class ModuleHistoric(controller: ModuleController) : Module(controller, "History
         addSubComponent(CButton("Paste", 120f, 25f, 50f, 20f).apply {
             leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.clipboard.paste"))
         })
+        maximize()
     }
 }

@@ -22,5 +22,6 @@ class ModuleTexture(controller: ModuleController) : Module(controller, "Texture"
         addSubComponent(Button("FlipY", 10f, 60f, 160f, 20f).apply {
             leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.texture.flip.y"))
         })
+        maximize()
     }
 }

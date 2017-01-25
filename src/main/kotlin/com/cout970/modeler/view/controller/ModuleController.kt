@@ -8,6 +8,7 @@ import com.cout970.modeler.event.IEventListener
 import com.cout970.modeler.event.IInput
 import com.cout970.modeler.modeleditor.IModelProvider
 import com.cout970.modeler.view.gui.RootFrame
+import com.cout970.modeler.view.gui.TextureHandler
 import com.cout970.modeler.view.module.*
 
 /**
@@ -18,12 +19,13 @@ class ModuleController(
         val modelProvider: IModelProvider,
         val rootFrame: RootFrame,
         val buttonController: ButtonController,
-        val input: IInput) {
+        val input: IInput,
+        textureHandler: TextureHandler) {
 
     val modules = listOf(
             ModuleAddElement(this),
-            ModuleSelectionType(this),
-            ModuleTransform(this),
+            ModuleSelectionType(this, textureHandler),
+            ModuleTransform(this, textureHandler),
             ModuleHistoric(this),
             ModuleStructure(this)
     ).onEach {
@@ -38,7 +40,7 @@ class ModuleController(
         var last = 0f
         modules.forEach {
             it.position.y = last
-            last = it.position.y + it.size.y
+            last = it.position.y + it.size.y + 1
         }
         rootFrame.leftBar.container.size.y = last
     }

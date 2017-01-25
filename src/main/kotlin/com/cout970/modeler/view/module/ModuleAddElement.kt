@@ -10,14 +10,15 @@ import org.liquidengine.legui.event.component.MouseClickEvent
 class ModuleAddElement(controller: ModuleController) : Module(controller, "Add element") {
 
     init {
-        addSubComponent(CButton("Cube", 10f, 0f, 160f, 20f).apply {
+        addSubComponent(CButton("Cube", 5f, 5f, 180f, 20f).apply {
             leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.add.cube"))
         })
-        addSubComponent(CButton("Plane", 10f, 20f, 160f, 20f).apply {
+        addSubComponent(CButton("Plane", 5f, 25f, 180f, 20f).apply {
             leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.add.plane"))
         })
-        addSubComponent(CButton("Group", 10f, 40f, 160f, 20f).apply {
+        addSubComponent(CButton("Group", 5f, 45f, 180f, 20f).apply {
             leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.add.group"))
         })
+        maximize()
     }
 }

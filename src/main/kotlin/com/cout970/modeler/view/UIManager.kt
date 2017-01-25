@@ -7,8 +7,8 @@ import com.cout970.modeler.view.controller.ButtonController
 import com.cout970.modeler.view.controller.ModuleController
 import com.cout970.modeler.view.controller.SceneController
 import com.cout970.modeler.view.gui.RootFrame
+import com.cout970.modeler.view.gui.TextureHandler
 import com.cout970.modeler.view.scene.ModelScene
-import com.cout970.modeler.view.scene.TextureScene
 import com.cout970.modeler.window.WindowHandler
 
 /**
@@ -19,6 +19,7 @@ class UIManager(
         val windowHandler: WindowHandler,
         eventHandler: EventHandler,
         renderManager: RenderManager,
+        textureHandler: TextureHandler,
         private val projectManager: ProjectManager) : ITickeable {
 
     val sceneController: SceneController
@@ -32,7 +33,8 @@ class UIManager(
         buttonController = ButtonController(projectManager, this)
         rootFrame = RootFrame(eventHandler, windowHandler, buttonController)
         sceneController = SceneController(projectManager.modelEditor, eventHandler, rootFrame, windowHandler.timer)
-        moduleController = ModuleController(projectManager.modelEditor, rootFrame, buttonController, eventHandler)
+        moduleController = ModuleController(projectManager.modelEditor, rootFrame, buttonController, eventHandler,
+                textureHandler)
         addScenes()
     }
 
@@ -41,7 +43,7 @@ class UIManager(
 //        sceneController.scenes += ModelScene(sceneController).apply { perspective = false; camera = camera.copy(angleX = 0.0, angleY = 0.0)  }
 //        sceneController.scenes += ModelScene(sceneController).apply { perspective = false; camera = camera.copy(angleX = 0.0, angleY = -90.toRads())  }
 //        sceneController.scenes += ModelScene(sceneController).apply { perspective = false; camera = camera.copy(angleX = 90.toRads(), angleY = 0.0)  }
-        sceneController.scenes += TextureScene(projectManager.modelEditor, windowHandler, sceneController)
+//        sceneController.scenes += TextureScene(projectManager.modelEditor, windowHandler, sceneController)
         sceneController.refreshScenes()
     }
 
