@@ -100,6 +100,17 @@ class MaterialSerializer : JsonSerializer<Material>, JsonDeserializer<Material> 
     }
 }
 
+class QuadIndicesSerializer : JsonSerializer<McxExporter.QuadStorage.QuadIndices> {
+
+    override fun serialize(src: McxExporter.QuadStorage.QuadIndices, typeOfSrc: Type?,
+                           context: JsonSerializationContext?): JsonElement {
+        val arr = JsonArray()
+        arr.add(JsonArray().apply { add(src.a); add(src.b); add(src.c); add(src.d) })
+        arr.add(JsonArray().apply { add(src.at); add(src.bt); add(src.ct); add(src.dt) })
+        return arr
+    }
+}
+
 fun JsonArray.toVector2(): IVector2 = vec2Of(this[0].asNumber, this[1].asNumber)
 fun JsonArray.toVector3(): IVector3 = vec3Of(this[0].asNumber, this[1].asNumber, this[2].asNumber)
 fun JsonArray.toVector4(): IVector4 = vec4Of(this[0].asNumber, this[1].asNumber, this[2].asNumber, this[3].asNumber)

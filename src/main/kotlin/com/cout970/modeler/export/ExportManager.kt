@@ -25,6 +25,7 @@ class ExportManager(val projectManager: ProjectManager, val resourceLoader: Reso
     val objExporter = ObjExporter()
     val tcnImporter = TcnImporter()
     val jsonImporter = JsonImporter()
+    val mcxExporter = McxExporter()
 
     val gson = GsonBuilder()
             .excludeFieldsWithoutExposeAnnotation()
@@ -59,36 +60,41 @@ class ExportManager(val projectManager: ProjectManager, val resourceLoader: Reso
         zip.close()
     }
 
-    fun importModel(import: ImportProperties) {
-        val file = File(import.path)
-        when (import.format) {
+    fun importModel(prop: ImportProperties) {
+        val file = File(prop.path)
+        when (prop.format) {
             ImportFormat.OBJ -> {
                 projectManager.modelEditor.historyRecord.doAction(
-                        ActionImportModel(projectManager.modelEditor, resourceLoader, import.path) {
-                            objImporter.import(file.createPath(), import.flipUV)
+                        ActionImportModel(projectManager.modelEditor, resourceLoader, prop.path) {
+                            objImporter.import(file.createPath(), prop.flipUV)
                         })
             }
             ImportFormat.TCN -> {
                 projectManager.modelEditor.historyRecord.doAction(
-                        ActionImportModel(projectManager.modelEditor, resourceLoader, import.path) {
+                        ActionImportModel(projectManager.modelEditor, resourceLoader, prop.path) {
                             tcnImporter.import(file.createPath())
                         })
             }
             ImportFormat.JSON -> {
                 projectManager.modelEditor.historyRecord.doAction(
-                        ActionImportModel(projectManager.modelEditor, resourceLoader, import.path) {
+                        ActionImportModel(projectManager.modelEditor, resourceLoader, prop.path) {
                             jsonImporter.import(file.createPath())
                         })
             }
         }
     }
 
-    fun exportModel(path: String, format: ExportFormat) {
-        val file = File(path)
-        when (format) {
+    fun exportModel(prop: ExportProperties) {
+        val file = File(prop.path)
+        when (prop.format) {
             ExportFormat.OBJ -> {
                 projectManager.modelEditor.addToQueue {
-                    objExporter.export(file.outputStream(), projectManager.modelEditor.model, "materials")
+                    objExporter.export(file.outputStream(), projectManager.modelEditor.model, prop.materialLib)
+                }
+            }
+            ExportFormat.MCX -> {
+                projectManager.modelEditor.addToQueue {
+                    mcxExporter.export(file.outputStream(), projectManager.modelEditor.model, prop.domain)
                 }
             }
         }

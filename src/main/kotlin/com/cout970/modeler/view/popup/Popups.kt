@@ -36,6 +36,10 @@ private val exportExtensionsObj: PointerBuffer = MemoryUtil.memAllocPointer(1).a
     put(MemoryUtil.memUTF8("*.obj"))
     flip()
 }
+private val exportExtensionsMcx: PointerBuffer = MemoryUtil.memAllocPointer(1).apply {
+    put(MemoryUtil.memUTF8("*.mcx"))
+    flip()
+}
 
 private val saveFileExtension: PointerBuffer = MemoryUtil.memAllocPointer(1).apply {
     put(MemoryUtil.memUTF8("*.pff"))
@@ -100,9 +104,9 @@ fun showImportModelPopup(projectManager: ProjectManager) {
 }
 
 fun showExportModelPopup(projectManager: ProjectManager) {
-    ExportDialog.show { (path, format) ->
-        if (path != null) {
-            projectManager.exportManager.exportModel(path, format!!)
+    ExportDialog.show { prop ->
+        if (prop != null) {
+            projectManager.exportManager.exportModel(prop)
         }
     }
 }
@@ -113,7 +117,10 @@ fun Missing(thing: String) {
 
 @Suppress("UNUSED_PARAMETER")
 fun getExportFileExtensions(format: ExportFormat): PointerBuffer {
-    return exportExtensionsObj
+    return when (format) {
+        ExportFormat.OBJ -> exportExtensionsObj
+        ExportFormat.MCX -> exportExtensionsMcx
+    }
 }
 
 fun JDialog.center() {

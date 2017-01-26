@@ -4,6 +4,7 @@ import com.cout970.modeler.log.print
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.resource.ResourceLoader
+import javax.swing.JOptionPane
 
 /**
  * Created by cout970 on 2017/01/02.
@@ -25,6 +26,7 @@ class ActionImportModel(val modelEditor: ModelEditor,
             modelEditor.updateModel(newModel)
         } catch(e: Exception) {
             e.print()
+            JOptionPane.showMessageDialog(null, "Error importing model: ${e.localizedMessage}")
         }
     }
 

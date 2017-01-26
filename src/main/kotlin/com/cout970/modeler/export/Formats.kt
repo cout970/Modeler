@@ -11,6 +11,9 @@ enum class ImportFormat {
 
 enum class ExportFormat {
     OBJ, //wavefront models
+    MCX
 }
 
 data class ImportProperties(val path: String, val format: ImportFormat, val flipUV: Boolean)
+data class ExportProperties(val path: String, val format: ExportFormat, val materialLib: String = "materials",
+                            val domain: String = "blacksmith")

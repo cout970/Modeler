@@ -41,6 +41,7 @@ public class ImportDialog {
             frame.setVisible(false);
         });
         dialog.selectButton.addActionListener(e -> {
+            frame.toBack();
             String file = TinyFileDialogs.tinyfd_openFileDialog("Import", "",
                     PopupsKt.getImportFileExtensions(), "Model Files (*.tcn, *.obj, *.json)",
                     false);
@@ -54,6 +55,7 @@ public class ImportDialog {
                 }
             }
             dialog.textField1.setText(file);
+            frame.toFront();
         });
 
         frame.setContentPane(dialog.root);

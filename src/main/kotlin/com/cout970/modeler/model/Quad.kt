@@ -2,7 +2,10 @@ package com.cout970.modeler.model
 
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.*
+import com.cout970.vector.extensions.cross
+import com.cout970.vector.extensions.minus
+import com.cout970.vector.extensions.normalize
+import com.cout970.vector.extensions.vec2Of
 
 /**
  * Created by cout970 on 2016/12/04.
@@ -16,35 +19,9 @@ data class Quad(
     val vertex: List<Vertex> get() = listOf(a, b, c, d)
 
     val normal: IVector3 by lazy {
-        val ab = b.pos - a.pos
         val ac = c.pos - a.pos
-        var vec = (ab cross ac).normalize()
-        if (vec.xd.isNaN()) {
-            val bc = c.pos - b.pos
-            val bd = d.pos - b.pos
-            vec = (bc cross bd).normalize()
-            if (vec.xd.isNaN()) {
-                val cd = d.pos - c.pos
-                val ca = a.pos - c.pos
-                vec = (cd cross ca).normalize()
-                if (vec.xd.isNaN()) {
-                    val da = a.pos - d.pos
-                    val db = b.pos - d.pos
-                    vec = (da cross db).normalize()
-                    if (vec.xd.isNaN()) {
-                        vec3Of(0)
-                    } else {
-                        vec
-                    }
-                } else {
-                    vec
-                }
-            } else {
-                vec
-            }
-        } else {
-            vec
-        }
+        val bd = d.pos - b.pos
+        (ac cross bd).normalize()
     }
 
     companion object {
