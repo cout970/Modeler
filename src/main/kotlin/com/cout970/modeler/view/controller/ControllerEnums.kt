@@ -19,5 +19,5 @@ enum class SelectionAxis(val axis: IVector3) {
 }
 
 enum class TransformationMode {
-    NONE, TRANSLATION, ROTATION, SCALE
+    TRANSLATION, ROTATION, SCALE
 }

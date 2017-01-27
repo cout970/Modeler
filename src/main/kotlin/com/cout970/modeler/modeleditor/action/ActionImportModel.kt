@@ -26,7 +26,7 @@ class ActionImportModel(val modelEditor: ModelEditor,
             modelEditor.updateModel(newModel)
         } catch(e: Exception) {
             e.print()
-            JOptionPane.showMessageDialog(null, "Error importing model: ${e.localizedMessage}")
+            JOptionPane.showMessageDialog(null, "Error importing model: \n$e")
         }
     }
 

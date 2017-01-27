@@ -6,13 +6,13 @@ import com.cout970.modeler.config.Config
 import com.cout970.modeler.event.IEventController
 import com.cout970.modeler.event.IEventListener
 import com.cout970.modeler.modeleditor.ModelEditor
-import com.cout970.modeler.modeleditor.action.ActionTranslate
+import com.cout970.modeler.modeleditor.action.ActionModifyModel
 import com.cout970.modeler.modeleditor.rotate
 import com.cout970.modeler.modeleditor.selection.SelectionNone
 import com.cout970.modeler.modeleditor.translate
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.popup.Missing
-import com.cout970.modeler.view.scene.ModelScene
+import com.cout970.modeler.view.scene.SceneModel
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
 import com.cout970.raytrace.RayTraceUtil
@@ -25,9 +25,9 @@ import org.joml.Vector3d
 /**
  * Created by cout970 on 2016/12/17.
  */
-class ModelSelector(val scene: ModelScene, val controller: SceneController, val modelEditor: ModelEditor) {
+class ModelSelector(val scene: SceneModel, val controller: SceneController, val modelEditor: ModelEditor) {
 
-    val transformationMode get() = controller.transformationMode
+    val transformationMode get() = controller.modelTransformationMode
     val selection get() = modelEditor.selectionManager.selection
     val selectionCenter: IVector3 get() = selection.getCenter(modelEditor.model)
 
@@ -67,12 +67,12 @@ class ModelSelector(val scene: ModelScene, val controller: SceneController, val 
     }
 
     fun updateUserInput() {
-        if (selection != SelectionNone && transformationMode != TransformationMode.NONE) {
+        if (selection != SelectionNone) {
             when (transformationMode) {
                 TransformationMode.TRANSLATION -> translate()
                 TransformationMode.ROTATION -> rotate()
                 TransformationMode.SCALE -> {
-                    controller.transformationMode = TransformationMode.NONE
+                    controller.modelTransformationMode = TransformationMode.TRANSLATION
                     Missing("Scale not implemented yet")
                 }
                 else -> {
@@ -180,7 +180,7 @@ class ModelSelector(val scene: ModelScene, val controller: SceneController, val 
                 lastOffset = 0f
 
                 controller.tmpModel?.let {
-                    modelEditor.historyRecord.doAction(ActionTranslate(modelEditor, it))
+                    modelEditor.historyRecord.doAction(ActionModifyModel(modelEditor, it))
                 }
                 controller.tmpModel = null
             }
@@ -243,18 +243,11 @@ class ModelSelector(val scene: ModelScene, val controller: SceneController, val 
                 lastOffset = 0f
 
                 controller.tmpModel?.let {
-                    modelEditor.historyRecord.doAction(ActionTranslate(modelEditor, it))
+                    modelEditor.historyRecord.doAction(ActionModifyModel(modelEditor, it))
                 }
                 controller.tmpModel = null
             }
         }
-    }
-
-    private fun projectCenter(matrix: Matrix4d, viewport: IVector2): IVector2 {
-        val point = selectionCenter
-        val pos = matrix.project(point.toJoml3d(),
-                intArrayOf(-1, -1, 2, 2), Vector3d())
-        return vec2Of(pos.x, pos.y)
     }
 
     private fun projectAxis(matrix: Matrix4d): Pair<IVector2, IVector2> {

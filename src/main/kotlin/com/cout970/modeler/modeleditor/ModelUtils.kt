@@ -38,9 +38,17 @@ fun Model.translate(selection: Selection, axis: SelectionAxis, offset: Float): M
                         .map { it.pos }
                         .distinct()
 
-                mesh.copy(positions = mesh.positions.replace({ pos -> pos in selectedPositions }, { pos ->
+                val newMesh = mesh.copy(positions = mesh.positions.replace({ pos -> pos in selectedPositions }, { pos ->
                     pos + axis.axis * offset
                 }))
+                if (newMesh.isCuboid()) {
+                    val size = newMesh.getCuboidSize()
+                    val x = mesh.textures[newMesh.indices[5].aT].x
+                    val y = mesh.textures[newMesh.indices[1].dT].y
+                    newMesh.setUVFromCuboid(size, vec2Of(x, y), 64)
+                } else {
+                    newMesh
+                }
             }
         }
 

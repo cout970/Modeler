@@ -10,7 +10,7 @@ import com.cout970.vector.extensions.vec3Of
 data class ActionCreateCube(val modelEditor: ModelEditor) : IAction {
 
     val model = modelEditor.model
-    val cube = Mesh.createCube(vec3Of(1, 1, 1))
+    val cube = Mesh.createCube(vec3Of(8, 8, 8))
 
     override fun run() {
         modelEditor.inserter.insertMesh(cube.translate(modelEditor.inserter.insertPosition))

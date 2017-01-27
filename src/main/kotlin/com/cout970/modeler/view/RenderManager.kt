@@ -7,9 +7,9 @@ import com.cout970.modeler.config.Config
 import com.cout970.modeler.resource.ResourceLoader
 import com.cout970.modeler.util.ITickeable
 import com.cout970.modeler.view.gui.GuiRenderer
-import com.cout970.modeler.view.scene.ModelScene
 import com.cout970.modeler.view.scene.ModelSceneRenderer
-import com.cout970.modeler.view.scene.TextureScene
+import com.cout970.modeler.view.scene.SceneModel
+import com.cout970.modeler.view.scene.SceneTexture
 import com.cout970.modeler.view.scene.TextureSceneRenderer
 import com.cout970.modeler.view.util.ShaderHandler
 import com.cout970.vector.extensions.xf
@@ -50,8 +50,8 @@ class RenderManager : ITickeable {
         GLStateMachine.clear()
         uiManager.sceneController.scenes.forEach {
             when (it) {
-                is ModelScene -> modelSceneRenderer.render(it)
-                is TextureScene -> textureSceneRenderer.render(it)
+                is SceneModel -> modelSceneRenderer.render(it)
+                is SceneTexture -> textureSceneRenderer.render(it)
             }
         }
         guiRenderer.render(uiManager.rootFrame)

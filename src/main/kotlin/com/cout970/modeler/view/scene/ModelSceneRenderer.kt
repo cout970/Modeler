@@ -28,7 +28,7 @@ import org.lwjgl.opengl.GL11
  */
 class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHandler) {
 
-    fun render(scene: ModelScene) {
+    fun render(scene: SceneModel) {
         if (scene.size.x < 1 || scene.size.y < 1) return
 
         val model = scene.sceneController.getModel(scene.modelProvider.model)
@@ -142,7 +142,7 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
 
                 // 3D cursor
                 val selector = scene.modelSelector
-                if (selection != SelectionNone && selector.transformationMode != TransformationMode.NONE) {
+                if (selection != SelectionNone) {
                     when (selector.transformationMode) {
                         TransformationMode.TRANSLATION -> {
                             renderTranslation(sceneController.cursorCenter, selector, selection, scene.camera)
@@ -150,7 +150,6 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
                         TransformationMode.ROTATION -> {
                             renderRotation(selection.getCenter(model), selector, selection, scene.camera)
                         }
-                        TransformationMode.NONE -> Unit
                         TransformationMode.SCALE -> Unit
                     }
                 }
@@ -313,7 +312,7 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
             val selX = controller.selectedAxis == SelectionAxis.X
             val selY = controller.selectedAxis == SelectionAxis.Y
             val selZ = controller.selectedAxis == SelectionAxis.Z
-            if (!selX && !selY && !selZ || !perspective || controller.transformationMode != TransformationMode.TRANSLATION) {
+            if (!selX && !selY && !selZ || !perspective || controller.modelTransformationMode != TransformationMode.TRANSLATION) {
                 color = Config.colorPalette.grid2Color
 
                 for (x in -7..8) {

@@ -6,7 +6,7 @@ import com.cout970.modeler.modeleditor.ModelEditor
 /**
  * Created by cout970 on 2016/12/10.
  */
-data class ActionTranslate(val modelEditor: ModelEditor, val newModel: Model) : IAction {
+data class ActionModifyModel(val modelEditor: ModelEditor, val newModel: Model) : IAction {
 
     val model = modelEditor.model
     val selection = modelEditor.selectionManager.selection

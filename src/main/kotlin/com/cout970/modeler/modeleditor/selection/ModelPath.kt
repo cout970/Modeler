@@ -78,4 +78,13 @@ data class ModelPath(
             ModelPath.Level.VERTEX -> listOf()
         }
     }
+
+    fun getParent(): ModelPath {
+        return when (level) {
+            ModelPath.Level.GROUPS -> throw IllegalStateException("Path ($this) doesn't have a parent")
+            ModelPath.Level.MESH -> ModelPath(group)
+            ModelPath.Level.QUADS -> ModelPath(group, mesh)
+            ModelPath.Level.VERTEX -> ModelPath(group, mesh, quad)
+        }
+    }
 }

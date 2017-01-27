@@ -14,8 +14,8 @@ import com.cout970.modeler.model.Model
 import com.cout970.modeler.modeleditor.IModelProvider
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.gui.RootFrame
-import com.cout970.modeler.view.scene.ModelScene
 import com.cout970.modeler.view.scene.Scene
+import com.cout970.modeler.view.scene.SceneModel
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
 import org.joml.Vector2f
@@ -36,7 +36,8 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
     val modelCache = Cache<Int, VAO>(1).apply { onRemove = { _, v -> v.close() } }
     val selectionCache = Cache<Int, VAO>(2).apply { onRemove = { _, v -> v.close() } }
 
-    var transformationMode = TransformationMode.TRANSLATION
+    var modelTransformationMode = TransformationMode.TRANSLATION
+    var textureTransformationMode = TransformationMode.TRANSLATION
     var selectedAxis = SelectionAxis.NONE
     var hoveredAxis = SelectionAxis.NONE
 
@@ -136,7 +137,7 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
                             lastOption = 0
                         }
                     } else if (Config.keyBindings.switchOrthoProjection.keycode == e.keycode) {
-                        (selectedScene as? ModelScene)?.apply {
+                        (selectedScene as? SceneModel)?.apply {
                             perspective = !perspective
                         }
                     } else if (Config.keyBindings.moveCameraToCursor.keycode == e.keycode) {

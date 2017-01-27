@@ -10,7 +10,7 @@ import com.cout970.vector.extensions.vec2Of
 data class ActionCreatePlane(val modelEditor: ModelEditor) : IAction {
 
     val model = modelEditor.model
-    val plane = Mesh.createPlane(vec2Of(1))
+    val plane = Mesh.createPlane(vec2Of(16))
 
     override fun run() {
         modelEditor.inserter.insertMesh(plane.translate(modelEditor.inserter.insertPosition))

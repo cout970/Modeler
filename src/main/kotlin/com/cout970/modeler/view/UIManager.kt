@@ -8,8 +8,8 @@ import com.cout970.modeler.view.controller.ModuleController
 import com.cout970.modeler.view.controller.SceneController
 import com.cout970.modeler.view.gui.RootFrame
 import com.cout970.modeler.view.gui.TextureHandler
-import com.cout970.modeler.view.scene.ModelScene
-import com.cout970.modeler.view.scene.TextureScene
+import com.cout970.modeler.view.scene.SceneModel
+import com.cout970.modeler.view.scene.SceneTexture
 import com.cout970.modeler.window.WindowHandler
 
 /**
@@ -40,11 +40,11 @@ class UIManager(
     }
 
     fun addScenes() {
-        sceneController.scenes += ModelScene(projectManager.modelEditor, windowHandler, sceneController)
+        sceneController.scenes += SceneModel(projectManager.modelEditor, windowHandler, sceneController)
 //        sceneController.scenes += ModelScene(sceneController).apply { perspective = false; camera = camera.copy(angleX = 0.0, angleY = 0.0)  }
 //        sceneController.scenes += ModelScene(sceneController).apply { perspective = false; camera = camera.copy(angleX = 0.0, angleY = -90.toRads())  }
 //        sceneController.scenes += ModelScene(sceneController).apply { perspective = false; camera = camera.copy(angleX = 90.toRads(), angleY = 0.0)  }
-        sceneController.scenes += TextureScene(projectManager.modelEditor, windowHandler, sceneController)
+        sceneController.scenes += SceneTexture(projectManager.modelEditor, windowHandler, sceneController)
         sceneController.refreshScenes()
     }
 

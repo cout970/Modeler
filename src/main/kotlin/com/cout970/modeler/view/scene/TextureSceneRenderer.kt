@@ -20,16 +20,16 @@ import org.lwjgl.opengl.GL11
  */
 class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHandler) {
 
-    fun render(scene: TextureScene) {
+    fun render(scene: SceneTexture) {
 
         if (scene.size.x < 1 || scene.size.y < 1) return
 
-        val model = scene.modelProvider.model
+        val model = scene.sceneController.getModel(scene.modelProvider.model)
         val selection = scene.modelProvider.selectionManager.selection
 
         val texture = model.groups.find { it.material != MaterialNone }?.material ?: MaterialNone
         val scale = 64.0
-        val divs = 128
+        val divs = texture.size
         val offset = scale / 2
 
         val y = scene.parent.size.y - (scene.position.y + scene.size.y)
@@ -93,7 +93,13 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
                                 }
                             }
                             ModelPath.Level.QUADS -> {
-                                renderQuad(path.getQuad(model)!!)
+                                if (true) {
+                                    path.getParent().getSubPaths(model).forEach { quadPath ->
+                                        renderQuad(quadPath.getQuad(model)!!)
+                                    }
+                                } else {
+                                    renderQuad(path.getQuad(model)!!)
+                                }
                             }
                             else -> {
                             }

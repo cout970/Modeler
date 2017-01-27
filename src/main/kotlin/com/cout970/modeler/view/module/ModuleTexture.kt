@@ -13,7 +13,7 @@ class ModuleTexture(controller: ModuleController) : Module(controller, "Texture"
         addSubComponent(Button("Import", 10f, 0f, 160f, 20f).apply {
             leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.texture.import"))
         })
-        addSubComponent(Button("Size", 10f, 20f, 160f, 20f).apply {
+        addSubComponent(Button("Offset", 10f, 20f, 160f, 20f).apply {
             leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.texture.size"))
         })
         addSubComponent(Button("FlipX", 10f, 40f, 160f, 20f).apply {
@@ -21,6 +21,9 @@ class ModuleTexture(controller: ModuleController) : Module(controller, "Texture"
         })
         addSubComponent(Button("FlipY", 10f, 60f, 160f, 20f).apply {
             leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.texture.flip.y"))
+        })
+        addSubComponent(Button("Show all mesh", 10f, 60f, 160f, 20f).apply {
+            leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.texture.show_all_mesh"))
         })
         maximize()
     }

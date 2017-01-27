@@ -96,9 +96,8 @@ data class ModelGroup(@Expose val meshes: List<Mesh>,
     fun add(mesh: Mesh): ModelGroup = copy(meshes + mesh)
 
     fun addAll(meshes: List<Mesh>): ModelGroup = copy(this.meshes + meshes)
+
     override fun toString(): String {
         return "ModelGroup(${meshes.size} meshes, transform=$transform, name='$name', material=$material)"
     }
-
-
 }
