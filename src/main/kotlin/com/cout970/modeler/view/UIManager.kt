@@ -18,7 +18,7 @@ import com.cout970.modeler.window.WindowHandler
 
 class UIManager(
         val windowHandler: WindowHandler,
-        eventHandler: EventHandler,
+        private val eventHandler: EventHandler,
         renderManager: RenderManager,
         textureHandler: TextureHandler,
         private val projectManager: ProjectManager) : ITickeable {
@@ -36,15 +36,36 @@ class UIManager(
         sceneController = SceneController(projectManager.modelEditor, eventHandler, rootFrame, windowHandler.timer)
         moduleController = ModuleController(projectManager.modelEditor, rootFrame, buttonController, eventHandler,
                 textureHandler)
-        addScenes()
+        showScenes(0)
     }
 
-    fun addScenes() {
-        sceneController.scenes += SceneModel(projectManager.modelEditor, windowHandler, sceneController)
-//        sceneController.scenes += ModelScene(sceneController).apply { perspective = false; camera = camera.copy(angleX = 0.0, angleY = 0.0)  }
-//        sceneController.scenes += ModelScene(sceneController).apply { perspective = false; camera = camera.copy(angleX = 0.0, angleY = -90.toRads())  }
-//        sceneController.scenes += ModelScene(sceneController).apply { perspective = false; camera = camera.copy(angleX = 90.toRads(), angleY = 0.0)  }
-        sceneController.scenes += SceneTexture(projectManager.modelEditor, windowHandler, sceneController)
+    fun showScenes(layout: Int) {
+        sceneController.scenes.clear()
+        when (layout) {
+            1 -> {
+                sceneController.scenes += SceneModel(projectManager.modelEditor, windowHandler, sceneController)
+                sceneController.scenes += SceneModel(projectManager.modelEditor, windowHandler, sceneController)
+            }
+            2 -> {
+                sceneController.scenes += SceneModel(projectManager.modelEditor, windowHandler, sceneController)
+                sceneController.scenes += SceneModel(projectManager.modelEditor, windowHandler, sceneController)
+                sceneController.scenes += SceneModel(projectManager.modelEditor, windowHandler, sceneController)
+                sceneController.scenes += SceneModel(projectManager.modelEditor, windowHandler, sceneController)
+            }
+            3 -> {
+                sceneController.scenes += SceneModel(projectManager.modelEditor, windowHandler, sceneController)
+                sceneController.scenes += SceneTexture(projectManager.modelEditor, windowHandler, sceneController)
+            }
+            4 -> {
+                sceneController.scenes += SceneModel(projectManager.modelEditor, windowHandler, sceneController)
+                sceneController.scenes += SceneTexture(projectManager.modelEditor, windowHandler, sceneController)
+                sceneController.scenes += SceneModel(projectManager.modelEditor, windowHandler, sceneController)
+                sceneController.scenes += SceneModel(projectManager.modelEditor, windowHandler, sceneController)
+            }
+            else -> {
+                sceneController.scenes += SceneModel(projectManager.modelEditor, windowHandler, sceneController)
+            }
+        }
         sceneController.refreshScenes()
     }
 

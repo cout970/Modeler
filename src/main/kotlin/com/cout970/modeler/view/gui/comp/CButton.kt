@@ -27,4 +27,9 @@ class CButton(
         hoveredBackgroundImage = img
         pressedBackgroundImage = img
     }
+
+    fun setTextLeft() = this.apply {
+        textState.horizontalAlign = org.liquidengine.legui.component.optional.align.HorizontalAlign.LEFT
+        textState.padding.x += 5f
+    }
 }

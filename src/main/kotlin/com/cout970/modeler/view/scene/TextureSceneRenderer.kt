@@ -109,6 +109,7 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
 
                 GL11.glLineWidth(1f)
                 GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL)
+                GLStateMachine.depthTest.enable()
             }
             // 2D cursor
             if (Config.keyBindings.moveCamera.check(scene.sceneController.input) ||

@@ -1,7 +1,7 @@
 package com.cout970.modeler.view.scene
 
+import com.cout970.glutilities.event.EventMouseClick
 import com.cout970.matrix.api.IMatrix4
-import com.cout970.modeler.event.IEventController
 import com.cout970.modeler.modeleditor.IModelProvider
 import com.cout970.modeler.util.toIMatrix
 import com.cout970.modeler.view.controller.SceneController
@@ -29,10 +29,10 @@ abstract class Scene(val modelProvider: IModelProvider, val windowHandler: Windo
 
     fun createOrthoMatrix(): IMatrix4 {
         val aspectRatio = (size.y / size.x)
-        return Matrix4d().setOrtho(-1.0 / aspectRatio, 1.0 / aspectRatio, -1.0, 1.0, 0.1, 1000.0).toIMatrix()
+        return Matrix4d().setOrtho(-1.0 / aspectRatio, 1.0 / aspectRatio, -1.0, 1.0, 0.1, 10000.0).toIMatrix()
     }
 
-    abstract fun registerListeners(eventHandler: IEventController)
+    abstract fun onEvent(e: EventMouseClick): Boolean
 
     init {
         backgroundColor = ColorConstants.transparent()

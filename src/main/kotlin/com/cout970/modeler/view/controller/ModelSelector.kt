@@ -3,8 +3,6 @@ package com.cout970.modeler.view.controller
 import com.cout970.glutilities.event.EnumKeyState
 import com.cout970.glutilities.event.EventMouseClick
 import com.cout970.modeler.config.Config
-import com.cout970.modeler.event.IEventController
-import com.cout970.modeler.event.IEventListener
 import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.modeleditor.action.ActionModifyModel
 import com.cout970.modeler.modeleditor.rotate
@@ -30,6 +28,7 @@ class ModelSelector(val scene: SceneModel, val controller: SceneController, val 
     val transformationMode get() = controller.modelTransformationMode
     val selection get() = modelEditor.selectionManager.selection
     val selectionCenter: IVector3 get() = selection.getCenter(modelEditor.model)
+    var time: Long = 0L
 
     var offset = 0f
     var lastOffset = 0f
@@ -259,36 +258,31 @@ class ModelSelector(val scene: SceneModel, val controller: SceneController, val 
         return vec2Of(start.x, start.y) to vec2Of(end.x, end.y)
     }
 
-    fun registerListeners(eventHandler: IEventController) {
-        var time: Long = 0L
-        eventHandler.addListener(EventMouseClick::class.java, object : IEventListener<EventMouseClick> {
-            override fun onEvent(e: EventMouseClick): Boolean {
-                if (e.keyState != EnumKeyState.PRESS) return false
+    fun onEvent(e: EventMouseClick): Boolean {
+        if (e.keyState != EnumKeyState.PRESS) return false
 
-                if (Config.keyBindings.selectModel.keycode == e.button) {
-                    if (inside(controller.input.mouse.getMousePos(), scene.absolutePosition, scene.size.toIVector())) {
-                        if (controller.hoveredAxis == SelectionAxis.NONE && controller.selectedAxis == SelectionAxis.NONE) {
-                            modelEditor.selectionManager.mouseTrySelect(mouseSnapshot.mouseRay,
-                                    controller.selectedScene.camera.zoom.toFloat(),
-                                    Config.keyBindings.multipleSelection.check(controller.input))
-                            return true
-                        }
-                    }
+        if (Config.keyBindings.selectModel.keycode == e.button) {
+            if (inside(controller.input.mouse.getMousePos(), scene.absolutePosition, scene.size.toIVector())) {
+                if (controller.hoveredAxis == SelectionAxis.NONE && controller.selectedAxis == SelectionAxis.NONE) {
+                    modelEditor.selectionManager.mouseTrySelect(mouseSnapshot.mouseRay,
+                            controller.selectedScene.camera.zoom.toFloat(),
+                            Config.keyBindings.multipleSelection.check(controller.input))
+                    return true
                 }
-                if (Config.keyBindings.jumpCameraToCursor.keycode == e.button) {
-                    if (inside(controller.input.mouse.getMousePos(), scene.absolutePosition, scene.size.toIVector())) {
-                        if (System.currentTimeMillis() - time < 500) {
-                            val hit = modelEditor.selectionManager.getMouseHit(mouseSnapshot.mouseRay)
-                            if (hit != null) {
-                                scene.camera = scene.camera.copy(position = -hit.hit)
-                                return true
-                            }
-                        }
-                        time = System.currentTimeMillis()
-                    }
-                }
-                return false
             }
-        })
+        }
+        if (Config.keyBindings.jumpCameraToCursor.keycode == e.button) {
+            if (inside(controller.input.mouse.getMousePos(), scene.absolutePosition, scene.size.toIVector())) {
+                if (System.currentTimeMillis() - time < 500) {
+                    val hit = modelEditor.selectionManager.getMouseHit(mouseSnapshot.mouseRay)
+                    if (hit != null) {
+                        scene.camera = scene.camera.copy(position = -hit.hit)
+                        return true
+                    }
+                }
+                time = System.currentTimeMillis()
+            }
+        }
+        return false
     }
 }

@@ -49,14 +49,19 @@ class ButtonController(
             "top.file.new" -> newProject(projectManager)
             "top.file.open" -> loadProject(projectManager)
             "top.file.save" -> saveProject(projectManager)
-            "top.file.saveas" -> saveProjectAs(projectManager)
+            "top.file.save_as" -> saveProjectAs(projectManager)
             "top.file.import" -> showImportModelPopup(projectManager)
             "top.file.export" -> showExportModelPopup(projectManager)
             "top.file.settings" -> Missing("settings")
             "top.file.exit" -> uiManager.windowHandler.close()
 
-            "top.view.showleft" -> rootFrame.leftBar.isEnabled = !rootFrame.leftBar.isEnabled
-            "top.view.showright" -> rootFrame.rightBar.isEnabled = !rootFrame.rightBar.isEnabled
+            "top.view.show_left" -> rootFrame.leftBar.isEnabled = !rootFrame.leftBar.isEnabled
+            "top.view.show_right" -> rootFrame.rightBar.isEnabled = !rootFrame.rightBar.isEnabled
+            "top.view.one_model" -> uiManager.showScenes(0)
+            "top.view.two_model" -> uiManager.showScenes(1)
+            "top.view.four_model" -> uiManager.showScenes(2)
+            "top.view.model_and_texture" -> uiManager.showScenes(3)
+            "top.view.3_model_1_texture" -> uiManager.showScenes(4)
             else -> log(Level.ERROR) { "unregistered button ID: $id" }
         }
     }

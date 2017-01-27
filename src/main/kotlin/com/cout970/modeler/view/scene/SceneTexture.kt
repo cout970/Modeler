@@ -1,9 +1,6 @@
 package com.cout970.modeler.view.scene
 
-import com.cout970.glutilities.event.EnumKeyState
-import com.cout970.glutilities.event.EventKeyUpdate
-import com.cout970.modeler.event.IEventController
-import com.cout970.modeler.event.IEventListener
+import com.cout970.glutilities.event.EventMouseClick
 import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.view.controller.SceneController
 import com.cout970.modeler.view.controller.TextureSelector
@@ -21,14 +18,5 @@ class SceneTexture(modelEditor: ModelEditor, windowHandler: WindowHandler, contr
         camera = Camera.DEFAULT.copy(angleX = 0.0, angleY = 0.0)
     }
 
-    override fun registerListeners(eventHandler: IEventController) {
-        eventHandler.addListener(EventKeyUpdate::class.java, object : IEventListener<EventKeyUpdate> {
-            override fun onEvent(e: EventKeyUpdate): Boolean {
-                if (e.keyState == EnumKeyState.PRESS) {
-
-                }
-                return false
-            }
-        })
-    }
+    override fun onEvent(e: EventMouseClick) = false
 }

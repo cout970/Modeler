@@ -23,7 +23,7 @@ class RootFrame(val input: IInput,
                 val windowHandler: WindowHandler,
                 val buttonController: ButtonController) : Frame() {
 
-    val dropdown = Panel(0f, 20f, 100f, 80f)
+    val dropdown = Panel(0f, 20f, 150f, 80f)
     val topBar = TopBar(this)
     val leftBar = SideBar(this)
     val rightBar = SideBar(this)
@@ -115,37 +115,62 @@ class RootFrame(val input: IInput,
 
         fun load(id: Int) {
             var i = 0
+            val sizeRight = 150f
             if (id == 0) {
                 root.dropdown.apply {
                     clearComponents()
-                    addComponent(CButton("New", 0f, i++ * 25f, 100f, 25f).onClick("top.file.new", controller))
-                    addComponent(CButton("Open", 0f, i++ * 25f, 100f, 25f).onClick("top.file.open", controller))
-                    addComponent(CButton("Save", 0f, i++ * 25f, 100f, 25f).onClick("top.file.save", controller))
-                    addComponent(CButton("Save as", 0f, i++ * 25f, 100f, 25f).onClick("top.file.saveas", controller))
-                    addComponent(CButton("Import", 0f, i++ * 25f, 100f, 25f).onClick("top.file.import", controller))
-                    addComponent(CButton("Export", 0f, i++ * 25f, 100f, 25f).onClick("top.file.export", controller))
-                    addComponent(CButton("Settings", 0f, i++ * 25f, 100f, 25f).onClick("top.file.settings", controller))
-                    addComponent(CButton("Exit", 0f, i++ * 25f, 100f, 25f).onClick("top.file.exit", controller))
+                    addComponent(CButton("New", 0f, i++ * 25f, sizeRight, 25f).onClick("top.file.new",
+                            controller).setTextLeft())
+                    addComponent(CButton("Open", 0f, i++ * 25f, sizeRight, 25f).onClick("top.file.open",
+                            controller).setTextLeft())
+                    addComponent(CButton("Save", 0f, i++ * 25f, sizeRight, 25f).onClick("top.file.save",
+                            controller).setTextLeft())
+                    addComponent(CButton("Save as", 0f, i++ * 25f, sizeRight, 25f).onClick("top.file.save_as",
+                            controller).setTextLeft())
+                    addComponent(CButton("Import", 0f, i++ * 25f, sizeRight, 25f).onClick("top.file.import",
+                            controller).setTextLeft())
+                    addComponent(CButton("Export", 0f, i++ * 25f, sizeRight, 25f).onClick("top.file.export",
+                            controller).setTextLeft())
+                    addComponent(CButton("Settings", 0f, i++ * 25f, sizeRight, 25f).onClick("top.file.settings",
+                            controller).setTextLeft())
+                    addComponent(CButton("Exit", 0f, i++ * 25f, sizeRight, 25f).onClick("top.file.exit",
+                            controller).setTextLeft())
                     size.y = i * 25f
                 }
             } else if (id == 1) {
                 root.dropdown.apply {
                     clearComponents()
-                    addComponent(CButton("Undo", 0f, i++ * 25f, 100f, 25f).onClick("top.edit.undo", controller))
-                    addComponent(CButton("Redo", 0f, i++ * 25f, 100f, 25f).onClick("top.edit.redo", controller))
-                    addComponent(CButton("Cut", 0f, i++ * 25f, 100f, 25f).onClick("top.edit.cut", controller))
-                    addComponent(CButton("Copy", 0f, i++ * 25f, 100f, 25f).onClick("top.edit.copy", controller))
-                    addComponent(CButton("Paste", 0f, i++ * 25f, 100f, 25f).onClick("top.edit.paste", controller))
-                    addComponent(CButton("Delete", 0f, i++ * 25f, 100f, 25f).onClick("top.edit.delete", controller))
+                    addComponent(CButton("Undo", 0f, i++ * 25f, sizeRight, 25f).onClick("top.edit.undo",
+                            controller).setTextLeft())
+                    addComponent(CButton("Redo", 0f, i++ * 25f, sizeRight, 25f).onClick("top.edit.redo",
+                            controller).setTextLeft())
+                    addComponent(CButton("Cut", 0f, i++ * 25f, sizeRight, 25f).onClick("top.edit.cut",
+                            controller).setTextLeft())
+                    addComponent(CButton("Copy", 0f, i++ * 25f, sizeRight, 25f).onClick("top.edit.copy",
+                            controller).setTextLeft())
+                    addComponent(CButton("Paste", 0f, i++ * 25f, sizeRight, 25f).onClick("top.edit.paste",
+                            controller).setTextLeft())
+                    addComponent(CButton("Delete", 0f, i++ * 25f, sizeRight, 25f).onClick("top.edit.delete",
+                            controller).setTextLeft())
                     size.y = i * 25f
                 }
             } else if (id == 2) {
                 root.dropdown.apply {
                     clearComponents()
-                    addComponent(CButton("Show/Hide Left Panel", 0f, i++ * 25f, 100f, 25f)
-                            .onClick("top.view.showleft", controller))
-                    addComponent(CButton("Show/Hide Right Panel", 0f, i++ * 25f, 100f, 25f)
-                            .onClick("top.view.showright", controller))
+                    addComponent(CButton("Show/Hide Left Panel", 0f, i++ * 25f, sizeRight, 25f).onClick(
+                            "top.view.show_left", controller).setTextLeft())
+                    addComponent(CButton("Show/Hide Right Panel", 0f, i++ * 25f, sizeRight, 25f).onClick(
+                            "top.view.show_right", controller).setTextLeft())
+                    addComponent(CButton("Layout Only model", 0f, i++ * 25f, sizeRight, 25f).onClick(
+                            "top.view.one_model", controller).setTextLeft())
+                    addComponent(CButton("Layout 2 Model scenes", 0f, i++ * 25f, sizeRight, 25f).onClick(
+                            "top.view.two_model", controller).setTextLeft())
+                    addComponent(CButton("Layout 4 Model scenes", 0f, i++ * 25f, sizeRight, 25f).onClick(
+                            "top.view.four_model", controller).setTextLeft())
+                    addComponent(CButton("Layout Model and Texture", 0f, i++ * 25f, sizeRight, 25f).onClick(
+                            "top.view.model_and_texture", controller).setTextLeft())
+                    addComponent(CButton("Layout 3 Model and 1 Texture", 0f, i++ * 25f, sizeRight, 25f).onClick(
+                            "top.view.3_model_1_texture", controller).setTextLeft())
                     size.y = i * 25f
                 }
             } else {

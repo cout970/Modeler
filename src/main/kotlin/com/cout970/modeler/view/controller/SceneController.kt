@@ -90,16 +90,8 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
                     if (inside(input.mouse.getMousePos(), scene.absolutePosition, scene.size.toIVector())) {
                         scene.run {
                             val scroll = -e.offsetY * Config.cameraScrollSpeed
-                            if (camera.zoom <= 10) {
-                                if (camera.zoom <= 3) {
-                                    if (camera.zoom + scroll / 20 > 0.5) {
-                                        desiredZoom = camera.zoom + scroll / 20
-                                    }
-                                } else {
-                                    desiredZoom = camera.zoom + scroll / 10
-                                }
-                            } else {
-                                desiredZoom = camera.zoom + scroll
+                            if (camera.zoom > 0.5 || scroll > 0) {
+                                desiredZoom = camera.zoom + scroll * (camera.zoom / 60f)
                             }
                         }
                     }
@@ -114,17 +106,17 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
                         selectedScene = it
                     }
                 }
+                scenes.any {
+                    it.onEvent(e)
+                }
                 return false
             }
         })
-        scenes.forEach {
-            it.registerListeners(eventHandler)
-        }
         var lastOption = 0
         eventHandler.addListener(EventKeyUpdate::class.java, object : IEventListener<EventKeyUpdate> {
             override fun onEvent(e: EventKeyUpdate): Boolean {
                 if (e.keyState == EnumKeyState.PRESS) {
-                    if (Config.keyBindings.switchCameraAxis.keycode == e.keycode) {
+                    if (Config.keyBindings.switchCameraAxis.check(e)) {
                         when (lastOption) {
                             0 -> selectedScene.camera = selectedScene.camera.copy(angleX = 0.0, angleY = 0.0)
                             1 -> selectedScene.camera = selectedScene.camera.copy(angleX = 0.0, angleY = -90.toRads())
@@ -136,11 +128,11 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
                         if (lastOption > 3) {
                             lastOption = 0
                         }
-                    } else if (Config.keyBindings.switchOrthoProjection.keycode == e.keycode) {
+                    } else if (Config.keyBindings.switchOrthoProjection.check(e)) {
                         (selectedScene as? SceneModel)?.apply {
                             perspective = !perspective
                         }
-                    } else if (Config.keyBindings.moveCameraToCursor.keycode == e.keycode) {
+                    } else if (Config.keyBindings.moveCameraToCursor.check(e)) {
                         selectedScene.apply {
                             camera = camera.copy(position = -cursorCenter)
                         }
@@ -159,13 +151,13 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
     }
 
     fun refreshScenes() {
-        selectedScene = scenes.first()
         rootFrame.contentPanel.apply {
             clearComponents()
             for (scene in scenes) {
                 addComponent(scene)
             }
         }
+        selectedScene = scenes.first()
     }
 
     fun scaleScenes() {

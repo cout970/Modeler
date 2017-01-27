@@ -1,9 +1,9 @@
 package com.cout970.modeler.view.scene
 
+import com.cout970.glutilities.event.EventMouseClick
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.times
 import com.cout970.modeler.config.Config
-import com.cout970.modeler.event.IEventController
 import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.util.toIMatrix
 import com.cout970.modeler.util.toRads
@@ -26,8 +26,8 @@ class SceneModel(modelEditor: ModelEditor, windowHandler: WindowHandler, sceneCo
         }
     }
 
-    override fun registerListeners(eventHandler: IEventController) {
-        modelSelector.registerListeners(eventHandler)
+    override fun onEvent(e: EventMouseClick): Boolean {
+        return modelSelector.onEvent(e)
     }
 
     fun getProjectionMatrix(): IMatrix4 {
