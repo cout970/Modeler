@@ -120,18 +120,19 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
 
                     // render selected quads
                     if (selection.mode == SelectionMode.QUAD) {
-                        GLStateMachine.useBlend(0.5f) {
+                        GLStateMachine.useBlend(0.25f) {
+                            val color = Config.colorPalette.modelSelectionColor
 
                             renderCache(selectionCache, model.hashCode() xor (selection.hashCode() + 1)) {
                                 tessellator.compile(GL11.GL_QUADS, formatPC) {
                                     model.getQuadsOptimized(selection) { quad ->
                                         quad.vertex.forEach { (pos, _) ->
-                                            set(0, pos.xd + 0.1, pos.yd + 0.1, pos.zd + 0.1).set(1, 0.5, 0.5,
-                                                    0.4).endVertex()
+                                            set(0, pos.xd + 0.1, pos.yd + 0.1, pos.zd + 0.1)
+                                                    .setVec(1, color).endVertex()
                                         }
                                         quad.vertex.forEach { (pos, _) ->
-                                            set(0, pos.xd - 0.1, pos.yd - 0.1, pos.zd - 0.1).set(1, 0.5, 0.5,
-                                                    0.4).endVertex()
+                                            set(0, pos.xd - 0.1, pos.yd - 0.1, pos.zd - 0.1)
+                                                    .setVec(1, color).endVertex()
                                         }
                                     }
                                 }

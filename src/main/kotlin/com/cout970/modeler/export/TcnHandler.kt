@@ -7,7 +7,6 @@ import com.cout970.modeler.model.*
 import com.cout970.modeler.modeleditor.rotatePointAroundPivot
 import com.cout970.modeler.resource.ResourcePath
 import com.cout970.vector.api.IVector2
-import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
 import org.w3c.dom.Node
 import javax.xml.parsers.DocumentBuilderFactory
@@ -120,123 +119,22 @@ class TcnImporter {
         val vRotation = vec3Of(rotation[0].toFloat(), rotation[1].toFloat(), rotation[2].toFloat())
 
         val rSize = vSize
-        val rOffset = vOffset * vec3Of(1, -1, 1)
-        val rPos = vPos * vec3Of(1, -1, 1) - vec3Of(0, vSize.y, 0)
+        val rOffset = vOffset * vec3Of(1, -1, -1)
+        val rPos = vPos * vec3Of(1, -1, -1) - vec3Of(0, vSize.y, vSize.z)
         val rTexture = vTexture
-        val rRotation = vRotation.toRadians() * vec3Of(-1, 1, -1)
-        val rRotPoint = vPos * vec3Of(1, -1, 1) + vec3Of(8, 24, 8)
+        val rRotation = vRotation.toRadians() * vec3Of(1, 1, -1)
+        val rRotPoint = vPos * vec3Of(1, -1, -1) + vec3Of(8, 24, 8)
 
         val fOffset = rPos + rOffset + vec3Of(8, 24, 8)
 
-//          cube.rotationPoint.set(cubePosition0.copy().add(8, 24, 8))
-//          cube.rotation.set(cubeRotation)
-//          cube.textureOffset.set(cubeTextureOffset)
-//          cube.flipUV = mirrored
-
-        val cube = createCube(size = rSize, offset = fOffset, textureOffset = rTexture, textureSize = textureSize,
-                mirrored = mirrored)
-
+        var cube = Mesh.createCube(size = rSize, offset = fOffset, textureOffset = rTexture, textureSize = textureSize)
+        if (mirrored) {
+            cube = Mesh.quadsToMesh(if (mirrored) cube.getQuads().map(Quad::flipUV) else cube.getQuads())
+        }
         if (rRotation.lengthSq() == 0.0) return cube
+
         return cube.copy(cube.positions.map {
             rotatePointAroundPivot(it, rRotPoint, rRotation)
         })
-    }
-
-    fun createCube(size: IVector3, offset: IVector3, textureOffset: IVector2 = Vector2.ORIGIN,
-                   textureSize: IVector2 = vec2Of(32, 32), mirrored: Boolean): Mesh {
-        val n: IVector3 = vec3Of(0) + offset
-        val p: IVector3 = size + offset
-
-        val width = size.xd
-        val height = size.yd
-        val length = size.zd
-
-        val offsetX = textureOffset.xd
-        val offsetY = textureOffset.yd
-
-        val texelSize = vec2Of(1) / textureSize
-
-        val quads = listOf(
-                //negX West
-                Quad.create(
-                        vec3Of(n.x, n.y, p.z),
-                        vec3Of(n.x, p.y, p.z),
-                        vec3Of(n.x, p.y, n.z),
-                        vec3Of(n.x, n.y, n.z)
-                ).setTexture1(
-                        vec2Of(offsetX + length + width + length, offsetY + length + height) * texelSize,
-                        vec2Of(offsetX + length + width, offsetY + length) * texelSize
-                ),
-                //posX East
-                Quad.create(
-                        vec3Of(p.x, p.y, n.z),
-                        vec3Of(p.x, p.y, p.z),
-                        vec3Of(p.x, n.y, p.z),
-                        vec3Of(p.x, n.y, n.z)
-                ).setTexture(
-                        vec2Of(offsetX + length, offsetY + length + height) * texelSize,
-                        vec2Of(offsetX, offsetY + length) * texelSize
-                ),
-                //negY Down
-                Quad.create(
-                        vec3Of(p.x, n.y, n.z),
-                        vec3Of(p.x, n.y, p.z),
-                        vec3Of(n.x, n.y, p.z),
-                        vec3Of(n.x, n.y, n.z)
-                ).setTexture1(
-                        vec2Of(offsetX + length + width + width, offsetY) * texelSize,
-                        vec2Of(offsetX + length + width, offsetY + length) * texelSize
-                ),
-                //posY Up
-                Quad.create(
-                        vec3Of(n.x, p.y, p.z),
-                        vec3Of(p.x, p.y, p.z),
-                        vec3Of(p.x, p.y, n.z),
-                        vec3Of(n.x, p.y, n.z)
-                ).setTexture(
-                        vec2Of(offsetX + length + width, offsetY + length) * texelSize,
-                        vec2Of(offsetX + length, offsetY) * texelSize
-                ),
-                //negZ North
-                Quad.create(
-                        vec3Of(n.x, p.y, n.z),
-                        vec3Of(p.x, p.y, n.z),
-                        vec3Of(p.x, n.y, n.z),
-                        vec3Of(n.x, n.y, n.z)
-                ).setTexture(
-                        vec2Of(offsetX + length + width, offsetY + length + height) * texelSize,
-                        vec2Of(offsetX + length, offsetY + length) * texelSize
-                ),
-                //posZ South
-                Quad.create(
-                        vec3Of(p.x, n.y, p.z),
-                        vec3Of(p.x, p.y, p.z),
-                        vec3Of(n.x, p.y, p.z),
-                        vec3Of(n.x, n.y, p.z)
-                ).setTexture1(
-                        vec2Of(offsetX + length + width + length, offsetY + length) * texelSize,
-                        vec2Of(offsetX + length + width + length + width, offsetY + length + height) * texelSize
-                )
-        )
-
-        return Mesh.quadsToMesh(if (mirrored) quads.map(Quad::flipUV) else quads)
-    }
-
-    fun Quad.setTexture(uv0: IVector2, uv1: IVector2): Quad {
-        return Quad(
-                a.copy(tex = vec2Of(uv1.x, uv0.y)),
-                b.copy(tex = vec2Of(uv0.x, uv0.y)),
-                c.copy(tex = vec2Of(uv0.x, uv1.y)),
-                d.copy(tex = vec2Of(uv1.x, uv1.y))
-        )
-    }
-
-    fun Quad.setTexture1(uv0: IVector2, uv1: IVector2): Quad {
-        return Quad(
-                a.copy(tex = vec2Of(uv1.x, uv1.y)),
-                b.copy(tex = vec2Of(uv1.x, uv0.y)),
-                c.copy(tex = vec2Of(uv0.x, uv0.y)),
-                d.copy(tex = vec2Of(uv0.x, uv1.y))
-        )
     }
 }

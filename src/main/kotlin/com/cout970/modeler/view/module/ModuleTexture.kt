@@ -1,7 +1,8 @@
 package com.cout970.modeler.view.module
 
 import com.cout970.modeler.view.controller.ModuleController
-import org.liquidengine.legui.component.Button
+import com.cout970.modeler.view.gui.comp.CButton
+import com.cout970.modeler.view.gui.comp.CCheckBox
 import org.liquidengine.legui.event.component.MouseClickEvent
 
 /**
@@ -10,21 +11,10 @@ import org.liquidengine.legui.event.component.MouseClickEvent
 class ModuleTexture(controller: ModuleController) : Module(controller, "Texture") {
 
     init {
-        addSubComponent(Button("Import", 10f, 0f, 160f, 20f).apply {
+        addSubComponent(CButton("Import Texture", 5f, 5f, 180f, 20f).apply {
             leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.texture.import"))
         })
-        addSubComponent(Button("Offset", 10f, 20f, 160f, 20f).apply {
-            leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.texture.size"))
-        })
-        addSubComponent(Button("FlipX", 10f, 40f, 160f, 20f).apply {
-            leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.texture.flip.x"))
-        })
-        addSubComponent(Button("FlipY", 10f, 60f, 160f, 20f).apply {
-            leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.texture.flip.y"))
-        })
-        addSubComponent(Button("Show all mesh", 10f, 60f, 160f, 20f).apply {
-            leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.texture.show_all_mesh"))
-        })
+        addSubComponent(CCheckBox("Show all mesh", 6f, 25f, 178f, 20f, propertyBind("menu.texture.show_all_mesh")))
         maximize()
     }
 }

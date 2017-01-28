@@ -78,9 +78,11 @@ abstract class Module(val controller: ModuleController, val name: String) : Widg
         container.addComponent(component)
     }
 
-    fun buttonListener(id: String) = Listener(controller.buttonController, id)
+    fun buttonListener(id: String) = ButtonListener(controller.buttonController, id)
 
-    open class Listener(val controller: ButtonController, val id: String) : LeguiEventListener<MouseClickEvent> {
+    fun propertyBind(id: String) = controller.buttonController.getBindProperty(id)
+
+    open class ButtonListener(val controller: ButtonController, val id: String) : LeguiEventListener<MouseClickEvent> {
         override fun update(e: MouseClickEvent) {
             if (e.action == MouseClickEvent.MouseClickAction.CLICK)
                 controller.onClick(id)

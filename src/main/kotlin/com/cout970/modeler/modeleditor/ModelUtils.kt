@@ -29,7 +29,7 @@ fun Model.translate(selection: Selection, axis: SelectionAxis, offset: Float): M
             }
         }
         SelectionMode.QUAD -> {
-            applyMesh(selection) { mesh ->
+            applyMeshAndGroup(selection) { mesh, group ->
                 val selectedQuadsIndex = selection.paths.filter { it.getMesh(this) == mesh }.map { it.quad }
                 val selectedPositions = mesh.indices
                         .filterIndexed { index, _ -> index in selectedQuadsIndex }
@@ -43,9 +43,7 @@ fun Model.translate(selection: Selection, axis: SelectionAxis, offset: Float): M
                 }))
                 if (newMesh.isCuboid()) {
                     val size = newMesh.getCuboidSize()
-                    val x = mesh.textures[newMesh.indices[5].aT].x
-                    val y = mesh.textures[newMesh.indices[1].dT].y
-                    newMesh.setUVFromCuboid(size, vec2Of(x, y), 64)
+                    newMesh.setUVFromCuboid(size, vec2Of(0, 0), group.material.size)
                 } else {
                     newMesh
                 }

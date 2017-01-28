@@ -87,6 +87,14 @@ fun Model.applyMesh(selection: Selection, meshFunc: (Mesh) -> Mesh): Model {
     })
 }
 
+fun Model.applyMeshAndGroup(selection: Selection, meshFunc: (Mesh, ModelGroup) -> Mesh): Model {
+    return copy(groups.replaceSelected(selection) { groupIndex, group ->
+        group.copy(group.meshes.replaceSelected(selection, groupIndex) { _, mesh ->
+            meshFunc(mesh, group)
+        })
+    })
+}
+
 /**
  * http://stackoverflow.com/questions/3120357/get-closest-point-to-a-line
  * Port to C# made by N.Schilke using the code of Justin L.

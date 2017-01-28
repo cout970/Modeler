@@ -26,4 +26,4 @@ class ResourcePath(val uri: URI) {
 }
 
 
-fun File.createPath() = ResourcePath(toURI())
+fun File.toResourcePath() = ResourcePath(toURI())

@@ -9,10 +9,7 @@ import com.cout970.modeler.modeleditor.selection.ModelPath
 import com.cout970.modeler.util.absolutePosition
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.view.util.ShaderHandler
-import com.cout970.vector.extensions.minus
-import com.cout970.vector.extensions.times
-import com.cout970.vector.extensions.vec2Of
-import com.cout970.vector.extensions.yd
+import com.cout970.vector.extensions.*
 import org.lwjgl.opengl.GL11
 
 /**
@@ -28,9 +25,10 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
         val selection = scene.modelProvider.selectionManager.selection
 
         val texture = model.groups.find { it.material != MaterialNone }?.material ?: MaterialNone
-        val scale = 64.0
-        val divs = texture.size
-        val offset = scale / 2
+        val size = texture.size
+        val divsX = texture.size.xi
+        val divsZ = texture.size.yi
+        val offset = size / 2
 
         val y = scene.parent.size.y - (scene.position.y + scene.size.y)
         scene.windowHandler.saveViewport(vec2Of(scene.absolutePosition.x, y), scene.size.toIVector()) {
@@ -39,28 +37,40 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
                 MaterialNone.bind()
                 enableColor = true
                 draw(GL11.GL_LINES, formatPCT) {
-                    for (x in 0..divs) {
-                        set(0, -offset + x * (scale / divs), -offset, 0).set(1, 0.5, 0.5, 0.5).set(2, 0.0,
-                                0.0).endVertex()
-                        set(0, -offset + x * (scale / divs), scale - offset, 0).set(1, 0.5, 0.5, 0.5).set(2, 0.0,
-                                0.0).endVertex()
+                    for (x in 0..divsX) {
+                        set(0, -offset.xi + x * (size.xi / divsX), -offset.yi, 0)
+                                .set(1, 0.5, 0.5, 0.5)
+                                .set(2, 0.0, 0.0).endVertex()
+                        set(0, -offset.xi + x * (size.xi / divsX), size.yi - offset.yi, 0)
+                                .set(1, 0.5, 0.5, 0.5)
+                                .set(2, 0.0, 0.0).endVertex()
                     }
 
-                    for (z in 0..divs) {
-                        set(0, -offset, z * (scale / divs) - offset, 0).set(1, 0.5, 0.5, 0.5).set(2, 0.0,
-                                0.0).endVertex()
-                        set(0, -offset + scale, z * (scale / divs) - offset, 0).set(1, 0.5, 0.5, 0.5).set(2, 0.0,
-                                0.0).endVertex()
+                    for (z in 0..divsZ) {
+                        set(0, -offset.xi, z * (size.yi / divsZ) - offset.yi, 0)
+                                .set(1, 0.5, 0.5, 0.5)
+                                .set(2, 0.0, 0.0).endVertex()
+                        set(0, -offset.xi + size.xi, z * (size.yi / divsZ) - offset.yi, 0)
+                                .set(1, 0.5, 0.5, 0.5)
+                                .set(2, 0.0, 0.0).endVertex()
                     }
                 }
 
                 enableColor = false
                 texture.bind()
                 draw(GL11.GL_QUADS, formatPCT) {
-                    set(0, -offset, -offset, 0).set(1, 1, 1, 1).set(2, 0.0, 1.0).endVertex()
-                    set(0, -offset + scale, -offset, 0).set(1, 1, 1, 1).set(2, 1.0, 1.0).endVertex()
-                    set(0, -offset + scale, scale - offset, 0).set(1, 1, 1, 1).set(2, 1.0, 0.0).endVertex()
-                    set(0, -offset, scale - offset, 0).set(1, 1, 1, 1).set(2, 0.0, 0.0).endVertex()
+                    set(0, -offset.xi, -offset.yi, 0)
+                            .set(1, 1, 1, 1)
+                            .set(2, 0.0, 1.0).endVertex()
+                    set(0, -offset.xi + size.xi, -offset.yi, 0)
+                            .set(1, 1, 1, 1)
+                            .set(2, 1.0, 1.0).endVertex()
+                    set(0, -offset.xi + size.xi, size.yi - offset.yi, 0)
+                            .set(1, 1, 1, 1)
+                            .set(2, 1.0, 0.0).endVertex()
+                    set(0, -offset.xi, size.yi - offset.yi, 0)
+                            .set(1, 1, 1, 1)
+                            .set(2, 0.0, 0.0).endVertex()
                 }
 
                 enableColor = true
@@ -74,7 +84,7 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
                     val renderQuad: (Quad) -> Unit = { quad ->
                         quad.vertex
                                 .map { it.copy(tex = vec2Of(it.tex.x, 1 - it.tex.yd)) }
-                                .map { (it.tex * scale) - offset }
+                                .map { (it.tex * size) - offset }
                                 .forEach { set(0, it.x, it.yd, 0).setVec(1, color).set(2, 0.0, 0.0).endVertex() }
                     }
 
@@ -93,7 +103,7 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
                                 }
                             }
                             ModelPath.Level.QUADS -> {
-                                if (true) {
+                                if (scene.sceneController.showAllMeshUVs.get()) {
                                     path.getParent().getSubPaths(model).forEach { quadPath ->
                                         renderQuad(quadPath.getQuad(model)!!)
                                     }

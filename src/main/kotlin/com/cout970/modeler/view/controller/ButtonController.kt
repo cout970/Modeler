@@ -5,6 +5,7 @@ import com.cout970.modeler.log.log
 import com.cout970.modeler.modeleditor.selection.SelectionManager
 import com.cout970.modeler.modeleditor.selection.SelectionMode
 import com.cout970.modeler.project.ProjectManager
+import com.cout970.modeler.util.IPropertyBind
 import com.cout970.modeler.view.UIManager
 import com.cout970.modeler.view.popup.*
 
@@ -22,6 +23,7 @@ class ButtonController(
     private val clipboard get() = projectManager.modelEditor.clipboard
     private val sceneController get() = uiManager.sceneController
     private val rootFrame get() = uiManager.rootFrame
+    private val modelEditor get() = projectManager.modelEditor
 
     fun onClick(id: String) {
         when (id) {
@@ -40,12 +42,7 @@ class ButtonController(
             "menu.cursor.translation" -> sceneController.modelTransformationMode = TransformationMode.TRANSLATION
             "menu.cursor.rotation" -> sceneController.modelTransformationMode = TransformationMode.ROTATION
             "menu.cursor.scale" -> sceneController.modelTransformationMode = TransformationMode.SCALE
-        /*
-            "menu.texture.import"
-            "menu.texture.size"
-            "menu.texture.flip.x"
-            "menu.texture.flip.y"
-         */
+
             "top.file.new" -> newProject(projectManager)
             "top.file.open" -> loadProject(projectManager)
             "top.file.save" -> saveProject(projectManager)
@@ -62,7 +59,25 @@ class ButtonController(
             "top.view.four_model" -> uiManager.showScenes(2)
             "top.view.model_and_texture" -> uiManager.showScenes(3)
             "top.view.3_model_1_texture" -> uiManager.showScenes(4)
-            else -> log(Level.ERROR) { "unregistered button ID: $id" }
+
+            "menu.texture.import" -> importTexture(projectManager)
+
+            else -> log(Level.ERROR) { "Unregistered button ID: $id" }
+        }
+    }
+
+    private var ignore = object : IPropertyBind<Boolean> {
+        override fun set(value: Boolean) = Unit
+        override fun get(): Boolean = false
+    }
+
+    fun getBindProperty(id: String): IPropertyBind<Boolean> {
+        return when (id) {
+            "menu.texture.show_all_mesh" -> sceneController.showAllMeshUVs
+            else -> {
+                log(Level.ERROR) { "Unregistered toggle button ID: $id" }
+                ignore
+            }
         }
     }
 }

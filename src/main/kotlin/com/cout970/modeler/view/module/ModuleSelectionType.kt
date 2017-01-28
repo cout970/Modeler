@@ -33,7 +33,7 @@ class ModuleSelectionType(controller: ModuleController, textureHandler: TextureH
         maximize()
     }
 
-    inner class Wrapper(id: String, val pos: Int) : Listener(controller.buttonController, id) {
+    inner class Wrapper(id: String, val pos: Int) : ButtonListener(controller.buttonController, id) {
 
         override fun update(e: MouseClickEvent) {
             super.update(e)

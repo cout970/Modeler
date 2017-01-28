@@ -1,11 +1,16 @@
 package com.cout970.modeler.export
 
 import com.cout970.modeler.model.Material
+import com.cout970.modeler.model.TexturedMaterial
 import com.cout970.modeler.modeleditor.action.ActionImportModel
+import com.cout970.modeler.modeleditor.action.ActionImportTexture
+import com.cout970.modeler.modeleditor.selection.ModelPath
+import com.cout970.modeler.modeleditor.selection.SelectionGroup
 import com.cout970.modeler.project.Project
 import com.cout970.modeler.project.ProjectManager
 import com.cout970.modeler.resource.ResourceLoader
-import com.cout970.modeler.resource.createPath
+import com.cout970.modeler.resource.toResourcePath
+import com.cout970.modeler.util.applyGroup
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -66,19 +71,19 @@ class ExportManager(val projectManager: ProjectManager, val resourceLoader: Reso
             ImportFormat.OBJ -> {
                 projectManager.modelEditor.historyRecord.doAction(
                         ActionImportModel(projectManager.modelEditor, resourceLoader, prop.path) {
-                            objImporter.import(file.createPath(), prop.flipUV)
+                            objImporter.import(file.toResourcePath(), prop.flipUV)
                         })
             }
             ImportFormat.TCN -> {
                 projectManager.modelEditor.historyRecord.doAction(
                         ActionImportModel(projectManager.modelEditor, resourceLoader, prop.path) {
-                            tcnImporter.import(file.createPath())
+                            tcnImporter.import(file.toResourcePath())
                         })
             }
             ImportFormat.JSON -> {
                 projectManager.modelEditor.historyRecord.doAction(
                         ActionImportModel(projectManager.modelEditor, resourceLoader, prop.path) {
-                            jsonImporter.import(file.createPath())
+                            jsonImporter.import(file.toResourcePath())
                         })
             }
         }
@@ -98,5 +103,19 @@ class ExportManager(val projectManager: ProjectManager, val resourceLoader: Reso
                 }
             }
         }
+    }
+
+    fun importTexture(path: String) {
+        projectManager.modelEditor.historyRecord.doAction(
+                ActionImportTexture(projectManager.modelEditor, resourceLoader, path) { model ->
+                    val file = File(path)
+                    val material = TexturedMaterial(file.nameWithoutExtension, file.toResourcePath())
+                    //TODO selected group
+                    val sel = SelectionGroup(model.getPaths(ModelPath.Level.GROUPS))
+                    model.applyGroup(sel) { group ->
+                        group.copy(material = material)
+                    }
+                }
+        )
     }
 }

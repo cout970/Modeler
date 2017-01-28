@@ -20,6 +20,6 @@ data class ActionModifyModel(val modelEditor: ModelEditor, val newModel: Model) 
     }
 
     override fun toString(): String {
-        return "ActionTranslate(oldModel=$model, newModel=$newModel, selection=$selection)"
+        return "ActionModifyModel(oldModel=$model, newModel=$newModel, selection=$selection)"
     }
 }

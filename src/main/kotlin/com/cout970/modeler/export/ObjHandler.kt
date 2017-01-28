@@ -5,7 +5,7 @@ import com.cout970.modeler.log.log
 import com.cout970.modeler.log.print
 import com.cout970.modeler.model.*
 import com.cout970.modeler.resource.ResourcePath
-import com.cout970.modeler.resource.createPath
+import com.cout970.modeler.resource.toResourcePath
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
@@ -294,7 +294,7 @@ class ObjImporter {
 private class ObjMaterial(val name: String) {
     var map_Ka: String = ""
 
-    fun toMaterial(): Material = TexturedMaterial(name, File(map_Ka).createPath())
+    fun toMaterial(): Material = TexturedMaterial(name, File(map_Ka).toResourcePath())
 }
 
 private class ObjObject(

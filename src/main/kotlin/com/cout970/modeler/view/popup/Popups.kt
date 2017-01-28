@@ -31,6 +31,10 @@ internal val importFileExtensions: PointerBuffer = MemoryUtil.memAllocPointer(3)
     put(MemoryUtil.memUTF8("*.json"))
     flip()
 }
+internal val importTextureExtensions: PointerBuffer = MemoryUtil.memAllocPointer(1).apply {
+    put(MemoryUtil.memUTF8("*.png"))
+    flip()
+}
 
 private val exportExtensionsObj: PointerBuffer = MemoryUtil.memAllocPointer(1).apply {
     put(MemoryUtil.memUTF8("*.obj"))
@@ -108,6 +112,14 @@ fun showExportModelPopup(projectManager: ProjectManager) {
         if (prop != null) {
             projectManager.exportManager.exportModel(prop)
         }
+    }
+}
+
+fun importTexture(projectManager: ProjectManager) {
+    val file = TinyFileDialogs.tinyfd_openFileDialog("Import Texture", "",
+            importTextureExtensions, "PNG texture (*.png)", false)
+    if (file != null) {
+        projectManager.exportManager.importTexture(file)
     }
 }
 

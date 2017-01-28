@@ -4,19 +4,20 @@ import com.cout970.glutilities.texture.Texture
 import com.cout970.modeler.log.print
 import com.cout970.modeler.resource.ResourceLoader
 import com.cout970.modeler.resource.ResourcePath
-import com.cout970.vector.extensions.xi
+import com.cout970.vector.api.IVector2
+import com.cout970.vector.extensions.vec2Of
 import com.google.gson.annotations.Expose
 import javax.swing.JOptionPane
 
 sealed class Material(@Expose val name: String) {
-    abstract val size: Int
+    abstract val size: IVector2
     abstract fun bind()
     abstract fun loadTexture(resourceLoader: ResourceLoader)
 }
 
 class TexturedMaterial(name: String, val path: ResourcePath) : Material(name) {
     var texture: Texture? = null
-    override val size: Int get() = texture?.size?.xi ?: 1
+    override val size: IVector2 get() = texture?.size ?: vec2Of(1)
 
     override fun loadTexture(resourceLoader: ResourceLoader) {
         try {
@@ -55,7 +56,7 @@ class TexturedMaterial(name: String, val path: ResourcePath) : Material(name) {
 }
 
 object MaterialNone : Material("noTexture") {
-    override val size: Int = 1
+    override val size: IVector2 = vec2Of(64)
     lateinit var whiteTexture: Texture
         private set
 

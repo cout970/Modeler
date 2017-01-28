@@ -41,6 +41,8 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
     var selectedAxis = SelectionAxis.NONE
     var hoveredAxis = SelectionAxis.NONE
 
+    val showAllMeshUVs = BooleanProperty(true)
+
     fun tick() {
         scaleScenes()
         updateCamera()
@@ -116,7 +118,7 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
         eventHandler.addListener(EventKeyUpdate::class.java, object : IEventListener<EventKeyUpdate> {
             override fun onEvent(e: EventKeyUpdate): Boolean {
                 if (e.keyState == EnumKeyState.PRESS) {
-                    if (Config.keyBindings.switchCameraAxis.check(e)) {
+                    if (Config.keyBindings.switchCameraAxis.check(e) && selectedScene is SceneModel) {
                         when (lastOption) {
                             0 -> selectedScene.camera = selectedScene.camera.copy(angleX = 0.0, angleY = 0.0)
                             1 -> selectedScene.camera = selectedScene.camera.copy(angleX = 0.0, angleY = -90.toRads())
