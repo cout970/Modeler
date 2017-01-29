@@ -3,24 +3,24 @@ package com.cout970.modeler.modeleditor.action
 import com.cout970.modeler.model.Mesh
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.modeleditor.ModelEditor
+import com.cout970.modeler.modeleditor.selection.IModelSelection
 import com.cout970.modeler.modeleditor.selection.ModelPath
-import com.cout970.modeler.modeleditor.selection.Selection
+import com.cout970.modeler.modeleditor.selection.ModelSelectionMode
 import com.cout970.modeler.modeleditor.selection.SelectionGroup
-import com.cout970.modeler.modeleditor.selection.SelectionMode
 import com.cout970.modeler.util.flatMapIndexed
 import com.cout970.modeler.util.replaceSelected
 
 /**
  * Created by cout970 on 2016/12/09.
  */
-class ActionPaste(val selection: Selection, val copiedModel: Model, val modelEditor: ModelEditor) : IAction {
+class ActionPaste(val selection: IModelSelection, val copiedModel: Model, val modelEditor: ModelEditor) : IAction {
 
     //the model when the action is executed
     val model = modelEditor.model
 
     override fun run() {
-        when (selection.mode) {
-            SelectionMode.GROUP -> {
+        when (selection.modelMode) {
+            ModelSelectionMode.GROUP -> {
                 val groups = copiedModel.groups.flatMapIndexed { groupIndex, (groups) ->
                     groups.filterIndexed { groupIndex, _ ->
                         selection.isSelected(ModelPath(groupIndex, groupIndex))
@@ -32,7 +32,7 @@ class ActionPaste(val selection: Selection, val copiedModel: Model, val modelEdi
                 }))
                 modelEditor.updateModel(newModel)
             }
-            SelectionMode.MESH -> {
+            ModelSelectionMode.MESH -> {
                 val meshes = copiedModel.groups.flatMapIndexed { groupIndex, group ->
                     group.meshes.filterIndexed { meshIndex, mesh ->
                         selection.isSelected(ModelPath(groupIndex, meshIndex))
@@ -44,7 +44,7 @@ class ActionPaste(val selection: Selection, val copiedModel: Model, val modelEdi
                 })
                 modelEditor.updateModel(newModel)
             }
-            SelectionMode.QUAD -> {
+            ModelSelectionMode.QUAD -> {
                 val quadMeshPairs = copiedModel.groups.flatMapIndexed { groupIndex, group ->
                     group.meshes.flatMapIndexed { meshIndex, mesh ->
                         mesh.getQuads().filterIndexed { quadIndex, quad ->
@@ -60,7 +60,7 @@ class ActionPaste(val selection: Selection, val copiedModel: Model, val modelEdi
                 })
                 modelEditor.updateModel(newModel)
             }
-            SelectionMode.VERTEX -> IllegalStateException("Trying to paste vertex")
+            ModelSelectionMode.VERTEX -> IllegalStateException("Trying to paste vertex")
         }
     }
 

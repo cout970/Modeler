@@ -12,7 +12,9 @@ class KeyBindings {
     var rotateCamera = MouseKeyBind(Mouse.BUTTON_RIGHT)
     var moveCamera = MouseKeyBind(Mouse.BUTTON_MIDDLE)
     var selectModel = MouseKeyBind(Mouse.BUTTON_LEFT)
+    var selectTexture = MouseKeyBind(Mouse.BUTTON_LEFT)
     var selectModelControls = MouseKeyBind(Mouse.BUTTON_LEFT)
+    var selectTextureControls = MouseKeyBind(Mouse.BUTTON_LEFT)
     var jumpCameraToCursor = MouseKeyBind(Mouse.BUTTON_RIGHT)
 
     var multipleSelection = KeyBind(Keyboard.KEY_LEFT_CONTROL)

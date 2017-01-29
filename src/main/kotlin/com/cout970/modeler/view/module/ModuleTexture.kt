@@ -15,6 +15,9 @@ class ModuleTexture(controller: ModuleController) : Module(controller, "Texture"
             leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.texture.import"))
         })
         addSubComponent(CCheckBox("Show all mesh", 6f, 25f, 178f, 20f, propertyBind("menu.texture.show_all_mesh")))
+        addSubComponent(CButton("Split vertex", 5f, 45f, 180f, 20f).apply {
+            leguiEventListeners.addListener(MouseClickEvent::class.java, buttonListener("menu.texture.split"))
+        })
         maximize()
     }
 }

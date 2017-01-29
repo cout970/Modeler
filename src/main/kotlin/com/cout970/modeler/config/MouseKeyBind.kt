@@ -1,5 +1,6 @@
 package com.cout970.modeler.config
 
+import com.cout970.glutilities.event.EventMouseClick
 import com.cout970.modeler.event.IInput
 
 /**
@@ -8,4 +9,5 @@ import com.cout970.modeler.event.IInput
 class MouseKeyBind(val keycode: Int) {
 
     fun check(eventHandler: IInput): Boolean = eventHandler.mouse.isButtonPressed(keycode)
+    fun check(event: EventMouseClick): Boolean = event.button == keycode
 }

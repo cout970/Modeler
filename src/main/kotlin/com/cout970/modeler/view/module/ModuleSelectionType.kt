@@ -42,7 +42,7 @@ class ModuleSelectionType(controller: ModuleController, textureHandler: TextureH
                     it.isToggled = i == pos
                 }
             }
-            this@ModuleSelectionType.controller.modelProvider.selectionManager.clearSelection()
+            this@ModuleSelectionType.controller.modelProvider.selectionManager.clearModelSelection()
         }
     }
 }

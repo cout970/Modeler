@@ -3,10 +3,13 @@ package com.cout970.modeler.modeleditor.selection
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.model.Quad
-import com.cout970.modeler.util.center
+import com.cout970.modeler.util.center2D
+import com.cout970.modeler.util.center3D
 import com.cout970.modeler.util.middle
+import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.plus
+import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.vec3Of
 
 /**
@@ -21,7 +24,21 @@ data class ModelPath(
     fun getGroup(model: Model) = if (group in model.groups.indices) model.groups[group] else null
     fun getMesh(model: Model) = if (mesh == -1) null else getGroup(model)?.meshes?.get(mesh)
     fun getQuad(model: Model) = if (quad == -1) null else getMesh(model)?.getQuads()?.get(quad)
-    fun getVertex(model: Model) = if (vertex == -1) null else getMesh(model)?.positions?.get(vertex)
+    fun getQuadIndices(model: Model) = if (quad == -1) null else getMesh(model)?.indices?.get(quad)
+
+    fun getVertexPos(model: Model): IVector3? {
+        if (vertex == -1) return null
+        val mesh = getMesh(model) ?: return null
+        val indices = getQuadIndices(model) ?: return null
+        return mesh.positions[indices.positions[vertex]]
+    }
+
+    fun getVertexTex(model: Model): IVector2? {
+        if (vertex == -1) return null
+        val mesh = getMesh(model) ?: return null
+        val indices = getQuadIndices(model) ?: return null
+        return mesh.textures[indices.textureCoords[vertex]]
+    }
 
     fun compareLevel(other: ModelPath, level: Level): Boolean {
         return when (level) {
@@ -39,13 +56,25 @@ data class ModelPath(
         else Level.VERTEX
     }
 
-    fun getCenter(model: Model): IVector3 {
+    fun getModelCenter(model: Model): IVector3 {
         return when (level) {
             Level.GROUPS -> getGroup(model)!!.transform.position
-            Level.MESH -> getGroup(model)!!.transform.position + getMesh(model)!!.getQuads().map(Quad::center).middle()
-            Level.QUADS -> getGroup(model)!!.transform.position + getQuad(model)!!.center()
-            Level.VERTEX -> getGroup(model)!!.transform.position + getVertex(model)!!
+            Level.MESH -> getGroup(model)!!.transform.position + getMesh(model)!!.getQuads().map(
+                    Quad::center3D).middle()
+            Level.QUADS -> getGroup(model)!!.transform.position + getQuad(model)!!.center3D()
+            Level.VERTEX -> getGroup(model)!!.transform.position + getVertexPos(model)!!
             else -> vec3Of(0)
+        }
+    }
+
+    fun getTextureCenter(model: Model): IVector2 {
+        return when (level) {
+            Level.GROUPS -> getGroup(model)!!.transform.position
+            Level.MESH -> getGroup(model)!!.transform.position + getMesh(model)!!.getQuads().map(
+                    Quad::center2D).middle()
+            Level.QUADS -> getGroup(model)!!.transform.position + getQuad(model)!!.center2D()
+            Level.VERTEX -> getGroup(model)!!.transform.position + getVertexTex(model)!!
+            else -> vec2Of(0)
         }
     }
 
@@ -73,7 +102,7 @@ data class ModelPath(
                 getMesh(model)!!.getQuads().mapIndexed { i, _ -> ModelPath(group, mesh, i) }
             }
             ModelPath.Level.QUADS -> {
-                getQuad(model)!!.vertex.mapIndexed { i, _ -> ModelPath(group, mesh, quad, i) }
+                (0..3).map { ModelPath(group, mesh, quad, it) }
             }
             ModelPath.Level.VERTEX -> listOf()
         }

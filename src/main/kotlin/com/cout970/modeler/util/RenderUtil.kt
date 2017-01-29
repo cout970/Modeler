@@ -6,6 +6,7 @@ import com.cout970.modeler.model.Quad
 import com.cout970.modeler.model.Transformation
 import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.vector.api.IQuaternion
+import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
 import org.joml.Quaterniond
@@ -65,9 +66,15 @@ object RenderUtil {
     }
 }
 
-fun Quad.center(): IVector3 {
+fun Quad.center3D(): IVector3 {
     val ab = (b.pos + a.pos) / 2
     val cd = (d.pos + c.pos) / 2
+    return (ab + cd) / 2
+}
+
+fun Quad.center2D(): IVector2 {
+    val ab = (b.tex + a.tex) / 2
+    val cd = (d.tex + c.tex) / 2
     return (ab + cd) / 2
 }
 
@@ -79,6 +86,17 @@ fun Iterable<IVector3>.middle(): IVector3 {
         count++
     }
     if (sum == null) return vec3Of(0)
+    return sum / count
+}
+
+fun Iterable<IVector2>.middle(): IVector2 {
+    var sum: IVector2? = null
+    var count = 0
+    for (i in this) {
+        if (sum == null) sum = i else sum += i
+        count++
+    }
+    if (sum == null) return vec2Of(0)
     return sum / count
 }
 

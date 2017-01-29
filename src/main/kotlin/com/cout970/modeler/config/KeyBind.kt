@@ -10,7 +10,6 @@ import org.lwjgl.glfw.GLFW
  */
 class KeyBind(val keycode: Int, vararg val mods: KeyboardModifiers) {
 
-
     fun check(input: IInput): Boolean = input.keyboard.isKeyPressed(keycode) && mods.all { it.check(input) }
     fun check(event: EventKeyUpdate): Boolean = event.keycode == keycode && mods.all { it.check(event) }
 }

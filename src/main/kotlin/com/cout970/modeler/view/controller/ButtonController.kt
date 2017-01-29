@@ -2,8 +2,8 @@ package com.cout970.modeler.view.controller
 
 import com.cout970.modeler.log.Level
 import com.cout970.modeler.log.log
+import com.cout970.modeler.modeleditor.selection.ModelSelectionMode
 import com.cout970.modeler.modeleditor.selection.SelectionManager
-import com.cout970.modeler.modeleditor.selection.SelectionMode
 import com.cout970.modeler.project.ProjectManager
 import com.cout970.modeler.util.IPropertyBind
 import com.cout970.modeler.view.UIManager
@@ -27,10 +27,10 @@ class ButtonController(
 
     fun onClick(id: String) {
         when (id) {
-            "menu.select.group" -> selectionManager.selectionMode = SelectionMode.GROUP
-            "menu.select.mesh" -> selectionManager.selectionMode = SelectionMode.MESH
-            "menu.select.quad" -> selectionManager.selectionMode = SelectionMode.QUAD
-            "menu.select.vertex" -> selectionManager.selectionMode = SelectionMode.VERTEX
+            "menu.select.group" -> selectionManager.modelSelectionMode = ModelSelectionMode.GROUP
+            "menu.select.mesh" -> selectionManager.modelSelectionMode = ModelSelectionMode.MESH
+            "menu.select.quad" -> selectionManager.modelSelectionMode = ModelSelectionMode.QUAD
+            "menu.select.vertex" -> selectionManager.modelSelectionMode = ModelSelectionMode.VERTEX
             "menu.add.cube" -> inserter.addCube()
             "menu.add.plane" -> inserter.addPlane()
             "menu.history.undo", "top.edit.undo", "input.undo" -> historyRecord.undo()
@@ -61,6 +61,7 @@ class ButtonController(
             "top.view.3_model_1_texture" -> uiManager.showScenes(4)
 
             "menu.texture.import" -> importTexture(projectManager)
+            "menu.texture.split" -> modelEditor.splitTextures()
 
             else -> log(Level.ERROR) { "Unregistered button ID: $id" }
         }

@@ -1,8 +1,8 @@
 package com.cout970.modeler.model
 
+import com.cout970.modeler.modeleditor.selection.IModelSelection
 import com.cout970.modeler.modeleditor.selection.ModelPath
-import com.cout970.modeler.modeleditor.selection.Selection
-import com.cout970.modeler.modeleditor.selection.SelectionMode
+import com.cout970.modeler.modeleditor.selection.ModelSelectionMode
 import com.cout970.modeler.util.flatMapIndexed
 import com.google.gson.annotations.Expose
 
@@ -43,35 +43,33 @@ data class Model(@Expose val groups: List<ModelGroup>, val id: Int = modelIds++)
                     }
                 }
             }
-
             ModelPath.Level.VERTEX -> groups.flatMapIndexed { groupIndex, group ->
                 group.meshes.flatMapIndexed { meshIndex, mesh ->
                     var quadIndex = 0
                     mesh.indices.flatMap { quad ->
                         quadIndex++
-                        listOf(ModelPath(groupIndex, meshIndex, quadIndex, quad.aP),
-                                ModelPath(groupIndex, meshIndex, quadIndex, quad.bP),
-                                ModelPath(groupIndex, meshIndex, quadIndex, quad.cP),
-                                ModelPath(groupIndex, meshIndex, quadIndex, quad.dP))
+                        (0..3).map { ModelPath(groupIndex, meshIndex, quadIndex, it) }
                     }
                 }
             }
         }
     }
 
-    fun getQuadsOptimized(selection: Selection, func: (Quad) -> Unit) {
-        when (selection.mode) {
-            SelectionMode.GROUP -> getPaths(ModelPath.Level.GROUPS).filter {
+    fun getQuadsOptimized(selection: IModelSelection, func: (Quad) -> Unit) {
+        when (selection.modelMode) {
+            ModelSelectionMode.GROUP -> getPaths(ModelPath.Level.GROUPS).filter {
                 selection.isSelected(it)
             }.flatMap { group ->
                 group.getSubPaths(this)
             }.flatMap { path ->
                 path.getMesh(this)!!.getQuads().map { it.transform(path.getMeshMatrix(this)) }
             }
-            SelectionMode.MESH -> getPaths(ModelPath.Level.MESH).filter { selection.isSelected(it) }.flatMap { path ->
+            ModelSelectionMode.MESH -> getPaths(ModelPath.Level.MESH).filter {
+                selection.isSelected(it)
+            }.flatMap { path ->
                 path.getMesh(this)!!.getQuads().map { it.transform(path.getMeshMatrix(this)) }
             }
-            SelectionMode.QUAD -> {
+            ModelSelectionMode.QUAD -> {
                 getPaths(ModelPath.Level.MESH).filter { selection.containsSelectedElements(it) }.flatMap { mesh ->
                     val matrix = mesh.getMeshMatrix(this)
                     mesh.getSubPaths(this).filter { selection.isSelected(it) }.map {

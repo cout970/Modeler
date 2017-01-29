@@ -9,7 +9,7 @@ import com.cout970.modeler.modeleditor.ModelEditor
 data class ActionModifyModel(val modelEditor: ModelEditor, val newModel: Model) : IAction {
 
     val model = modelEditor.model
-    val selection = modelEditor.selectionManager.selection
+    val selection = modelEditor.selectionManager.modelSelection
 
     override fun run() {
         modelEditor.updateModel(newModel)

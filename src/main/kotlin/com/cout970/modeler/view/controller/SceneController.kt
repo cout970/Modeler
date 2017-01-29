@@ -38,8 +38,12 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
 
     var modelTransformationMode = TransformationMode.TRANSLATION
     var textureTransformationMode = TransformationMode.TRANSLATION
-    var selectedAxis = SelectionAxis.NONE
-    var hoveredAxis = SelectionAxis.NONE
+
+    var selectedModelAxis = SelectionAxis.NONE
+    var hoveredModelAxis = SelectionAxis.NONE
+
+    var selectedTextureAxis = SelectionAxis.NONE
+    var hoveredTextureAxis = SelectionAxis.NONE
 
     val showAllMeshUVs = BooleanProperty(true)
 

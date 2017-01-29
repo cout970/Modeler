@@ -19,7 +19,7 @@ class ActionImportModel(val modelEditor: ModelEditor,
     override fun run() {
         try {
             val newModel = function()
-            modelEditor.selectionManager.clearSelection()
+            modelEditor.selectionManager.clearModelSelection()
             newModel.groups.map { it.material }.distinct().forEach {
                 it.loadTexture(resourceLoader)
             }

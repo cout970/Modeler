@@ -73,7 +73,8 @@ fun newProject(projectManager: ProjectManager) {
             "Do you want to create a new project? \nAll unsaved changes will be lost!")
     if (res != JOptionPane.OK_OPTION) return
     projectManager.project = Project(projectManager.project.owner, "Unnamed")
-    projectManager.modelEditor.selectionManager.clearSelection()
+    projectManager.modelEditor.selectionManager.clearModelSelection()
+    projectManager.modelEditor.selectionManager.clearTextureSelection()
 }
 
 fun loadProject(projectManager: ProjectManager) {

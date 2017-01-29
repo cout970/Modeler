@@ -1,10 +1,11 @@
 package com.cout970.modeler.util
 
+import com.cout970.modeler.config.Config
 import com.cout970.modeler.model.Mesh
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.model.ModelGroup
+import com.cout970.modeler.modeleditor.selection.ISelection
 import com.cout970.modeler.modeleditor.selection.ModelPath
-import com.cout970.modeler.modeleditor.selection.Selection
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
 import java.io.File
@@ -51,7 +52,7 @@ inline fun <T> Iterable<T>.filterNotIndexed(predicate: (index: Int, T) -> Boolea
     return destination
 }
 
-inline fun List<ModelGroup>.replaceSelected(sel: Selection,
+inline fun List<ModelGroup>.replaceSelected(sel: ISelection,
                                             func: (groupIndex: Int, ModelGroup) -> ModelGroup): List<ModelGroup> {
     return this.mapIndexed { index, modelGroup ->
         if (sel.containsSelectedElements(ModelPath(index))) {
@@ -62,7 +63,7 @@ inline fun List<ModelGroup>.replaceSelected(sel: Selection,
     }
 }
 
-inline fun List<Mesh>.replaceSelected(sel: Selection, groupIndex: Int,
+inline fun List<Mesh>.replaceSelected(sel: ISelection, groupIndex: Int,
                                       func: (groupIndex: Int, Mesh) -> Mesh): List<Mesh> {
     return this.mapIndexed { index, mesh ->
         if (sel.containsSelectedElements(ModelPath(groupIndex, index))) {
@@ -73,13 +74,13 @@ inline fun List<Mesh>.replaceSelected(sel: Selection, groupIndex: Int,
     }
 }
 
-fun Model.applyGroup(selection: Selection, groupFunc: (ModelGroup) -> ModelGroup): Model {
+fun Model.applyGroup(selection: ISelection, groupFunc: (ModelGroup) -> ModelGroup): Model {
     return copy(groups.replaceSelected(selection) { _, group ->
         groupFunc(group)
     })
 }
 
-fun Model.applyMesh(selection: Selection, meshFunc: (Mesh) -> Mesh): Model {
+fun Model.applyMesh(selection: ISelection, meshFunc: (Mesh) -> Mesh): Model {
     return copy(groups.replaceSelected(selection) { groupIndex, group ->
         group.copy(group.meshes.replaceSelected(selection, groupIndex) { _, mesh ->
             meshFunc(mesh)
@@ -87,12 +88,21 @@ fun Model.applyMesh(selection: Selection, meshFunc: (Mesh) -> Mesh): Model {
     })
 }
 
-fun Model.applyMeshAndGroup(selection: Selection, meshFunc: (Mesh, ModelGroup) -> Mesh): Model {
+fun Model.applyMeshAndGroup(selection: ISelection, meshFunc: (Mesh, ModelGroup) -> Mesh): Model {
     return copy(groups.replaceSelected(selection) { groupIndex, group ->
         group.copy(group.meshes.replaceSelected(selection, groupIndex) { _, mesh ->
             meshFunc(mesh, group)
         })
     })
+}
+
+fun getArrowProperties(zoom: Double): Triple<Double, Double, Double> {
+    val scale = zoom / 10 * Config.cursorArrowsScale
+    return Triple(
+            scale,
+            Config.cursorArrowsDispersion * scale,
+            0.0625 * scale
+    )
 }
 
 /**

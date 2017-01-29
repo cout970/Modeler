@@ -3,9 +3,9 @@ package com.cout970.modeler.modeleditor.action
 import com.cout970.modeler.model.Mesh
 import com.cout970.modeler.model.QuadIndices
 import com.cout970.modeler.modeleditor.ModelEditor
+import com.cout970.modeler.modeleditor.selection.IModelSelection
 import com.cout970.modeler.modeleditor.selection.ModelPath
-import com.cout970.modeler.modeleditor.selection.Selection
-import com.cout970.modeler.modeleditor.selection.SelectionMode
+import com.cout970.modeler.modeleditor.selection.ModelSelectionMode
 import com.cout970.modeler.util.filterNotIndexed
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -13,27 +13,26 @@ import com.cout970.vector.api.IVector3
 /**
  * Created by cout970 on 2016/12/08.
  */
-data class ActionDelete(val selection: Selection, val modelEditor: ModelEditor) : IAction {
+data class ActionDelete(val selection: IModelSelection, val modelEditor: ModelEditor) : IAction {
 
     val model = modelEditor.model
 
     override fun run() {
         modelEditor.apply {
-            when (selection.mode) {
-                SelectionMode.GROUP -> {
+            when (selection.modelMode) {
+                ModelSelectionMode.GROUP -> {
                     updateModel(model.copy(model.groups.filterNotIndexed { groupIndex, group ->
                         selection.isSelected(ModelPath(groupIndex))
                     }))
                 }
-                SelectionMode.MESH -> {
+                ModelSelectionMode.MESH -> {
                     updateModel(model.copy(model.groups.mapIndexed { groupIndex, group ->
                         group.copy(group.meshes.filterNotIndexed { meshIndex, mesh ->
                             selection.isSelected(ModelPath(groupIndex, meshIndex))
                         })
                     }))
                 }
-                SelectionMode.QUAD -> {
-
+                ModelSelectionMode.QUAD -> {
                     updateModel(model.copy(model.groups.mapIndexed { groupIndex, group ->
                         group.copy(group.meshes.mapIndexedNotNull { meshIndex, mesh ->
                             if (!selection.containsSelectedElements(ModelPath(groupIndex, meshIndex))) {
@@ -75,15 +74,15 @@ data class ActionDelete(val selection: Selection, val modelEditor: ModelEditor) 
                         })
                     }))
                 }
-                SelectionMode.VERTEX -> Unit //you can't remove a vertex because everything needs to be made of quads
+                ModelSelectionMode.VERTEX -> Unit //you can't remove a vertex because everything needs to be made of quads
             }
         }
-        modelEditor.selectionManager.clearSelection()
+        modelEditor.selectionManager.clearModelSelection()
     }
 
     override fun undo() {
         modelEditor.updateModel(model)
-        modelEditor.selectionManager.selection = selection
+        modelEditor.selectionManager.modelSelection = selection
     }
 
     override fun toString(): String {

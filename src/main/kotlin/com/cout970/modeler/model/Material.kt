@@ -51,8 +51,6 @@ class TexturedMaterial(name: String, val path: ResourcePath) : Material(name) {
         result = 31 * result + (texture?.hashCode() ?: 0)
         return result
     }
-
-
 }
 
 object MaterialNone : Material("noTexture") {

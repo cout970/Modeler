@@ -2,8 +2,8 @@ package com.cout970.modeler.modeleditor
 
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.model.Quad
-import com.cout970.modeler.modeleditor.selection.Selection
-import com.cout970.modeler.modeleditor.selection.SelectionMode
+import com.cout970.modeler.modeleditor.selection.IModelSelection
+import com.cout970.modeler.modeleditor.selection.ModelSelectionMode
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.vector.api.IVector3
@@ -14,21 +14,21 @@ import org.joml.Quaterniond
  * Created by cout970 on 2016/12/17.
  */
 
-fun Model.translate(selection: Selection, axis: SelectionAxis, offset: Float): Model {
-    return when (selection.mode) {
+fun Model.translate(selection: IModelSelection, axis: SelectionAxis, offset: Float): Model {
+    return when (selection.modelMode) {
 
-        SelectionMode.GROUP -> {
+        ModelSelectionMode.GROUP -> {
             applyGroup(selection) { group ->
                 group.copy(transform = group.transform.move(axis, offset))
             }
         }
 
-        SelectionMode.MESH -> {
+        ModelSelectionMode.MESH -> {
             applyMesh(selection) { mesh ->
                 mesh.translate(axis.axis * offset)
             }
         }
-        SelectionMode.QUAD -> {
+        ModelSelectionMode.QUAD -> {
             applyMeshAndGroup(selection) { mesh, group ->
                 val selectedQuadsIndex = selection.paths.filter { it.getMesh(this) == mesh }.map { it.quad }
                 val selectedPositions = mesh.indices
@@ -50,10 +50,10 @@ fun Model.translate(selection: Selection, axis: SelectionAxis, offset: Float): M
             }
         }
 
-        SelectionMode.VERTEX -> {
+        ModelSelectionMode.VERTEX -> {
             applyMesh(selection) { mesh ->
                 val pathToThisComponent = selection.paths.filter { it.getMesh(this) == mesh }
-                val selectedIndices = pathToThisComponent.map { it.vertex }
+                val selectedIndices = pathToThisComponent.map { mesh.indices[it.quad].positions[it.vertex] }
 
                 mesh.copy(positions = mesh.positions.mapIndexed { i, pos ->
                     if (i in selectedIndices) {
@@ -68,31 +68,31 @@ fun Model.translate(selection: Selection, axis: SelectionAxis, offset: Float): M
     }
 }
 
-fun Model.rotate(selection: Selection, axis: SelectionAxis, offset: Float): Model {
+fun Model.rotate(selection: IModelSelection, axis: SelectionAxis, offset: Float): Model {
     val axisDir = when (axis) {
         SelectionAxis.X -> SelectionAxis.Y
         SelectionAxis.Y -> SelectionAxis.Z
         SelectionAxis.Z -> SelectionAxis.X
         else -> SelectionAxis.NONE
     }
-    return when (selection.mode) {
+    return when (selection.modelMode) {
 
-        SelectionMode.GROUP -> {
+        ModelSelectionMode.GROUP -> {
             applyGroup(selection) { group ->
                 group.copy(transform = group.transform.rotate(axisDir, offset))
             }
         }
 
-        SelectionMode.MESH -> {
-            val center = selection.getCenter(this)
+        ModelSelectionMode.MESH -> {
+            val center = selection.getCenter3D(this)
             applyMesh(selection) { mesh ->
                 mesh.copy(positions = mesh.positions.map { pos ->
                     rotatePointAroundPivot(pos, center, axisDir.axis * offset)
                 })
             }
         }
-        SelectionMode.QUAD -> {
-            val center = selection.getCenter(this)
+        ModelSelectionMode.QUAD -> {
+            val center = selection.getCenter3D(this)
             applyMesh(selection) { mesh ->
                 val selectedQuadsIndex = selection.paths.filter { it.getMesh(this) == mesh }.map { it.quad }
                 val selectedPositions = mesh.indices
@@ -108,11 +108,11 @@ fun Model.rotate(selection: Selection, axis: SelectionAxis, offset: Float): Mode
             }
         }
 
-        SelectionMode.VERTEX -> {
-            val center = selection.getCenter(this)
+        ModelSelectionMode.VERTEX -> {
+            val center = selection.getCenter3D(this)
             applyMesh(selection) { mesh ->
                 val pathToThisComponent = selection.paths.filter { it.getMesh(this) == mesh }
-                val selectedIndices = pathToThisComponent.map { it.vertex }
+                val selectedIndices = pathToThisComponent.map { mesh.indices[it.quad].positions[it.vertex] }
 
                 mesh.copy(positions = mesh.positions.mapIndexed { i, pos ->
                     if (i in selectedIndices) {

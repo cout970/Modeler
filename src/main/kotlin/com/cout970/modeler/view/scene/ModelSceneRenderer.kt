@@ -6,14 +6,11 @@ import com.cout970.matrix.extensions.Matrix4
 import com.cout970.matrix.extensions.times
 import com.cout970.matrix.extensions.transpose
 import com.cout970.modeler.config.Config
+import com.cout970.modeler.modeleditor.selection.IModelSelection
 import com.cout970.modeler.modeleditor.selection.ModelPath
-import com.cout970.modeler.modeleditor.selection.Selection
-import com.cout970.modeler.modeleditor.selection.SelectionMode
+import com.cout970.modeler.modeleditor.selection.ModelSelectionMode
 import com.cout970.modeler.modeleditor.selection.SelectionNone
-import com.cout970.modeler.util.Cache
-import com.cout970.modeler.util.RenderUtil
-import com.cout970.modeler.util.absolutePosition
-import com.cout970.modeler.util.toIVector
+import com.cout970.modeler.util.*
 import com.cout970.modeler.view.controller.ModelSelector
 import com.cout970.modeler.view.controller.SceneController
 import com.cout970.modeler.view.controller.SelectionAxis
@@ -32,7 +29,7 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
         if (scene.size.x < 1 || scene.size.y < 1) return
 
         val model = scene.sceneController.getModel(scene.modelProvider.model)
-        val selection = scene.modelProvider.selectionManager.selection
+        val selection = scene.modelProvider.selectionManager.modelSelection
         val sceneController = scene.sceneController
 
         val modelCache: Cache<Int, VAO> = sceneController.modelCache
@@ -94,7 +91,7 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
                         val size = Config.selectionThickness.toDouble()
                         val color = Config.colorPalette.modelSelectionColor
                         tessellator.compile(GL11.GL_QUADS, formatPC) {
-                            if (selection.mode != SelectionMode.VERTEX) {
+                            if (selection.modelMode != ModelSelectionMode.VERTEX) {
                                 model.getQuadsOptimized(selection) { (a, b, c, d) ->
                                     RenderUtil.renderBar(tessellator, a.pos, b.pos, size, color)
                                     RenderUtil.renderBar(tessellator, b.pos, c.pos, size, color)
@@ -108,7 +105,9 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
                                     }
                                     if (paths.isNotEmpty()) {
                                         val matrix = compPath.getMeshMatrix(model)
-                                        paths.map { it.getVertex(model)!! }.map { matrix * it.toVector4(1.0) }.forEach {
+                                        paths.map { it.getVertexPos(model)!! }.map {
+                                            matrix * it.toVector4(1.0)
+                                        }.forEach {
                                             RenderUtil.renderBar(tessellator, it, it, size * 4, color)
                                         }
                                     }
@@ -119,7 +118,7 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
                     }
 
                     // render selected quads
-                    if (selection.mode == SelectionMode.QUAD) {
+                    if (selection.modelMode == ModelSelectionMode.QUAD) {
                         GLStateMachine.useBlend(0.25f) {
                             val color = Config.colorPalette.modelSelectionColor
 
@@ -149,7 +148,7 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
                             renderTranslation(sceneController.cursorCenter, selector, selection, scene.camera)
                         }
                         TransformationMode.ROTATION -> {
-                            renderRotation(selection.getCenter(model), selector, selection, scene.camera)
+                            renderRotation(selection.getCenter3D(model), selector, selection, scene.camera)
                         }
                         TransformationMode.SCALE -> Unit
                     }
@@ -163,24 +162,24 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
         }
     }
 
-    fun renderRotation(center: IVector3, selector: ModelSelector, selection: Selection, camera: Camera) {
+    fun renderRotation(center: IVector3, selector: ModelSelector, selection: IModelSelection, camera: Camera) {
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
         val controller = selector.controller
-        val selX = controller.selectedAxis == SelectionAxis.X || controller.hoveredAxis == SelectionAxis.X
-        val selY = controller.selectedAxis == SelectionAxis.Y || controller.hoveredAxis == SelectionAxis.Y
-        val selZ = controller.selectedAxis == SelectionAxis.Z || controller.hoveredAxis == SelectionAxis.Z
+        val selX = controller.selectedModelAxis == SelectionAxis.X || controller.hoveredModelAxis == SelectionAxis.X
+        val selY = controller.selectedModelAxis == SelectionAxis.Y || controller.hoveredModelAxis == SelectionAxis.Y
+        val selZ = controller.selectedModelAxis == SelectionAxis.Z || controller.hoveredModelAxis == SelectionAxis.Z
 
         draw(GL11.GL_QUADS, shaderHandler.formatPC) {
-            val (scale, radius, size) = selector.getArrowProperties(camera.zoom)
+            val (scale, radius, size) = getArrowProperties(camera.zoom)
 
-            if (selection.mode != SelectionMode.VERTEX) {
+            if (selection.modelMode != ModelSelectionMode.VERTEX) {
                 RenderUtil.renderBar(this, center, center, size * 1.5, vec3Of(1, 1, 1))
             }
 
             //if one of the axis is selected
-            if (controller.selectedAxis != SelectionAxis.NONE) {
+            if (controller.selectedModelAxis != SelectionAxis.NONE) {
 
-                val axis = controller.selectedAxis
+                val axis = controller.selectedModelAxis
                 RenderUtil.renderCircle(this, center, axis,
                         radius, Config.cursorLinesSize * scale * 0.03125, axis.axis)
 
@@ -202,13 +201,13 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
         }
     }
 
-    fun renderTranslation(center: IVector3, selector: ModelSelector, selection: Selection, camera: Camera) {
+    fun renderTranslation(center: IVector3, selector: ModelSelector, selection: IModelSelection, camera: Camera) {
         val controller = selector.controller
-        val selX = controller.selectedAxis == SelectionAxis.X || controller.hoveredAxis == SelectionAxis.X
-        val selY = controller.selectedAxis == SelectionAxis.Y || controller.hoveredAxis == SelectionAxis.Y
-        val selZ = controller.selectedAxis == SelectionAxis.Z || controller.hoveredAxis == SelectionAxis.Z
+        val selX = controller.selectedModelAxis == SelectionAxis.X || controller.hoveredModelAxis == SelectionAxis.X
+        val selY = controller.selectedModelAxis == SelectionAxis.Y || controller.hoveredModelAxis == SelectionAxis.Y
+        val selZ = controller.selectedModelAxis == SelectionAxis.Z || controller.hoveredModelAxis == SelectionAxis.Z
 
-        if (Config.enableHelperGrid && selector.scene.perspective && controller.selectedAxis != SelectionAxis.NONE) {
+        if (Config.enableHelperGrid && selector.scene.perspective && controller.selectedModelAxis != SelectionAxis.NONE) {
             draw(GL11.GL_LINES, shaderHandler.formatPC) {
                 val grid1 = Config.colorPalette.grid1Color
                 val grid2 = Config.colorPalette.grid2Color
@@ -241,11 +240,11 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
         draw(GL11.GL_QUADS, shaderHandler.formatPC) {
 
-            val (scale, radius, size) = selector.getArrowProperties(camera.zoom)
+            val (scale, radius, size) = getArrowProperties(camera.zoom)
             val start = radius - 0.2 * scale
             val end = radius + 0.2 * scale
 
-            if (selection.mode != SelectionMode.VERTEX) {
+            if (selection.modelMode != ModelSelectionMode.VERTEX) {
                 RenderUtil.renderBar(this, center, center, size * 1.5, vec3Of(1, 1, 1))
             }
 
@@ -310,9 +309,9 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
                 set(0, x, 160, dist).setVec(1, color).endVertex()
             }
 
-            val selX = controller.selectedAxis == SelectionAxis.X
-            val selY = controller.selectedAxis == SelectionAxis.Y
-            val selZ = controller.selectedAxis == SelectionAxis.Z
+            val selX = controller.selectedModelAxis == SelectionAxis.X
+            val selY = controller.selectedModelAxis == SelectionAxis.Y
+            val selZ = controller.selectedModelAxis == SelectionAxis.Z
             if (!selX && !selY && !selZ || !perspective || controller.modelTransformationMode != TransformationMode.TRANSLATION) {
                 color = Config.colorPalette.grid2Color
 

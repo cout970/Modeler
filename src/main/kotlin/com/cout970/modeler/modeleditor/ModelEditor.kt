@@ -1,7 +1,9 @@
 package com.cout970.modeler.modeleditor
 
 import com.cout970.modeler.model.Model
+import com.cout970.modeler.modeleditor.action.ActionModifyModel
 import com.cout970.modeler.modeleditor.selection.SelectionManager
+import com.cout970.modeler.modeleditor.selection.SelectionNone
 import com.cout970.modeler.project.ProjectManager
 import com.cout970.modeler.util.ITickeable
 import java.util.*
@@ -43,4 +45,10 @@ class ModelEditor(val projectManager: ProjectManager) : ITickeable, IModelProvid
     }
 
     override fun tick() = Unit
+
+    fun splitTextures() {
+        if (selectionManager.textureSelection != SelectionNone) {
+            historyRecord.doAction(ActionModifyModel(this, model.splitUV(selectionManager.textureSelection)))
+        }
+    }
 }
