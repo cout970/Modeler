@@ -5,7 +5,9 @@ import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.plus
 import com.cout970.vector.extensions.xd
 import com.cout970.vector.extensions.yd
+import org.joml.Vector2f
 import org.liquidengine.legui.component.Component
+import org.liquidengine.legui.component.Frame
 import org.liquidengine.legui.event.component.MouseClickEvent
 
 /**
@@ -14,7 +16,7 @@ import org.liquidengine.legui.event.component.MouseClickEvent
 
 fun inside(point: IVector2, pos: IVector2, size: IVector2): Boolean {
     return point.xd > pos.xd && point.xd < pos.xd + size.xd &&
-            point.yd > pos.yd && point.yd < pos.yd + size.yd
+           point.yd > pos.yd && point.yd < pos.yd + size.yd
 }
 
 val Component.absolutePosition: IVector2 get() {
@@ -44,3 +46,9 @@ inline fun <T : Component> T.onClick(id: Int, crossinline func: (Int) -> Unit): 
     })
     return this
 }
+
+var Frame.size: Vector2f
+    get() = componentLayer.container.size
+    set(value) {
+        componentLayer.container.size = value
+    }

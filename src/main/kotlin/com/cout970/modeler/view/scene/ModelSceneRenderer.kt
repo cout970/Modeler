@@ -64,8 +64,9 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
                             group.getQuads().forEach { quad ->
                                 val norm = quad.normal
                                 quad.vertex.forEach { (pos, tex) ->
-                                    set(0, pos.x, pos.y, pos.z).set(1, tex.xd, tex.yd).set(2, norm.x, norm.y,
-                                            norm.z).endVertex()
+                                    set(0, pos.x, pos.y, pos.z)
+                                            .set(1, tex.xd, tex.yd)
+                                            .set(2, norm.x, norm.y, norm.z).endVertex()
                                 }
                             }
                         }

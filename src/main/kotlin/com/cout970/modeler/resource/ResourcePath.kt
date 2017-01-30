@@ -20,14 +20,16 @@ class ResourcePath(val uri: URI) {
     fun inputStream() = uri.toURL().openStream()!!
 
     fun lastModifiedTime(): Long {
-        try {
-            val file = Paths.get(uri).toFile()
-            if (file.exists()) {
-                return file.lastModified()
+        if (uri.scheme == "file") {
+            try {
+                val file = Paths.get(uri).toFile()
+                if (file.exists() && file.isFile) {
+                    return file.lastModified()
+                }
+            } catch (e: Exception) {
+                //ignored
+                e.print()
             }
-        } catch (e: Exception) {
-            //ignored
-            e.print()
         }
         return -1
     }

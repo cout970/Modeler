@@ -57,7 +57,6 @@ class RootFrame(val input: IInput,
 
     fun update() {
         size = windowHandler.window.getFrameBufferSize().toJoml2f()
-        position = Vector2f(0f, 0f)
 
         topBar.size = Vector2f(size.x, 20f)
         leftBar.container.size.x = 200f

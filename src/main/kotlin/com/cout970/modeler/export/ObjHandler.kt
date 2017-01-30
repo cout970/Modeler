@@ -191,7 +191,7 @@ class ObjImporter {
             } else if (line.startsWith(sFace)) { //faces
                 val quad = ObjQuad()
                 for (i in 1..4) {
-                    val textVertex = lineSpliced[i]
+                    val textVertex = if (i in lineSpliced.indices) lineSpliced[i] else lineSpliced[lineSpliced.size - 1]
                     val index = textVertex.split(separator)
 
                     quad.vertexIndices[i - 1] = index[0].toInt() - 1
@@ -202,7 +202,8 @@ class ObjImporter {
                         }
                     } else {
                         if (hasNormals) {
-                            quad.normalIndices[i - 1] = index[1].toInt() - 1
+                            quad.textureIndices[i - 1] = 0
+                            quad.normalIndices[i - 1] = index[2].toInt() - 1
                         }
                     }
                 }
@@ -245,13 +246,14 @@ class ObjImporter {
         return Model(objects.map { obj ->
             ModelGroup(name = obj.name,
                     material = materials.firstOrNull { it.name == obj.material }?.toMaterial() ?: MaterialNone,
-                    meshes = obj.groups.map { group ->
-                        Mesh(vertices.map { it * 16 }, texCoords, group.quads.map {
-                            QuadIndices(it.vertexIndices[0], it.textureIndices[0],
-                                    it.vertexIndices[1], it.textureIndices[1],
-                                    it.vertexIndices[2], it.textureIndices[2],
-                                    it.vertexIndices[3], it.textureIndices[3])
-                        })
+                    meshes = obj.groups.mapNotNull { group ->
+                        Mesh(vertices.map { it * 16 }, if (texCoords.isEmpty()) listOf(vec2Of(0)) else texCoords,
+                                group.quads.map {
+                                    QuadIndices(it.vertexIndices[0], it.textureIndices[0],
+                                            it.vertexIndices[1], it.textureIndices[1],
+                                            it.vertexIndices[2], it.textureIndices[2],
+                                            it.vertexIndices[3], it.textureIndices[3])
+                                })
                     })
         })
     }

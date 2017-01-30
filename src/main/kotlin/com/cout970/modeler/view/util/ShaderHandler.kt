@@ -5,7 +5,6 @@ import com.cout970.glutilities.shader.ShaderProgram
 import com.cout970.glutilities.shader.UniformVariable
 import com.cout970.glutilities.tessellator.*
 import com.cout970.glutilities.tessellator.format.FormatPT
-import com.cout970.glutilities.tessellator.format.FormatPTN
 import com.cout970.glutilities.texture.Texture
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.Matrix4
@@ -213,10 +212,14 @@ class ShaderHandler(resourceLoader: ResourceLoader) {
             }
         }
 
+    object BufferSize {
+        val value = 67108864 / 32 * 32
+    }
+
     class FormatPC : IFormat {
 
-        var bufferPos = Buffer(IBuffer.BufferType.FLOAT, 524288 * 16, 3)
-        var bufferCol = Buffer(IBuffer.BufferType.FLOAT, 524288 * 16, 3)
+        var bufferPos = Buffer(IBuffer.BufferType.FLOAT, BufferSize.value, 3)
+        var bufferCol = Buffer(IBuffer.BufferType.FLOAT, BufferSize.value, 3)
 
         override fun getBuffers(): List<IBuffer> = listOf(bufferPos, bufferCol)
 
@@ -233,9 +236,9 @@ class ShaderHandler(resourceLoader: ResourceLoader) {
 
     class FormatPCT : IFormat {
 
-        var bufferPos = Buffer(IBuffer.BufferType.FLOAT, 524288 * 16, 3)
-        var bufferCol = Buffer(IBuffer.BufferType.FLOAT, 524288 * 16, 3)
-        var bufferTex = Buffer(IBuffer.BufferType.FLOAT, 524288 * 16, 2)
+        var bufferPos = Buffer(IBuffer.BufferType.FLOAT, BufferSize.value, 3)
+        var bufferCol = Buffer(IBuffer.BufferType.FLOAT, BufferSize.value, 3)
+        var bufferTex = Buffer(IBuffer.BufferType.FLOAT, BufferSize.value, 2)
 
         override fun getBuffers(): List<IBuffer> = listOf(bufferPos, bufferCol, bufferTex)
 
@@ -249,6 +252,27 @@ class ShaderHandler(resourceLoader: ResourceLoader) {
             bufferPos.getBase().clear()
             bufferCol.getBase().clear()
             bufferTex.getBase().clear()
+        }
+    }
+
+    class FormatPTN : IFormat {
+
+        var bufferPos = Buffer(IBuffer.BufferType.FLOAT, BufferSize.value, 3)
+        var bufferTex = Buffer(IBuffer.BufferType.FLOAT, BufferSize.value, 2)
+        var bufferNorm = Buffer(IBuffer.BufferType.FLOAT, BufferSize.value, 3)
+
+        override fun getBuffers(): List<IBuffer> = listOf(bufferPos, bufferTex, bufferNorm)
+
+        override fun injectData(builder: VaoBuilder) {
+            builder.bindAttribf(0, bufferPos.getBase().apply { flip() }, 3)
+            builder.bindAttribf(1, bufferTex.getBase().apply { flip() }, 2)
+            builder.bindAttribf(2, bufferNorm.getBase().apply { flip() }, 3)
+        }
+
+        override fun reset() {
+            bufferPos.getBase().clear()
+            bufferTex.getBase().clear()
+            bufferNorm.getBase().clear()
         }
     }
 }
