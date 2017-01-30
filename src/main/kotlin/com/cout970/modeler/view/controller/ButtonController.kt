@@ -61,6 +61,7 @@ class ButtonController(
             "top.view.3_model_1_texture" -> uiManager.showScenes(4)
 
             "menu.texture.import" -> importTexture(projectManager)
+            "menu.texture.export" -> exportTexture(projectManager)
             "menu.texture.split" -> modelEditor.splitTextures()
 
             else -> log(Level.ERROR) { "Unregistered button ID: $id" }

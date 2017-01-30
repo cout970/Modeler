@@ -3,6 +3,7 @@ package com.cout970.modeler.view.gui
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.div
 import com.cout970.vector.extensions.vec3Of
+import java.awt.Color
 
 /**
  * Created by cout970 on 2017/01/24.
@@ -24,19 +25,26 @@ data class ColorPalette(
 
     companion object {
 
-        val defaultPalette = ColorPalette(
-                darkColor = vec3Of(194, 209, 221) / 255f,
-                primaryColor = vec3Of(213, 237, 255) / 255f,
-                lightColor = vec3Of(229, 244, 255) / 255f,
-                buttonColor = vec3Of(229, 244, 255) / 255f,
-                selectedButton = vec3Of(229, 244, 255) / 255f,
-                textColor = vec3Of(32, 32, 32) / 255f,
-                modelBackgroundColor = vec3Of(126, 201, 255) / 255f,
-                textureSelectionColor = vec3Of(255, 0, 0) / 255f,
-                modelSelectionColor = vec3Of(0, 0, 255) / 255f,
-                borderColor = vec3Of(188, 188, 188) / 255f,
-                grid1Color = vec3Of(125, 125, 125) / 255f,
-                grid2Color = vec3Of(255, 0, 0) / 255f
+        val darkPalette = ColorPalette(
+                darkColor = hexToColor(0x383838),
+                primaryColor = hexToColor(0x545454),
+                lightColor = hexToColor(0x474747),
+                buttonColor = hexToColor(0x8b8b8b),
+                selectedButton = hexToColor(0xffffff),
+                textColor = hexToColor(0xffffff),
+                modelBackgroundColor = hexToColor(0x252525),
+                textureSelectionColor = hexToColor(0x0000ff),
+                modelSelectionColor = hexToColor(0xffff00),
+                borderColor = hexToColor(0xbcbcbc),
+                grid1Color = hexToColor(0x6f6f6f),
+                grid2Color = hexToColor(0xefefef)
         )
+
+        val defaultPalette = darkPalette
+
+        fun hexToColor(hex: Int): IVector3 {
+            val color = Color(hex)
+            return vec3Of(color.red, color.green, color.blue) / 255f
+        }
     }
 }

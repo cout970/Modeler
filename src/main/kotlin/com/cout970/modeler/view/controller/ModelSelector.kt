@@ -98,7 +98,6 @@ class ModelSelector(val scene: SceneModel, val controller: SceneController, val 
                     controller.tmpModel = null
                 }
             }
-
         } else {
             controller.hoveredModelAxis = SelectionAxis.NONE
             controller.selectedModelAxis = SelectionAxis.NONE
