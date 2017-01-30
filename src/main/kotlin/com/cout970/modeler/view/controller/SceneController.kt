@@ -175,12 +175,12 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
             }
             2 -> {
                 scenes[0].apply {
-                    size = contentPanel.size.run { Vector2f(x / 2, y) }
+                    size = contentPanel.size.run { Vector2f(x, y / 2) }
                     position = Vector2f(0f, 0f)
                 }
                 scenes[1].apply {
-                    size = contentPanel.size.run { Vector2f(x / 2, y) }
-                    position = Vector2f(contentPanel.size.x / 2f, 0f)
+                    size = contentPanel.size.run { Vector2f(x, y / 2) }
+                    position = Vector2f(0f, contentPanel.size.y / 2f)
                 }
             }
             3 -> {

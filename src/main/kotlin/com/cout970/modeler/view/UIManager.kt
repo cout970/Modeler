@@ -20,7 +20,7 @@ class UIManager(
         val windowHandler: WindowHandler,
         private val eventHandler: EventHandler,
         renderManager: RenderManager,
-        textureHandler: TextureHandler,
+        private val textureHandler: TextureHandler,
         private val projectManager: ProjectManager) : ITickeable {
 
     val sceneController: SceneController
@@ -67,6 +67,11 @@ class UIManager(
             }
         }
         sceneController.refreshScenes()
+    }
+
+    override fun preTick() {
+        super.preTick()
+        textureHandler.updateMaterials(projectManager.modelEditor.model)
     }
 
     override fun tick() {

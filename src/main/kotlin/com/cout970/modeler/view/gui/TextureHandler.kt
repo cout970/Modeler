@@ -1,5 +1,6 @@
 package com.cout970.modeler.view.gui
 
+import com.cout970.modeler.model.Model
 import com.cout970.modeler.resource.ResourceLoader
 import org.joml.Vector2f
 import org.liquidengine.legui.component.ImageView
@@ -7,7 +8,7 @@ import org.liquidengine.legui.component.ImageView
 /**
  * Created by cout970 on 2017/01/24.
  */
-class TextureHandler(loader: ResourceLoader) {
+class TextureHandler(val loader: ResourceLoader) {
 
     val selectionModeGroup: ImageView
     val selectionModeMesh: ImageView
@@ -35,5 +36,9 @@ class TextureHandler(loader: ResourceLoader) {
         cursorScale = ImageView(loader.getImage("assets/textures/scale.png")).apply {
             size = Vector2f(16f); position = Vector2f(5f, 2f)
         }
+    }
+
+    fun updateMaterials(model: Model) {
+        model.groups.map { it.material }.filter { it.hasChanged() }.forEach { it.loadTexture(loader) }
     }
 }

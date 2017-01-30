@@ -38,13 +38,18 @@ class ModelEditor(val projectManager: ProjectManager) : ITickeable, IModelProvid
         actionQueue.add(function)
     }
 
+    override fun preTick() {
+        super.preTick()
+
+    }
+
+    override fun tick() = Unit
+
     override fun postTick() {
         while (actionQueue.isNotEmpty()) {
             actionQueue.poll().invoke()
         }
     }
-
-    override fun tick() = Unit
 
     fun splitTextures() {
         if (selectionManager.textureSelection != SelectionNone) {

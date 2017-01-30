@@ -12,11 +12,13 @@ import javax.swing.JOptionPane
 sealed class Material(@Expose val name: String) {
     abstract val size: IVector2
     abstract fun bind()
+    abstract fun hasChanged(): Boolean
     abstract fun loadTexture(resourceLoader: ResourceLoader)
 }
 
 class TexturedMaterial(name: String, val path: ResourcePath) : Material(name) {
     var texture: Texture? = null
+    private var lastModified = -1L
     override val size: IVector2 get() = texture?.size ?: vec2Of(1)
 
     override fun loadTexture(resourceLoader: ResourceLoader) {
@@ -25,11 +27,16 @@ class TexturedMaterial(name: String, val path: ResourcePath) : Material(name) {
                 magFilter = Texture.PIXELATED
                 minFilter = Texture.PIXELATED
             }
+            lastModified = path.lastModifiedTime()
         } catch (e: Exception) {
             e.print()
             JOptionPane.showMessageDialog(null, "Error loading texture: Missing resource ($path)")
             texture = null
         }
+    }
+
+    override fun hasChanged(): Boolean {
+        return lastModified != path.lastModifiedTime()
     }
 
     override fun bind() {
@@ -61,6 +68,8 @@ object MaterialNone : Material("noTexture") {
     override fun loadTexture(resourceLoader: ResourceLoader) {
         whiteTexture = resourceLoader.getTexture("assets/textures/debug.png")
     }
+
+    override fun hasChanged(): Boolean = false
 
     override fun bind() {
         whiteTexture.bind()
