@@ -19,30 +19,15 @@ import com.google.gson.annotations.Expose
 data class Mesh(
         @Expose val positions: List<IVector3>,
         @Expose val textures: List<IVector2>,
-        @Expose val indices: List<QuadIndices>) : IRayObstacle {
+        @Expose val indices: List<QuadIndices>
+) : IRayObstacle {
 
     fun getQuads(): List<Quad> = indices.map { it.toQuad(positions, textures) }
 
     fun getVertices(): List<Vertex> = getQuads().flatMap(Quad::vertex).distinct()
 
-    fun rayTrace(matrix: IMatrix4, ray: Ray): RayTraceResult? {
-        val hits = mutableListOf<RayTraceResult>()
-        for ((a, b, c, d) in getQuads().map { it.transform(matrix) }) {
-            RayTraceUtil.rayTraceQuad(ray, this, a.pos, b.pos, c.pos, d.pos)?.let { hits += it }
-        }
-        if (hits.isEmpty()) return null
-        if (hits.size == 1) return hits.first()
-        return hits.apply { sortBy { it.hit.distance(ray.start) } }.first()
-    }
-
-    override fun rayTrace(ray: Ray): RayTraceResult? {
-        val hits = mutableListOf<RayTraceResult>()
-        for ((a, b, c, d) in getQuads()) {
-            RayTraceUtil.rayTraceQuad(ray, this, a.pos, b.pos, c.pos, d.pos)?.let { hits += it }
-        }
-        if (hits.isEmpty()) return null
-        if (hits.size == 1) return hits.first()
-        return hits.apply { sortBy { it.hit.distance(ray.start) } }.first()
+    fun translate(offset: IVector3): Mesh {
+        return copy(positions.map { it + offset })
     }
 
     fun isCuboid(): Boolean {
@@ -82,6 +67,17 @@ data class Mesh(
             return vec3Of(x, y, z)
         }
         return Vector3.ORIGIN
+    }
+
+    fun toAABB(): AABB {
+        if (indices.isEmpty()) return AABB(Vector3.ORIGIN, Vector3.ORIGIN)
+        var min: IVector3 = positions[0]
+        var max: IVector3 = positions[0]
+        for (pos in positions) {
+            min = min.min(pos)
+            max = max.max(pos)
+        }
+        return AABB(min, max)
     }
 
     override fun toString(): String {
@@ -170,8 +166,24 @@ data class Mesh(
         }
     }
 
-    fun translate(offset: IVector3): Mesh {
-        return copy(positions.map { it + offset })
+    fun rayTrace(matrix: IMatrix4, ray: Ray): RayTraceResult? {
+        val hits = mutableListOf<RayTraceResult>()
+        for ((a, b, c, d) in getQuads().map { it.transform(matrix) }) {
+            RayTraceUtil.rayTraceQuad(ray, this, a.pos, b.pos, c.pos, d.pos)?.let { hits += it }
+        }
+        if (hits.isEmpty()) return null
+        if (hits.size == 1) return hits.first()
+        return hits.apply { sortBy { it.hit.distance(ray.start) } }.first()
+    }
+
+    override fun rayTrace(ray: Ray): RayTraceResult? {
+        val hits = mutableListOf<RayTraceResult>()
+        for ((a, b, c, d) in getQuads()) {
+            RayTraceUtil.rayTraceQuad(ray, this, a.pos, b.pos, c.pos, d.pos)?.let { hits += it }
+        }
+        if (hits.isEmpty()) return null
+        if (hits.size == 1) return hits.first()
+        return hits.apply { sortBy { it.hit.distance(ray.start) } }.first()
     }
 }
 

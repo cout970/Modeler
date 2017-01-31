@@ -50,5 +50,8 @@ inline fun <T : Component> T.onClick(id: Int, crossinline func: (Int) -> Unit): 
 var Frame.size: Vector2f
     get() = componentLayer.container.size
     set(value) {
+        allLayers.forEach {
+            it.container.size = value
+        }
         componentLayer.container.size = value
     }

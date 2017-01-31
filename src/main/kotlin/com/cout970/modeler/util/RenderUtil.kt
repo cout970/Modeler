@@ -1,6 +1,7 @@
 package com.cout970.modeler.util
 
 import com.cout970.glutilities.tessellator.ITessellator
+import com.cout970.modeler.model.AABB
 import com.cout970.modeler.model.Mesh
 import com.cout970.modeler.model.Quad
 import com.cout970.modeler.model.Transformation
@@ -62,6 +63,47 @@ object RenderUtil {
             }
 
             renderBar(t, start * radius + center, end * radius + center, size, color)
+        }
+    }
+
+    fun renderBox(tes: ITessellator, box: AABB) {
+
+        tes.apply {
+            set(0, box.minX, box.minY, box.minZ).set(1, 1, 1, 1).endVertex()
+            set(0, box.maxX, box.minY, box.minZ).set(1, 1, 1, 1).endVertex()
+
+            set(0, box.minX, box.minY, box.minZ).set(1, 1, 1, 1).endVertex()
+            set(0, box.minX, box.maxY, box.minZ).set(1, 1, 1, 1).endVertex()
+
+            set(0, box.minX, box.minY, box.minZ).set(1, 1, 1, 1).endVertex()
+            set(0, box.minX, box.minY, box.maxZ).set(1, 1, 1, 1).endVertex()
+
+            set(0, box.maxX, box.maxY, box.maxZ).set(1, 1, 1, 1).endVertex()
+            set(0, box.minX, box.maxY, box.maxZ).set(1, 1, 1, 1).endVertex()
+
+            set(0, box.maxX, box.maxY, box.maxZ).set(1, 1, 1, 1).endVertex()
+            set(0, box.maxX, box.minY, box.maxZ).set(1, 1, 1, 1).endVertex()
+
+            set(0, box.maxX, box.maxY, box.maxZ).set(1, 1, 1, 1).endVertex()
+            set(0, box.maxX, box.maxY, box.minZ).set(1, 1, 1, 1).endVertex()
+
+            set(0, box.minX, box.maxY, box.minZ).set(1, 1, 1, 1).endVertex()
+            set(0, box.maxX, box.maxY, box.minZ).set(1, 1, 1, 1).endVertex()
+
+            set(0, box.maxX, box.minY, box.minZ).set(1, 1, 1, 1).endVertex()
+            set(0, box.maxX, box.maxY, box.minZ).set(1, 1, 1, 1).endVertex()
+
+            set(0, box.minX, box.maxY, box.minZ).set(1, 1, 1, 1).endVertex()
+            set(0, box.minX, box.maxY, box.maxZ).set(1, 1, 1, 1).endVertex()
+
+            set(0, box.maxX, box.minY, box.maxZ).set(1, 1, 1, 1).endVertex()
+            set(0, box.minX, box.minY, box.maxZ).set(1, 1, 1, 1).endVertex()
+
+            set(0, box.minX, box.maxY, box.maxZ).set(1, 1, 1, 1).endVertex()
+            set(0, box.minX, box.minY, box.maxZ).set(1, 1, 1, 1).endVertex()
+
+            set(0, box.maxX, box.minY, box.maxZ).set(1, 1, 1, 1).endVertex()
+            set(0, box.maxX, box.minY, box.minZ).set(1, 1, 1, 1).endVertex()
         }
     }
 }

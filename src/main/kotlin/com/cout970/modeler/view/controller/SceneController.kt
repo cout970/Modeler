@@ -46,6 +46,7 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
     var hoveredTextureAxis = SelectionAxis.NONE
 
     val showAllMeshUVs = BooleanProperty(true)
+    val showBoundingBoxes = BooleanProperty(false)
 
     fun tick() {
         scaleScenes()

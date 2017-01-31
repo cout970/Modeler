@@ -130,6 +130,7 @@ class ObjImporter {
     internal val sVertex = "v "
     internal val sNormal = "vn "
     internal val sTexture = "vt "
+    internal val sTexture2 = "vtc "
     internal val sFace = "f "
     internal val sGroup = "g "
     internal val sObject = "o "
@@ -178,7 +179,7 @@ class ObjImporter {
                 normals.add(vec3Of(lineSpliced[startIndex].toFloat(),
                         lineSpliced[startIndex + 1].toFloat(),
                         lineSpliced[startIndex + 2].toFloat()))
-            } else if (line.startsWith(sTexture)) { //textures
+            } else if (line.startsWith(sTexture) || line.startsWith(sTexture2)) { //textures
 
                 hasTextures = true
                 //reads a texture coords

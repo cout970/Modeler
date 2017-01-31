@@ -21,7 +21,7 @@ import org.liquidengine.legui.component.ScrollablePanel
 
 class RootFrame(val input: IInput,
                 val windowHandler: WindowHandler,
-                val buttonController: ButtonController) : Frame() {
+                val buttonController: ButtonController) : Frame(1f, 1f) {
 
     val dropdown = Panel(0f, 20f, 150f, 80f)
     val topBar = TopBar(this)

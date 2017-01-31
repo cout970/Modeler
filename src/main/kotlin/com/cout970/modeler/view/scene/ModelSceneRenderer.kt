@@ -6,6 +6,8 @@ import com.cout970.matrix.extensions.Matrix4
 import com.cout970.matrix.extensions.times
 import com.cout970.matrix.extensions.transpose
 import com.cout970.modeler.config.Config
+import com.cout970.modeler.model.Mesh
+import com.cout970.modeler.model.ModelGroup
 import com.cout970.modeler.modeleditor.selection.IModelSelection
 import com.cout970.modeler.modeleditor.selection.ModelPath
 import com.cout970.modeler.modeleditor.selection.ModelSelectionMode
@@ -83,6 +85,15 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
 
                 // axis grids
                 drawGrids(sceneController, scene.perspective)
+
+                // bounding boxes
+                if (sceneController.showBoundingBoxes.get()) {
+                    draw(GL11.GL_LINES, formatPC) {
+                        model.groups.flatMap(ModelGroup::meshes).map(Mesh::toAABB).forEach {
+                            RenderUtil.renderBox(this, it)
+                        }
+                    }
+                }
 
                 // selection outline
                 if (selection != SelectionNone) {

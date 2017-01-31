@@ -28,6 +28,7 @@ class ModuleController(
             ModuleTransform(this, textureHandler),
             ModuleHistoric(this),
             ModuleTexture(this),
+            ModuleBoundingBoxes(this),
             ModuleStructure(this)
     ).onEach {
         rootFrame.leftBar.container.addComponent(it)

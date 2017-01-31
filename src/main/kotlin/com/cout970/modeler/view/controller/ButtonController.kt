@@ -2,12 +2,16 @@ package com.cout970.modeler.view.controller
 
 import com.cout970.modeler.log.Level
 import com.cout970.modeler.log.log
+import com.cout970.modeler.model.AABB
+import com.cout970.modeler.model.Mesh
+import com.cout970.modeler.model.ModelGroup
 import com.cout970.modeler.modeleditor.selection.ModelSelectionMode
 import com.cout970.modeler.modeleditor.selection.SelectionManager
 import com.cout970.modeler.project.ProjectManager
 import com.cout970.modeler.util.IPropertyBind
 import com.cout970.modeler.view.UIManager
 import com.cout970.modeler.view.popup.*
+import java.io.File
 
 /**
  * Created by cout970 on 2017/01/19.
@@ -64,6 +68,11 @@ class ButtonController(
             "menu.texture.export" -> exportTexture(projectManager)
             "menu.texture.split" -> modelEditor.splitTextures()
 
+            "menu.aabb.export" -> {
+                val aabb = projectManager.project.model.groups.flatMap(ModelGroup::meshes).map(Mesh::toAABB)
+                AABB.export(aabb, File("aabb.txt"))
+            }
+
             else -> log(Level.ERROR) { "Unregistered button ID: $id" }
         }
     }
@@ -76,6 +85,8 @@ class ButtonController(
     fun getBindProperty(id: String): IPropertyBind<Boolean> {
         return when (id) {
             "menu.texture.show_all_mesh" -> sceneController.showAllMeshUVs
+            "menu.aabb.show_aabb" -> sceneController.showBoundingBoxes
+
             else -> {
                 log(Level.ERROR) { "Unregistered toggle button ID: $id" }
                 ignore

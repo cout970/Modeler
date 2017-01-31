@@ -19,8 +19,7 @@ class CCheckBox(name: String, x: Float, y: Float, width: Float, height: Float, v
     }
 
     override fun isChecked(): Boolean {
-        isChecked = bind.get()
-        return super.isChecked()
+        return bind.get()
     }
 
     override fun setChecked(checked: Boolean) {
