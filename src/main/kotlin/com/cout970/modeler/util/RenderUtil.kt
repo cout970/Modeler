@@ -7,7 +7,6 @@ import com.cout970.modeler.model.Quad
 import com.cout970.modeler.model.Transformation
 import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.vector.api.IQuaternion
-import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
 import org.joml.Quaterniond
@@ -18,19 +17,19 @@ import org.joml.Vector3d
  */
 object RenderUtil {
 
-    fun renderBar(tessellator: ITessellator, a_: IVector3, b_: IVector3, size: Double = 0.1,
+    fun renderBar(tessellator: ITessellator, startPoint: IVector3, endPoint: IVector3, size: Double = 0.1,
                   color: IVector3 = vec3Of(1, 1, 0)) {
 
-        val a = a_
-        val b = b_
+        val start = startPoint
+        val end = endPoint
 
-        val dir = (b - a).normalize()
+        val dir = (end - start).normalize()
 
         val q = Quaterniond().rotationTo(dir.toJoml3d(), Vector3d(1.0, 0.0, 0.0))
-        val rot: IQuaternion = if (b != a) quatOf(q.x, q.y, q.z, q.w) else Quaternion.IDENTITY
+        val rot: IQuaternion = if (end != start) quatOf(q.x, q.y, q.z, q.w) else Quaternion.IDENTITY
 
-        val matrix = Transformation(a, rot, vec3Of(1)).matrix
-        val mesh = Mesh.createCube(vec3Of(a.distance(b) + size, size, size), offset = vec3Of(-size / 2))
+        val matrix = Transformation(start, rot, vec3Of(1)).matrix
+        val mesh = Mesh.createCube(vec3Of(start.distance(end) + size, size, size), offset = vec3Of(-size / 2))
 
         tessellator.apply {
             for ((pos) in mesh.getQuads().map { it.transform(matrix) }.flatMap(Quad::vertex)) {
@@ -105,52 +104,5 @@ object RenderUtil {
             set(0, box.maxX, box.minY, box.maxZ).set(1, 1, 1, 1).endVertex()
             set(0, box.maxX, box.minY, box.minZ).set(1, 1, 1, 1).endVertex()
         }
-    }
-}
-
-fun Quad.center3D(): IVector3 {
-    val ab = (b.pos + a.pos) / 2
-    val cd = (d.pos + c.pos) / 2
-    return (ab + cd) / 2
-}
-
-fun Quad.center2D(): IVector2 {
-    val ab = (b.tex + a.tex) / 2
-    val cd = (d.tex + c.tex) / 2
-    return (ab + cd) / 2
-}
-
-fun Iterable<IVector3>.middle(): IVector3 {
-    var sum: IVector3? = null
-    var count = 0
-    for (i in this) {
-        if (sum == null) sum = i else sum += i
-        count++
-    }
-    if (sum == null) return vec3Of(0)
-    return sum / count
-}
-
-fun Iterable<IVector2>.middle(): IVector2 {
-    var sum: IVector2? = null
-    var count = 0
-    for (i in this) {
-        if (sum == null) sum = i else sum += i
-        count++
-    }
-    if (sum == null) return vec2Of(0)
-    return sum / count
-}
-
-fun getSide(side: Int, size: IVector3 = vec3Of(1), offset: IVector3 = vec3Of(0)): List<IVector3> {
-    val n: IVector3 = offset
-    val p: IVector3 = size + offset
-    return when (side) {
-        0 -> listOf(vec3Of(n.x, n.y, p.z), vec3Of(n.x, p.y, p.z), vec3Of(n.x, p.y, n.z), vec3Of(n.x, n.y, n.z))//negX
-        1 -> listOf(vec3Of(p.x, p.y, n.z), vec3Of(p.x, p.y, p.z), vec3Of(p.x, n.y, p.z), vec3Of(p.x, n.y, n.z))//posX
-        2 -> listOf(vec3Of(p.x, n.y, n.z), vec3Of(p.x, n.y, p.z), vec3Of(n.x, n.y, p.z), vec3Of(n.x, n.y, n.z))//negY
-        3 -> listOf(vec3Of(n.x, p.y, p.z), vec3Of(p.x, p.y, p.z), vec3Of(p.x, p.y, n.z), vec3Of(n.x, p.y, n.z))//posY
-        4 -> listOf(vec3Of(n.x, p.y, n.z), vec3Of(p.x, p.y, n.z), vec3Of(p.x, n.y, n.z), vec3Of(n.x, n.y, n.z))//negZ
-        else -> listOf(vec3Of(p.x, n.y, p.z), vec3Of(p.x, p.y, p.z), vec3Of(n.x, p.y, p.z), vec3Of(n.x, n.y, p.z))//posZ
     }
 }

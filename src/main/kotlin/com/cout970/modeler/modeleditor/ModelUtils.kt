@@ -25,7 +25,7 @@ fun Model.translate(selection: IModelSelection, axis: SelectionAxis, offset: Flo
 
         ModelSelectionMode.MESH -> {
             applyMesh(selection) { mesh ->
-                mesh.translate(axis.axis * offset)
+                mesh.translate(axis.direction * offset)
             }
         }
         ModelSelectionMode.QUAD -> {
@@ -39,7 +39,7 @@ fun Model.translate(selection: IModelSelection, axis: SelectionAxis, offset: Flo
                         .distinct()
 
                 val newMesh = mesh.copy(positions = mesh.positions.replace({ pos -> pos in selectedPositions }, { pos ->
-                    pos + axis.axis * offset
+                    pos + axis.direction * offset
                 }))
                 if (newMesh.isCuboid()) {
                     val size = newMesh.getCuboidSize()
@@ -57,7 +57,7 @@ fun Model.translate(selection: IModelSelection, axis: SelectionAxis, offset: Flo
 
                 mesh.copy(positions = mesh.positions.mapIndexed { i, pos ->
                     if (i in selectedIndices) {
-                        pos + axis.axis * offset
+                        pos + axis.direction * offset
                     } else {
                         pos
                     }
@@ -87,7 +87,7 @@ fun Model.rotate(selection: IModelSelection, axis: SelectionAxis, offset: Float)
             val center = selection.getCenter3D(this)
             applyMesh(selection) { mesh ->
                 mesh.copy(positions = mesh.positions.map { pos ->
-                    rotatePointAroundPivot(pos, center, axisDir.axis * offset)
+                    rotatePointAroundPivot(pos, center, axisDir.direction * offset)
                 })
             }
         }
@@ -103,7 +103,7 @@ fun Model.rotate(selection: IModelSelection, axis: SelectionAxis, offset: Float)
                         .distinct()
 
                 mesh.copy(positions = mesh.positions.replace({ pos -> pos in selectedPositions }, { pos ->
-                    rotatePointAroundPivot(pos, center, axisDir.axis * offset)
+                    rotatePointAroundPivot(pos, center, axisDir.direction * offset)
                 }))
             }
         }
@@ -116,7 +116,7 @@ fun Model.rotate(selection: IModelSelection, axis: SelectionAxis, offset: Float)
 
                 mesh.copy(positions = mesh.positions.mapIndexed { i, pos ->
                     if (i in selectedIndices) {
-                        rotatePointAroundPivot(pos, center, axisDir.axis * offset)
+                        rotatePointAroundPivot(pos, center, axisDir.direction * offset)
                     } else {
                         pos
                     }

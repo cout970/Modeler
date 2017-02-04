@@ -84,9 +84,19 @@ class RootFrame(val input: IInput,
         contentPanel.position = Vector2f(leftBar.size.x, topBar.size.y)
         rightBar.position = Vector2f(leftBar.size.x + contentPanel.size.x, topBar.size.y)
 
-        val mouse = input.mouse.getMousePos()
-        if (!inside(mouse, topBar.position.toIVector(), topBar.size.toIVector() + vec2Of(0, 20)) &&
-            !inside(mouse, dropdown.position.toIVector() - vec2Of(20, 0), dropdown.size.toIVector() + vec2Of(40, 20))) {
+        updateDropdownVisibility()
+    }
+
+    private fun updateDropdownVisibility() {
+        val mousePos = input.mouse.getMousePos()
+
+        val startTopBar = topBar.position.toIVector()
+        val sizeTopBar = topBar.size.toIVector() + vec2Of(0, 20)
+
+        val startDropdown = dropdown.position.toIVector() - vec2Of(20, 0)
+        val sizeDropdown = dropdown.size.toIVector() + vec2Of(40, 20)
+
+        if (!mousePos.isInside(startTopBar, sizeTopBar) && !mousePos.isInside(startDropdown, sizeDropdown)) {
             dropdown.isVisible = false
         }
     }

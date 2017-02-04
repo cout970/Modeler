@@ -35,12 +35,12 @@ data class Transformation(
     }
 
     fun move(axis: SelectionAxis, offset: Float): Transformation {
-        val direction = axis.axis * offset
+        val direction = axis.direction * offset
         return copy(position = position + direction)
     }
 
     fun rotate(axis: SelectionAxis, offset: Float): Transformation {
-        val rotAxis = axis.axis
+        val rotAxis = axis.direction
         return copy(rotation = rotation.toJOML().rotateAxis(offset.toDouble(), rotAxis.xd, rotAxis.yd,
                 rotAxis.zd).toIQuaternion())
     }

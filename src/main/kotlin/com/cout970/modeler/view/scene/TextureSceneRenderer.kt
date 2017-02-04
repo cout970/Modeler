@@ -7,12 +7,12 @@ import com.cout970.modeler.model.MaterialNone
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.model.Quad
 import com.cout970.modeler.modeleditor.selection.*
+import com.cout970.modeler.util.CursorParameters
 import com.cout970.modeler.util.RenderUtil
 import com.cout970.modeler.util.absolutePosition
-import com.cout970.modeler.util.getArrowProperties
 import com.cout970.modeler.util.toIVector
+import com.cout970.modeler.view.controller.SceneController
 import com.cout970.modeler.view.controller.SelectionAxis
-import com.cout970.modeler.view.controller.TextureSelector
 import com.cout970.modeler.view.util.ShaderHandler
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -92,7 +92,8 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
 
                 if (textureSelection != SelectionNone) {
                     val center = scene.fromTextureToWorld(scene.textureSelector.selectionCenter)
-                    renderTranslation(center, scene.textureSelector, scene.textureSelector.selection, scene.camera)
+                    val cursorParams = CursorParameters(center, scene.camera.zoom, scene.size.toIVector())
+                    renderTranslation(scene.textureSelector.selection, scene.sceneController, cursorParams)
                 }
                 GLStateMachine.depthTest.enable()
             }
@@ -167,31 +168,28 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
                 .forEach { tes.set(0, it.x, it.yd, 0).setVec(1, color).set(2, 0.0, 0.0).endVertex() }
     }
 
-    fun renderTranslation(center: IVector3, selector: TextureSelector, selection: ITextureSelection, camera: Camera) {
-        val controller = selector.controller
-        val selX = controller.selectedTextureAxis == SelectionAxis.X || controller.hoveredTextureAxis == SelectionAxis.X
-        val selY = controller.selectedTextureAxis == SelectionAxis.Y || controller.hoveredTextureAxis == SelectionAxis.Y
+    fun renderTranslation(selection: ITextureSelection, controller: SceneController, params: CursorParameters) {
 
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
         draw(GL11.GL_QUADS, shaderHandler.formatPC) {
 
-            val (scale, radius, size) = getArrowProperties(camera.zoom)
-            val start = radius - 0.2 * scale
-            val end = radius + 0.2 * scale
+            val center = params.center
+            val radius = params.distanceFromCenter
+            val start = radius - params.maxSizeOfSelectionBox / 2.0
+            val end = radius + params.maxSizeOfSelectionBox / 2.0
 
             if (selection.textureMode != TextureSelectionMode.VERTEX) {
-                RenderUtil.renderBar(this, center, center, size * 1.5, vec3Of(1, 1, 1))
+                RenderUtil.renderBar(this, center, center, params.minSizeOfSelectionBox, vec3Of(1, 1, 1))
             }
 
-            RenderUtil.renderBar(this, center + vec3Of(start, 0, 0), center + vec3Of(end, 0, 0),
-                    if (selX) size * 2.5 else size * 1.5, color = vec3Of(1, 1, 1))
-            RenderUtil.renderBar(this, center + vec3Of(0, start, 0), center + vec3Of(0, end, 0),
-                    if (selY) size * 2.5 else size * 1.5, color = vec3Of(1, 1, 1))
-
-            RenderUtil.renderBar(this, center + vec3Of(start, 0, 0), center + vec3Of(end, 0, 0),
-                    if (selX) size * 1.5 else size, color = vec3Of(1, 0, 0))
-            RenderUtil.renderBar(this, center + vec3Of(0, start, 0), center + vec3Of(0, end, 0),
-                    if (selY) size * 1.5 else size, color = vec3Of(0, 1, 0))
+            for (axis in SelectionAxis.selectedValues) {
+                val selected = controller.selectedModelAxis == axis || controller.hoveredModelAxis == axis
+                RenderUtil.renderBar(this,
+                        center + axis.direction * start,
+                        center + axis.direction * end,
+                        if (selected) params.minSizeOfSelectionBox * 1.5 else params.minSizeOfSelectionBox,
+                        color = axis.direction)
+            }
         }
     }
 }

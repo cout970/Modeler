@@ -7,7 +7,7 @@ import com.cout970.modeler.model.QuadIndices
 import com.cout970.modeler.modeleditor.selection.ITextureSelection
 import com.cout970.modeler.modeleditor.selection.TextureSelectionMode
 import com.cout970.modeler.util.applyMesh
-import com.cout970.modeler.view.controller.SelectionAxis
+import com.cout970.modeler.util.rotateAround
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
@@ -15,7 +15,6 @@ import com.cout970.vector.extensions.*
 /**
  * Created by cout970 on 2017/01/28.
  */
-
 
 fun Quad.setTexture0(uv0: IVector2, uv1: IVector2): Quad {
     return Quad(
@@ -84,7 +83,19 @@ private fun generateUVs(size: IVector3, offset: IVector2, textureSize: IVector2)
     )
 }
 
-fun Model.moveTexture(selection: ITextureSelection, axis: SelectionAxis, offset: Float): Model {
+fun Model.moveTexture(selection: ITextureSelection, translation: IVector3): Model {
+    return applyToSelectedTextureVertices(selection) { pos -> pos + translation }
+}
+
+fun Model.rotateTexture(selection: ITextureSelection, center: IVector3, rotation: Double): Model {
+    return applyToSelectedTextureVertices(selection) { pos -> pos.rotateAround(center, rotation) }
+}
+
+fun Model.scaleTexture(selection: ITextureSelection, scale: IVector3): Model {
+    return applyToSelectedTextureVertices(selection) { pos -> pos * scale }
+}
+
+fun Model.applyToSelectedTextureVertices(selection: ITextureSelection, func: (IVector2) -> IVector2): Model {
     val newModel = when (selection.textureMode) {
         TextureSelectionMode.QUAD -> {
             applyMesh(selection) { mesh ->
@@ -93,7 +104,7 @@ fun Model.moveTexture(selection: ITextureSelection, axis: SelectionAxis, offset:
 
                 mesh.copy(textures = mesh.textures.mapIndexed { i, pos ->
                     if (i in selectedIndices) {
-                        pos + axis.axis * offset
+                        func(pos)
                     } else {
                         pos
                     }
@@ -107,7 +118,7 @@ fun Model.moveTexture(selection: ITextureSelection, axis: SelectionAxis, offset:
 
                 mesh.copy(textures = mesh.textures.mapIndexed { i, pos ->
                     if (i in selectedIndices) {
-                        pos + axis.axis * offset
+                        func(pos)
                     } else {
                         pos
                     }

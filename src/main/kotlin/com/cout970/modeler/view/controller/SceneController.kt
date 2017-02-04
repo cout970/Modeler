@@ -93,8 +93,9 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
 
         eventHandler.addListener(EventMouseScroll::class.java, object : IEventListener<EventMouseScroll> {
             override fun onEvent(e: EventMouseScroll): Boolean {
+                val mousePos = input.mouse.getMousePos()
                 scenes.forEach { scene ->
-                    if (inside(input.mouse.getMousePos(), scene.absolutePosition, scene.size.toIVector())) {
+                    if (mousePos.isInside(scene.absolutePosition, scene.size.toIVector())) {
                         scene.run {
                             val scroll = -e.offsetY * Config.cameraScrollSpeed
                             if (camera.zoom > 0.5 || scroll > 0) {
@@ -108,8 +109,9 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
         })
         eventHandler.addListener(EventMouseClick::class.java, object : IEventListener<EventMouseClick> {
             override fun onEvent(e: EventMouseClick): Boolean {
+                val mousePos = input.mouse.getMousePos()
                 scenes.forEach {
-                    if (inside(input.mouse.getMousePos(), it.absolutePosition, it.size.toIVector())) {
+                    if (mousePos.isInside(it.absolutePosition, it.size.toIVector())) {
                         selectedScene = it
                     }
                 }

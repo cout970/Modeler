@@ -13,7 +13,6 @@ import com.cout970.modeler.modeleditor.selection.ModelPath
 import com.cout970.modeler.modeleditor.selection.ModelSelectionMode
 import com.cout970.modeler.modeleditor.selection.SelectionNone
 import com.cout970.modeler.util.*
-import com.cout970.modeler.view.controller.ModelSelector
 import com.cout970.modeler.view.controller.SceneController
 import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.modeler.view.controller.TransformationMode
@@ -155,12 +154,23 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
                 // 3D cursor
                 val selector = scene.modelSelector
                 if (selection != SelectionNone) {
+
                     when (selector.transformationMode) {
                         TransformationMode.TRANSLATION -> {
-                            renderTranslation(sceneController.cursorCenter, selector, selection, scene.camera)
+                            val cursorParams = CursorParameters(
+                                    sceneController.cursorCenter,
+                                    scene.camera.zoom,
+                                    scene.size.toIVector())
+
+                            renderTranslation(selection, sceneController, cursorParams, scene.perspective)
                         }
                         TransformationMode.ROTATION -> {
-                            renderRotation(selection.getCenter3D(model), selector, selection, scene.camera)
+                            val cursorParams = CursorParameters(
+                                    selection.getCenter3D(model),
+                                    scene.camera.zoom,
+                                    scene.size.toIVector())
+
+                            renderRotation(selection, scene.sceneController, cursorParams)
                         }
                         TransformationMode.SCALE -> Unit
                     }
@@ -174,18 +184,15 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
         }
     }
 
-    fun renderRotation(center: IVector3, selector: ModelSelector, selection: IModelSelection, camera: Camera) {
+    fun renderRotation(selection: IModelSelection, controller: SceneController, cursorParams: CursorParameters) {
+
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
-        val controller = selector.controller
-        val selX = controller.selectedModelAxis == SelectionAxis.X || controller.hoveredModelAxis == SelectionAxis.X
-        val selY = controller.selectedModelAxis == SelectionAxis.Y || controller.hoveredModelAxis == SelectionAxis.Y
-        val selZ = controller.selectedModelAxis == SelectionAxis.Z || controller.hoveredModelAxis == SelectionAxis.Z
+        val center = cursorParams.center
 
         draw(GL11.GL_QUADS, shaderHandler.formatPC) {
-            val (scale, radius, size) = getArrowProperties(camera.zoom)
 
             if (selection.modelMode != ModelSelectionMode.VERTEX) {
-                RenderUtil.renderBar(this, center, center, size * 1.5, vec3Of(1, 1, 1))
+                RenderUtil.renderBar(this, center, center, cursorParams.minSizeOfSelectionBox, vec3Of(1, 1, 1))
             }
 
             //if one of the axis is selected
@@ -193,79 +200,90 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
 
                 val axis = controller.selectedModelAxis
                 RenderUtil.renderCircle(this, center, axis,
-                        radius, Config.cursorLinesSize * scale * 0.03125, axis.axis)
+                        cursorParams.distanceFromCenter,
+                        Config.cursorLinesSize * cursorParams.minSizeOfSelectionBox,
+                        axis.direction)
 
             } else {
                 for (axis in SelectionAxis.selectedValues) {
                     RenderUtil.renderCircle(this, center, axis,
-                            radius, Config.cursorLinesSize * scale * 0.03125, axis.axis)
+                            cursorParams.distanceFromCenter,
+                            Config.cursorLinesSize * cursorParams.minSizeOfSelectionBox,
+                            axis.direction)
                 }
 
-                RenderUtil.renderBar(this, center + vec3Of(radius, 0, -0.2 * scale),
-                        center + vec3Of(radius, 0, 0.2 * scale), if (selX) size * 1.5 else size, color = vec3Of(1))
+                val radius = cursorParams.distanceFromCenter
 
-                RenderUtil.renderBar(this, center + vec3Of(-0.2 * scale, radius, 0),
-                        center + vec3Of(0.2 * scale, radius, 0), if (selY) size * 1.5 else size, color = vec3Of(1))
-
-                RenderUtil.renderBar(this, center + vec3Of(0, -0.2 * scale, radius),
-                        center + vec3Of(0, 0.2 * scale, radius), if (selZ) size * 1.5 else size, color = vec3Of(1))
+                for (axis in SelectionAxis.selectedValues) {
+                    val edgePoint = center + axis.direction * radius
+                    val selected = controller.selectedModelAxis == axis || controller.hoveredModelAxis == axis
+                    RenderUtil.renderBar(this,
+                            edgePoint - axis.rotationDirection * cursorParams.maxSizeOfSelectionBox / 2,
+                            edgePoint + axis.rotationDirection * cursorParams.maxSizeOfSelectionBox / 2,
+                            if (selected) cursorParams.minSizeOfSelectionBox * 1.5 else cursorParams.minSizeOfSelectionBox,
+                            color = vec3Of(1))
+                }
             }
         }
     }
 
-    fun renderTranslation(center: IVector3, selector: ModelSelector, selection: IModelSelection, camera: Camera) {
-        val controller = selector.controller
-        val selX = controller.selectedModelAxis == SelectionAxis.X || controller.hoveredModelAxis == SelectionAxis.X
-        val selY = controller.selectedModelAxis == SelectionAxis.Y || controller.hoveredModelAxis == SelectionAxis.Y
-        val selZ = controller.selectedModelAxis == SelectionAxis.Z || controller.hoveredModelAxis == SelectionAxis.Z
+    fun renderTranslation(selection: IModelSelection, controller: SceneController, params: CursorParameters,
+                          perspective: Boolean) {
 
-        if (Config.enableHelperGrid && selector.scene.perspective && controller.selectedModelAxis != SelectionAxis.NONE) {
-            draw(GL11.GL_LINES, shaderHandler.formatPC) {
-                val grid1 = Config.colorPalette.grid1Color
-                val grid2 = Config.colorPalette.grid2Color
-                var col: IVector3
-                if (selX || selZ) {
-                    for (x in -160..160) {
-                        col = if (x % 16 == 0) grid2 else grid1
-                        set(0, x, center.y, -160).set(1, col.x, col.y, col.z).endVertex()
-                        set(0, x, center.y, 160).set(1, col.x, col.y, col.z).endVertex()
-                    }
-                    for (z in -160..160) {
-                        col = if (z % 16 == 0) grid2 else grid1
-                        set(0, -160, center.y, z).set(1, col.x, col.y, col.z).endVertex()
-                        set(0, 160, center.y, z).set(1, col.x, col.y, col.z).endVertex()
-                    }
-                } else if (selY) {
-                    for (z in -160..160) {
-                        col = if (z % 16 == 0) grid2 else grid1
-                        set(0, -160, z, center.z).set(1, col.x, col.y, col.z).endVertex()
-                        set(0, 160, z, center.z).set(1, col.x, col.y, col.z).endVertex()
-                    }
-                    for (x in -160..160) {
-                        col = if (x % 16 == 0) grid2 else grid1
-                        set(0, x, -160, center.z).set(1, col.x, col.y, col.z).endVertex()
-                        set(0, x, 160, center.z).set(1, col.x, col.y, col.z).endVertex()
-                    }
-                }
-            }
+        if (Config.enableHelperGrid && perspective && controller.selectedModelAxis != SelectionAxis.NONE) {
+            drawHelperGrids(params.center, controller.selectedModelAxis)
         }
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
         draw(GL11.GL_QUADS, shaderHandler.formatPC) {
 
-            val (scale, radius, size) = getArrowProperties(camera.zoom)
-            val start = radius - 0.2 * scale
-            val end = radius + 0.2 * scale
+            val center = params.center
+            val radius = params.distanceFromCenter
+            val start = radius - params.maxSizeOfSelectionBox / 2.0
+            val end = radius + params.maxSizeOfSelectionBox / 2.0
 
             if (selection.modelMode != ModelSelectionMode.VERTEX) {
-                RenderUtil.renderBar(this, center, center, size * 1.5, vec3Of(1, 1, 1))
+                RenderUtil.renderBar(this, center, center, params.minSizeOfSelectionBox, vec3Of(1, 1, 1))
             }
 
-            RenderUtil.renderBar(this, center + vec3Of(start, 0, 0), center + vec3Of(end, 0, 0),
-                    if (selX) size * 1.5 else size, color = vec3Of(1, 0, 0))
-            RenderUtil.renderBar(this, center + vec3Of(0, start, 0), center + vec3Of(0, end, 0),
-                    if (selY) size * 1.5 else size, color = vec3Of(0, 1, 0))
-            RenderUtil.renderBar(this, center + vec3Of(0, 0, start), center + vec3Of(0, 0, end),
-                    if (selZ) size * 1.5 else size, color = vec3Of(0, 0, 1))
+            for (axis in SelectionAxis.selectedValues) {
+                val selected = controller.selectedModelAxis == axis || controller.hoveredModelAxis == axis
+                RenderUtil.renderBar(this,
+                        center + axis.direction * start,
+                        center + axis.direction * end,
+                        if (selected) params.minSizeOfSelectionBox * 1.5 else params.minSizeOfSelectionBox,
+                        color = axis.direction)
+            }
+        }
+    }
+
+    private fun drawHelperGrids(center: IVector3, axis: SelectionAxis) {
+        draw(GL11.GL_LINES, shaderHandler.formatPC) {
+            val grid1 = Config.colorPalette.grid1Color
+            val grid2 = Config.colorPalette.grid2Color
+            var col: IVector3
+            if (axis != SelectionAxis.Y) {
+                for (x in -160..160) {
+                    col = if (x % 16 == 0) grid2 else grid1
+                    set(0, x, center.y, -160).set(1, col.x, col.y, col.z).endVertex()
+                    set(0, x, center.y, 160).set(1, col.x, col.y, col.z).endVertex()
+                }
+                for (z in -160..160) {
+                    col = if (z % 16 == 0) grid2 else grid1
+                    set(0, -160, center.y, z).set(1, col.x, col.y, col.z).endVertex()
+                    set(0, 160, center.y, z).set(1, col.x, col.y, col.z).endVertex()
+                }
+            } else {
+                for (z in -160..160) {
+                    col = if (z % 16 == 0) grid2 else grid1
+                    set(0, -160, z, center.z).set(1, col.x, col.y, col.z).endVertex()
+                    set(0, 160, z, center.z).set(1, col.x, col.y, col.z).endVertex()
+                }
+                for (x in -160..160) {
+                    col = if (x % 16 == 0) grid2 else grid1
+                    set(0, x, -160, center.z).set(1, col.x, col.y, col.z).endVertex()
+                    set(0, x, 160, center.z).set(1, col.x, col.y, col.z).endVertex()
+                }
+            }
         }
     }
 
