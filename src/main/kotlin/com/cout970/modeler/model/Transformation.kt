@@ -34,7 +34,7 @@ data class Transformation(
         return Vertex(matrix.transpose() * v.pos.toVector4(1.0), v.tex)
     }
 
-    fun move(axis: SelectionAxis, offset: Float): Transformation {
+    fun translate(axis: SelectionAxis, offset: Float): Transformation {
         val direction = axis.direction * offset
         return copy(position = position + direction)
     }
@@ -43,5 +43,10 @@ data class Transformation(
         val rotAxis = axis.direction
         return copy(rotation = rotation.toJOML().rotateAxis(offset.toDouble(), rotAxis.xd, rotAxis.yd,
                 rotAxis.zd).toIQuaternion())
+    }
+
+    fun scale(axis: SelectionAxis, offset: Float): Transformation {
+        val direction = axis.direction * offset
+        return copy(scale = scale + direction)
     }
 }

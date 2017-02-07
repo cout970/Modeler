@@ -172,7 +172,14 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
 
                             renderRotation(selection, scene.sceneController, cursorParams)
                         }
-                        TransformationMode.SCALE -> Unit
+                        TransformationMode.SCALE -> {
+                            val cursorParams = CursorParameters(
+                                    sceneController.cursorCenter,
+                                    scene.camera.zoom,
+                                    scene.size.toIVector())
+
+                            renderTranslation(selection, sceneController, cursorParams, scene.perspective)
+                        }
                     }
                 }
             }
@@ -342,7 +349,7 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
             val selX = controller.selectedModelAxis == SelectionAxis.X
             val selY = controller.selectedModelAxis == SelectionAxis.Y
             val selZ = controller.selectedModelAxis == SelectionAxis.Z
-            if (!selX && !selY && !selZ || !perspective || controller.modelTransformationMode != TransformationMode.TRANSLATION) {
+            if (!selX && !selY && !selZ || !perspective || controller.transformationMode != TransformationMode.TRANSLATION) {
                 color = Config.colorPalette.grid2Color
 
                 for (x in -7..8) {

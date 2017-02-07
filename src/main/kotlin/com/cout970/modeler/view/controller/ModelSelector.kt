@@ -6,6 +6,7 @@ import com.cout970.modeler.config.Config
 import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.modeleditor.action.ActionModifyModel
 import com.cout970.modeler.modeleditor.rotate
+import com.cout970.modeler.modeleditor.scale
 import com.cout970.modeler.modeleditor.selection.SelectionNone
 import com.cout970.modeler.modeleditor.translate
 import com.cout970.modeler.util.*
@@ -24,7 +25,7 @@ import org.joml.Vector3d
  */
 class ModelSelector(val scene: SceneModel, val controller: SceneController, val modelEditor: ModelEditor) {
 
-    val transformationMode get() = controller.modelTransformationMode
+    val transformationMode get() = controller.transformationMode
     val selection get() = modelEditor.selectionManager.modelSelection
     val selectionCenter: IVector3 get() = selection.getCenter3D(modelEditor.model)
     var time: Long = 0L
@@ -38,8 +39,6 @@ class ModelSelector(val scene: SceneModel, val controller: SceneController, val 
     var mouseSnapshot = MouseSnapshot(vec2Of(0), Ray(vec3Of(0), vec3Of(0)))
     var capturedMouse: MouseSnapshot? = null
     var viewportSize = vec2Of(1)
-
-    class MouseSnapshot(val mousePos: IVector2, val mouseRay: Ray)
 
     fun update() {
 
@@ -298,9 +297,10 @@ class ModelSelector(val scene: SceneModel, val controller: SceneController, val 
             } else {
                 offset = Math.round(move).toFloat()
             }
+
             if (lastOffset != offset) {
                 lastOffset = offset
-                controller.tmpModel = modelEditor.model.translate(selection, controller.selectedModelAxis, offset)
+                controller.tmpModel = modelEditor.model.scale(selection, controller.selectedModelAxis, offset)
             }
         }
     }

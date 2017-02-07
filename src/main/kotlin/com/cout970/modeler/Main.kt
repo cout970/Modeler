@@ -24,7 +24,7 @@ fun main(args: Array<String>) {
 
     try {
         Initializer(args.toList()).start()
-    } catch (e: Exception) {
+    } catch (e: kotlin.Throwable) {
         e.print()
     } finally {
         log(Level.NORMAL) { "Eng of log" }

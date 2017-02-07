@@ -2,6 +2,8 @@ package com.cout970.modeler.model
 
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.modeler.modeleditor.setUVFromCuboid
+import com.cout970.modeler.util.scale
+import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.raytrace.IRayObstacle
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
@@ -28,6 +30,10 @@ data class Mesh(
 
     fun translate(offset: IVector3): Mesh {
         return copy(positions.map { it + offset })
+    }
+
+    fun scale(center: IVector3, axis: SelectionAxis, offset: Float): Mesh {
+        return copy(positions.map { it.scale(center, axis, offset) })
     }
 
     fun isCuboid(): Boolean {

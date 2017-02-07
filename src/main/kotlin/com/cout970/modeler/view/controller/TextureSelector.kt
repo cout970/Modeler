@@ -23,13 +23,13 @@ import org.joml.Vector3d
  */
 class TextureSelector(val scene: SceneTexture, val controller: SceneController, val modelEditor: ModelEditor) {
 
-    val transformationMode get() = controller.textureTransformationMode
+    val transformationMode get() = controller.transformationMode
     val selection get() = modelEditor.selectionManager.textureSelection
     val selectionCenter: IVector2 get() = selection.getCenter2D(controller.tmpModel ?: modelEditor.model)
 
     var matrix = Matrix4d()
-    var mouseSnapshot = ModelSelector.MouseSnapshot(vec2Of(0), Ray(vec3Of(0), vec3Of(0)))
-    var capturedMouse: ModelSelector.MouseSnapshot? = null
+    var mouseSnapshot = MouseSnapshot(vec2Of(0), Ray(vec3Of(0), vec3Of(0)))
+    var capturedMouse: MouseSnapshot? = null
     var viewportSize = vec2Of(1)
 
     val translateCursor = TranslationCursor()
@@ -52,7 +52,7 @@ class TextureSelector(val scene: SceneTexture, val controller: SceneController, 
                 viewport, Vector3d()).toIVector()
         val mouseRay = Ray(a, b)
 
-        mouseSnapshot = ModelSelector.MouseSnapshot(mousePos, mouseRay)
+        mouseSnapshot = MouseSnapshot(mousePos, mouseRay)
     }
 
     fun updateUserInput() {
@@ -230,8 +230,8 @@ class TextureSelector(val scene: SceneTexture, val controller: SceneController, 
             val edgePoint = center + axis.direction * radius
 
             return RayTraceUtil.rayTraceBox3(
-                    edgePoint + params.minSizeOfSelectionBox + axis.rotationDirection * params.minSizeOfSelectionBox / 2,
-                    edgePoint - params.minSizeOfSelectionBox - axis.rotationDirection * params.minSizeOfSelectionBox / 2,
+                    edgePoint - axis.rotationDirection * params.maxSizeOfSelectionBox / 2 - Vector3.ONE * params.minSizeOfSelectionBox,
+                    edgePoint + axis.rotationDirection * params.maxSizeOfSelectionBox / 2 + Vector3.ONE * params.minSizeOfSelectionBox,
                     ray, FakeRayObstacle)
         }
     }

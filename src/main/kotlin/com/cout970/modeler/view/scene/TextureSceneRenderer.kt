@@ -13,6 +13,7 @@ import com.cout970.modeler.util.absolutePosition
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.view.controller.SceneController
 import com.cout970.modeler.view.controller.SelectionAxis
+import com.cout970.modeler.view.controller.TransformationMode
 import com.cout970.modeler.view.util.ShaderHandler
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -93,7 +94,20 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
                 if (textureSelection != SelectionNone) {
                     val center = scene.fromTextureToWorld(scene.textureSelector.selectionCenter)
                     val cursorParams = CursorParameters(center, scene.camera.zoom, scene.size.toIVector())
-                    renderTranslation(scene.textureSelector.selection, scene.sceneController, cursorParams)
+
+                    when (scene.textureSelector.transformationMode) {
+
+                        TransformationMode.TRANSLATION -> {
+                            renderTranslation(scene.textureSelector.selection, scene.sceneController, cursorParams)
+                        }
+                        TransformationMode.ROTATION -> {
+                            renderRotation(scene.textureSelector.selection, scene.sceneController, cursorParams)
+                        }
+                        TransformationMode.SCALE -> {
+                            renderTranslation(scene.textureSelector.selection, scene.sceneController, cursorParams)
+                        }
+                    }
+
                 }
                 GLStateMachine.depthTest.enable()
             }
@@ -187,9 +201,50 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
                 RenderUtil.renderBar(this,
                         center + axis.direction * start,
                         center + axis.direction * end,
+                        if (selected) params.minSizeOfSelectionBox * 3 else params.minSizeOfSelectionBox * 2,
+                        color = Vector3.ONE)
+                RenderUtil.renderBar(this,
+                        center + axis.direction * start,
+                        center + axis.direction * end,
                         if (selected) params.minSizeOfSelectionBox * 1.5 else params.minSizeOfSelectionBox,
                         color = axis.direction)
             }
+        }
+    }
+
+    fun renderRotation(selection: ITextureSelection, controller: SceneController, params: CursorParameters) {
+
+        GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
+        draw(GL11.GL_QUADS, shaderHandler.formatPC) {
+
+            val center = params.center
+            val radius = params.distanceFromCenter
+
+            if (selection.textureMode != TextureSelectionMode.VERTEX) {
+                RenderUtil.renderBar(this, center, center, params.minSizeOfSelectionBox, vec3Of(1, 1, 1))
+            }
+
+            val selected = controller.hoveredTextureAxis != SelectionAxis.NONE ||
+                           controller.selectedTextureAxis != SelectionAxis.NONE
+            val direction = vec3Of(1, 0, 0)
+            val rotationDirection = vec3Of(0, 1, 0)
+
+            val edgePoint = center + direction * radius
+
+            RenderUtil.renderBar(
+                    tessellator = this,
+                    startPoint = edgePoint - rotationDirection * params.maxSizeOfSelectionBox / 2,
+                    endPoint = edgePoint + rotationDirection * params.maxSizeOfSelectionBox / 2,
+                    size = if (selected) params.minSizeOfSelectionBox * 3 else params.minSizeOfSelectionBox * 2,
+                    color = Vector3.ORIGIN
+            )
+            RenderUtil.renderBar(
+                    tessellator = this,
+                    startPoint = edgePoint - rotationDirection * params.maxSizeOfSelectionBox / 2,
+                    endPoint = edgePoint + rotationDirection * params.maxSizeOfSelectionBox / 2,
+                    size = if (selected) params.minSizeOfSelectionBox * 1.5 else params.minSizeOfSelectionBox,
+                    color = Vector3.ONE
+            )
         }
     }
 }

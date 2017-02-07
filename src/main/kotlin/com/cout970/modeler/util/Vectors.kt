@@ -2,6 +2,7 @@ package com.cout970.modeler.util
 
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.*
+import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -93,4 +94,23 @@ fun Quaterniond.toIQuaternion(): IQuaternion = quatOf(x,
 fun IVector2.isInside(pos: IVector2, size: IVector2): Boolean {
     return xd > pos.xd && xd < pos.xd + size.xd &&
            yd > pos.yd && yd < pos.yd + size.yd
+}
+
+private fun IVector3.scale(center: IVector3, scale: IVector3): IVector3 {
+    val pos = this - center
+    val newPos = pos * scale
+    return newPos + center
+}
+
+fun IVector3.scale(center: IVector3, axis: SelectionAxis, offset: Float): IVector3 {
+    return scale(center, Vector3.ONE + axis.direction * offset / this.distanceInAxis(center, axis))
+}
+
+private fun IVector3.distanceInAxis(center: IVector3, axis: SelectionAxis): Double {
+    return when (axis) {
+        SelectionAxis.X -> Math.abs(this.xd - center.xd)
+        SelectionAxis.Y -> Math.abs(this.yd - center.yd)
+        SelectionAxis.Z -> Math.abs(this.zd - center.zd)
+        SelectionAxis.NONE -> 0.0
+    }
 }
