@@ -4,8 +4,9 @@ import com.cout970.modeler.log.Level
 import com.cout970.modeler.log.log
 import com.cout970.modeler.log.print
 import com.cout970.modeler.model.*
-import com.cout970.modeler.modeleditor.rotatePointAroundPivot
 import com.cout970.modeler.resource.ResourcePath
+import com.cout970.modeler.util.quatOfAngles
+import com.cout970.modeler.util.rotateAround
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.*
 import org.w3c.dom.Node
@@ -134,7 +135,7 @@ class TcnImporter {
         if (rRotation.lengthSq() == 0.0) return cube
 
         return cube.copy(cube.positions.map {
-            rotatePointAroundPivot(it, rRotPoint, rRotation)
+            it.rotateAround(rRotPoint, quatOfAngles(rRotation))
         })
     }
 }

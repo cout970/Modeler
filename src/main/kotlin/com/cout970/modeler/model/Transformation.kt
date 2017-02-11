@@ -1,8 +1,9 @@
 package com.cout970.modeler.model
 
 import com.cout970.matrix.extensions.*
-import com.cout970.modeler.util.toIQuaternion
+import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.util.toJOML
+import com.cout970.modeler.util.toJoml3d
 import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
@@ -34,19 +35,21 @@ data class Transformation(
         return Vertex(matrix.transpose() * v.pos.toVector4(1.0), v.tex)
     }
 
-    fun translate(axis: SelectionAxis, offset: Float): Transformation {
-        val direction = axis.direction * offset
-        return copy(position = position + direction)
-    }
-
-    fun rotate(axis: SelectionAxis, offset: Float): Transformation {
-        val rotAxis = axis.direction
-        return copy(rotation = rotation.toJOML().rotateAxis(offset.toDouble(), rotAxis.xd, rotAxis.yd,
-                rotAxis.zd).toIQuaternion())
+    fun translate(trans: IVector3): Transformation {
+        return copy(position = position + trans)
     }
 
     fun scale(axis: SelectionAxis, offset: Float): Transformation {
         val direction = axis.direction * offset
         return copy(scale = scale + direction)
+    }
+
+    fun rotateAround(pivot: IVector3, rotation: IQuaternion): Transformation {
+        val dir = position - pivot
+        val newDir = rotation.toJOML().transform(dir.toJoml3d()).toIVector()
+        val pos = newDir + pivot
+        val rot = rotation * this.rotation
+
+        return copy(position = pos, rotation = rot)
     }
 }

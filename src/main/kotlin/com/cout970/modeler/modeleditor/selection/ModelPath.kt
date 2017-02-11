@@ -59,8 +59,8 @@ data class ModelPath(
     fun getModelCenter(model: Model): IVector3 {
         return when (level) {
             Level.GROUPS -> getGroup(model)!!.transform.position
-            Level.MESH -> getGroup(model)!!.transform.position + getMesh(model)!!.getQuads().map(
-                    Quad::center3D).middle()
+            Level.MESH -> getGroup(model)!!.transform.position + getMesh(model)!!.getQuads()
+                    .map(Quad::center3D).middle()
             Level.QUADS -> getGroup(model)!!.transform.position + getQuad(model)!!.center3D()
             Level.VERTEX -> getGroup(model)!!.transform.position + getVertexPos(model)!!
             else -> vec3Of(0)
@@ -117,3 +117,5 @@ data class ModelPath(
         }
     }
 }
+
+

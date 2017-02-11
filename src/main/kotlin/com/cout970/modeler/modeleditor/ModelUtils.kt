@@ -19,7 +19,7 @@ fun Model.translate(selection: IModelSelection, axis: SelectionAxis, offset: Flo
 
         ModelSelectionMode.GROUP -> {
             applyGroup(selection) { group ->
-                group.copy(transform = group.transform.translate(axis, offset))
+                group.copy(transform = group.transform.translate(axis.direction * offset))
             }
         }
 
@@ -78,9 +78,11 @@ fun Model.rotate(selection: IModelSelection, axis: SelectionAxis, offset: Float)
     return when (selection.modelMode) {
 
         ModelSelectionMode.GROUP -> {
-            applyGroup(selection) { group ->
-                group.copy(transform = group.transform.rotate(axisDir, offset))
-            }
+            //ignored
+//            applyGroup(selection) { group ->
+//                group.copy(transform = group.transform.rotateAround(axisDir.direction, offset))
+//            }
+            this
         }
 
         ModelSelectionMode.MESH -> {

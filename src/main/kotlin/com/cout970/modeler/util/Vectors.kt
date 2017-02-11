@@ -114,3 +114,40 @@ private fun IVector3.distanceInAxis(center: IVector3, axis: SelectionAxis): Doub
         SelectionAxis.NONE -> 0.0
     }
 }
+
+fun quatOfAngles(x: Number, y: Number, z: Number): IQuaternion {
+    return Quaterniond().rotateXYZ(x.toDouble(), y.toDouble(), z.toDouble()).toIQuaternion()
+}
+
+fun quatOfAngles(angles: IVector3): IQuaternion {
+    return Quaterniond().rotateXYZ(angles.x.toDouble(), angles.y.toDouble(), angles.z.toDouble()).toIQuaternion()
+}
+
+fun quatOfAxisAngled(x: Number, y: Number, z: Number, angle: Number): IQuaternion {
+    return Quaterniond().rotateAxis(angle.toDouble(), x.toDouble(), y.toDouble(), z.toDouble()).toIQuaternion()
+}
+
+fun quatOfAxisAngled(angles: IVector3, angle: Number): IQuaternion {
+    return Quaterniond().rotateAxis(
+            angle.toDouble(),
+            angles.x.toDouble(),
+            angles.y.toDouble(),
+            angles.z.toDouble()
+    ).toIQuaternion()
+}
+
+fun IQuaternion.transform(pos: IVector3): IVector3 {
+    return toJOML().transform(pos.toJoml3d()).toIVector()
+}
+
+fun IVector3.rotateAround(pivot: IVector3, rotation: IQuaternion): IVector3 {
+    var dir: IVector3 = this - pivot // get point direction relative to pivot
+    dir = rotation.transform(dir) // rotate it
+    return dir + pivot // calculate final point
+}
+
+fun IVector2.hasNaN() = xd.isNaN() || yd.isNaN()
+fun IVector3.hasNaN() = xd.isNaN() || yd.isNaN() || zd.isNaN()
+fun IVector4.hasNaN() = xd.isNaN() || yd.isNaN() || zd.isNaN() || wd.isNaN()
+
+fun IQuaternion.invert() = toJOML().invert().toIQuaternion()
