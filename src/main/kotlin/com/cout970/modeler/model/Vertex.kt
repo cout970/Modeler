@@ -16,4 +16,12 @@ data class Vertex(
     fun transform(matrix: IMatrix4): Vertex {
         return Vertex(matrix * pos.toVector4(1.0), tex)
     }
+
+    fun transformPos(func: (IVector3) -> IVector3): Vertex {
+        return Vertex(func(pos), tex)
+    }
+
+    fun transformTex(func: (IVector2) -> IVector2): Vertex {
+        return Vertex(pos, func(tex))
+    }
 }

@@ -33,13 +33,11 @@ class JsonImporter {
             }
         }
 
-        var count = 0
         val groups = quads.map { (name, list) ->
-            ModelGroup(listOf(Mesh.quadsToMesh(list)), name = "Group_${count++}",
-                    material = materials[name] ?: MaterialNone)
+            Meshes.quadsToMesh(list)
         }
 
-        return Model(groups)
+        return Model(groups, ModelResources(materials.values.toList()))
     }
 
     private fun getQuad(element: Element, side: Side, face: Face): Quad {

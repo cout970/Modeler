@@ -1,13 +1,8 @@
 package com.cout970.modeler.modeleditor
 
-import com.cout970.modeler.model.Mesh
-import com.cout970.modeler.model.ModelGroup
-import com.cout970.modeler.model.Transformation
+import com.cout970.modeler.model.*
 import com.cout970.modeler.modeleditor.action.ActionCreateCube
 import com.cout970.modeler.modeleditor.action.ActionCreatePlane
-import com.cout970.modeler.modeleditor.selection.ModelPath
-import com.cout970.modeler.modeleditor.selection.SelectionGroup
-import com.cout970.modeler.util.applyGroup
 import com.cout970.vector.extensions.vec3Of
 
 /**
@@ -15,25 +10,22 @@ import com.cout970.vector.extensions.vec3Of
  */
 class ModelInserter(val modelEditor: ModelEditor) {
 
-    var groupCount = 0
-    var insertPath = 0
+    var insertPath: ElementPath = ElementPath(intArrayOf())
     var insertPosition = vec3Of(0, 0, 0)
 
-    fun insertMesh(mesh: Mesh) {
+    fun insertElement(elem: IElement) {
         modelEditor.apply {
-            if (model.groups.isEmpty()) {
-                insertGroup()
-            }
-            val insertSelection = SelectionGroup(listOf(ModelPath(insertPath)))
-            updateModel(model.applyGroup(insertSelection) { group ->
-                group.add(mesh)
-            })
+            val newModel = model.copy(elements = insert(model.elements, elem, 0))
+            updateModel(newModel)
         }
     }
 
-    fun insertGroup(group: ModelGroup = ModelGroup(listOf(), Transformation(insertPosition), "Group_${groupCount++}")) {
-        modelEditor.apply {
-            updateModel(model.copy(groups = model.groups + group))
+    private fun insert(list: List<IElement>, elem: IElement, level: Int): List<IElement> {
+        if (insertPath.indices.size == level) {
+            return list + elem
+        } else {
+            val group = list[insertPath.indices[level]] as IElementGroup
+            return insert(group.elements, elem, level + 1)
         }
     }
 
@@ -43,5 +35,12 @@ class ModelInserter(val modelEditor: ModelEditor) {
 
     fun addPlane() {
         modelEditor.historyRecord.doAction(ActionCreatePlane(modelEditor))
+    }
+
+    // model is the current model, copiedModel is the model when ctrl+c was pressed,
+    // selection is the part of the model to paste
+    fun paste(model: Model, copiedModel: Model, selection: Selection): Model {
+        //TODO
+        return model
     }
 }

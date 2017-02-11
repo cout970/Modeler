@@ -1,10 +1,5 @@
 package com.cout970.modeler.util
 
-import com.cout970.modeler.model.Mesh
-import com.cout970.modeler.model.ModelGroup
-import com.cout970.modeler.modeleditor.selection.ISelection
-import com.cout970.modeler.modeleditor.selection.ModelPath
-
 /**
  * Created by cout970 on 2016/12/09.
  */
@@ -38,26 +33,4 @@ inline fun <T> Iterable<T>.filterNotIndexed(predicate: (index: Int, T) -> Boolea
         index++
     }
     return destination
-}
-
-inline fun List<ModelGroup>.replaceSelected(sel: ISelection,
-                                            func: (groupIndex: Int, ModelGroup) -> ModelGroup): List<ModelGroup> {
-    return this.mapIndexed { index, modelGroup ->
-        if (sel.containsSelectedElements(ModelPath(index))) {
-            func(index, modelGroup)
-        } else {
-            modelGroup
-        }
-    }
-}
-
-inline fun List<Mesh>.replaceSelected(sel: ISelection, groupIndex: Int,
-                                      func: (groupIndex: Int, Mesh) -> Mesh): List<Mesh> {
-    return this.mapIndexed { index, mesh ->
-        if (sel.containsSelectedElements(ModelPath(groupIndex, index))) {
-            func(index, mesh)
-        } else {
-            mesh
-        }
-    }
 }

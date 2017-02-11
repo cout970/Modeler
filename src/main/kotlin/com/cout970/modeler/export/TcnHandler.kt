@@ -54,7 +54,7 @@ class TcnImporter {
         }
 
         val shapes = document.getElementsByTagName("Shape")
-        val meshes = mutableListOf<Mesh>()
+        val meshes = mutableListOf<IElementObject>()
 
         for (i in 0..shapes.length - 1) {
             val shape = shapes.item(i)
@@ -78,11 +78,11 @@ class TcnImporter {
                 e.print()
             }
         }
-        return Model(listOf(ModelGroup(meshes, name = "TcnModel", material = texture)))
+        return Model(meshes, ModelResources(listOf(texture)))
     }
 
     @Throws(NumberFormatException::class)
-    private fun getMesh(shape: Node, textureSize: IVector2): Mesh {
+    private fun getMesh(shape: Node, textureSize: IVector2): IElementObject {
         var mirrored = false
         var offset: List<String> = listOf()
         var position: List<String> = listOf()
@@ -128,9 +128,10 @@ class TcnImporter {
 
         val fOffset = rPos + rOffset + vec3Of(8, 24, 8)
 
-        var cube = Mesh.createCube(size = rSize, offset = fOffset, textureOffset = rTexture, textureSize = textureSize)
+        var cube = Meshes.createCube(size = rSize, offset = fOffset, textureOffset = rTexture,
+                textureSize = textureSize)
         if (mirrored) {
-            cube = Mesh.quadsToMesh(if (mirrored) cube.getQuads().map(Quad::flipUV) else cube.getQuads())
+            cube = Meshes.quadsToMesh(if (mirrored) cube.getQuads().map(Quad::flipUV) else cube.getQuads())
         }
         if (rRotation.lengthSq() == 0.0) return cube
 

@@ -1,9 +1,6 @@
-package com.cout970.modeler.model.freemodel
+package com.cout970.modeler.model
 
 import com.cout970.modeler.model.Quad
-import com.cout970.modeler.util.center2D
-import com.cout970.modeler.util.center3D
-import com.cout970.modeler.util.middle
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 
@@ -29,7 +26,7 @@ open class Selection(open val paths: List<ElementPath>) {
         }
     }
 
-    fun center3D(model: FreeModel): IVector3 {
+    fun center3D(model: Model): IVector3 {
         return paths.map {
             if (it is VertexPath) {
                 model.getVertex(it).pos
@@ -39,7 +36,7 @@ open class Selection(open val paths: List<ElementPath>) {
         }.middle()
     }
 
-    fun center2D(model: FreeModel): IVector2 {
+    fun center2D(model: Model): IVector2 {
         return paths.map {
             if (it is VertexPath) {
                 model.getVertex(it).tex
@@ -51,3 +48,5 @@ open class Selection(open val paths: List<ElementPath>) {
 }
 
 class VertexSelection(override val paths: List<VertexPath>) : Selection(paths)
+
+object SelectionNone : Selection(listOf())

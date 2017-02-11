@@ -1,9 +1,6 @@
 package com.cout970.modeler.view.module
 
 import com.cout970.modeler.config.Config
-import com.cout970.modeler.modeleditor.selection.ModelPath
-import com.cout970.modeler.modeleditor.selection.ModelSelectionMode
-import com.cout970.modeler.modeleditor.selection.SelectionMesh
 import com.cout970.modeler.util.onClick
 import com.cout970.modeler.util.toColor
 import com.cout970.modeler.view.controller.ModuleController

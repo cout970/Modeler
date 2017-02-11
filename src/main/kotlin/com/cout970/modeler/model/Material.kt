@@ -9,6 +9,7 @@ import com.cout970.vector.extensions.vec2Of
 import com.google.gson.annotations.Expose
 import javax.swing.JOptionPane
 
+//TODO make IMaterial
 sealed class Material(@Expose val name: String) {
     abstract val size: IVector2
     abstract fun bind()

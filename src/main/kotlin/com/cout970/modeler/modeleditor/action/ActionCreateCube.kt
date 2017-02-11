@@ -1,7 +1,9 @@
 package com.cout970.modeler.modeleditor.action
 
-import com.cout970.modeler.model.Mesh
+import com.cout970.modeler.model.ElementObject
+import com.cout970.modeler.model.Meshes
 import com.cout970.modeler.modeleditor.ModelEditor
+import com.cout970.vector.extensions.plus
 import com.cout970.vector.extensions.vec3Of
 
 /**
@@ -10,10 +12,14 @@ import com.cout970.vector.extensions.vec3Of
 data class ActionCreateCube(val modelEditor: ModelEditor) : IAction {
 
     val model = modelEditor.model
-    val cube = Mesh.createCube(vec3Of(8, 8, 8))
+    val cube: ElementObject = Meshes.createCube(vec3Of(8, 8, 8))
 
     override fun run() {
-        modelEditor.inserter.insertMesh(cube.translate(modelEditor.inserter.insertPosition))
+        modelEditor.inserter.insertElement(cube.transform { vertex ->
+            vertex.transformPos { pos ->
+                pos + modelEditor.inserter.insertPosition
+            }
+        })
     }
 
     override fun undo() {

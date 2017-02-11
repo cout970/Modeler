@@ -1,7 +1,7 @@
 package com.cout970.modeler.modeleditor.tool
 
-import com.cout970.modeler.model.freemodel.FreeModel
-import com.cout970.modeler.model.freemodel.Selection
+import com.cout970.modeler.model.Model
+import com.cout970.modeler.model.Selection
 import com.cout970.vector.api.IVector3
 
 /**
@@ -9,5 +9,5 @@ import com.cout970.vector.api.IVector3
  */
 interface IModelTranslate {
 
-    fun translate(source: FreeModel, selection: Selection, translation: IVector3): FreeModel
+    fun translate(source: Model, selection: Selection, translation: IVector3): Model
 }

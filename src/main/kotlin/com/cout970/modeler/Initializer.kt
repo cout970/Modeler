@@ -7,7 +7,7 @@ import com.cout970.modeler.export.ExportManager
 import com.cout970.modeler.log.Level
 import com.cout970.modeler.log.log
 import com.cout970.modeler.log.print
-import com.cout970.modeler.model.Mesh
+import com.cout970.modeler.model.Meshes
 import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.project.ProjectManager
 import com.cout970.modeler.resource.ResourceLoader
@@ -86,7 +86,7 @@ class Initializer(val programArguments: List<String>) {
         uiManager.moduleController.registerListeners(eventHandler)
 
         log(Level.FINE) { "Adding placeholder cube" }
-        modelEditor.inserter.insertMesh(Mesh.createCube(vec3Of(16, 16, 16)))
+        modelEditor.inserter.insertElement(Meshes.createCube(vec3Of(16, 16, 16)))
     }
 
     private fun parseArgs() {

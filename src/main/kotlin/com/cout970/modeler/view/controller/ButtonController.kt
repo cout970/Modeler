@@ -3,9 +3,7 @@ package com.cout970.modeler.view.controller
 import com.cout970.modeler.log.Level
 import com.cout970.modeler.log.log
 import com.cout970.modeler.model.AABB
-import com.cout970.modeler.model.Mesh
-import com.cout970.modeler.model.ModelGroup
-import com.cout970.modeler.modeleditor.selection.ModelSelectionMode
+import com.cout970.modeler.model.IElementObject
 import com.cout970.modeler.modeleditor.selection.SelectionManager
 import com.cout970.modeler.project.ProjectManager
 import com.cout970.modeler.util.IPropertyBind
@@ -66,10 +64,11 @@ class ButtonController(
 
             "menu.texture.import" -> importTexture(projectManager)
             "menu.texture.export" -> exportTexture(projectManager)
-            "menu.texture.split" -> modelEditor.splitTextures()
+            "menu.texture.split" -> modelEditor.texturizer.splitTextures()
 
             "menu.aabb.export" -> {
-                val aabb = projectManager.project.model.groups.flatMap(ModelGroup::meshes).map(Mesh::toAABB)
+                val aabb = projectManager.project.model.groups.flatMap(ModelGroup::meshes).map(
+                        IElementObject::toAABB)
                 AABB.export(aabb, File("aabb.txt"))
             }
 

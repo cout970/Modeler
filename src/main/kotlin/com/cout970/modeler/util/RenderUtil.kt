@@ -2,7 +2,7 @@ package com.cout970.modeler.util
 
 import com.cout970.glutilities.tessellator.ITessellator
 import com.cout970.modeler.model.AABB
-import com.cout970.modeler.model.Mesh
+import com.cout970.modeler.model.Meshes
 import com.cout970.modeler.model.Quad
 import com.cout970.modeler.model.Transformation
 import com.cout970.modeler.view.controller.SelectionAxis
@@ -29,7 +29,7 @@ object RenderUtil {
         val rot: IQuaternion = if (end != start) quatOf(q.x, q.y, q.z, q.w) else Quaternion.IDENTITY
 
         val matrix = Transformation(start, rot, vec3Of(1)).matrix
-        val mesh = Mesh.createCube(vec3Of(start.distance(end) + size, size, size), offset = vec3Of(-size / 2))
+        val mesh = Meshes.createCube(vec3Of(start.distance(end) + size, size, size), offset = vec3Of(-size / 2))
 
         tessellator.apply {
             for ((pos) in mesh.getQuads().map { it.transform(matrix) }.flatMap(Quad::vertex)) {

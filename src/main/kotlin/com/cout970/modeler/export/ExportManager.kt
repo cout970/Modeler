@@ -5,26 +5,20 @@ import com.cout970.modeler.model.Material
 import com.cout970.modeler.model.TexturedMaterial
 import com.cout970.modeler.modeleditor.action.ActionImportModel
 import com.cout970.modeler.modeleditor.action.ActionImportTexture
-import com.cout970.modeler.modeleditor.selection.ModelPath
-import com.cout970.modeler.modeleditor.selection.SelectionGroup
 import com.cout970.modeler.project.Project
 import com.cout970.modeler.project.ProjectManager
 import com.cout970.modeler.resource.ResourceLoader
 import com.cout970.modeler.resource.toResourcePath
-import com.cout970.modeler.util.applyGroup
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.*
 import com.google.gson.GsonBuilder
 import com.google.gson.stream.JsonReader
 import java.awt.Color
-import java.awt.image.BufferedImage
 import java.io.File
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
-import javax.imageio.ImageIO
 
 /**
  * Created by cout970 on 2017/01/02.
@@ -116,10 +110,11 @@ class ExportManager(val projectManager: ProjectManager, val resourceLoader: Reso
                     val file = File(path)
                     val material = TexturedMaterial(file.nameWithoutExtension, file.toResourcePath())
                     //TODO selected group
-                    val sel = SelectionGroup(model.getPaths(ModelPath.Level.GROUPS))
-                    model.applyGroup(sel) { group ->
-                        group.copy(material = material)
-                    }
+//                    val sel = SelectionGroup(model.getPaths(ModelPath.Level.GROUPS))
+//                    model.applyGroup(sel) { group ->
+//                        group.copy(material = material)
+//                    }
+                    model
                 }
         )
     }
@@ -127,39 +122,40 @@ class ExportManager(val projectManager: ProjectManager, val resourceLoader: Reso
     fun exportTexture(path: String) {
         projectManager.modelEditor.addToQueue {
             try {
-                val file = File(path)
-                val group = projectManager.modelEditor.model.groups[0]
-                val size = group.material.size
-
-                val image = BufferedImage(size.xi, size.yi, BufferedImage.TYPE_INT_ARGB_PRE)
-                val g = image.createGraphics()
-                g.color = Color(0f, 0f, 0f, 0f)
-                g.fillRect(0, 0, size.xi, size.yi)
-
-                val set = mutableSetOf<Int>()
-
-                group.meshes.forEach { mesh ->
-                    mesh.getQuads().forEach { quad ->
-                        val a = quad.a.tex * size
-                        val b = quad.b.tex * size
-                        val c = quad.c.tex * size
-                        val d = quad.d.tex * size
-                        g.color = generateColor(set)
-                        g.fillPolygon(
-                                intArrayOf(
-                                        StrictMath.rint(a.xd).toInt(),
-                                        StrictMath.rint(b.xd).toInt(),
-                                        StrictMath.rint(c.xd).toInt(),
-                                        StrictMath.rint(d.xd).toInt()),
-                                intArrayOf(
-                                        StrictMath.rint(a.yd).toInt(),
-                                        StrictMath.rint(b.yd).toInt(),
-                                        StrictMath.rint(c.yd).toInt(),
-                                        StrictMath.rint(d.yd).toInt()), 4)
-                    }
-                }
-
-                ImageIO.write(image, "png", file)
+                //TODO use Texturizer
+//                val file = File(path)
+//                val group = projectManager.modelEditor.model.groups[0]
+//                val size = group.material.size
+//
+//                val image = BufferedImage(size.xi, size.yi, BufferedImage.TYPE_INT_ARGB_PRE)
+//                val g = image.createGraphics()
+//                g.color = Color(0f, 0f, 0f, 0f)
+//                g.fillRect(0, 0, size.xi, size.yi)
+//
+//                val set = mutableSetOf<Int>()
+//
+//                group.meshes.forEach { mesh ->
+//                    mesh.getQuads().forEach { quad ->
+//                        val a = quad.a.tex * size
+//                        val b = quad.b.tex * size
+//                        val c = quad.c.tex * size
+//                        val d = quad.d.tex * size
+//                        g.color = generateColor(set)
+//                        g.fillPolygon(
+//                                intArrayOf(
+//                                        StrictMath.rint(a.xd).toInt(),
+//                                        StrictMath.rint(b.xd).toInt(),
+//                                        StrictMath.rint(c.xd).toInt(),
+//                                        StrictMath.rint(d.xd).toInt()),
+//                                intArrayOf(
+//                                        StrictMath.rint(a.yd).toInt(),
+//                                        StrictMath.rint(b.yd).toInt(),
+//                                        StrictMath.rint(c.yd).toInt(),
+//                                        StrictMath.rint(d.yd).toInt()), 4)
+//                    }
+//                }
+//
+//                ImageIO.write(image, "png", file)
             } catch (e: Exception) {
                 e.print()
             }

@@ -39,6 +39,7 @@ class TextureHandler(val loader: ResourceLoader) {
     }
 
     fun updateMaterials(model: Model) {
-        model.groups.map { it.material }.filter { it.hasChanged() }.forEach { it.loadTexture(loader) }
+        //TODO use texturizer
+//        model.groups.map { it.material }.filter { it.hasChanged() }.forEach { it.loadTexture(loader) }
     }
 }

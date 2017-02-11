@@ -3,15 +3,8 @@ package com.cout970.modeler.view.scene
 import com.cout970.glutilities.structure.GLStateMachine
 import com.cout970.glutilities.tessellator.VAO
 import com.cout970.matrix.extensions.Matrix4
-import com.cout970.matrix.extensions.times
-import com.cout970.matrix.extensions.transpose
 import com.cout970.modeler.config.Config
-import com.cout970.modeler.model.Mesh
-import com.cout970.modeler.model.ModelGroup
-import com.cout970.modeler.modeleditor.selection.IModelSelection
-import com.cout970.modeler.modeleditor.selection.ModelPath
-import com.cout970.modeler.modeleditor.selection.ModelSelectionMode
-import com.cout970.modeler.modeleditor.selection.SelectionNone
+import com.cout970.modeler.model.*
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.controller.SceneController
 import com.cout970.modeler.view.controller.SelectionAxis
@@ -88,7 +81,7 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
                 // bounding boxes
                 if (sceneController.showBoundingBoxes.get()) {
                     draw(GL11.GL_LINES, formatPC) {
-                        model.groups.flatMap(ModelGroup::meshes).map(Mesh::toAABB).forEach {
+                        model.groups.flatMap(ModelGroup::meshes).map(IElementObject::toAABB).forEach {
                             RenderUtil.renderBox(this, it)
                         }
                     }
@@ -166,7 +159,7 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
                         }
                         TransformationMode.ROTATION -> {
                             val cursorParams = CursorParameters(
-                                    selection.getCenter3D(model),
+                                    selection.center3D(model),
                                     scene.camera.zoom,
                                     scene.size.toIVector())
 
@@ -191,14 +184,14 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
         }
     }
 
-    fun renderRotation(selection: IModelSelection, controller: SceneController, cursorParams: CursorParameters) {
+    fun renderRotation(selection: Selection, controller: SceneController, cursorParams: CursorParameters) {
 
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
         val center = cursorParams.center
 
         draw(GL11.GL_QUADS, shaderHandler.formatPC) {
 
-            if (selection.modelMode != ModelSelectionMode.VERTEX) {
+            if (selection !is VertexSelection) {
                 RenderUtil.renderBar(this, center, center, cursorParams.minSizeOfSelectionBox, vec3Of(1, 1, 1))
             }
 
@@ -234,7 +227,7 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
         }
     }
 
-    fun renderTranslation(selection: IModelSelection, controller: SceneController, params: CursorParameters,
+    fun renderTranslation(selection: Selection, controller: SceneController, params: CursorParameters,
                           perspective: Boolean) {
 
         if (Config.enableHelperGrid && perspective && controller.selectedModelAxis != SelectionAxis.NONE) {
@@ -248,7 +241,7 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
             val start = radius - params.maxSizeOfSelectionBox / 2.0
             val end = radius + params.maxSizeOfSelectionBox / 2.0
 
-            if (selection.modelMode != ModelSelectionMode.VERTEX) {
+            if (selection !is VertexSelection) {
                 RenderUtil.renderBar(this, center, center, params.minSizeOfSelectionBox, vec3Of(1, 1, 1))
             }
 

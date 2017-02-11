@@ -1,4 +1,4 @@
-package com.cout970.modeler.model.freemodel
+package com.cout970.modeler.model
 
 import java.util.*
 
@@ -13,10 +13,14 @@ open class ElementPath(open val indices: IntArray) {
         return ElementPath(indices.take(indices.size - 1).toIntArray())
     }
 
-    open fun getSubPaths(model: FreeModel): List<ElementPath> {
+    open fun getSubPaths(model: Model): List<ElementPath> {
         val elem = model.getElement(this)
         if (elem is IElementGroup) {
             return (0 until elem.elements.size).map { ElementPath(indices + it) }
+        } else if (elem is IElementObject) {
+            return elem.vertex.mapIndexed { i, vertexIndex ->
+                VertexPath(indices, i)
+            }
         }
         return listOf()
     }
@@ -41,7 +45,7 @@ data class VertexPath(override val indices: IntArray, val vertexIndex: Int) : El
         return ElementPath(indices)
     }
 
-    override fun getSubPaths(model: FreeModel): List<ElementPath> {
+    override fun getSubPaths(model: Model): List<ElementPath> {
         return listOf()
     }
 

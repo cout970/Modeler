@@ -1,82 +1,17 @@
 package com.cout970.modeler.modeleditor.action
 
-import com.cout970.modeler.model.Mesh
-import com.cout970.modeler.model.QuadIndices
+import com.cout970.modeler.model.Selection
 import com.cout970.modeler.modeleditor.ModelEditor
-import com.cout970.modeler.modeleditor.selection.IModelSelection
-import com.cout970.modeler.modeleditor.selection.ModelPath
-import com.cout970.modeler.modeleditor.selection.ModelSelectionMode
-import com.cout970.modeler.util.filterNotIndexed
-import com.cout970.vector.api.IVector2
-import com.cout970.vector.api.IVector3
 
 /**
  * Created by cout970 on 2016/12/08.
  */
-data class ActionDelete(val selection: IModelSelection, val modelEditor: ModelEditor) : IAction {
+data class ActionDelete(val selection: Selection, val modelEditor: ModelEditor) : IAction {
 
     val model = modelEditor.model
 
     override fun run() {
-        modelEditor.apply {
-            when (selection.modelMode) {
-                ModelSelectionMode.GROUP -> {
-                    updateModel(model.copy(model.groups.filterNotIndexed { groupIndex, group ->
-                        selection.isSelected(ModelPath(groupIndex))
-                    }))
-                }
-                ModelSelectionMode.MESH -> {
-                    updateModel(model.copy(model.groups.mapIndexed { groupIndex, group ->
-                        group.copy(group.meshes.filterNotIndexed { meshIndex, mesh ->
-                            selection.isSelected(ModelPath(groupIndex, meshIndex))
-                        })
-                    }))
-                }
-                ModelSelectionMode.QUAD -> {
-                    updateModel(model.copy(model.groups.mapIndexed { groupIndex, group ->
-                        group.copy(group.meshes.mapIndexedNotNull { meshIndex, mesh ->
-                            if (!selection.containsSelectedElements(ModelPath(groupIndex, meshIndex))) {
-                                // unaffected mesh
-                                mesh
-                            } else {
-                                val unselectedQuads = mesh.indices.filterNotIndexed { quadIndex, quadIndices ->
-                                    selection.isSelected(ModelPath(groupIndex, meshIndex, quadIndex))
-                                }
-                                if (unselectedQuads.isNotEmpty()) {
-                                    val posIndexMap = mutableMapOf<Int, Int>()
-                                    val texIndexMap = mutableMapOf<Int, Int>()
-                                    val positions = mutableListOf<IVector3>()
-                                    val textureCoords = mutableListOf<IVector2>()
-                                    for (quad in unselectedQuads) {
-                                        for (pos in quad.positions) {
-                                            posIndexMap += pos to positions.size
-                                            positions.add(mesh.positions[pos])
-                                        }
-                                        for (tex in quad.textureCoords) {
-                                            texIndexMap += tex to textureCoords.size
-                                            textureCoords.add(mesh.textures[tex])
-                                        }
-                                    }
-                                    val indices = unselectedQuads.map { (aP, aT, bP, bT, cP, cT, dP, dT) ->
-                                        QuadIndices(
-                                                posIndexMap[aP]!!, texIndexMap[aT]!!,
-                                                posIndexMap[bP]!!, texIndexMap[bT]!!,
-                                                posIndexMap[cP]!!, texIndexMap[cT]!!,
-                                                posIndexMap[dP]!!, texIndexMap[dT]!!)
-                                    }
-                                    //return a new mesh, if only some parts of the component are removed, but not all
-                                    Mesh(positions, textureCoords, indices)
-                                } else {
-                                    // the resulting mesh is empty
-                                    null
-                                }
-                            }
-                        })
-                    }))
-                }
-                ModelSelectionMode.VERTEX -> Unit //you can't remove a vertex because everything needs to be made of quads
-            }
-        }
+        modelEditor.updateModel(model.delete(selection))
         modelEditor.selectionManager.clearModelSelection()
     }
 

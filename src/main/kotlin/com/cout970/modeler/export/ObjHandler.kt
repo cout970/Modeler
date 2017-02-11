@@ -34,12 +34,12 @@ class ObjExporter {
         val objects: MutableList<ObjObject> = mutableListOf()
 
         // begin model conversion
-        for (group in model.groups) {
+        val flatGroups: Map<String, List<IElement>> = model.zipGroups()
+        for ((groupName, group) in flatGroups) {
             val groupsInObj = mutableListOf<ObjGroup>()
-            for ((meshIndex, mesh) in group.meshes.withIndex()) {
+            for ((meshIndex, mesh) in group.withIndex()) {
                 val quads = mutableListOf<ObjQuad>()
-                val matrix = group.transform.matrix
-                val rawQuads = mesh.getQuads().map { it.transform(matrix) }
+                val rawQuads = mesh.getQuads()
 
                 for (rawQuad in rawQuads) {
                     val objQuad = ObjQuad()
@@ -77,7 +77,8 @@ class ObjExporter {
                 }
                 groupsInObj += ObjGroup("Mesh_$meshIndex", quads)
             }
-            objects += ObjObject(group.name, group.material.name, groupsInObj)
+            //TODO update materials
+            objects += ObjObject(groupName, model.resources.materials[0].name, groupsInObj)
         }
         //end of model conversion
 
@@ -244,19 +245,25 @@ class ObjImporter {
         if (noObj.groups.isNotEmpty()) {
             objects.add(noObj)
         }
+
+
         return Model(objects.map { obj ->
-            ModelGroup(name = obj.name,
-                    material = materials.firstOrNull { it.name == obj.material }?.toMaterial() ?: MaterialNone,
-                    meshes = obj.groups.mapNotNull { group ->
-                        Mesh(vertices.map { it * 16 }, if (texCoords.isEmpty()) listOf(vec2Of(0)) else texCoords,
-                                group.quads.map {
-                                    QuadIndices(it.vertexIndices[0], it.textureIndices[0],
-                                            it.vertexIndices[1], it.textureIndices[1],
-                                            it.vertexIndices[2], it.textureIndices[2],
-                                            it.vertexIndices[3], it.textureIndices[3])
-                                })
-                    })
-        })
+            //TODO
+//            if (obj.name.startsWith("root"))
+            ElementGroup(name = obj.name, elements = obj.groups.map { group ->
+                val pos = vertices.map { it * 16 }
+                val tex = if (texCoords.isEmpty()) listOf(vec2Of(0)) else texCoords
+                val newQuads = group.quads.map {
+                    Quad(
+                            Vertex(pos[it.vertexIndices[0]], tex[it.textureIndices[0]]),
+                            Vertex(pos[it.vertexIndices[1]], tex[it.textureIndices[1]]),
+                            Vertex(pos[it.vertexIndices[2]], tex[it.textureIndices[2]]),
+                            Vertex(pos[it.vertexIndices[3]], tex[it.textureIndices[3]])
+                    )
+                }
+                Meshes.quadsToMesh(newQuads)
+            })
+        }, ModelResources(materials.map { it.toMaterial() }))
     }
 
     private fun parseMaterialLib(resource: ResourcePath, name: String): List<ObjMaterial> {

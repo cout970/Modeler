@@ -1,7 +1,7 @@
 package com.cout970.modeler.modeleditor.tool
 
-import com.cout970.modeler.model.freemodel.FreeModel
-import com.cout970.modeler.model.freemodel.Selection
+import com.cout970.modeler.model.Model
+import com.cout970.modeler.model.Selection
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
 
@@ -10,5 +10,5 @@ import com.cout970.vector.api.IVector3
  */
 interface IModelRotate {
 
-    fun rotate(source: FreeModel, selection: Selection, pivot: IVector3, rotation: IQuaternion): FreeModel
+    fun rotate(source: Model, selection: Selection, pivot: IVector3, rotation: IQuaternion): Model
 }

@@ -1,10 +1,12 @@
 package com.cout970.modeler.modeleditor.selection
 
-import com.cout970.modeler.model.Model
-import com.cout970.modeler.model.Vertex
+import com.cout970.matrix.extensions.Matrix4
+import com.cout970.modeler.model.*
 import com.cout970.modeler.modeleditor.ModelEditor
+import com.cout970.modeler.modeleditor.SelectionMode
 import com.cout970.modeler.modeleditor.action.ActionChangeModelSelection
 import com.cout970.modeler.modeleditor.action.ActionChangeTextureSelection
+import com.cout970.modeler.util.FakeRayObstacle
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
 import com.cout970.raytrace.RayTraceUtil
@@ -17,18 +19,19 @@ import com.cout970.vector.extensions.*
  */
 class SelectionManager(val modelEditor: ModelEditor) {
 
-    var modelSelectionMode: ModelSelectionMode = ModelSelectionMode.MESH
-    var modelSelection: IModelSelection = SelectionNone
+    var modelSelectionMode: SelectionMode = SelectionMode.ELEMENT
+    var modelSelection: Selection = SelectionNone
 
-    var textureSelectionMode: TextureSelectionMode = TextureSelectionMode.QUAD
-    var textureSelection: ITextureSelection = SelectionNone
+    var textureSelectionMode: SelectionMode = SelectionMode.QUAD
+    var textureSelection: Selection = SelectionNone
 
     fun getMouseHit(ray: Ray, model: Model = modelEditor.model): RayTraceResult? {
-        val hits = mutableListOf<Pair<RayTraceResult, ModelPath>>()
+        val hits = mutableListOf<Pair<RayTraceResult, ElementPath>>()
 
-        model.getPaths(ModelPath.Level.MESH).forEach { path ->
-            path.getMesh(model)!!.rayTrace(path.getMeshMatrix(model), ray)?.let {
-                hits += it to ModelPath(path.group)
+        model.getObjectPaths().forEach { path ->
+            val obj = model.getElement(path) as IElementObject
+            obj.rayTrace(Matrix4.IDENTITY, ray)?.let {
+                hits += it to path
             }
         }
 
@@ -41,49 +44,61 @@ class SelectionManager(val modelEditor: ModelEditor) {
 
     fun mouseTrySelectModel(ray: Ray, zoom: Float, allowMultiSelection: Boolean) {
 
-        val hits = mutableListOf<Pair<RayTraceResult, ModelPath>>()
+        val hits = mutableListOf<Pair<RayTraceResult, List<ElementPath>>>()
         val model = modelEditor.model
 
-        if (modelSelectionMode == ModelSelectionMode.GROUP) {
-            model.getPaths(ModelPath.Level.MESH).forEach { path ->
-                path.getMesh(model)!!.rayTrace(path.getMeshMatrix(model), ray)?.let {
-                    hits += it to ModelPath(path.group)
-                }
-            }
-        } else if (modelSelectionMode == ModelSelectionMode.MESH) {
-            model.getPaths(ModelPath.Level.MESH).forEach { path ->
-                path.getMesh(model)!!.rayTrace(path.getMeshMatrix(model), ray)?.let {
-                    hits += it to path
-                }
-            }
-        } else if (modelSelectionMode == ModelSelectionMode.QUAD) {
-            model.getPaths(ModelPath.Level.MESH).forEach { path ->
-                val mesh = path.getMesh(model)!!
-                val matrix = path.getMeshMatrix(model)
-                mesh.getQuads().map { it.transform(matrix) }.forEachIndexed { quadIndex, quad ->
-                    RayTraceUtil.rayTraceQuad(ray, mesh, quad.a.pos, quad.b.pos, quad.c.pos, quad.d.pos)?.let {
-                        hits += it to ModelPath(path.group, path.mesh, quadIndex)
+        when (modelSelectionMode) {
+            SelectionMode.ELEMENT -> {
+                model.getObjectPaths().forEach { path ->
+                    val obj = model.getElement(path) as IElementObject
+
+                    obj.rayTrace(Matrix4.IDENTITY, ray)?.let {
+                        hits += it to listOf(path)
                     }
                 }
             }
-        } else if (modelSelectionMode == ModelSelectionMode.VERTEX) {
-            model.getPaths(ModelPath.Level.MESH).forEach { path ->
-                val mesh = path.getMesh(model)!!
-                val matrix = path.getMeshMatrix(model)
-                mesh.indices.forEachIndexed { quadIndex, quadI ->
-                    val quad = quadI.toQuad(mesh.positions, mesh.textures).transform(matrix)
+            SelectionMode.QUAD -> {
+                model.getObjectPaths().forEach { path ->
+                    val obj = model.getElement(path) as IElementObject
+                    obj.getQuads().forEachIndexed { quadIndex, quad ->
+                        RayTraceUtil.rayTraceQuad(ray, FakeRayObstacle,
+                                quad.a.pos, quad.b.pos, quad.c.pos, quad.d.pos)?.let {
 
-                    fun rayTraceVertex(vertex: Vertex, index: Int) {
-                        val start = vertex.pos - vec3Of(0.125) * zoom / 10
-                        val end = vertex.pos + vec3Of(0.125) * zoom / 10
-                        RayTraceUtil.rayTraceBox3(start, end, ray, mesh)?.let {
-                            hits += it to ModelPath(path.group, path.mesh, quadIndex, index)
+                            hits += it to listOf(
+                                    VertexPath(path.indices, obj.faces[quadIndex].a),
+                                    VertexPath(path.indices, obj.faces[quadIndex].b),
+                                    VertexPath(path.indices, obj.faces[quadIndex].c),
+                                    VertexPath(path.indices, obj.faces[quadIndex].d)
+                            )
                         }
                     }
-                    rayTraceVertex(quad.a, 0)
-                    rayTraceVertex(quad.b, 1)
-                    rayTraceVertex(quad.c, 2)
-                    rayTraceVertex(quad.d, 3)
+                }
+            }
+            SelectionMode.EDGE -> {
+                //TODO add edge selection...
+                model.getObjectPaths().forEach { path ->
+                    val obj = model.getElement(path) as IElementObject
+                    obj.vertex.forEachIndexed { index, vertexIndex ->
+                        val vertex = vertexIndex.toVertex(obj)
+                        val start = vertex.pos - vec3Of(0.125) * zoom / 10
+                        val end = vertex.pos + vec3Of(0.125) * zoom / 10
+                        RayTraceUtil.rayTraceBox3(start, end, ray, FakeRayObstacle)?.let {
+                            hits += it to listOf(VertexPath(path.indices, index))
+                        }
+                    }
+                }
+            }
+            SelectionMode.VERTEX -> {
+                model.getObjectPaths().forEach { path ->
+                    val obj = model.getElement(path) as IElementObject
+                    obj.vertex.forEachIndexed { index, vertexIndex ->
+                        val vertex = vertexIndex.toVertex(obj)
+                        val start = vertex.pos - vec3Of(0.125) * zoom / 10
+                        val end = vertex.pos + vec3Of(0.125) * zoom / 10
+                        RayTraceUtil.rayTraceBox3(start, end, ray, FakeRayObstacle)?.let {
+                            hits += it to listOf(VertexPath(path.indices, index))
+                        }
+                    }
                 }
             }
         }
@@ -102,28 +117,28 @@ class SelectionManager(val modelEditor: ModelEditor) {
         }
     }
 
-    fun updateModelSelection(sel: IModelSelection) {
+    fun updateModelSelection(sel: Selection) {
         modelEditor.historyRecord.doAction(ActionChangeModelSelection(modelSelection, sel, modelEditor))
-        updateTextureSelection(sel.toTextureSelection(modelEditor.model))
+        updateTextureSelection(sel)
     }
 
-    fun updateTextureSelection(sel: ITextureSelection) {
+    fun updateTextureSelection(sel: Selection) {
         modelEditor.historyRecord.doAction(ActionChangeTextureSelection(textureSelection, sel, modelEditor))
     }
 
-    fun handleModelSelection(path: ModelPath, allowMultiSelection: Boolean): IModelSelection {
+    fun handleModelSelection(path: List<ElementPath>, allowMultiSelection: Boolean): Selection {
         var sel = makeModelSelection(path, allowMultiSelection)
         if (sel == null || sel.paths.isEmpty()) sel = SelectionNone
         return sel
     }
 
-    fun handleTextureSelection(path: ModelPath, allowMultiSelection: Boolean): ITextureSelection {
+    fun handleTextureSelection(path: List<ElementPath>, allowMultiSelection: Boolean): Selection {
         var sel = makeTextureSelection(path, allowMultiSelection)
         if (sel == null || sel.paths.isEmpty()) sel = SelectionNone
         return sel
     }
 
-    private fun makeModelSelection(path: ModelPath, allowMultiSelection: Boolean): IModelSelection? {
+    private fun makeModelSelection(path: List<ElementPath>, allowMultiSelection: Boolean): Selection? {
         if (modelSelectionMode == ModelSelectionMode.GROUP) {
             if (allowMultiSelection && modelSelection.modelMode == ModelSelectionMode.MESH) {
                 if (path in modelSelection.paths) {
@@ -184,7 +199,7 @@ class SelectionManager(val modelEditor: ModelEditor) {
         return null
     }
 
-    private fun makeTextureSelection(path: ModelPath, allowMultiSelection: Boolean): ITextureSelection? {
+    private fun makeTextureSelection(path: List<ElementPath>, allowMultiSelection: Boolean): Selection? {
         if (textureSelectionMode == TextureSelectionMode.QUAD) {
             if (allowMultiSelection && textureSelection.textureMode == TextureSelectionMode.QUAD) {
                 if (path in textureSelection.paths) {
@@ -226,11 +241,11 @@ class SelectionManager(val modelEditor: ModelEditor) {
     }
 
     fun mouseTrySelectTexture(ray: Ray, zoom: Float, allowMultiSelection: Boolean, to3D: (IVector2) -> IVector3) {
-        val hits = mutableListOf<Pair<RayTraceResult, ModelPath>>()
+        val hits = mutableListOf<Pair<RayTraceResult, ElementPath>>()
         val model = modelEditor.model
 
         if (textureSelectionMode == TextureSelectionMode.QUAD) {
-            model.getPaths(ModelPath.Level.MESH).forEach { path ->
+            model.getPaths(ElementPath.Level.MESH).forEach { path ->
                 val mesh = path.getMesh(model)!!
                 val matrix = path.getMeshMatrix(model)
                 mesh.getQuads().map { it.transform(matrix) }.forEachIndexed { quadIndex, quad ->
@@ -240,7 +255,7 @@ class SelectionManager(val modelEditor: ModelEditor) {
                             to3D(quad.c.tex),
                             to3D(quad.d.tex)
                     )?.let {
-                        hits += it to ModelPath(path.group, path.mesh, quadIndex)
+                        hits += it to ElementPath(path.group, path.mesh, quadIndex)
                     }
                 }
             }

@@ -1,7 +1,6 @@
-package com.cout970.modeler.model.freemodel
+package com.cout970.modeler.model
 
 import com.cout970.modeler.model.Quad
-import com.cout970.modeler.model.Vertex
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 
@@ -12,47 +11,64 @@ import com.cout970.vector.api.IVector3
 // the id is used to get a different hashCode for every model, so this can be used to detect changes
 private var modelIds = 0
 
-data class FreeModel(val elements: List<Element>, val id: Int = modelIds++) {
+data class Model(val elements: List<IElement>, val resources: ModelResources, val id: Int = modelIds++) {
 
     //copies the model with a different modelId so the hashCode of the model is different
-    fun copy(elements: List<Element> = this.elements): FreeModel {
-        return FreeModel(elements)
+    fun copy(elements: List<IElement> = this.elements): Model {
+        return Model(elements, resources)
     }
 
     fun getQuads(): List<Quad> = elements.flatMap { it.getQuads() }
 
     fun getVertices(): List<Vertex> = elements.flatMap { it.getVertices() }
+
+    //TODO add quad deletion
+    fun delete(selection: Selection): Model {
+        val elements = mutableListOf<IElement>()
+
+        for ((index, elem) in this.elements.withIndex()) {
+            val path = ElementPath(intArrayOf(index))
+            if (!selection.isSelected(path)) {
+                if (elem is IElementGroup && selection.containsSelectedElements(path)) {
+                    elements += elem.delete(selection, path)
+                } else {
+                    elements += elem
+                }
+            }
+        }
+        return copy(elements = elements)
+    }
+
+    private fun IElementGroup.delete(selection: Selection, path: ElementPath): IElementGroup {
+        val elements = mutableListOf<IElement>()
+
+        for ((index, elem) in this.elements.withIndex()) {
+            val subPath = ElementPath(path.indices + index)
+            if (!selection.isSelected(subPath)) {
+                if (elem is IElementGroup && selection.containsSelectedElements(subPath)) {
+                    elements += elem.delete(selection, subPath)
+                } else {
+                    elements += elem
+                }
+            }
+        }
+        return deepCopy(elements = elements)
+    }
 }
 
-interface Element {
+data class ModelResources(val materials: List<Material>)
 
-    fun getQuads(): List<Quad>
-    fun getVertices(): List<Vertex>
-}
+private var groupCount = 0
 
-interface IElementGroup : Element {
-
-    val elements: List<Element>
-
-    fun deepCopy(elements: List<Element>): IElementGroup
-}
-
-interface IElementObject : Element {
-
-    val positions: List<IVector3>
-    val textures: List<IVector2>
-    val vertex: List<VertexIndex>
-    val faces: List<QuadIndex>
-
-    fun updateVertex(newVertex: List<Vertex>): IElementObject
-}
-
-data class ElementGroup(override val elements: List<Element>) : IElementGroup {
+data class ElementGroup(
+        override val elements: List<IElement>,
+        override val name: String = "Group_${groupCount++}"
+) : IElementGroup {
 
     override fun getQuads(): List<Quad> = elements.flatMap { it.getQuads() }
     override fun getVertices(): List<Vertex> = elements.flatMap { it.getVertices() }
 
-    override fun deepCopy(elements: List<Element>): IElementGroup {
+    override fun deepCopy(elements: List<IElement>): IElementGroup {
         return ElementGroup(elements)
     }
 }
@@ -73,7 +89,11 @@ data class ElementObject(
         )
     }
 
-    override fun updateVertex(newVertex: List<Vertex>): IElementObject {
+    fun transform(func: (Vertex) -> Vertex): ElementObject {
+        return updateVertex(vertex.map { it.toVertex(this) }.map(func))
+    }
+
+    override fun updateVertex(newVertex: List<Vertex>): ElementObject {
         val positions = newVertex.map { it.pos }.distinct()
         val textures = newVertex.map { it.tex }.distinct()
 

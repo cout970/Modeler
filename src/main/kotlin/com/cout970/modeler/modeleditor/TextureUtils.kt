@@ -1,12 +1,6 @@
 package com.cout970.modeler.modeleditor
 
-import com.cout970.modeler.model.Mesh
-import com.cout970.modeler.model.Model
-import com.cout970.modeler.model.Quad
-import com.cout970.modeler.model.QuadIndices
-import com.cout970.modeler.modeleditor.selection.ITextureSelection
-import com.cout970.modeler.modeleditor.selection.TextureSelectionMode
-import com.cout970.modeler.util.applyMesh
+import com.cout970.modeler.model.*
 import com.cout970.modeler.util.rotateAround
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -34,9 +28,9 @@ fun Quad.setTexture1(uv0: IVector2, uv1: IVector2): Quad {
     )
 }
 
-fun Mesh.setUVFromCuboid(size: IVector3, offset: IVector2, textureSize: IVector2): Mesh {
+fun ElementObject.setUVFromCuboid(size: IVector3, offset: IVector2, textureSize: IVector2): ElementObject {
     val uvs = generateUVs(size, offset, textureSize)
-    return Mesh.quadsToMesh(getQuads().mapIndexed { index, quad ->
+    return Meshes.quadsToMesh(getQuads().mapIndexed { index, quad ->
         val flag = when (index) {
             0 -> false; 1 -> true
             2 -> true; 3 -> false
@@ -83,85 +77,66 @@ private fun generateUVs(size: IVector3, offset: IVector2, textureSize: IVector2)
     )
 }
 
-fun Model.moveTexture(selection: ITextureSelection, translation: IVector3): Model {
+fun Model.moveTexture(selection: Selection, translation: IVector3): Model {
     return applyToSelectedTextureVertices(selection) { pos -> pos + translation }
 }
 
-fun Model.rotateTexture(selection: ITextureSelection, center: IVector3, rotation: Double): Model {
+fun Model.rotateTexture(selection: Selection, center: IVector3, rotation: Double): Model {
     return applyToSelectedTextureVertices(selection) { pos -> pos.rotateAround(center, rotation) }
 }
 
-fun Model.scaleTexture(selection: ITextureSelection, scale: IVector3): Model {
+fun Model.scaleTexture(selection: Selection, scale: IVector3): Model {
     return applyToSelectedTextureVertices(selection) { pos -> pos * scale }
 }
 
-fun Model.applyToSelectedTextureVertices(selection: ITextureSelection, func: (IVector2) -> IVector2): Model {
-    val newModel = when (selection.textureMode) {
-        TextureSelectionMode.QUAD -> {
-            applyMesh(selection) { mesh ->
-                val pathToThisComponent = selection.paths.filter { it.getMesh(this) == mesh }
-                val selectedIndices = pathToThisComponent.map { mesh.indices[it.quad] }.flatMap { it.textureCoords }
-
-                mesh.copy(textures = mesh.textures.mapIndexed { i, pos ->
-                    if (i in selectedIndices) {
-                        func(pos)
-                    } else {
-                        pos
-                    }
-                })
-            }
-        }
-        TextureSelectionMode.VERTEX -> {
-            applyMesh(selection) { mesh ->
-                val pathToThisComponent = selection.paths.filter { it.getMesh(this) == mesh }
-                val selectedIndices = pathToThisComponent.map { mesh.indices[it.quad].positions[it.vertex] }
-
-                mesh.copy(textures = mesh.textures.mapIndexed { i, pos ->
-                    if (i in selectedIndices) {
-                        func(pos)
-                    } else {
-                        pos
-                    }
-                })
-            }
-        }
-        else -> this
+fun Model.applyToSelectedTextureVertices(selection: Selection, func: (IVector2) -> IVector2): Model {
+    return this.applyVertex(selection) { path, vertex ->
+        vertex.transformTex(func)
     }
-    return newModel
 }
 
-fun Model.splitUV(selection: ITextureSelection): Model {
-    return applyMesh(selection) { mesh ->
-        val pathToThisComponent = selection.paths.filter { it.getMesh(this) == mesh }
-        val selectedIndices = if (selection.textureMode == TextureSelectionMode.VERTEX) {
-            pathToThisComponent.map { mesh.indices[it.quad].positions[it.vertex] }
+//TODO test if the changes make it work
+fun Model.splitUV(selection: Selection): Model {
+    return applyObject(selection) { path, element ->
+        val pathToThisComponent = selection.filterPaths(path)
+
+        val selectedVertex = if (selection is VertexSelection) {
+            pathToThisComponent
+                    .map { it as VertexPath }
+                    .map { it.vertexIndex }
         } else {
-            pathToThisComponent.map { mesh.indices[it.quad] }.flatMap { it.textureCoords }
+            pathToThisComponent
+                    .flatMap { it.getSubPaths(this) }
+                    .map { it as VertexPath }
+                    .map { it.vertexIndex }
         }
-        val indexMap = mutableMapOf<Pair<QuadIndices, Int>, Int>()
-        val newTextureList = mutableListOf<IVector2>()
-        for (quad in mesh.indices) {
-            for (i in quad.textureCoords) {
-                if (i in selectedIndices) {
-                    indexMap += (quad to i) to newTextureList.size
-                    newTextureList += mesh.textures[i]
+
+        val indexMap = mutableMapOf<Pair<QuadIndex, Int>, Int>()
+        val newVertexList = mutableListOf<VertexIndex>()
+
+        for (quad in element.faces) {
+            for (i in quad.indices) {
+                if (i in selectedVertex) {
+                    indexMap += (quad to i) to newVertexList.size
+                    newVertexList += element.vertex[i]
                 } else {
-                    val aux = mesh.textures[i]
-                    if (aux in newTextureList) {
-                        indexMap += (quad to i) to newTextureList.indexOf(aux)
+                    val aux = element.vertex[i]
+                    if (aux in newVertexList) {
+                        indexMap += (quad to i) to newVertexList.indexOf(aux)
                     } else {
-                        indexMap += (quad to i) to newTextureList.size
-                        newTextureList += mesh.textures[i]
+                        indexMap += (quad to i) to newVertexList.size
+                        newVertexList += element.vertex[i]
                     }
                 }
             }
         }
-        Mesh(mesh.positions, newTextureList, mesh.indices.map { indices ->
-            QuadIndices(
-                    indices.aP, indexMap[indices to indices.aT]!!,
-                    indices.bP, indexMap[indices to indices.bT]!!,
-                    indices.cP, indexMap[indices to indices.cT]!!,
-                    indices.dP, indexMap[indices to indices.dT]!!
+
+        ElementObject(element.positions, element.textures, newVertexList, element.faces.map { indices ->
+            QuadIndex(
+                    indexMap[indices to indices.a]!!,
+                    indexMap[indices to indices.b]!!,
+                    indexMap[indices to indices.c]!!,
+                    indexMap[indices to indices.d]!!
             )
         })
     }

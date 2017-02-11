@@ -1,7 +1,7 @@
 package com.cout970.modeler.modeleditor.tool
 
-import com.cout970.modeler.model.freemodel.FreeModel
-import com.cout970.modeler.model.freemodel.Selection
+import com.cout970.modeler.model.Model
+import com.cout970.modeler.model.Selection
 import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.vector.api.IVector3
 
@@ -10,6 +10,6 @@ import com.cout970.vector.api.IVector3
  */
 interface IModelScale {
 
-    fun scale(source: FreeModel, selection: Selection, center: IVector3, axis: SelectionAxis,
-              offset: Float): FreeModel
+    fun scale(source: Model, selection: Selection, center: IVector3, axis: SelectionAxis,
+              offset: Float): Model
 }
