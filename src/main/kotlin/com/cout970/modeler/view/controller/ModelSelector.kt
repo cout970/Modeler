@@ -3,12 +3,9 @@ package com.cout970.modeler.view.controller
 import com.cout970.glutilities.event.EnumKeyState
 import com.cout970.glutilities.event.EventMouseClick
 import com.cout970.modeler.config.Config
+import com.cout970.modeler.model.SelectionNone
 import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.modeleditor.action.ActionModifyModel
-import com.cout970.modeler.modeleditor.rotate
-import com.cout970.modeler.modeleditor.scale
-import com.cout970.modeler.modeleditor.selection.SelectionNone
-import com.cout970.modeler.modeleditor.translate
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.scene.SceneModel
 import com.cout970.raytrace.Ray
@@ -27,7 +24,7 @@ class ModelSelector(val scene: SceneModel, val controller: SceneController, val 
 
     val transformationMode get() = controller.transformationMode
     val selection get() = modelEditor.selectionManager.modelSelection
-    val selectionCenter: IVector3 get() = selection.getCenter3D(modelEditor.model)
+    val selectionCenter: IVector3 get() = selection.center3D(modelEditor.model)
     var time: Long = 0L
 
     val translateCursor = TranslationCursor()
@@ -219,7 +216,11 @@ class ModelSelector(val scene: SceneModel, val controller: SceneController, val 
             }
             if (lastOffset != offset) {
                 lastOffset = offset
-                controller.tmpModel = modelEditor.model.translate(selection, controller.selectedModelAxis, offset)
+                modelEditor.apply {
+                    val axis = controller.selectedModelAxis
+                    val newModel = editTool.translate(model, selection, axis.direction * offset)
+                    controller.tmpModel = newModel
+                }
             }
         }
     }
@@ -259,7 +260,18 @@ class ModelSelector(val scene: SceneModel, val controller: SceneController, val 
             offset = Math.toRadians(offset.toDouble() * 360.0 / 32).toFloat()
             if (lastOffset != offset) {
                 lastOffset = offset
-                controller.tmpModel = modelEditor.model.rotate(selection, controller.selectedModelAxis, offset)
+                modelEditor.apply {
+                    val axis = controller.selectedModelAxis
+                    val axisDir = when (axis) {
+                        SelectionAxis.X -> SelectionAxis.Y
+                        SelectionAxis.Y -> SelectionAxis.Z
+                        SelectionAxis.Z -> SelectionAxis.X
+                        else -> SelectionAxis.NONE
+                    }
+                    val rot = axisDir.direction.toVector4(offset).fromAxisAngToQuat()
+                    val newModel = editTool.rotate(model, selection, selectionCenter, rot)
+                    controller.tmpModel = newModel
+                }
             }
         }
 
@@ -300,7 +312,11 @@ class ModelSelector(val scene: SceneModel, val controller: SceneController, val 
 
             if (lastOffset != offset) {
                 lastOffset = offset
-                controller.tmpModel = modelEditor.model.scale(selection, controller.selectedModelAxis, offset)
+                modelEditor.apply {
+                    val axis = controller.selectedModelAxis
+                    val newModel = editTool.scale(model, selection, selectionCenter, axis, offset)
+                    controller.tmpModel = newModel
+                }
             }
         }
     }

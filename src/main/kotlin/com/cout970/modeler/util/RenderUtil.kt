@@ -1,10 +1,7 @@
 package com.cout970.modeler.util
 
 import com.cout970.glutilities.tessellator.ITessellator
-import com.cout970.modeler.model.AABB
-import com.cout970.modeler.model.Meshes
-import com.cout970.modeler.model.Quad
-import com.cout970.modeler.model.Transformation
+import com.cout970.modeler.model.*
 import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
@@ -104,5 +101,22 @@ object RenderUtil {
             set(0, box.maxX, box.minY, box.maxZ).set(1, 1, 1, 1).endVertex()
             set(0, box.maxX, box.minY, box.minZ).set(1, 1, 1, 1).endVertex()
         }
+    }
+
+    fun zipQuads(model: Model, paths: List<VertexPath>): List<List<VertexPath>> {
+        //element -> vertex
+        val map = paths.groupBy { it.getParent() }
+        val list = mutableListOf<List<VertexPath>>()
+        for ((elem, vertex) in map) {
+            if (elem is IElementObject) {
+                val indices = vertex.map { it.vertexIndex }
+                val facesWithAllVertexInIndices = elem.faces.filter { it.indices.all { it in indices } }
+
+                facesWithAllVertexInIndices.forEach { face ->
+                    list += vertex.filter { it.vertexIndex in face.indices }
+                }
+            }
+        }
+        return list
     }
 }

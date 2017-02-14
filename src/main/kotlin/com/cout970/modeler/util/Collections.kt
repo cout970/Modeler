@@ -34,3 +34,6 @@ inline fun <T> Iterable<T>.filterNotIndexed(predicate: (index: Int, T) -> Boolea
     }
     return destination
 }
+
+
+inline fun <reified F> Iterable<*>.castTo(): List<F> = map { it as F }

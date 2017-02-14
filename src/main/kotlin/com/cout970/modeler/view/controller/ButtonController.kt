@@ -4,6 +4,9 @@ import com.cout970.modeler.log.Level
 import com.cout970.modeler.log.log
 import com.cout970.modeler.model.AABB
 import com.cout970.modeler.model.IElementObject
+import com.cout970.modeler.model.getObjectElements
+import com.cout970.modeler.model.toAABB
+import com.cout970.modeler.modeleditor.SelectionTarget
 import com.cout970.modeler.modeleditor.selection.SelectionManager
 import com.cout970.modeler.project.ProjectManager
 import com.cout970.modeler.util.IPropertyBind
@@ -29,10 +32,10 @@ class ButtonController(
 
     fun onClick(id: String) {
         when (id) {
-            "menu.select.group" -> selectionManager.modelSelectionMode = ModelSelectionMode.GROUP
-            "menu.select.mesh" -> selectionManager.modelSelectionMode = ModelSelectionMode.MESH
-            "menu.select.quad" -> selectionManager.modelSelectionMode = ModelSelectionMode.QUAD
-            "menu.select.vertex" -> selectionManager.modelSelectionMode = ModelSelectionMode.VERTEX
+            "menu.select.group" -> selectionManager.modelSelectionTarget = SelectionTarget.QUAD
+            "menu.select.quad" -> selectionManager.modelSelectionTarget = SelectionTarget.QUAD
+            "menu.select.mesh" -> selectionManager.modelSelectionTarget = SelectionTarget.EDGE
+            "menu.select.vertex" -> selectionManager.modelSelectionTarget = SelectionTarget.VERTEX
             "menu.add.cube" -> inserter.addCube()
             "menu.add.plane" -> inserter.addPlane()
             "menu.history.undo", "top.edit.undo", "input.undo" -> historyRecord.undo()
@@ -67,8 +70,7 @@ class ButtonController(
             "menu.texture.split" -> modelEditor.texturizer.splitTextures()
 
             "menu.aabb.export" -> {
-                val aabb = projectManager.project.model.groups.flatMap(ModelGroup::meshes).map(
-                        IElementObject::toAABB)
+                val aabb = projectManager.project.model.getObjectElements().map(IElementObject::toAABB)
                 AABB.export(aabb, File("aabb.txt"))
             }
 

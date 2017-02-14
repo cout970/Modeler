@@ -3,14 +3,8 @@ package com.cout970.modeler.view.scene
 import com.cout970.glutilities.structure.GLStateMachine
 import com.cout970.glutilities.tessellator.ITessellator
 import com.cout970.modeler.config.Config
-import com.cout970.modeler.model.MaterialNone
-import com.cout970.modeler.model.Model
-import com.cout970.modeler.model.Quad
-import com.cout970.modeler.modeleditor.selection.*
-import com.cout970.modeler.util.CursorParameters
-import com.cout970.modeler.util.RenderUtil
-import com.cout970.modeler.util.absolutePosition
-import com.cout970.modeler.util.toIVector
+import com.cout970.modeler.model.*
+import com.cout970.modeler.util.*
 import com.cout970.modeler.view.controller.SceneController
 import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.modeler.view.controller.TransformationMode
@@ -36,7 +30,7 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
         val model = scene.sceneController.getModel(scene.modelProvider.model)
         val modelSelection = scene.modelProvider.selectionManager.modelSelection
         val textureSelection = scene.modelProvider.selectionManager.textureSelection
-        val texture = model.groups.find { it.material != MaterialNone }?.material ?: MaterialNone
+        val texture = model.resources.materials.firstOrNull() ?: MaterialNone
 
         size = texture.size
         offset = size / 2
@@ -119,21 +113,24 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
         }
     }
 
-    private fun drawTextureSelection(sh: ShaderHandler, model: Model, textureSelection: ITextureSelection) {
+    private fun drawTextureSelection(sh: ShaderHandler, model: Model, textureSelection: Selection) {
         sh.apply {
             GLStateMachine.useBlend(0.25f) {
                 draw(GL11.GL_QUADS, formatPCT) {
-                    textureSelection.paths.forEach { path ->
-                        if (path.level == ModelPath.Level.QUADS) {
-                            renderQuad(this, path.getQuad(model)!!)
-                        }
+                    RenderUtil.zipQuads(model, textureSelection.paths.castTo<VertexPath>()).forEach { quads ->
+                        renderQuad(this, Quad(
+                                model.getVertex(quads[0]),
+                                model.getVertex(quads[1]),
+                                model.getVertex(quads[2]),
+                                model.getVertex(quads[3])
+                        ))
                     }
                 }
             }
         }
     }
 
-    private fun drawModelSelection(sh: ShaderHandler, model: Model, modelSelection: IModelSelection,
+    private fun drawModelSelection(sh: ShaderHandler, model: Model, modelSelection: Selection,
                                    showAllMeshUVs: Boolean) {
         sh.apply {
             GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE)
@@ -141,33 +138,42 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
 
             draw(GL11.GL_QUADS, formatPCT) {
 
-                modelSelection.paths.forEach { path ->
-                    when (path.level) {
-                        ModelPath.Level.GROUPS -> {
-                            path.getSubPaths(model).forEach { meshPath ->
-                                meshPath.getSubPaths(model).forEach { quadPath ->
-                                    renderQuad(this, quadPath.getQuad(model)!!)
-                                }
-                            }
-                        }
-                        ModelPath.Level.MESH -> {
-                            path.getSubPaths(model).forEach { quadPath ->
-                                renderQuad(this, quadPath.getQuad(model)!!)
-                            }
-                        }
-                        ModelPath.Level.QUADS -> {
-                            if (showAllMeshUVs) {
-                                path.getParent().getSubPaths(model).forEach { quadPath ->
-                                    renderQuad(this, quadPath.getQuad(model)!!)
-                                }
-                            } else {
-                                renderQuad(this, path.getQuad(model)!!)
-                            }
-                        }
-                        else -> {
-                        }
-                    }
+                //TODO render selection
+                RenderUtil.zipQuads(model, modelSelection.paths.castTo<VertexPath>()).forEach { quads ->
+                    renderQuad(this, Quad(
+                            model.getVertex(quads[0]),
+                            model.getVertex(quads[1]),
+                            model.getVertex(quads[2]),
+                            model.getVertex(quads[3])
+                    ))
                 }
+//                modelSelection.paths.forEach { path ->
+//                    when (path.level) {
+//                        ModelPath.Level.GROUPS -> {
+//                            path.getSubPaths(model).forEach { meshPath ->
+//                                meshPath.getSubPaths(model).forEach { quadPath ->
+//                                    renderQuad(this, quadPath.getQuad(model)!!)
+//                                }
+//                            }
+//                        }
+//                        ModelPath.Level.MESH -> {
+//                            path.getSubPaths(model).forEach { quadPath ->
+//                                renderQuad(this, quadPath.getQuad(model)!!)
+//                            }
+//                        }
+//                        ModelPath.Level.QUADS -> {
+//                            if (showAllMeshUVs) {
+//                                path.getParent().getSubPaths(model).forEach { quadPath ->
+//                                    renderQuad(this, quadPath.getQuad(model)!!)
+//                                }
+//                            } else {
+//                                renderQuad(this, path.getQuad(model)!!)
+//                            }
+//                        }
+//                        else -> {
+//                        }
+//                    }
+//                }
             }
 
             GL11.glLineWidth(1f)
@@ -182,7 +188,7 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
                 .forEach { tes.set(0, it.x, it.yd, 0).setVec(1, color).set(2, 0.0, 0.0).endVertex() }
     }
 
-    fun renderTranslation(selection: ITextureSelection, controller: SceneController, params: CursorParameters) {
+    fun renderTranslation(selection: Selection, controller: SceneController, params: CursorParameters) {
 
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
         draw(GL11.GL_QUADS, shaderHandler.formatPC) {
@@ -192,7 +198,7 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
             val start = radius - params.maxSizeOfSelectionBox / 2.0
             val end = radius + params.maxSizeOfSelectionBox / 2.0
 
-            if (selection.textureMode != TextureSelectionMode.VERTEX) {
+            if (selection !is VertexSelection) {
                 RenderUtil.renderBar(this, center, center, params.minSizeOfSelectionBox, vec3Of(1, 1, 1))
             }
 
@@ -212,7 +218,7 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
         }
     }
 
-    fun renderRotation(selection: ITextureSelection, controller: SceneController, params: CursorParameters) {
+    fun renderRotation(selection: Selection, controller: SceneController, params: CursorParameters) {
 
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
         draw(GL11.GL_QUADS, shaderHandler.formatPC) {
@@ -220,7 +226,7 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
             val center = params.center
             val radius = params.distanceFromCenter
 
-            if (selection.textureMode != TextureSelectionMode.VERTEX) {
+            if (selection !is VertexSelection) {
                 RenderUtil.renderBar(this, center, center, params.minSizeOfSelectionBox, vec3Of(1, 1, 1))
             }
 

@@ -45,6 +45,10 @@ fun Model.getVertex(path: VertexPath): Vertex {
     return vertexIndex.toVertex(element)
 }
 
+fun Model.getObjectElements(): List<IElementObject> {
+    return getObjectPaths().map { getElement(it) as IElementObject }
+}
+
 fun Model.getObjectPaths(): List<ElementPath> {
     val paths = mutableListOf<ElementPath>()
     for ((index, elem) in elements.withIndex()) {

@@ -20,7 +20,7 @@ class ActionImportTexture(val modelEditor: ModelEditor,
         try {
             val newModel = function(oldModel)
             modelEditor.selectionManager.clearModelSelection()
-            newModel.groups.map { it.material }.distinct().forEach {
+            newModel.resources.materials.distinct().forEach {
                 it.loadTexture(resourceLoader)
             }
             modelEditor.updateModel(newModel)

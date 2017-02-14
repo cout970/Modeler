@@ -3,11 +3,11 @@ package com.cout970.modeler.view.controller
 import com.cout970.glutilities.event.EnumKeyState
 import com.cout970.glutilities.event.EventMouseClick
 import com.cout970.modeler.config.Config
+import com.cout970.modeler.model.SelectionNone
 import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.modeleditor.action.ActionModifyModel
 import com.cout970.modeler.modeleditor.moveTexture
 import com.cout970.modeler.modeleditor.scaleTexture
-import com.cout970.modeler.modeleditor.selection.SelectionNone
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.scene.SceneTexture
 import com.cout970.raytrace.Ray
@@ -25,7 +25,7 @@ class TextureSelector(val scene: SceneTexture, val controller: SceneController, 
 
     val transformationMode get() = controller.transformationMode
     val selection get() = modelEditor.selectionManager.textureSelection
-    val selectionCenter: IVector2 get() = selection.getCenter2D(controller.tmpModel ?: modelEditor.model)
+    val selectionCenter: IVector2 get() = selection.center2D(controller.tmpModel ?: modelEditor.model)
 
     var matrix = Matrix4d()
     var mouseSnapshot = MouseSnapshot(vec2Of(0), Ray(vec3Of(0), vec3Of(0)))
@@ -205,8 +205,8 @@ class TextureSelector(val scene: SceneTexture, val controller: SceneController, 
                 offset = Math.round(move).toFloat()
             }
             when (controller.selectedTextureAxis) {
-                SelectionAxis.X -> offset /= modelEditor.model.groups[0].material.size.xf
-                SelectionAxis.Y -> offset /= -modelEditor.model.groups[0].material.size.yf
+                SelectionAxis.X -> offset /= modelEditor.model.resources.materials[0].size.xf
+                SelectionAxis.Y -> offset /= -modelEditor.model.resources.materials[0].size.yf
                 else -> Unit
             }
             if (lastOffset != offset) {
@@ -259,8 +259,8 @@ class TextureSelector(val scene: SceneTexture, val controller: SceneController, 
                 offset = Math.round(move).toFloat()
             }
             when (controller.selectedTextureAxis) {
-                SelectionAxis.X -> offset /= modelEditor.model.groups[0].material.size.xf
-                SelectionAxis.Y -> offset /= -modelEditor.model.groups[0].material.size.yf
+                SelectionAxis.X -> offset /= modelEditor.model.resources.materials[0].size.xf
+                SelectionAxis.Y -> offset /= -modelEditor.model.resources.materials[0].size.yf
                 else -> Unit
             }
             if (lastOffset != offset) {

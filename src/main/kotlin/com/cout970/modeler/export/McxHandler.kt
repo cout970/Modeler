@@ -1,7 +1,8 @@
 package com.cout970.modeler.export
 
-import com.cout970.matrix.extensions.times
 import com.cout970.modeler.model.Model
+import com.cout970.modeler.model.getObjectElements
+import com.cout970.modeler.model.zipGroups
 import com.cout970.modeler.util.Direction
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -27,11 +28,9 @@ class McxExporter {
         val posSet = mutableSetOf<IVector3>()
         val texSet = mutableSetOf<IVector2>()
 
-        model.groups.forEach { group ->
-            group.meshes.forEach { (positions, textures) ->
-                posSet += positions.map { group.transform.matrix * it }
-                texSet += textures
-            }
+        model.getObjectElements().forEach {
+            posSet += it.positions
+            texSet += it.textures
         }
 
         val pos = posSet.toList()
@@ -40,27 +39,29 @@ class McxExporter {
         val parts = mutableListOf<ModelData.Part>()
         var particleTexture: String? = null
 
-        for (group in model.groups) {
-            val texture = "$domain:${group.material.name}"
-            val localIndices = mutableListOf<QuadStorage.QuadIndices>()
-            for (mesh in group.meshes) {
-                localIndices += mesh.indices.map { i ->
-                    QuadStorage.QuadIndices(
-                            pos.indexOf(group.transform.matrix * mesh.positions[i.aP]),
-                            pos.indexOf(group.transform.matrix * mesh.positions[i.bP]),
-                            pos.indexOf(group.transform.matrix * mesh.positions[i.cP]),
-                            pos.indexOf(group.transform.matrix * mesh.positions[i.dP]),
-                            tex.indexOf(mesh.textures[i.aT]),
-                            tex.indexOf(mesh.textures[i.bT]),
-                            tex.indexOf(mesh.textures[i.cT]),
-                            tex.indexOf(mesh.textures[i.dT])
-                    )
-                }
-            }
-            if (particleTexture == null) particleTexture = texture
-            parts += ModelData.Part(indices.size, indices.size + localIndices.size, null, texture)
-            indices += localIndices
-        }
+        model.zipGroups()
+        //TODO redo format
+//        for (group in model.groups) {
+//            val texture = "$domain:${group.material.name}"
+//            val localIndices = mutableListOf<QuadStorage.QuadIndices>()
+//            for (mesh in group.meshes) {
+//                localIndices += mesh.indices.map { i ->
+//                    QuadStorage.QuadIndices(
+//                            pos.indexOf(group.transform.matrix * mesh.positions[i.aP]),
+//                            pos.indexOf(group.transform.matrix * mesh.positions[i.bP]),
+//                            pos.indexOf(group.transform.matrix * mesh.positions[i.cP]),
+//                            pos.indexOf(group.transform.matrix * mesh.positions[i.dP]),
+//                            tex.indexOf(mesh.textures[i.aT]),
+//                            tex.indexOf(mesh.textures[i.bT]),
+//                            tex.indexOf(mesh.textures[i.cT]),
+//                            tex.indexOf(mesh.textures[i.dT])
+//                    )
+//                }
+//            }
+//            if (particleTexture == null) particleTexture = texture
+//            parts += ModelData.Part(indices.size, indices.size + localIndices.size, null, texture)
+//            indices += localIndices
+//        }
 
         val data = ModelData(
                 useAmbientOcclusion = true,

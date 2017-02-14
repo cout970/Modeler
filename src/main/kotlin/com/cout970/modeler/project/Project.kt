@@ -1,6 +1,7 @@
 package com.cout970.modeler.project
 
 import com.cout970.modeler.model.Model
+import com.cout970.modeler.model.ModelResources
 import com.google.gson.annotations.Expose
 import java.io.Serializable
 import java.util.*
@@ -15,5 +16,5 @@ class Project(
     @Expose var description: String = ""
     @Expose var creationTime: Long = Calendar.getInstance().timeInMillis
 
-    @Expose var model: Model = Model(listOf())
+    @Expose var model: Model = Model(listOf(), ModelResources())
 }

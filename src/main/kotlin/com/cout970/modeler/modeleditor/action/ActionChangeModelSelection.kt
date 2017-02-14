@@ -1,12 +1,12 @@
 package com.cout970.modeler.modeleditor.action
 
+import com.cout970.modeler.model.Selection
 import com.cout970.modeler.modeleditor.ModelEditor
-import com.cout970.modeler.modeleditor.selection.IModelSelection
 
 /**
  * Created by cout970 on 2016/12/08.
  */
-data class ActionChangeModelSelection(val oldSelection: IModelSelection, val newSelection: IModelSelection,
+data class ActionChangeModelSelection(val oldSelection: Selection, val newSelection: Selection,
                                       val modelEditor: ModelEditor) : IAction {
 
     override fun run() {

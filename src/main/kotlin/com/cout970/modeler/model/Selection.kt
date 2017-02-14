@@ -1,6 +1,7 @@
 package com.cout970.modeler.model
 
 import com.cout970.modeler.model.Quad
+import com.cout970.modeler.modeleditor.SelectionMode
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 
@@ -9,6 +10,8 @@ import com.cout970.vector.api.IVector3
  */
 
 open class Selection(open val paths: List<ElementPath>) {
+
+    open val mode = SelectionMode.ELEMENT
 
     fun isSelected(path: ElementPath): Boolean {
         return paths.any { it == path }
@@ -45,8 +48,23 @@ open class Selection(open val paths: List<ElementPath>) {
             }
         }.middle()
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Selection) return false
+
+        if (paths != other.paths) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return paths.hashCode()
+    }
 }
-
-class VertexSelection(override val paths: List<VertexPath>) : Selection(paths)
-
 object SelectionNone : Selection(listOf())
+
+
+class VertexSelection(override val paths: List<VertexPath>) : Selection(paths) {
+    override val mode = SelectionMode.EDIT
+}

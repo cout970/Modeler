@@ -4,6 +4,7 @@ import com.cout970.matrix.extensions.Matrix4
 import com.cout970.modeler.model.*
 import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.modeleditor.SelectionMode
+import com.cout970.modeler.modeleditor.SelectionTarget
 import com.cout970.modeler.modeleditor.action.ActionChangeModelSelection
 import com.cout970.modeler.modeleditor.action.ActionChangeTextureSelection
 import com.cout970.modeler.util.FakeRayObstacle
@@ -19,10 +20,12 @@ import com.cout970.vector.extensions.*
  */
 class SelectionManager(val modelEditor: ModelEditor) {
 
-    var modelSelectionMode: SelectionMode = SelectionMode.ELEMENT
+    var selectionMode: SelectionMode = SelectionMode.ELEMENT
+
+    var modelSelectionTarget: SelectionTarget = SelectionTarget.QUAD
     var modelSelection: Selection = SelectionNone
 
-    var textureSelectionMode: SelectionMode = SelectionMode.QUAD
+    var textureSelectionTarget: SelectionTarget = SelectionTarget.QUAD
     var textureSelection: Selection = SelectionNone
 
     fun getMouseHit(ray: Ray, model: Model = modelEditor.model): RayTraceResult? {
@@ -47,7 +50,7 @@ class SelectionManager(val modelEditor: ModelEditor) {
         val hits = mutableListOf<Pair<RayTraceResult, List<ElementPath>>>()
         val model = modelEditor.model
 
-        when (modelSelectionMode) {
+        when (selectionMode) {
             SelectionMode.ELEMENT -> {
                 model.getObjectPaths().forEach { path ->
                     val obj = model.getElement(path) as IElementObject
@@ -57,46 +60,50 @@ class SelectionManager(val modelEditor: ModelEditor) {
                     }
                 }
             }
-            SelectionMode.QUAD -> {
-                model.getObjectPaths().forEach { path ->
-                    val obj = model.getElement(path) as IElementObject
-                    obj.getQuads().forEachIndexed { quadIndex, quad ->
-                        RayTraceUtil.rayTraceQuad(ray, FakeRayObstacle,
-                                quad.a.pos, quad.b.pos, quad.c.pos, quad.d.pos)?.let {
+            SelectionMode.EDIT -> {
+                when (modelSelectionTarget) {
+                    SelectionTarget.QUAD -> {
+                        model.getObjectPaths().forEach { path ->
+                            val obj = model.getElement(path) as IElementObject
+                            obj.getQuads().forEachIndexed { quadIndex, quad ->
+                                RayTraceUtil.rayTraceQuad(ray, FakeRayObstacle,
+                                        quad.a.pos, quad.b.pos, quad.c.pos, quad.d.pos)?.let {
 
-                            hits += it to listOf(
-                                    VertexPath(path.indices, obj.faces[quadIndex].a),
-                                    VertexPath(path.indices, obj.faces[quadIndex].b),
-                                    VertexPath(path.indices, obj.faces[quadIndex].c),
-                                    VertexPath(path.indices, obj.faces[quadIndex].d)
-                            )
+                                    hits += it to listOf(
+                                            VertexPath(path.indices, obj.faces[quadIndex].a),
+                                            VertexPath(path.indices, obj.faces[quadIndex].b),
+                                            VertexPath(path.indices, obj.faces[quadIndex].c),
+                                            VertexPath(path.indices, obj.faces[quadIndex].d)
+                                    )
+                                }
+                            }
                         }
                     }
-                }
-            }
-            SelectionMode.EDGE -> {
-                //TODO add edge selection...
-                model.getObjectPaths().forEach { path ->
-                    val obj = model.getElement(path) as IElementObject
-                    obj.vertex.forEachIndexed { index, vertexIndex ->
-                        val vertex = vertexIndex.toVertex(obj)
-                        val start = vertex.pos - vec3Of(0.125) * zoom / 10
-                        val end = vertex.pos + vec3Of(0.125) * zoom / 10
-                        RayTraceUtil.rayTraceBox3(start, end, ray, FakeRayObstacle)?.let {
-                            hits += it to listOf(VertexPath(path.indices, index))
+                    SelectionTarget.EDGE -> {
+                        //TODO add edge selection...
+                        model.getObjectPaths().forEach { path ->
+                            val obj = model.getElement(path) as IElementObject
+                            obj.vertex.forEachIndexed { index, vertexIndex ->
+                                val vertex = vertexIndex.toVertex(obj)
+                                val start = vertex.pos - vec3Of(0.125) * zoom / 10
+                                val end = vertex.pos + vec3Of(0.125) * zoom / 10
+                                RayTraceUtil.rayTraceBox3(start, end, ray, FakeRayObstacle)?.let {
+                                    hits += it to listOf(VertexPath(path.indices, index))
+                                }
+                            }
                         }
                     }
-                }
-            }
-            SelectionMode.VERTEX -> {
-                model.getObjectPaths().forEach { path ->
-                    val obj = model.getElement(path) as IElementObject
-                    obj.vertex.forEachIndexed { index, vertexIndex ->
-                        val vertex = vertexIndex.toVertex(obj)
-                        val start = vertex.pos - vec3Of(0.125) * zoom / 10
-                        val end = vertex.pos + vec3Of(0.125) * zoom / 10
-                        RayTraceUtil.rayTraceBox3(start, end, ray, FakeRayObstacle)?.let {
-                            hits += it to listOf(VertexPath(path.indices, index))
+                    SelectionTarget.VERTEX -> {
+                        model.getObjectPaths().forEach { path ->
+                            val obj = model.getElement(path) as IElementObject
+                            obj.vertex.forEachIndexed { index, vertexIndex ->
+                                val vertex = vertexIndex.toVertex(obj)
+                                val start = vertex.pos - vec3Of(0.125) * zoom / 10
+                                val end = vertex.pos + vec3Of(0.125) * zoom / 10
+                                RayTraceUtil.rayTraceBox3(start, end, ray, FakeRayObstacle)?.let {
+                                    hits += it to listOf(VertexPath(path.indices, index))
+                                }
+                            }
                         }
                     }
                 }
@@ -138,94 +145,105 @@ class SelectionManager(val modelEditor: ModelEditor) {
         return sel
     }
 
-    private fun makeModelSelection(path: List<ElementPath>, allowMultiSelection: Boolean): Selection? {
-        if (modelSelectionMode == ModelSelectionMode.GROUP) {
-            if (allowMultiSelection && modelSelection.modelMode == ModelSelectionMode.MESH) {
-                if (path in modelSelection.paths) {
-                    return SelectionGroup(modelSelection.paths - path)
+    @Suppress("UNCHECKED_CAST")
+    private fun makeModelSelection(paths: List<ElementPath>, allowMultiSelection: Boolean): Selection? {
+        when (selectionMode) {
+            SelectionMode.ELEMENT -> {
+                if (allowMultiSelection && modelSelection.mode == SelectionMode.ELEMENT) {
+                    var list: List<ElementPath> = modelSelection.paths
+
+                    if (paths.all { it in list }) {
+                        for (i in paths) {
+                            list -= i
+                        }
+                    } else {
+                        for (i in paths) {
+                            list += i
+                        }
+                    }
+
+                    if (list.isEmpty()) {
+                        return SelectionNone
+                    } else {
+                        return Selection(list)
+                    }
                 } else {
-                    return SelectionGroup(modelSelection.paths + path)
-                }
-            } else {
-                if (path in modelSelection.paths) {
-                    return SelectionNone
-                } else {
-                    return SelectionGroup(listOf(path))
-                }
-            }
-        } else if (modelSelectionMode == ModelSelectionMode.MESH) {
-            if (allowMultiSelection && modelSelection.modelMode == ModelSelectionMode.MESH) {
-                if (path in modelSelection.paths) {
-                    return SelectionMesh(modelSelection.paths - path)
-                } else {
-                    return SelectionMesh(modelSelection.paths + path)
-                }
-            } else {
-                if (path in modelSelection.paths) {
-                    return SelectionNone
-                } else {
-                    return SelectionMesh(listOf(path))
-                }
-            }
-        } else if (modelSelectionMode == ModelSelectionMode.QUAD) {
-            if (allowMultiSelection && modelSelection.modelMode == ModelSelectionMode.QUAD) {
-                if (path in modelSelection.paths) {
-                    return SelectionQuad(modelSelection.paths - path)
-                } else {
-                    return SelectionQuad(modelSelection.paths + path)
-                }
-            } else {
-                if (path in modelSelection.paths) {
-                    return SelectionNone
-                } else {
-                    return SelectionQuad(listOf(path))
+                    if (paths.isEmpty()) {
+                        return SelectionNone
+                    } else {
+                        return Selection(paths)
+                    }
                 }
             }
-        } else if (modelSelectionMode == ModelSelectionMode.VERTEX) {
-            if (allowMultiSelection && modelSelection.modelMode == ModelSelectionMode.VERTEX) {
-                if (path in modelSelection.paths) {
-                    return SelectionVertex(modelSelection.paths - path)
+            SelectionMode.EDIT -> {
+                if (allowMultiSelection && modelSelection.mode == SelectionMode.EDIT) {
+                    var list: List<VertexPath> = modelSelection.paths as List<VertexPath>
+
+                    if (paths.all { it in list }) {
+                        for (i in paths) {
+                            list -= i as VertexPath
+                        }
+                    } else {
+                        for (i in paths) {
+                            list += i as VertexPath
+                        }
+                    }
+                    if (list.isEmpty()) {
+                        return SelectionNone
+                    } else {
+                        return VertexSelection(list)
+                    }
                 } else {
-                    return SelectionVertex(modelSelection.paths + path)
-                }
-            } else {
-                if (path in modelSelection.paths) {
-                    return SelectionNone
-                } else {
-                    return SelectionVertex(listOf(path))
+                    return VertexSelection(paths as List<VertexPath>)
                 }
             }
         }
         return null
     }
 
-    private fun makeTextureSelection(path: List<ElementPath>, allowMultiSelection: Boolean): Selection? {
-        if (textureSelectionMode == TextureSelectionMode.QUAD) {
-            if (allowMultiSelection && textureSelection.textureMode == TextureSelectionMode.QUAD) {
-                if (path in textureSelection.paths) {
-                    return SelectionQuad(textureSelection.paths - path)
+    @Suppress("UNCHECKED_CAST")
+    private fun makeTextureSelection(paths: List<ElementPath>, allowMultiSelection: Boolean): Selection? {
+        when (selectionMode) {
+            SelectionMode.ELEMENT -> {
+                if (allowMultiSelection && textureSelection.mode == SelectionMode.ELEMENT) {
+                    var list: List<ElementPath> = textureSelection.paths
+                    if (paths.all { it in list }) {
+                        for (i in paths) {
+                            list -= i as VertexPath
+                        }
+                    } else {
+                        for (i in paths) {
+                            list += i as VertexPath
+                        }
+                    }
+                    if (list.isEmpty()) {
+                        return SelectionNone
+                    } else {
+                        return Selection(list)
+                    }
                 } else {
-                    return SelectionQuad(textureSelection.paths + path)
-                }
-            } else {
-                if (path in textureSelection.paths) {
-                    return SelectionNone
-                } else {
-                    return SelectionQuad(listOf(path))
+
                 }
             }
-        } else if (textureSelectionMode == TextureSelectionMode.VERTEX) {
-            if (allowMultiSelection && textureSelection.textureMode == TextureSelectionMode.VERTEX) {
-                if (path in textureSelection.paths) {
-                    return SelectionVertex(textureSelection.paths - path)
+            SelectionMode.EDIT -> {
+                if (allowMultiSelection && textureSelection.mode == SelectionMode.EDIT) {
+                    var list: List<VertexPath> = textureSelection.paths as List<VertexPath>
+                    if (paths.all { it in list }) {
+                        for (i in paths) {
+                            list -= i as VertexPath
+                        }
+                    } else {
+                        for (i in paths) {
+                            list += i as VertexPath
+                        }
+                    }
+                    if (list.isEmpty()) {
+                        return SelectionNone
+                    } else {
+                        return VertexSelection(list)
+                    }
                 } else {
-                    return SelectionVertex(textureSelection.paths + path)
-                }
-            } else {
-                if (path in textureSelection.paths) {
-                    return SelectionNone
-                } else {
-                    return SelectionVertex(listOf(path))
+                    return VertexSelection(paths as List<VertexPath>)
                 }
             }
         }
@@ -241,21 +259,22 @@ class SelectionManager(val modelEditor: ModelEditor) {
     }
 
     fun mouseTrySelectTexture(ray: Ray, zoom: Float, allowMultiSelection: Boolean, to3D: (IVector2) -> IVector3) {
-        val hits = mutableListOf<Pair<RayTraceResult, ElementPath>>()
+        val hits = mutableListOf<Pair<RayTraceResult, List<ElementPath>>>()
         val model = modelEditor.model
 
-        if (textureSelectionMode == TextureSelectionMode.QUAD) {
-            model.getPaths(ElementPath.Level.MESH).forEach { path ->
-                val mesh = path.getMesh(model)!!
-                val matrix = path.getMeshMatrix(model)
-                mesh.getQuads().map { it.transform(matrix) }.forEachIndexed { quadIndex, quad ->
-                    RayTraceUtil.rayTraceQuad(ray, mesh,
-                            to3D(quad.a.tex),
-                            to3D(quad.b.tex),
-                            to3D(quad.c.tex),
-                            to3D(quad.d.tex)
-                    )?.let {
-                        hits += it to ElementPath(path.group, path.mesh, quadIndex)
+        model.getObjectPaths().forEach { path ->
+            val element = model.getElement(path)
+            element.getQuads().forEachIndexed { i, quad ->
+                RayTraceUtil.rayTraceQuad(ray, FakeRayObstacle,
+                        to3D(quad.a.tex),
+                        to3D(quad.b.tex),
+                        to3D(quad.c.tex),
+                        to3D(quad.d.tex)
+                )?.let {
+                    if (textureSelectionTarget == SelectionTarget.QUAD) {
+                        hits += it to path.getSubPaths(model)
+                    } else {
+                        hits += it to listOf(path)
                     }
                 }
             }

@@ -1,12 +1,12 @@
 package com.cout970.modeler.modeleditor.action
 
+import com.cout970.modeler.model.Selection
 import com.cout970.modeler.modeleditor.ModelEditor
-import com.cout970.modeler.modeleditor.selection.ITextureSelection
 
 /**
  * Created by cout970 on 2017/01/29.
  */
-class ActionChangeTextureSelection(val oldSelection: ITextureSelection, val newSelection: ITextureSelection,
+class ActionChangeTextureSelection(val oldSelection: Selection, val newSelection: Selection,
                                    val modelEditor: ModelEditor) : IAction {
 
     override fun run() {

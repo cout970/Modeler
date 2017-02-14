@@ -1,6 +1,5 @@
 package com.cout970.modeler.view.scene
 
-import com.cout970.glutilities.structure.GLStateMachine
 import com.cout970.glutilities.tessellator.VAO
 import com.cout970.matrix.extensions.Matrix4
 import com.cout970.modeler.config.Config
@@ -47,21 +46,17 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
             ) {
                 matrixP = scene.getProjectionMatrix()
                 matrixV = scene.getViewMatrix()
+                matrixM = Matrix4.IDENTITY
 
-                // render base model
-                for (group in model.groups) {
-                    group.material.bind()
-                    matrixM = group.transform.matrix.transpose()
-
-                    renderCache(modelCache, model.hashCode()) {
-                        tessellator.compile(GL11.GL_QUADS, formatPTN) {
-                            group.getQuads().forEach { quad ->
-                                val norm = quad.normal
-                                quad.vertex.forEach { (pos, tex) ->
-                                    set(0, pos.x, pos.y, pos.z)
-                                            .set(1, tex.xd, tex.yd)
-                                            .set(2, norm.x, norm.y, norm.z).endVertex()
-                                }
+                MaterialNone.bind()
+                renderCache(modelCache, model.hashCode()) {
+                    tessellator.compile(GL11.GL_QUADS, formatPTN) {
+                        model.getQuads().forEach { quad ->
+                            val norm = quad.normal
+                            quad.vertex.forEach { (pos, tex) ->
+                                set(0, pos.x, pos.y, pos.z)
+                                        .set(1, tex.xd, tex.yd)
+                                        .set(2, norm.x, norm.y, norm.z).endVertex()
                             }
                         }
                     }
@@ -81,7 +76,7 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
                 // bounding boxes
                 if (sceneController.showBoundingBoxes.get()) {
                     draw(GL11.GL_LINES, formatPC) {
-                        model.groups.flatMap(ModelGroup::meshes).map(IElementObject::toAABB).forEach {
+                        model.getObjectElements().map(IElementObject::toAABB).forEach {
                             RenderUtil.renderBox(this, it)
                         }
                     }
@@ -95,24 +90,21 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
                         val size = Config.selectionThickness.toDouble()
                         val color = Config.colorPalette.modelSelectionColor
                         tessellator.compile(GL11.GL_QUADS, formatPC) {
-                            if (selection.modelMode != ModelSelectionMode.VERTEX) {
-                                model.getQuadsOptimized(selection) { (a, b, c, d) ->
+                            if (selection !is VertexSelection) {
+                                selection.paths.flatMap { model.getQuads(it) }.forEach { (a, b, c, d) ->
                                     RenderUtil.renderBar(tessellator, a.pos, b.pos, size, color)
                                     RenderUtil.renderBar(tessellator, b.pos, c.pos, size, color)
                                     RenderUtil.renderBar(tessellator, c.pos, d.pos, size, color)
                                     RenderUtil.renderBar(tessellator, d.pos, a.pos, size, color)
                                 }
                             } else {
-                                model.getPaths(ModelPath.Level.MESH).forEach { compPath ->
-                                    val paths = selection.paths.filter {
-                                        it.compareLevel(compPath, ModelPath.Level.MESH)
-                                    }
+
+                                model.getObjectPaths().forEach { compPath ->
+                                    val paths = selection.filterPaths(compPath)
                                     if (paths.isNotEmpty()) {
-                                        val matrix = compPath.getMeshMatrix(model)
-                                        paths.map { it.getVertexPos(model)!! }.map {
-                                            matrix * it.toVector4(1.0)
-                                        }.forEach {
-                                            RenderUtil.renderBar(tessellator, it, it, size * 4, color)
+
+                                        paths.map { model.getVertex(it as VertexPath) }.forEach { (pos, _) ->
+                                            RenderUtil.renderBar(tessellator, pos, pos, size * 4, color)
                                         }
                                     }
                                 }
@@ -122,26 +114,27 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
                     }
 
                     // render selected quads
-                    if (selection.modelMode == ModelSelectionMode.QUAD) {
-                        GLStateMachine.useBlend(0.25f) {
-                            val color = Config.colorPalette.modelSelectionColor
-
-                            renderCache(selectionCache, model.hashCode() xor (selection.hashCode() + 1)) {
-                                tessellator.compile(GL11.GL_QUADS, formatPC) {
-                                    model.getQuadsOptimized(selection) { quad ->
-                                        quad.vertex.forEach { (pos, _) ->
-                                            set(0, pos.xd + 0.1, pos.yd + 0.1, pos.zd + 0.1)
-                                                    .setVec(1, color).endVertex()
-                                        }
-                                        quad.vertex.forEach { (pos, _) ->
-                                            set(0, pos.xd - 0.1, pos.yd - 0.1, pos.zd - 0.1)
-                                                    .setVec(1, color).endVertex()
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    //TODO selection mode for quads
+//                    if (selection.modelMode == ModelSelectionMode.QUAD) {
+//                        GLStateMachine.useBlend(0.25f) {
+//                            val color = Config.colorPalette.modelSelectionColor
+//
+//                            renderCache(selectionCache, model.hashCode() xor (selection.hashCode() + 1)) {
+//                                tessellator.compile(GL11.GL_QUADS, formatPC) {
+//                                    model.getQuadsOptimized(selection) { quad ->
+//                                        quad.vertex.forEach { (pos, _) ->
+//                                            set(0, pos.xd + 0.1, pos.yd + 0.1, pos.zd + 0.1)
+//                                                    .setVec(1, color).endVertex()
+//                                        }
+//                                        quad.vertex.forEach { (pos, _) ->
+//                                            set(0, pos.xd - 0.1, pos.yd - 0.1, pos.zd - 0.1)
+//                                                    .setVec(1, color).endVertex()
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
                 }
 
                 // 3D cursor

@@ -37,7 +37,7 @@ class SceneTexture(modelEditor: ModelEditor, windowHandler: WindowHandler, contr
     }
 
     fun fromTextureToWorld(point: IVector2): IVector3 {
-        val texture = modelProvider.model.groups.find { it.material != MaterialNone }?.material ?: MaterialNone
+        val texture = modelProvider.model.resources.materials.firstOrNull() ?: MaterialNone
         val size = texture.size
         val offset = size / 2
 
