@@ -1,6 +1,6 @@
 package com.cout970.modeler.export
 
-import com.cout970.modeler.model.Material
+import com.cout970.modeler.model.IMaterial
 import com.cout970.modeler.model.MaterialNone
 import com.cout970.modeler.model.TexturedMaterial
 import com.cout970.modeler.resource.ResourcePath
@@ -82,9 +82,9 @@ class QuaternionSerializer : JsonSerializer<IQuaternion>, JsonDeserializer<IQuat
     }
 }
 
-class MaterialSerializer : JsonSerializer<Material>, JsonDeserializer<Material> {
+class MaterialSerializer : JsonSerializer<IMaterial>, JsonDeserializer<IMaterial> {
 
-    override fun serialize(src: Material, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+    override fun serialize(src: IMaterial, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
         return JsonObject().apply {
             addProperty("name", src.name)
             if (src is TexturedMaterial) {
@@ -93,7 +93,7 @@ class MaterialSerializer : JsonSerializer<Material>, JsonDeserializer<Material> 
         }
     }
 
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Material {
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IMaterial {
         val obj = json.asJsonObject
         return if (obj["name"].asString == "noTexture") MaterialNone else TexturedMaterial(
                 obj["name"].asString, ResourcePath(URI(obj["path"].asString)))

@@ -1,7 +1,7 @@
 package com.cout970.modeler.export
 
 import com.cout970.modeler.log.print
-import com.cout970.modeler.model.Material
+import com.cout970.modeler.model.IMaterial
 import com.cout970.modeler.model.TexturedMaterial
 import com.cout970.modeler.modeleditor.action.ActionImportModel
 import com.cout970.modeler.modeleditor.action.ActionImportTexture
@@ -37,7 +37,7 @@ class ExportManager(val projectManager: ProjectManager, val resourceLoader: Reso
             .registerTypeAdapter(IVector3::class.java, Vector3Serializer())
             .registerTypeAdapter(IVector2::class.java, Vector2Serializer())
             .registerTypeAdapter(IQuaternion::class.java, QuaternionSerializer())
-            .registerTypeAdapter(Material::class.java, MaterialSerializer())
+            .registerTypeAdapter(IMaterial::class.java, MaterialSerializer())
             .create()!!
 
     init {

@@ -304,7 +304,7 @@ class ObjImporter {
 private class ObjMaterial(val name: String) {
     var map_Ka: String = ""
 
-    fun toMaterial(): Material = TexturedMaterial(name, File(map_Ka).toResourcePath())
+    fun toMaterial(): IMaterial = TexturedMaterial(name, File(map_Ka).toResourcePath())
 }
 
 private class ObjObject(

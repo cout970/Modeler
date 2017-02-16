@@ -58,7 +58,7 @@ repositories {
 }
 
 project.ext.lwjglVersion = "3.1.2-SNAPSHOT"
-project.ext.legui_version = "0.2.18-SNAPSHOT"
+project.ext.legui_version = "0.2.19-SNAPSHOT"
 
 dependencies {
     compile files("./lib/CollisionLib-0.0.1.jar", "./lib/GlUtilities-0.1.4.jar", "./lib/MatrixLib-0.1.0.jar",
@@ -84,4 +84,13 @@ dependencies {
     runtime "org.lwjgl:lwjgl-stb:${lwjglVersion}:${lwjglNatives}"
     runtime "org.lwjgl:lwjgl-tinyfd:${lwjglVersion}:${lwjglNatives}"
     runtime "org.lwjgl:lwjgl-xxhash:${lwjglVersion}:${lwjglNatives}"
+}
+
+jar {
+    manifest {
+        attributes "Main-Class": "com.cout970.modeler.MainKt"
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }

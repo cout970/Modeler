@@ -27,7 +27,7 @@ class TcnImporter {
         val documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder()
         val document = documentBuilder.parse(stream)
 
-        var texture: Material = MaterialNone
+        var texture: IMaterial = MaterialNone
         val nodeListModel = document.getElementsByTagName("Model")
         if (nodeListModel.length < 1) throw IllegalStateException(
                 "Tcn Model contains no Model tag, (no models in the file)")

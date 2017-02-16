@@ -117,13 +117,23 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
         sh.apply {
             GLStateMachine.useBlend(0.25f) {
                 draw(GL11.GL_QUADS, formatPCT) {
-                    RenderUtil.zipQuads(model, textureSelection.paths.castTo<VertexPath>()).forEach { quads ->
-                        renderQuad(this, Quad(
-                                model.getVertex(quads[0]),
-                                model.getVertex(quads[1]),
-                                model.getVertex(quads[2]),
-                                model.getVertex(quads[3])
-                        ))
+                    if (textureSelection is VertexSelection) {
+                        //TODO adv render, quads, edges y vertex
+                        RenderUtil.zipQuads(model, textureSelection.paths.castTo<VertexPath>()).forEach { quads ->
+                            renderQuad(this, Quad(
+                                    model.getVertex(quads[0]),
+                                    model.getVertex(quads[1]),
+                                    model.getVertex(quads[2]),
+                                    model.getVertex(quads[3])
+                            ))
+                        }
+                    } else {
+                        model.getObjectPaths().forEach {
+                            if (textureSelection.isSelected(it)) {
+                                val obj = model.getElement(it) as IElementObject
+                                obj.getQuads().forEach { renderQuad(this, it) }
+                            }
+                        }
                     }
                 }
             }
@@ -138,15 +148,26 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
 
             draw(GL11.GL_QUADS, formatPCT) {
 
-                //TODO render selection
-                RenderUtil.zipQuads(model, modelSelection.paths.castTo<VertexPath>()).forEach { quads ->
-                    renderQuad(this, Quad(
-                            model.getVertex(quads[0]),
-                            model.getVertex(quads[1]),
-                            model.getVertex(quads[2]),
-                            model.getVertex(quads[3])
-                    ))
+                if (modelSelection is VertexSelection) {
+                    //TODO adv render, quads, edges y vertex
+                    RenderUtil.zipQuads(model, modelSelection.paths.castTo<VertexPath>()).forEach { quads ->
+                        renderQuad(this, Quad(
+                                model.getVertex(quads[0]),
+                                model.getVertex(quads[1]),
+                                model.getVertex(quads[2]),
+                                model.getVertex(quads[3])
+                        ))
+                    }
+                } else {
+                    model.getObjectPaths().forEach {
+                        if (modelSelection.isSelected(it)) {
+                            val obj = model.getElement(it) as IElementObject
+                            obj.getQuads().forEach { renderQuad(this, it) }
+                        }
+                    }
                 }
+                //TODO render selection
+
 //                modelSelection.paths.forEach { path ->
 //                    when (path.level) {
 //                        ModelPath.Level.GROUPS -> {

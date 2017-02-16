@@ -56,7 +56,7 @@ data class Model(val elements: List<IElement>, val resources: ModelResources, va
     }
 }
 
-data class ModelResources(val materials: List<Material> = listOf())
+data class ModelResources(val materials: List<IMaterial> = listOf())
 
 private var groupCount = 0
 

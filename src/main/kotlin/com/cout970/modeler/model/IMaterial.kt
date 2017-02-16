@@ -9,15 +9,15 @@ import com.cout970.vector.extensions.vec2Of
 import com.google.gson.annotations.Expose
 import javax.swing.JOptionPane
 
-//TODO make IMaterial
-sealed class Material(@Expose val name: String) {
-    abstract val size: IVector2
-    abstract fun bind()
-    abstract fun hasChanged(): Boolean
-    abstract fun loadTexture(resourceLoader: ResourceLoader)
+interface IMaterial {
+    val name: String
+    val size: IVector2
+    fun bind()
+    fun hasChanged(): Boolean
+    fun loadTexture(resourceLoader: ResourceLoader)
 }
 
-class TexturedMaterial(name: String, val path: ResourcePath) : Material(name) {
+class TexturedMaterial(@Expose override val name: String, val path: ResourcePath) : IMaterial {
     var texture: Texture? = null
     private var lastModified = -1L
     override val size: IVector2 get() = texture?.size ?: vec2Of(1)
@@ -61,7 +61,8 @@ class TexturedMaterial(name: String, val path: ResourcePath) : Material(name) {
     }
 }
 
-object MaterialNone : Material("noTexture") {
+object MaterialNone : IMaterial {
+    override val name: String = "noTexture"
     override val size: IVector2 = vec2Of(64)
     lateinit var whiteTexture: Texture
         private set
