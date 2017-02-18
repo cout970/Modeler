@@ -6,6 +6,7 @@ import com.cout970.modeler.model.AABB
 import com.cout970.modeler.model.IElementObject
 import com.cout970.modeler.model.getObjectElements
 import com.cout970.modeler.model.toAABB
+import com.cout970.modeler.modeleditor.SelectionMode
 import com.cout970.modeler.modeleditor.SelectionTarget
 import com.cout970.modeler.modeleditor.selection.SelectionManager
 import com.cout970.modeler.project.ProjectManager
@@ -32,10 +33,21 @@ class ButtonController(
 
     fun onClick(id: String) {
         when (id) {
-            "menu.select.group" -> selectionManager.modelSelectionTarget = SelectionTarget.QUAD
-            "menu.select.quad" -> selectionManager.modelSelectionTarget = SelectionTarget.QUAD
-            "menu.select.mesh" -> selectionManager.modelSelectionTarget = SelectionTarget.EDGE
-            "menu.select.vertex" -> selectionManager.modelSelectionTarget = SelectionTarget.VERTEX
+            "menu.select.group" -> {
+                selectionManager.selectionMode = SelectionMode.ELEMENT
+            }
+            "menu.select.quad" -> {
+                selectionManager.selectionMode = SelectionMode.EDIT
+                selectionManager.modelSelectionTarget = SelectionTarget.QUAD
+            }
+            "menu.select.mesh" -> {
+                selectionManager.selectionMode = SelectionMode.EDIT
+                selectionManager.modelSelectionTarget = SelectionTarget.EDGE
+            }
+            "menu.select.vertex" -> {
+                selectionManager.selectionMode = SelectionMode.EDIT
+                selectionManager.modelSelectionTarget = SelectionTarget.VERTEX
+            }
             "menu.add.cube" -> inserter.addCube()
             "menu.add.plane" -> inserter.addPlane()
             "menu.history.undo", "top.edit.undo", "input.undo" -> historyRecord.undo()

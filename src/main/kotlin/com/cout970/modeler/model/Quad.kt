@@ -15,8 +15,9 @@ data class Quad(
         val b: Vertex,
         val c: Vertex,
         val d: Vertex
-) {
-    val vertex: List<Vertex> get() = listOf(a, b, c, d)
+) : IVertexCompound {
+
+    override val vertex: List<Vertex> get() = listOf(a, b, c, d)
 
     val normal: IVector3 by lazy {
         val ac = c.pos - a.pos

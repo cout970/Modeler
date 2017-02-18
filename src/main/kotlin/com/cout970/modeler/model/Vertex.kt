@@ -12,7 +12,9 @@ import com.cout970.vector.extensions.toVector4
 data class Vertex(
         val pos: IVector3,
         val tex: IVector2
-) {
+) : IVertexCompound {
+    override val vertex: List<Vertex> get() = listOf(this)
+
     fun transform(matrix: IMatrix4): Vertex {
         return Vertex(matrix * pos.toVector4(1.0), tex)
     }

@@ -99,16 +99,22 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
                                 }
                             } else {
 
-                                model.getObjectPaths().forEach { compPath ->
-                                    val paths = selection.filterPaths(compPath)
-                                    if (paths.isNotEmpty()) {
+                                val structure = RenderUtil.zipVertexPaths(model, selection.paths).toStructure(model)
 
-                                        paths.map { model.getVertex(it as VertexPath) }.forEach { (pos, _) ->
-                                            RenderUtil.renderBar(tessellator, pos, pos, size * 4, color)
-                                        }
-                                    }
+                                structure.quads.forEach { (a, b, c, d) ->
+                                    RenderUtil.renderBar(tessellator, a.pos, b.pos, size, color)
+                                    RenderUtil.renderBar(tessellator, b.pos, c.pos, size, color)
+                                    RenderUtil.renderBar(tessellator, c.pos, d.pos, size, color)
+                                    RenderUtil.renderBar(tessellator, d.pos, a.pos, size, color)
                                 }
 
+                                structure.edges.forEach { (a, b) ->
+                                    RenderUtil.renderBar(tessellator, a.pos, b.pos, size, color)
+                                }
+
+                                structure.vertex.forEach { (pos) ->
+                                    RenderUtil.renderBar(tessellator, pos, pos, size * 4, color)
+                                }
                             }
                         }
                     }

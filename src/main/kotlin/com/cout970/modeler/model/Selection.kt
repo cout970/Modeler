@@ -24,6 +24,7 @@ open class Selection(open val paths: List<ElementPath>) {
     }
 
     fun filterPaths(path: ElementPath): List<ElementPath> {
+        //TODO java.lang.ArrayIndexOutOfBoundsException: 1
         return paths.filter { item ->
             path.indices.none { item.indices[it] != path.indices[it] }
         }

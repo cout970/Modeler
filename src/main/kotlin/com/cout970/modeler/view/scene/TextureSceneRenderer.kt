@@ -4,7 +4,10 @@ import com.cout970.glutilities.structure.GLStateMachine
 import com.cout970.glutilities.tessellator.ITessellator
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.model.*
-import com.cout970.modeler.util.*
+import com.cout970.modeler.util.CursorParameters
+import com.cout970.modeler.util.RenderUtil
+import com.cout970.modeler.util.absolutePosition
+import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.view.controller.SceneController
 import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.modeler.view.controller.TransformationMode
@@ -118,14 +121,12 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
             GLStateMachine.useBlend(0.25f) {
                 draw(GL11.GL_QUADS, formatPCT) {
                     if (textureSelection is VertexSelection) {
-                        //TODO adv render, quads, edges y vertex
-                        RenderUtil.zipQuads(model, textureSelection.paths.castTo<VertexPath>()).forEach { quads ->
-                            renderQuad(this, Quad(
-                                    model.getVertex(quads[0]),
-                                    model.getVertex(quads[1]),
-                                    model.getVertex(quads[2]),
-                                    model.getVertex(quads[3])
-                            ))
+                        val structure = RenderUtil.zipVertexPaths(model, textureSelection.paths).toStructure(model)
+                        structure.quads.forEach { quad ->
+                            renderQuad(this, quad)
+                        }
+                        structure.edges.forEach { edge ->
+                            renderEdge(this, edge)
                         }
                     } else {
                         model.getObjectPaths().forEach {
@@ -149,14 +150,13 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
             draw(GL11.GL_QUADS, formatPCT) {
 
                 if (modelSelection is VertexSelection) {
-                    //TODO adv render, quads, edges y vertex
-                    RenderUtil.zipQuads(model, modelSelection.paths.castTo<VertexPath>()).forEach { quads ->
-                        renderQuad(this, Quad(
-                                model.getVertex(quads[0]),
-                                model.getVertex(quads[1]),
-                                model.getVertex(quads[2]),
-                                model.getVertex(quads[3])
-                        ))
+
+                    val structure = RenderUtil.zipVertexPaths(model, modelSelection.paths).toStructure(model)
+                    structure.quads.forEach { quad ->
+                        renderQuad(this, quad)
+                    }
+                    structure.edges.forEach { edge ->
+                        renderEdge(this, edge)
                     }
                 } else {
                     model.getObjectPaths().forEach {
@@ -166,35 +166,6 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
                         }
                     }
                 }
-                //TODO render selection
-
-//                modelSelection.paths.forEach { path ->
-//                    when (path.level) {
-//                        ModelPath.Level.GROUPS -> {
-//                            path.getSubPaths(model).forEach { meshPath ->
-//                                meshPath.getSubPaths(model).forEach { quadPath ->
-//                                    renderQuad(this, quadPath.getQuad(model)!!)
-//                                }
-//                            }
-//                        }
-//                        ModelPath.Level.MESH -> {
-//                            path.getSubPaths(model).forEach { quadPath ->
-//                                renderQuad(this, quadPath.getQuad(model)!!)
-//                            }
-//                        }
-//                        ModelPath.Level.QUADS -> {
-//                            if (showAllMeshUVs) {
-//                                path.getParent().getSubPaths(model).forEach { quadPath ->
-//                                    renderQuad(this, quadPath.getQuad(model)!!)
-//                                }
-//                            } else {
-//                                renderQuad(this, path.getQuad(model)!!)
-//                            }
-//                        }
-//                        else -> {
-//                        }
-//                    }
-//                }
             }
 
             GL11.glLineWidth(1f)
@@ -204,6 +175,13 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
 
     private fun renderQuad(tes: ITessellator, quad: Quad) {
         quad.vertex
+                .map { it.copy(tex = vec2Of(it.tex.x, 1 - it.tex.yd)) }
+                .map { (it.tex * size) - offset }
+                .forEach { tes.set(0, it.x, it.yd, 0).setVec(1, color).set(2, 0.0, 0.0).endVertex() }
+    }
+
+    private fun renderEdge(tes: ITessellator, edge: Edge) {
+        (edge.vertex + edge.vertex)
                 .map { it.copy(tex = vec2Of(it.tex.x, 1 - it.tex.yd)) }
                 .map { (it.tex * size) - offset }
                 .forEach { tes.set(0, it.x, it.yd, 0).setVec(1, color).set(2, 0.0, 0.0).endVertex() }

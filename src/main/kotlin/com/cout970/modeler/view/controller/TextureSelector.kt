@@ -205,8 +205,8 @@ class TextureSelector(val scene: SceneTexture, val controller: SceneController, 
                 offset = Math.round(move).toFloat()
             }
             when (controller.selectedTextureAxis) {
-                SelectionAxis.X -> offset /= modelEditor.model.resources.materials[0].size.xf
-                SelectionAxis.Y -> offset /= -modelEditor.model.resources.materials[0].size.yf
+                SelectionAxis.X -> offset /= (modelEditor.model.resources.materials.firstOrNull()?.size?.xf ?: 1f)
+                SelectionAxis.Y -> offset /= -(modelEditor.model.resources.materials.firstOrNull()?.size?.yf ?: 1f)
                 else -> Unit
             }
             if (lastOffset != offset) {
