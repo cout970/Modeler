@@ -5,7 +5,7 @@ import com.cout970.modeler.model.util.getVertexPos
 import com.cout970.modeler.model.util.middle
 import com.cout970.vector.api.IVector3
 
-class VertexPosSelection(val paths: List<VertexPosPaths>) {
+data class VertexPosSelection(val paths: List<VertexPosPaths>) {
 
     val pathList: List<VertexPath> get() = paths.flatMap { it.subPaths }.distinct()
 

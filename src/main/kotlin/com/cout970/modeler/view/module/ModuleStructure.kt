@@ -1,11 +1,7 @@
 package com.cout970.modeler.view.module
 
-import com.cout970.modeler.config.Config
 import com.cout970.modeler.selection.ElementPath
-import com.cout970.modeler.util.toColor
 import com.cout970.modeler.view.controller.ModuleController
-import org.liquidengine.legui.component.Label
-import org.liquidengine.legui.component.optional.align.HorizontalAlign
 
 /**
  * Created by cout970 on 2016/12/31.
@@ -17,19 +13,19 @@ class ModuleStructure(controller: ModuleController) : Module(controller, "Struct
 
     override fun tick() {
         val model = controller.modelProvider.model
-        val selection = controller.modelProvider.selectionManager.modelSelection
+        val selection = controller.modelProvider.selectionManager.vertexPosSelection
         val tmpHash = model.hashCode() xor selection.hashCode()
-
+//
         if (tmpHash != hash) {
             hash = tmpHash
-            container.clearComponents()
-            container.size.y = 0f
-            addSubComponent(Label("Model", 3f, 0f, 172f, 20f).apply {
-                textState.horizontalAlign = HorizontalAlign.LEFT
-                textState.textColor = Config.colorPalette.textColor.toColor()
-            })
-            var index = 20f
-            val desc = 15f
+//            container.clearComponents()
+//            container.size.y = 0f
+//            addSubComponent(Label("Model", 3f, 0f, 172f, 20f).apply {
+//                textState.horizontalAlign = HorizontalAlign.LEFT
+//                textState.textColor = Config.colorPalette.textColor.toColor()
+//            })
+//            var index = 20f
+//            val desc = 15f
 
 //            for ((groupIndex, group) in model.groups.withIndex()) {
 //

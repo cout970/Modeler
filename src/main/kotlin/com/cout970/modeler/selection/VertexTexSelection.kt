@@ -5,7 +5,7 @@ import com.cout970.modeler.model.util.getVertexTex
 import com.cout970.modeler.model.util.middle
 import com.cout970.vector.api.IVector2
 
-class VertexTexSelection(val paths: List<VertexTexPaths>) {
+data class VertexTexSelection(val paths: List<VertexTexPaths>) {
 
     val pathList: List<VertexPath> get() = paths.flatMap { it.subPaths }.distinct()
 

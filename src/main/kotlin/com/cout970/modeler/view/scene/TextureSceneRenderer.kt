@@ -6,10 +6,10 @@ import com.cout970.modeler.config.Config
 import com.cout970.modeler.model.Edge
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.model.Quad
-import com.cout970.modeler.model.api.IElementLeaf
 import com.cout970.modeler.model.material.MaterialNone
-import com.cout970.modeler.model.util.getElement
-import com.cout970.modeler.model.util.getLeafPaths
+import com.cout970.modeler.model.structure.zipVertexPaths
+import com.cout970.modeler.selection.VertexPosSelection
+import com.cout970.modeler.selection.VertexTexSelection
 import com.cout970.modeler.util.CursorParameters
 import com.cout970.modeler.util.RenderUtil
 import com.cout970.modeler.util.absolutePosition
@@ -37,8 +37,8 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
         if (scene.size.x < 1 || scene.size.y < 1) return
 
         val model = scene.sceneController.getModel(scene.modelProvider.model)
-        val modelSelection = scene.modelProvider.selectionManager.modelSelection
-        val textureSelection = scene.modelProvider.selectionManager.textureSelection
+        val modelSelection = scene.modelProvider.selectionManager.vertexPosSelection
+        val textureSelection = scene.modelProvider.selectionManager.vertexTexSelection
         val texture = model.resources.materials.firstOrNull() ?: MaterialNone
 
         size = texture.size
@@ -94,7 +94,7 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
                 drawModelSelection(this, model, modelSelection, scene.sceneController.showAllMeshUVs.get())
                 drawTextureSelection(this, model, textureSelection)
 
-                if (textureSelection != SelectionNone) {
+                if (textureSelection != VertexTexSelection.EMPTY) {
                     val center = scene.fromTextureToWorld(scene.textureSelector.selectionCenter)
                     val cursorParams = CursorParameters(center, scene.camera.zoom, scene.size.toIVector())
 
@@ -122,55 +122,36 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
         }
     }
 
-    private fun drawTextureSelection(sh: ShaderHandler, model: Model, textureSelection: Selection) {
+    private fun drawTextureSelection(sh: ShaderHandler, model: Model, textureSelection: VertexTexSelection) {
         sh.apply {
             GLStateMachine.useBlend(0.25f) {
-                draw(GL11.GL_QUADS, formatPCT) {
-                    if (textureSelection is VertexSelection) {
-                        val structure = RenderUtil.zipVertexPaths(model, textureSelection.paths).toStructure(model)
-                        structure.quads.forEach { quad ->
-                            renderQuad(this, quad)
-                        }
-                        structure.edges.forEach { edge ->
-                            renderEdge(this, edge)
-                        }
-                    } else {
-                        model.getLeafPaths().forEach {
-                            if (textureSelection.isSelected(it)) {
-                                val obj = model.getElement(it) as IElementLeaf
-                                obj.getQuads().forEach { renderQuad(this, it) }
-                            }
-                        }
-                    }
-                }
+                //TODO add zipVertexPaths for VertexTexSelection
+//                draw(GL11.GL_QUADS, formatPCT) {
+//                    val structure = model.zipVertexPaths(textureSelection).toStructure(model)
+//                    structure.quads.forEach { quad ->
+//                        renderQuad(this, quad)
+//                    }
+//                    structure.edges.forEach { edge ->
+//                        renderEdge(this, edge)
+//                    }
+//                }
             }
         }
     }
 
-    private fun drawModelSelection(sh: ShaderHandler, model: Model, modelSelection: Selection,
+    private fun drawModelSelection(sh: ShaderHandler, model: Model, modelSelection: VertexPosSelection,
                                    showAllMeshUVs: Boolean) {
         sh.apply {
             GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE)
             GL11.glLineWidth(2f)
 
             draw(GL11.GL_QUADS, formatPCT) {
-
-                if (modelSelection is VertexSelection) {
-
-                    val structure = RenderUtil.zipVertexPaths(model, modelSelection.paths).toStructure(model)
-                    structure.quads.forEach { quad ->
-                        renderQuad(this, quad)
-                    }
-                    structure.edges.forEach { edge ->
-                        renderEdge(this, edge)
-                    }
-                } else {
-                    model.getLeafPaths().forEach {
-                        if (modelSelection.isSelected(it)) {
-                            val obj = model.getElement(it) as IElementLeaf
-                            obj.getQuads().forEach { renderQuad(this, it) }
-                        }
-                    }
+                val structure = model.zipVertexPaths(modelSelection).toStructure(model)
+                structure.quads.forEach { quad ->
+                    renderQuad(this, quad)
+                }
+                structure.edges.forEach { edge ->
+                    renderEdge(this, edge)
                 }
             }
 
@@ -193,7 +174,7 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
                 .forEach { tes.set(0, it.x, it.yd, 0).setVec(1, color).set(2, 0.0, 0.0).endVertex() }
     }
 
-    fun renderTranslation(selection: Selection, controller: SceneController, params: CursorParameters) {
+    fun renderTranslation(selection: VertexTexSelection, controller: SceneController, params: CursorParameters) {
 
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
         draw(GL11.GL_QUADS, shaderHandler.formatPC) {
@@ -203,9 +184,9 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
             val start = radius - params.maxSizeOfSelectionBox / 2.0
             val end = radius + params.maxSizeOfSelectionBox / 2.0
 
-            if (selection !is VertexSelection) {
-                RenderUtil.renderBar(this, center, center, params.minSizeOfSelectionBox, vec3Of(1, 1, 1))
-            }
+//            if (selection !is VertexSelection) {
+//                RenderUtil.renderBar(this, center, center, params.minSizeOfSelectionBox, vec3Of(1, 1, 1))
+//            }
 
             for (axis in SelectionAxis.selectedValues) {
                 val selected = controller.selectedModelAxis == axis || controller.hoveredModelAxis == axis
@@ -223,7 +204,7 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
         }
     }
 
-    fun renderRotation(selection: Selection, controller: SceneController, params: CursorParameters) {
+    fun renderRotation(selection: VertexTexSelection, controller: SceneController, params: CursorParameters) {
 
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
         draw(GL11.GL_QUADS, shaderHandler.formatPC) {
@@ -231,9 +212,9 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
             val center = params.center
             val radius = params.distanceFromCenter
 
-            if (selection !is VertexSelection) {
-                RenderUtil.renderBar(this, center, center, params.minSizeOfSelectionBox, vec3Of(1, 1, 1))
-            }
+//            if (selection !is VertexSelection) {
+//                RenderUtil.renderBar(this, center, center, params.minSizeOfSelectionBox, vec3Of(1, 1, 1))
+//            }
 
             val selected = controller.hoveredTextureAxis != SelectionAxis.NONE ||
                            controller.selectedTextureAxis != SelectionAxis.NONE

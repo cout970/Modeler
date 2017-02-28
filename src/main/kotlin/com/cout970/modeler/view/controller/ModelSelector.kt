@@ -3,9 +3,9 @@ package com.cout970.modeler.view.controller
 import com.cout970.glutilities.event.EnumKeyState
 import com.cout970.glutilities.event.EventMouseClick
 import com.cout970.modeler.config.Config
-import com.cout970.modeler.model.SelectionNone
 import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.modeleditor.action.ActionModifyModel
+import com.cout970.modeler.selection.VertexPosSelection
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.scene.SceneModel
 import com.cout970.raytrace.Ray
@@ -23,7 +23,7 @@ import org.joml.Vector3d
 class ModelSelector(val scene: SceneModel, val controller: SceneController, val modelEditor: ModelEditor) {
 
     val transformationMode get() = controller.transformationMode
-    val selection get() = modelEditor.selectionManager.modelSelection
+    val selection get() = modelEditor.selectionManager.vertexPosSelection
     val selectionCenter: IVector3 get() = selection.center3D(modelEditor.model)
     var time: Long = 0L
 
@@ -39,7 +39,7 @@ class ModelSelector(val scene: SceneModel, val controller: SceneController, val 
 
     fun update() {
 
-        if (controller.selectedScene === scene && selection != SelectionNone) {
+        if (controller.selectedScene === scene && selection != VertexPosSelection.EMPTY) {
             controller.cursorCenter = selectionCenter + controller.selectedModelAxis.direction * translateCursor.offset
         }
 
@@ -62,7 +62,7 @@ class ModelSelector(val scene: SceneModel, val controller: SceneController, val 
     }
 
     fun updateUserInput() {
-        if (selection != SelectionNone) {
+        if (selection != VertexPosSelection.EMPTY) {
             val cursor = when (transformationMode) {
                 TransformationMode.TRANSLATION -> translateCursor
                 TransformationMode.ROTATION -> rotateCursor
@@ -139,7 +139,7 @@ class ModelSelector(val scene: SceneModel, val controller: SceneController, val 
             val mousePos = controller.input.mouse.getMousePos()
             if (mousePos.isInside(scene.absolutePosition, scene.size.toIVector())) {
                 if (controller.hoveredModelAxis == SelectionAxis.NONE && controller.selectedModelAxis == SelectionAxis.NONE) {
-                    modelEditor.selectionManager.mouseTrySelectModel(mouseSnapshot.mouseRay,
+                    modelEditor.selectionManager.selectPos(mouseSnapshot.mouseRay,
                             controller.selectedScene.camera.zoom.toFloat(),
                             Config.keyBindings.multipleSelection.check(controller.input))
                     return true

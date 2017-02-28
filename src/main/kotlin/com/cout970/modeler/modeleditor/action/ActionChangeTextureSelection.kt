@@ -1,20 +1,20 @@
 package com.cout970.modeler.modeleditor.action
 
-import com.cout970.modeler.model.Selection
 import com.cout970.modeler.modeleditor.ModelEditor
+import com.cout970.modeler.selection.VertexTexSelection
 
 /**
  * Created by cout970 on 2017/01/29.
  */
-class ActionChangeTextureSelection(val oldSelection: Selection, val newSelection: Selection,
+class ActionChangeTextureSelection(val oldSelection: VertexTexSelection, val newSelection: VertexTexSelection,
                                    val modelEditor: ModelEditor) : IAction {
 
     override fun run() {
-        modelEditor.selectionManager.textureSelection = newSelection
+        modelEditor.selectionManager.vertexTexSelection = newSelection
     }
 
     override fun undo() {
-        modelEditor.selectionManager.textureSelection = oldSelection
+        modelEditor.selectionManager.vertexTexSelection = oldSelection
     }
 
     override fun toString(): String {

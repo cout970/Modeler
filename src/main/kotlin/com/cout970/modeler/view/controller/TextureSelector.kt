@@ -3,11 +3,11 @@ package com.cout970.modeler.view.controller
 import com.cout970.glutilities.event.EnumKeyState
 import com.cout970.glutilities.event.EventMouseClick
 import com.cout970.modeler.config.Config
-import com.cout970.modeler.model.SelectionNone
 import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.modeleditor.action.ActionModifyModel
 import com.cout970.modeler.modeleditor.moveTexture
 import com.cout970.modeler.modeleditor.scaleTexture
+import com.cout970.modeler.selection.VertexTexSelection
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.scene.SceneTexture
 import com.cout970.raytrace.Ray
@@ -24,7 +24,7 @@ import org.joml.Vector3d
 class TextureSelector(val scene: SceneTexture, val controller: SceneController, val modelEditor: ModelEditor) {
 
     val transformationMode get() = controller.transformationMode
-    val selection get() = modelEditor.selectionManager.textureSelection
+    val selection get() = modelEditor.selectionManager.vertexTexSelection
     val selectionCenter: IVector2 get() = selection.center2D(controller.tmpModel ?: modelEditor.model)
 
     var matrix = Matrix4d()
@@ -56,7 +56,7 @@ class TextureSelector(val scene: SceneTexture, val controller: SceneController, 
     }
 
     fun updateUserInput() {
-        if (selection != SelectionNone) {
+        if (selection != VertexTexSelection.EMPTY) {
             val cursor = when (transformationMode) {
                 TransformationMode.TRANSLATION -> translateCursor
                 TransformationMode.ROTATION -> rotateCursor
@@ -141,7 +141,7 @@ class TextureSelector(val scene: SceneTexture, val controller: SceneController, 
                 val hoveredTextureAxis = controller.hoveredTextureAxis
 
                 if (hoveredTextureAxis == SelectionAxis.NONE && selectedTextureAxis == SelectionAxis.NONE) {
-                    modelEditor.selectionManager.mouseTrySelectTexture(mouseSnapshot.mouseRay,
+                    modelEditor.selectionManager.selectTex(mouseSnapshot.mouseRay,
                             controller.selectedScene.camera.zoom.toFloat(),
                             Config.keyBindings.multipleSelection.check(controller.input),
                             scene::fromTextureToWorld)

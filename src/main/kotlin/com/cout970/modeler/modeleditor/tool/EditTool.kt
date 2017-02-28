@@ -99,7 +99,7 @@ class EditTool : IModelTranslate, IModelRotate, IModelScale {
     }
 
     fun insertElement(source: Model, elem: IElement, path: ElementPath = insertPath): Model {
-        if (source.getElement(path) !is IElementGroup) throw IllegalArgumentException("Invalid insertion path")
+
         return source.copy(elements = insert(source.elements, elem, path, 0))
     }
 
