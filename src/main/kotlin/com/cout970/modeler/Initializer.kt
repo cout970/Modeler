@@ -86,7 +86,7 @@ class Initializer(val programArguments: List<String>) {
         uiManager.moduleController.registerListeners(eventHandler)
 
         log(Level.FINE) { "Adding placeholder cube" }
-        modelEditor.inserter.insertElement(Meshes.createCube(vec3Of(16, 16, 16)))
+        modelEditor.editTool.insertElementLeaf(modelEditor.model, Meshes.createCube(vec3Of(16, 16, 16)))
     }
 
     private fun parseArgs() {

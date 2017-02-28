@@ -2,6 +2,7 @@ package com.cout970.modeler.model
 
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.times
+import com.cout970.modeler.model.api.IVertexCompound
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.toVector4

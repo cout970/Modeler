@@ -1,8 +1,8 @@
 package com.cout970.modeler.export
 
-import com.cout970.modeler.model.IMaterial
-import com.cout970.modeler.model.MaterialNone
-import com.cout970.modeler.model.TexturedMaterial
+import com.cout970.modeler.model.material.IMaterial
+import com.cout970.modeler.model.material.MaterialNone
+import com.cout970.modeler.model.material.TexturedMaterial
 import com.cout970.modeler.resource.ResourcePath
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2

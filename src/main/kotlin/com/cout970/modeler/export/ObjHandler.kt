@@ -4,6 +4,10 @@ import com.cout970.modeler.log.Level
 import com.cout970.modeler.log.log
 import com.cout970.modeler.log.print
 import com.cout970.modeler.model.*
+import com.cout970.modeler.model.api.IElement
+import com.cout970.modeler.model.material.IMaterial
+import com.cout970.modeler.model.material.TexturedMaterial
+import com.cout970.modeler.model.util.zipGroups
 import com.cout970.modeler.resource.ResourcePath
 import com.cout970.modeler.resource.toResourcePath
 import com.cout970.vector.api.IVector2

@@ -1,7 +1,10 @@
 package com.cout970.modeler.util
 
 import com.cout970.glutilities.tessellator.ITessellator
-import com.cout970.modeler.model.*
+import com.cout970.modeler.model.AABB
+import com.cout970.modeler.model.Meshes
+import com.cout970.modeler.model.Quad
+import com.cout970.modeler.model.Transformation
 import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
@@ -101,44 +104,5 @@ object RenderUtil {
             set(0, box.maxX, box.minY, box.maxZ).set(1, 1, 1, 1).endVertex()
             set(0, box.maxX, box.minY, box.minZ).set(1, 1, 1, 1).endVertex()
         }
-    }
-
-    fun zipVertexPaths(model: Model, paths: List<VertexPath>): VertexStructurePath {
-        val quadList = mutableListOf<List<VertexPath>>()
-        val edgeList = mutableListOf<Pair<VertexPath, VertexPath>>()
-        val map = paths.groupBy { model.getElement(it.getParent()!!) as IElementObject }
-
-        // Get all quads
-        for ((elem, vertex) in map) {
-            val indices = vertex.map { it.vertexIndex }
-            val facesWithAllVertexInIndices = elem.faces.filter { it.indices.all { it in indices } }
-            facesWithAllVertexInIndices.forEach { face ->
-                quadList += face.indices.map { VertexPath(vertex[0].indices, it) }
-            }
-        }
-
-        val vertexInQuads = quadList.flatMap { it }
-        //Get all edges
-        for ((elem, vertex) in map) {
-            val indices = vertex.filter { it !in vertexInQuads }.map { it.vertexIndex }
-            val edges = elem.faces.flatMap { listOf(it.a to it.b, it.b to it.c, it.c to it.d, it.d to it.a) }
-            println(edges.size)
-            val edgesWithAllVertexInIndices = edges.filter { it.first in indices && it.second in indices }
-            edgesWithAllVertexInIndices.forEach { edge ->
-                val a = vertex.find { it.vertexIndex == edge.first }!!
-                val b = vertex.find { it.vertexIndex == edge.second }!!
-                edgeList += (a to b)
-            }
-        }
-
-        // Get remaining vertex
-        val vertexInQuadsOrEdges = vertexInQuads + edgeList.flatMap { listOf(it.first, it.second) }
-        val vertexList = paths.filter { it !in vertexInQuadsOrEdges }
-
-        return VertexStructurePath(
-                quadList,
-                edgeList,
-                vertexList
-        )
     }
 }

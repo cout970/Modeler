@@ -1,6 +1,10 @@
 package com.cout970.modeler.modeleditor
 
-import com.cout970.modeler.model.*
+import com.cout970.modeler.model.ElementLeaf
+import com.cout970.modeler.model.Meshes
+import com.cout970.modeler.model.Model
+import com.cout970.modeler.model.Quad
+import com.cout970.modeler.selection.VertexTexSelection
 import com.cout970.modeler.util.rotateAround
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -28,7 +32,7 @@ fun Quad.setTexture1(uv0: IVector2, uv1: IVector2): Quad {
     )
 }
 
-fun ElementObject.setUVFromCuboid(size: IVector3, offset: IVector2, textureSize: IVector2): ElementObject {
+fun ElementLeaf.setUVFromCuboid(size: IVector3, offset: IVector2, textureSize: IVector2): ElementLeaf {
     val uvs = generateUVs(size, offset, textureSize)
     return Meshes.quadsToMesh(getQuads().mapIndexed { index, quad ->
         val flag = when (index) {
@@ -77,67 +81,71 @@ private fun generateUVs(size: IVector3, offset: IVector2, textureSize: IVector2)
     )
 }
 
-fun Model.moveTexture(selection: Selection, translation: IVector3): Model {
+fun Model.moveTexture(selection: VertexTexSelection, translation: IVector3): Model {
     return applyToSelectedTextureVertices(selection) { pos -> pos + translation }
 }
 
-fun Model.rotateTexture(selection: Selection, center: IVector3, rotation: Double): Model {
+fun Model.rotateTexture(selection: VertexTexSelection, center: IVector3, rotation: Double): Model {
     return applyToSelectedTextureVertices(selection) { pos -> pos.rotateAround(center, rotation) }
 }
 
-fun Model.scaleTexture(selection: Selection, scale: IVector3): Model {
+fun Model.scaleTexture(selection: VertexTexSelection, scale: IVector3): Model {
     return applyToSelectedTextureVertices(selection) { pos -> pos * scale }
 }
 
-fun Model.applyToSelectedTextureVertices(selection: Selection, func: (IVector2) -> IVector2): Model {
-    return this.applyVertex(selection) { path, vertex ->
-        vertex.transformTex(func)
-    }
+fun Model.applyToSelectedTextureVertices(selection: VertexTexSelection, func: (IVector2) -> IVector2): Model {
+    //TODO reimplement this, again...
+    return this
+//    return this.applyVertexPos(selection) { path, vertex ->
+//        vertex.transformTex(func)
+//    }
 }
 
 //TODO test if the changes make it work
-fun Model.splitUV(selection: Selection): Model {
-    return applyObject(selection) { path, element ->
-        val pathToThisComponent = selection.filterPaths(path)
-
-        val selectedVertex = if (selection is VertexSelection) {
-            pathToThisComponent
-                    .map { it as VertexPath }
-                    .map { it.vertexIndex }
-        } else {
-            pathToThisComponent
-                    .flatMap { it.getSubPaths(this) }
-                    .map { it as VertexPath }
-                    .map { it.vertexIndex }
-        }
-
-        val indexMap = mutableMapOf<Pair<QuadIndex, Int>, Int>()
-        val newVertexList = mutableListOf<VertexIndex>()
-
-        for (quad in element.faces) {
-            for (i in quad.indices) {
-                if (i in selectedVertex) {
-                    indexMap += (quad to i) to newVertexList.size
-                    newVertexList += element.vertex[i]
-                } else {
-                    val aux = element.vertex[i]
-                    if (aux in newVertexList) {
-                        indexMap += (quad to i) to newVertexList.indexOf(aux)
-                    } else {
-                        indexMap += (quad to i) to newVertexList.size
-                        newVertexList += element.vertex[i]
-                    }
-                }
-            }
-        }
-
-        ElementObject(element.positions, element.textures, newVertexList, element.faces.map { indices ->
-            QuadIndex(
-                    indexMap[indices to indices.a]!!,
-                    indexMap[indices to indices.b]!!,
-                    indexMap[indices to indices.c]!!,
-                    indexMap[indices to indices.d]!!
-            )
-        })
-    }
+fun Model.splitUV(selection: VertexTexSelection): Model {
+//    return applyElementLeaves(selection) { path, element ->
+//        val pathToThisComponent = selection.filterPaths(path)
+//
+//        val selectedVertex = if (selection is VertexSelection) {
+//            pathToThisComponent
+//                    .map { it as VertexPath }
+//                    .map { it.vertexIndex }
+//        } else {
+//            pathToThisComponent
+//                    .flatMap { it.getSubPaths(this) }
+//                    .map { it as VertexPath }
+//                    .map { it.vertexIndex }
+//        }
+//
+//        val indexMap = mutableMapOf<Pair<QuadIndex, Int>, Int>()
+//        val newVertexList = mutableListOf<VertexIndex>()
+//
+//        for (quad in element.faces) {
+//            for (i in quad.indices) {
+//                if (i in selectedVertex) {
+//                    indexMap += (quad to i) to newVertexList.size
+//                    newVertexList += element.vertex[i]
+//                } else {
+//                    val aux = element.vertex[i]
+//                    if (aux in newVertexList) {
+//                        indexMap += (quad to i) to newVertexList.indexOf(aux)
+//                    } else {
+//                        indexMap += (quad to i) to newVertexList.size
+//                        newVertexList += element.vertex[i]
+//                    }
+//                }
+//            }
+//        }
+//
+//        ElementLeaf(element.positions, element.textures, newVertexList,
+//                element.faces.map { indices ->
+//                    QuadIndex(
+//                            indexMap[indices to indices.a]!!,
+//                            indexMap[indices to indices.b]!!,
+//                            indexMap[indices to indices.c]!!,
+//                            indexMap[indices to indices.d]!!
+//                    )
+//                })
+//    }
+    return this
 }

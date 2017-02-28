@@ -1,8 +1,8 @@
 package com.cout970.modeler.export
 
 import com.cout970.modeler.model.Model
-import com.cout970.modeler.model.getObjectElements
-import com.cout970.modeler.model.zipGroups
+import com.cout970.modeler.model.util.getLeafElements
+import com.cout970.modeler.model.util.zipGroups
 import com.cout970.modeler.util.Direction
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -28,7 +28,7 @@ class McxExporter {
         val posSet = mutableSetOf<IVector3>()
         val texSet = mutableSetOf<IVector2>()
 
-        model.getObjectElements().forEach {
+        model.getLeafElements().forEach {
             posSet += it.positions
             texSet += it.textures
         }

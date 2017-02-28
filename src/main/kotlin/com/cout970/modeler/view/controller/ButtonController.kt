@@ -3,13 +3,13 @@ package com.cout970.modeler.view.controller
 import com.cout970.modeler.log.Level
 import com.cout970.modeler.log.log
 import com.cout970.modeler.model.AABB
-import com.cout970.modeler.model.IElementObject
-import com.cout970.modeler.model.getObjectElements
-import com.cout970.modeler.model.toAABB
-import com.cout970.modeler.modeleditor.SelectionMode
-import com.cout970.modeler.modeleditor.SelectionTarget
+import com.cout970.modeler.model.api.IElementLeaf
+import com.cout970.modeler.model.util.getLeafElements
+import com.cout970.modeler.model.util.toAABB
 import com.cout970.modeler.modeleditor.selection.SelectionManager
 import com.cout970.modeler.project.ProjectManager
+import com.cout970.modeler.selection.SelectionMode
+import com.cout970.modeler.selection.SelectionTarget
 import com.cout970.modeler.util.IPropertyBind
 import com.cout970.modeler.view.UIManager
 import com.cout970.modeler.view.popup.*
@@ -24,7 +24,6 @@ class ButtonController(
 ) {
 
     private val selectionManager: SelectionManager get() = projectManager.modelEditor.selectionManager
-    private val inserter get() = projectManager.modelEditor.inserter
     private val historyRecord get() = projectManager.modelEditor.historyRecord
     private val clipboard get() = projectManager.modelEditor.clipboard
     private val sceneController get() = uiManager.sceneController
@@ -38,18 +37,18 @@ class ButtonController(
             }
             "menu.select.quad" -> {
                 selectionManager.selectionMode = SelectionMode.EDIT
-                selectionManager.modelSelectionTarget = SelectionTarget.QUAD
+                selectionManager.vertexPosTarget = SelectionTarget.QUAD
             }
             "menu.select.mesh" -> {
                 selectionManager.selectionMode = SelectionMode.EDIT
-                selectionManager.modelSelectionTarget = SelectionTarget.EDGE
+                selectionManager.vertexPosTarget = SelectionTarget.EDGE
             }
             "menu.select.vertex" -> {
                 selectionManager.selectionMode = SelectionMode.EDIT
-                selectionManager.modelSelectionTarget = SelectionTarget.VERTEX
+                selectionManager.vertexPosTarget = SelectionTarget.VERTEX
             }
-            "menu.add.cube" -> inserter.addCube()
-            "menu.add.plane" -> inserter.addPlane()
+            "menu.add.cube" -> modelEditor.addCube()
+            "menu.add.plane" -> modelEditor.addPlane()
             "menu.history.undo", "top.edit.undo", "input.undo" -> historyRecord.undo()
             "menu.history.redo", "top.edit.redo", "input.redo" -> historyRecord.redo()
             "menu.clipboard.copy", "top.edit.copy", "input.copy" -> clipboard.copy()
@@ -82,7 +81,7 @@ class ButtonController(
             "menu.texture.split" -> modelEditor.texturizer.splitTextures()
 
             "menu.aabb.export" -> {
-                val aabb = projectManager.project.model.getObjectElements().map(IElementObject::toAABB)
+                val aabb = projectManager.project.model.getLeafElements().map(IElementLeaf::toAABB)
                 AABB.export(aabb, File("aabb.txt"))
             }
 

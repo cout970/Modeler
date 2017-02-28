@@ -8,7 +8,7 @@ import com.cout970.glutilities.tessellator.format.FormatPT
 import com.cout970.glutilities.texture.Texture
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.Matrix4
-import com.cout970.modeler.model.MaterialNone
+import com.cout970.modeler.model.material.MaterialNone
 import com.cout970.modeler.resource.ResourceLoader
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3

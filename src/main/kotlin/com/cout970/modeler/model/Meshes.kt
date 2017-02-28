@@ -1,5 +1,6 @@
 package com.cout970.modeler.model
 
+import com.cout970.modeler.model.api.QuadIndex
 import com.cout970.modeler.modeleditor.setUVFromCuboid
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -10,49 +11,33 @@ import com.cout970.vector.extensions.*
  */
 object Meshes {
 
-    fun createPlane(size: IVector2): ElementObject {
-        return ElementObject(
+    fun createPlane(size: IVector2): ElementLeaf {
+        return ElementLeaf(
                 listOf(vec3Of(0, 0, 0), vec3Of(0, 0, 1), vec3Of(1, 0, 1), vec3Of(1, 0, 0)).map {
                     it * vec3Of(size.x, 1, size.y)
                 },
                 listOf(vec2Of(0, 0), vec2Of(1, 0), vec2Of(1, 1), vec2Of(0, 1)),
-                listOf(
-                        VertexIndex(0, 0),
-                        VertexIndex(1, 1),
-                        VertexIndex(2, 2),
-                        VertexIndex(3, 3)
-                ),
-                listOf(QuadIndex(0, 1, 2, 3)))
+                listOf(QuadIndex(0 to 0, 1 to 1, 2 to 2, 3 to 3)))
     }
 
-    fun quadsToMesh(quads: List<Quad>): ElementObject {
+    fun quadsToMesh(quads: List<Quad>): ElementLeaf {
+        val positions = quads.flatMap(Quad::vertex).map(Vertex::pos).distinct()
+        val textures = quads.flatMap(Quad::vertex).map(Vertex::tex).distinct()
 
-        val vertexList = mutableListOf<Vertex>()
-        val quadIndex = quads.map { quad ->
-            quad.vertex
-                    .filter { it !in vertexList }
-                    .forEach { vertexList += it }
-
+        val quadIndex = quads.map { (a, b, c, d) ->
             QuadIndex(
-                    vertexList.indexOf(quad.a),
-                    vertexList.indexOf(quad.b),
-                    vertexList.indexOf(quad.c),
-                    vertexList.indexOf(quad.d)
+                    positions.indexOf(a.pos) to textures.indexOf(a.tex),
+                    positions.indexOf(b.pos) to textures.indexOf(b.tex),
+                    positions.indexOf(c.pos) to textures.indexOf(c.tex),
+                    positions.indexOf(d.pos) to textures.indexOf(d.tex)
             )
         }
 
-        val positions = vertexList.map(Vertex::pos).distinct()
-        val textures = vertexList.map(Vertex::tex).distinct()
-
-        val vertexIndex = vertexList.map { (pos, tex) ->
-            VertexIndex(positions.indexOf(pos), textures.indexOf(tex))
-        }
-
-        return ElementObject(positions, textures, vertexIndex, quadIndex)
+        return ElementLeaf(positions, textures, quadIndex)
     }
 
     fun createCube(size: IVector3, offset: IVector3 = Vector3.ORIGIN, textureOffset: IVector2 = Vector2.ORIGIN,
-                   textureSize: IVector2 = vec2Of(64, 64)): ElementObject {
+                   textureSize: IVector2 = vec2Of(64, 64)): ElementLeaf {
 
         val quads = createQuads(size, offset)
         return quadsToMesh(quads).setUVFromCuboid(size, textureOffset, textureSize)

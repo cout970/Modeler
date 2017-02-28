@@ -1,4 +1,4 @@
-package com.cout970.modeler.modeleditor
+package com.cout970.modeler.selection
 
 /**
  * Created by cout970 on 2017/02/11.
@@ -9,7 +9,3 @@ enum class SelectionTarget {
     VERTEX
 }
 
-enum class SelectionMode {
-    ELEMENT,
-    EDIT
-}

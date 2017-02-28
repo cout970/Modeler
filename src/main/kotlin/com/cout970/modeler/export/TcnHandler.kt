@@ -3,7 +3,14 @@ package com.cout970.modeler.export
 import com.cout970.modeler.log.Level
 import com.cout970.modeler.log.log
 import com.cout970.modeler.log.print
-import com.cout970.modeler.model.*
+import com.cout970.modeler.model.Meshes
+import com.cout970.modeler.model.Model
+import com.cout970.modeler.model.ModelResources
+import com.cout970.modeler.model.Quad
+import com.cout970.modeler.model.api.IElementLeaf
+import com.cout970.modeler.model.material.IMaterial
+import com.cout970.modeler.model.material.MaterialNone
+import com.cout970.modeler.model.material.TexturedMaterial
 import com.cout970.modeler.resource.ResourcePath
 import com.cout970.modeler.util.quatOfAngles
 import com.cout970.modeler.util.rotateAround
@@ -37,7 +44,8 @@ class TcnImporter {
 
         val textureName = nodeListModel.item(0).attributes.getNamedItem("texture")
         if (textureName != null) {
-            texture = TexturedMaterial(textureName.textContent, path.enterZip(textureName.textContent))
+            texture = TexturedMaterial(textureName.textContent,
+                    path.enterZip(textureName.textContent))
         }
 
         val textureDim = document.getElementsByTagName("TextureSize")
@@ -54,7 +62,7 @@ class TcnImporter {
         }
 
         val shapes = document.getElementsByTagName("Shape")
-        val meshes = mutableListOf<IElementObject>()
+        val meshes = mutableListOf<IElementLeaf>()
 
         for (i in 0..shapes.length - 1) {
             val shape = shapes.item(i)
@@ -82,7 +90,7 @@ class TcnImporter {
     }
 
     @Throws(NumberFormatException::class)
-    private fun getMesh(shape: Node, textureSize: IVector2): IElementObject {
+    private fun getMesh(shape: Node, textureSize: IVector2): IElementLeaf {
         var mirrored = false
         var offset: List<String> = listOf()
         var position: List<String> = listOf()

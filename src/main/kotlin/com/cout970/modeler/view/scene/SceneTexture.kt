@@ -3,7 +3,7 @@ package com.cout970.modeler.view.scene
 import com.cout970.glutilities.event.EventMouseClick
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.times
-import com.cout970.modeler.model.MaterialNone
+import com.cout970.modeler.model.material.MaterialNone
 import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.view.controller.SceneController
 import com.cout970.modeler.view.controller.TextureSelector

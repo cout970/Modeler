@@ -1,4 +1,4 @@
-package com.cout970.modeler.model
+package com.cout970.modeler.model.api
 
 interface IElementGroup : IElement {
 

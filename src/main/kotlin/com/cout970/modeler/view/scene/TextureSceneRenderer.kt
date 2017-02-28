@@ -3,7 +3,13 @@ package com.cout970.modeler.view.scene
 import com.cout970.glutilities.structure.GLStateMachine
 import com.cout970.glutilities.tessellator.ITessellator
 import com.cout970.modeler.config.Config
-import com.cout970.modeler.model.*
+import com.cout970.modeler.model.Edge
+import com.cout970.modeler.model.Model
+import com.cout970.modeler.model.Quad
+import com.cout970.modeler.model.api.IElementLeaf
+import com.cout970.modeler.model.material.MaterialNone
+import com.cout970.modeler.model.util.getElement
+import com.cout970.modeler.model.util.getLeafPaths
 import com.cout970.modeler.util.CursorParameters
 import com.cout970.modeler.util.RenderUtil
 import com.cout970.modeler.util.absolutePosition
@@ -129,9 +135,9 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
                             renderEdge(this, edge)
                         }
                     } else {
-                        model.getObjectPaths().forEach {
+                        model.getLeafPaths().forEach {
                             if (textureSelection.isSelected(it)) {
-                                val obj = model.getElement(it) as IElementObject
+                                val obj = model.getElement(it) as IElementLeaf
                                 obj.getQuads().forEach { renderQuad(this, it) }
                             }
                         }
@@ -159,9 +165,9 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
                         renderEdge(this, edge)
                     }
                 } else {
-                    model.getObjectPaths().forEach {
+                    model.getLeafPaths().forEach {
                         if (modelSelection.isSelected(it)) {
-                            val obj = model.getElement(it) as IElementObject
+                            val obj = model.getElement(it) as IElementLeaf
                             obj.getQuads().forEach { renderQuad(this, it) }
                         }
                     }

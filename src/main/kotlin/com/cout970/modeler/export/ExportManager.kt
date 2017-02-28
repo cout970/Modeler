@@ -1,8 +1,8 @@
 package com.cout970.modeler.export
 
 import com.cout970.modeler.log.print
-import com.cout970.modeler.model.IMaterial
-import com.cout970.modeler.model.TexturedMaterial
+import com.cout970.modeler.model.material.IMaterial
+import com.cout970.modeler.model.material.TexturedMaterial
 import com.cout970.modeler.modeleditor.action.ActionImportModel
 import com.cout970.modeler.modeleditor.action.ActionImportTexture
 import com.cout970.modeler.project.Project
@@ -108,7 +108,8 @@ class ExportManager(val projectManager: ProjectManager, val resourceLoader: Reso
         projectManager.modelEditor.historyRecord.doAction(
                 ActionImportTexture(projectManager.modelEditor, resourceLoader, path) { model ->
                     val file = File(path)
-                    val material = TexturedMaterial(file.nameWithoutExtension, file.toResourcePath())
+                    val material = TexturedMaterial(file.nameWithoutExtension,
+                            file.toResourcePath())
                     //TODO selected group
 //                    val sel = SelectionGroup(model.getPaths(ModelPath.Level.GROUPS))
 //                    model.applyGroup(sel) { group ->

@@ -3,7 +3,11 @@ package com.cout970.modeler.view.scene
 import com.cout970.glutilities.tessellator.VAO
 import com.cout970.matrix.extensions.Matrix4
 import com.cout970.modeler.config.Config
-import com.cout970.modeler.model.*
+import com.cout970.modeler.model.api.IElementLeaf
+import com.cout970.modeler.model.material.MaterialNone
+import com.cout970.modeler.model.util.getLeafElements
+import com.cout970.modeler.model.util.toAABB
+import com.cout970.modeler.selection.VertexPosSelection
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.controller.SceneController
 import com.cout970.modeler.view.controller.SelectionAxis
@@ -22,7 +26,7 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
         if (scene.size.x < 1 || scene.size.y < 1) return
 
         val model = scene.sceneController.getModel(scene.modelProvider.model)
-        val selection = scene.modelProvider.selectionManager.modelSelection
+        val selection = scene.modelProvider.selectionManager.vertexPosSelection
         val sceneController = scene.sceneController
 
         val modelCache: Cache<Int, VAO> = sceneController.modelCache
@@ -76,14 +80,14 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
                 // bounding boxes
                 if (sceneController.showBoundingBoxes.get()) {
                     draw(GL11.GL_LINES, formatPC) {
-                        model.getObjectElements().map(IElementObject::toAABB).forEach {
+                        model.getLeafElements().map(IElementLeaf::toAABB).forEach {
                             RenderUtil.renderBox(this, it)
                         }
                     }
                 }
 
                 // selection outline
-                if (selection != SelectionNone) {
+                if (selection != VertexPosSelection.EMPTY) {
 
                     // render selection
                     renderCache(selectionCache, model.hashCode() xor selection.hashCode()) {
@@ -99,7 +103,7 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
                                 }
                             } else {
 
-                                val structure = RenderUtil.zipVertexPaths(model, selection.paths).toStructure(model)
+                                val structure = RenderUtil.zipVertexPaths(model, selection).toStructure(model)
 
                                 structure.quads.forEach { (a, b, c, d) ->
                                     RenderUtil.renderBar(tessellator, a.pos, b.pos, size, color)

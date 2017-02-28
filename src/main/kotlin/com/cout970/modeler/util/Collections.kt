@@ -1,5 +1,9 @@
 package com.cout970.modeler.util
 
+import com.cout970.raytrace.Ray
+import com.cout970.raytrace.RayTraceResult
+import com.cout970.vector.extensions.distance
+
 /**
  * Created by cout970 on 2016/12/09.
  */
@@ -37,3 +41,13 @@ inline fun <T> Iterable<T>.filterNotIndexed(predicate: (index: Int, T) -> Boolea
 
 
 inline fun <reified F> Iterable<*>.castTo(): List<F> = map { it as F }
+
+fun <T> List<Pair<RayTraceResult, T>>.getClosest(ray: Ray): Pair<RayTraceResult, T>? {
+    return when {
+        isEmpty() -> null
+        size == 1 -> first()
+        else -> {
+            sortedBy { it.first.hit.distance(ray.start) }.first()
+        }
+    }
+}

@@ -1,6 +1,10 @@
 package com.cout970.modeler.export
 
-import com.cout970.modeler.model.*
+import com.cout970.modeler.model.Meshes
+import com.cout970.modeler.model.Model
+import com.cout970.modeler.model.ModelResources
+import com.cout970.modeler.model.Quad
+import com.cout970.modeler.model.material.TexturedMaterial
 import com.cout970.modeler.resource.ResourcePath
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.api.IVector4

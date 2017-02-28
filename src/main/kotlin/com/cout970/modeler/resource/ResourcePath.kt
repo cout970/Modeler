@@ -1,7 +1,6 @@
 package com.cout970.modeler.resource
 
 import com.cout970.modeler.log.print
-import java.io.File
 import java.net.URI
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -40,6 +39,3 @@ class ResourcePath(val uri: URI) {
 
     fun toPath(): Path = Paths.get(uri)
 }
-
-
-fun File.toResourcePath() = ResourcePath(toURI())

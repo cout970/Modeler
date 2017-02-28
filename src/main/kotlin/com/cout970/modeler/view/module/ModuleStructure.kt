@@ -1,7 +1,7 @@
 package com.cout970.modeler.view.module
 
 import com.cout970.modeler.config.Config
-import com.cout970.modeler.model.ElementPath
+import com.cout970.modeler.selection.ElementPath
 import com.cout970.modeler.util.toColor
 import com.cout970.modeler.view.controller.ModuleController
 import org.liquidengine.legui.component.Label
