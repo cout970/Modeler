@@ -3,8 +3,8 @@ package com.cout970.modeler.modeleditor.clipboard
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.modeleditor.HistoricalRecord
 import com.cout970.modeler.modeleditor.ModelEditor
+import com.cout970.modeler.modeleditor.SelectionManager
 import com.cout970.modeler.modeleditor.action.ActionModifyModel
-import com.cout970.modeler.modeleditor.selection.SelectionManager
 import com.cout970.modeler.selection.VertexPosSelection
 
 /**

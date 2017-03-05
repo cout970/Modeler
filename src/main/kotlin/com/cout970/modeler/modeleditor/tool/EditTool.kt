@@ -4,11 +4,8 @@ import com.cout970.modeler.model.ElementLeaf
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.model.api.IElement
 import com.cout970.modeler.model.api.IElementGroup
-import com.cout970.modeler.model.api.IElementLeaf
-import com.cout970.modeler.model.structure.zipVertexPaths
 import com.cout970.modeler.model.util.applyElementLeaves
 import com.cout970.modeler.model.util.applyVertexPos
-import com.cout970.modeler.model.util.getElement
 import com.cout970.modeler.selection.ElementPath
 import com.cout970.modeler.selection.ElementSelection
 import com.cout970.modeler.selection.VertexPosSelection
@@ -56,27 +53,29 @@ class EditTool : IModelTranslate, IModelRotate, IModelScale {
     }
 
     fun deleteFaces(source: Model, selection: VertexPosSelection): Model {
-        val structure = source.zipVertexPaths(selection)
-
-        val faceIndices = structure.quads.map { (vertex) ->
-            val elem = source.getElement(vertex[0].first.elementPath) as IElementLeaf
-
-            val indices = vertex.map { it.first.vertexIndex }
-            val quadIndex = elem.faces.indexOfFirst { it.pos.toSet() == indices.toSet() }
-
-            elem to quadIndex
-        }
-
-        return source.applyElementLeaves(selection.toElementSelection()) { path, elem ->
-            val quadsList = elem.faces.mapIndexed { index, quadIndex -> elem to index }
-            if (faceIndices.containsAll(quadsList)) {
-                null
-            } else if (faceIndices.any { it in quadsList }) {
-                elem.removeFaces(quadsList.filter { it in faceIndices }.map { it.second })
-            } else {
-                elem
-            }
-        }
+//        val structure = source.zipVertexPaths(selection)
+//
+//        val faceIndices = structure.quads.map { (vertex) ->
+//            val elem = source.getElement(vertex[0].first.elementPath) as IElementLeaf
+//
+//            val indices = vertex.map { it.first.vertexIndex }
+//            val quadIndex = elem.faces.indexOfFirst { it.pos.toSet() == indices.toSet() }
+//
+//            elem to quadIndex
+//        }
+//
+//        return source.applyElementLeaves(selection.toElementSelection()) { path, elem ->
+//            val quadsList = elem.faces.mapIndexed { index, quadIndex -> elem to index }
+//            if (faceIndices.containsAll(quadsList)) {
+//                null
+//            } else if (faceIndices.any { it in quadsList }) {
+//                elem.removeFaces(quadsList.filter { it in faceIndices }.map { it.second })
+//            } else {
+//                elem
+//            }
+//        }
+        //TODO
+        return source
     }
 
     // PASTE

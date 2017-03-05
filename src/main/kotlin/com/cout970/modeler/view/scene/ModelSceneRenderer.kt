@@ -5,10 +5,14 @@ import com.cout970.matrix.extensions.Matrix4
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.model.api.IElementLeaf
 import com.cout970.modeler.model.material.MaterialNone
-import com.cout970.modeler.model.structure.zipVertexPaths
 import com.cout970.modeler.model.util.getLeafElements
+import com.cout970.modeler.model.util.getVertexPos
 import com.cout970.modeler.model.util.toAABB
+import com.cout970.modeler.selection.VertexPath
 import com.cout970.modeler.selection.VertexPosSelection
+import com.cout970.modeler.selection.subselection.SubSelectionEdge
+import com.cout970.modeler.selection.subselection.SubSelectionFace
+import com.cout970.modeler.selection.subselection.SubSelectionVertex
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.controller.SceneController
 import com.cout970.modeler.view.controller.SelectionAxis
@@ -95,21 +99,34 @@ class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHan
                         val size = Config.selectionThickness.toDouble()
                         val color = Config.colorPalette.modelSelectionColor
                         tessellator.compile(GL11.GL_QUADS, formatPC) {
-                            val structure = model.zipVertexPaths(selection).toStructure(model)
-                                structure.quads.forEach { (a, b, c, d) ->
-                                    RenderUtil.renderBar(tessellator, a.pos, b.pos, size, color)
-                                    RenderUtil.renderBar(tessellator, b.pos, c.pos, size, color)
-                                    RenderUtil.renderBar(tessellator, c.pos, d.pos, size, color)
-                                    RenderUtil.renderBar(tessellator, d.pos, a.pos, size, color)
+                            val handler = selection.subPathHandler
+                            when (handler) {
+                                is SubSelectionVertex -> {
+                                    handler.paths.map { model.getVertexPos(it) }
+                                            .forEach { pos ->
+                                                RenderUtil.renderBar(tessellator, pos, pos, size * 4, color)
+                                            }
                                 }
-
-                                structure.edges.forEach { (a, b) ->
-                                    RenderUtil.renderBar(tessellator, a.pos, b.pos, size, color)
+                                is SubSelectionEdge -> {
+                                    handler.paths.map {
+                                        Pair(model.getVertexPos(VertexPath(it.elementPath, it.firstIndex)),
+                                                model.getVertexPos(VertexPath(it.elementPath, it.secondIndex)))
+                                    }.forEach { (a, b) ->
+                                        RenderUtil.renderBar(tessellator, a, b, size, color)
+                                    }
                                 }
-
-                                structure.vertex.forEach { (pos) ->
-                                    RenderUtil.renderBar(tessellator, pos, pos, size * 4, color)
+                                is SubSelectionFace -> {
+                                    handler.paths.map { quad ->
+                                        val (a, b, c, d) = quad.vertex.map {
+                                            model.getVertexPos(VertexPath(quad.elementPath, it))
+                                        }
+                                        RenderUtil.renderBar(tessellator, a, b, size, color)
+                                        RenderUtil.renderBar(tessellator, b, c, size, color)
+                                        RenderUtil.renderBar(tessellator, c, d, size, color)
+                                        RenderUtil.renderBar(tessellator, d, a, size, color)
+                                    }
                                 }
+                            }
                         }
                     }
                 }

@@ -1,43 +1,26 @@
 package com.cout970.modeler.selection
 
-import com.cout970.modeler.model.Model
-import com.cout970.modeler.model.util.getVertexPos
-import com.cout970.modeler.model.util.middle
-import com.cout970.vector.api.IVector3
+import com.cout970.modeler.selection.subselection.ISubSelection
+import com.cout970.modeler.selection.subselection.SubSelectionEdge
+import com.cout970.modeler.selection.subselection.SubSelectionFace
+import com.cout970.modeler.selection.subselection.SubSelectionVertex
 
-data class VertexPosSelection(val paths: List<VertexPosPaths>) {
-
-    val pathList: List<VertexPath> get() = paths.flatMap { it.subPaths }.distinct()
+data class VertexPosSelection(val subPathHandler: ISubSelection) : ISubSelection by subPathHandler {
 
     companion object {
-        val EMPTY = VertexPosSelection(listOf())
+        val EMPTY = VertexPosSelection(SubSelectionVertex(listOf()))
 
-        fun of(paths: List<VertexPath>): VertexPosSelection {
-            val groupBy = paths.groupBy { it.elementPath }
-            val vertexPosPaths = groupBy.map { VertexPosPaths(it.key, it.value) }
-            return VertexPosSelection(vertexPosPaths)
+        fun ofVertex(paths: List<VertexPath>): VertexPosSelection {
+            return VertexPosSelection(SubSelectionVertex(paths))
+        }
+
+        fun ofEdges(paths: List<EdgePath>): VertexPosSelection {
+            return VertexPosSelection(SubSelectionEdge(paths))
+        }
+
+        fun ofFaces(paths: List<FacePath>): VertexPosSelection {
+            return VertexPosSelection(SubSelectionFace(paths))
         }
     }
 
-    data class VertexPosPaths(
-            val elementPath: ElementPath,
-            val subPaths: List<VertexPath>
-    )
-
-    fun isSelected(path: VertexPath): Boolean {
-        val pathsToElement = paths.find { it.elementPath == path.elementPath } ?: return false
-        return pathsToElement.subPaths.any { it == path }
-    }
-
-    fun center3D(model: Model): IVector3 {
-        return paths.flatMap {
-            it.subPaths.map {
-                model.getVertexPos(it)
-            }
-        }.middle()
-    }
-
-    fun toElementSelection(): ElementSelection {
-        return ElementSelection(paths.map { it.elementPath })
-    }
 }

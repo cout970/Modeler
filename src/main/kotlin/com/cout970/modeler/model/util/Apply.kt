@@ -44,15 +44,15 @@ fun IElement.applyElementLeaves(path: ElementPath, selection: ElementSelection,
 fun Model.applyVertexPos(selection: VertexPosSelection, func: (VertexPath, IVector3) -> IVector3): Model {
     val elemSel = selection.toElementSelection()
     return this.applyElementLeaves(elemSel) { elemPath, elem ->
-        val paths = selection.paths.find { it.elementPath == elemPath } ?: throw IllegalStateException("")
-        elem.transformPos(paths, func)
+        val paths = selection.pathList.filter { it.elementPath == elemPath }
+        elem.transformPos(VertexPosSelection.ofVertex(paths), func)
     }
 }
 
 fun Model.applyVertexTex(selection: VertexTexSelection, func: (VertexPath, IVector2) -> IVector2): Model {
     val elemSel = selection.toElementSelection()
     return this.applyElementLeaves(elemSel) { elemPath, elem ->
-        val paths = selection.paths.find { it.elementPath == elemPath } ?: throw IllegalStateException("")
-        elem.transformTex(paths, func)
+        val paths = selection.pathList.filter { it.elementPath == elemPath }
+        elem.transformTex(VertexTexSelection.ofVertex(paths), func)
     }
 }

@@ -17,8 +17,11 @@ data class ElementSelection(
     }
 
     fun containsSelectedElements(path: ElementPath): Boolean {
+        //TODO fixme
+        // java.lang.ArrayIndexOutOfBoundsException: 1
+        // at com.cout970.modeler.selection.ElementSelection.containsSelectedElements(ElementSelection.kt:21)
         return paths.any { item ->
-            path.indices.none { item.indices[it] != path.indices[it] }
+            path.indices.none { item.indices.getOrNull(it) != path.indices.getOrNull(it) }
         }
     }
 

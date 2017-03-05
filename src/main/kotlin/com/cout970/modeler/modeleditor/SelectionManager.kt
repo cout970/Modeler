@@ -1,7 +1,6 @@
-package com.cout970.modeler.modeleditor.selection
+package com.cout970.modeler.modeleditor
 
 import com.cout970.modeler.model.Model
-import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.modeleditor.action.ActionChangeModelSelection
 import com.cout970.modeler.selection.*
 import com.cout970.modeler.util.Raytracer
@@ -19,7 +18,7 @@ import com.cout970.vector.api.IVector3
  */
 class SelectionManager(val modelEditor: ModelEditor) {
 
-    var selectionMode: SelectionMode = SelectionMode.ELEMENT
+    var selectionMode: SelectionMode = SelectionMode.EDIT
 
     var elementSelection: ElementSelection = ElementSelection.EMPTY
     var vertexPosSelection: VertexPosSelection = VertexPosSelection.EMPTY
@@ -37,8 +36,8 @@ class SelectionManager(val modelEditor: ModelEditor) {
                         vertexTexSelection: VertexTexSelection = this.vertexTexSelection) {
 
         val action = ActionChangeModelSelection(
-                elementSelection, vertexPosSelection, vertexTexSelection,
                 this.elementSelection, this.vertexPosSelection, this.vertexTexSelection,
+                elementSelection, vertexPosSelection, vertexTexSelection,
                 modelEditor)
 
         modelEditor.historyRecord.doAction(action)
@@ -76,16 +75,17 @@ class SelectionManager(val modelEditor: ModelEditor) {
                 if (vertexPosSelection.isSelected(path)) {
                     val newPaths = vertexPosSelection.pathList - path
                     if (newPaths.isNotEmpty()) {
-                        changeSelection(vertexPosSelection = VertexPosSelection.of(newPaths))
+                        changeSelection(vertexPosSelection = VertexPosSelection.ofVertex(newPaths))
                     } else {
                         changeSelection(vertexPosSelection = VertexPosSelection.EMPTY)
                     }
                 } else {
-                    changeSelection(vertexPosSelection = VertexPosSelection.of(vertexPosSelection.pathList + path))
+                    changeSelection(
+                            vertexPosSelection = VertexPosSelection.ofVertex(vertexPosSelection.pathList + path))
                 }
             } else {
                 val path = result.second
-                changeSelection(vertexPosSelection = VertexPosSelection.of(listOf(path)))
+                changeSelection(vertexPosSelection = VertexPosSelection.ofVertex(listOf(path)))
             }
 
         } else if (vertexPosTarget == SelectionTarget.EDGE) {
@@ -96,20 +96,23 @@ class SelectionManager(val modelEditor: ModelEditor) {
             } else if (result == null) {
                 changeSelection(vertexPosSelection = VertexPosSelection.EMPTY)
             } else if (allowMultiSelection) {
-                val paths = result.second.toList()
-                if (paths.all { vertexPosSelection.isSelected(it) }) {
-                    val newPaths = vertexPosSelection.pathList - paths
+                val path = result.second
+
+                if (vertexPosSelection.isSelected(path)) {
+                    val newPaths = vertexPosSelection.subPathHandler.toEdgePaths() - path
                     if (newPaths.isNotEmpty()) {
-                        changeSelection(vertexPosSelection = VertexPosSelection.of(newPaths))
+                        changeSelection(vertexPosSelection = VertexPosSelection.ofEdges(newPaths))
                     } else {
                         changeSelection(vertexPosSelection = VertexPosSelection.EMPTY)
                     }
                 } else {
-                    changeSelection(vertexPosSelection = VertexPosSelection.of(vertexPosSelection.pathList + paths))
+                    changeSelection(
+                            vertexPosSelection = VertexPosSelection.ofEdges(vertexPosSelection.toEdgePaths() + path))
                 }
             } else {
-                val paths = result.second.toList()
-                changeSelection(vertexPosSelection = VertexPosSelection.of(paths))
+                val path = result.second
+
+                changeSelection(vertexPosSelection = VertexPosSelection.ofEdges(listOf(path)))
             }
 
         } else if (vertexPosTarget == SelectionTarget.QUAD) {
@@ -120,20 +123,21 @@ class SelectionManager(val modelEditor: ModelEditor) {
             } else if (result == null) {
                 changeSelection(vertexPosSelection = VertexPosSelection.EMPTY)
             } else if (allowMultiSelection) {
-                val paths = result.second
-                if (paths.all { vertexPosSelection.isSelected(it) }) {
-                    val newPaths = vertexPosSelection.pathList - paths
+                val path = result.second
+                if (vertexPosSelection.isSelected(path)) {
+                    val newPaths = vertexPosSelection.toFacePaths() - path
                     if (newPaths.isNotEmpty()) {
-                        changeSelection(vertexPosSelection = VertexPosSelection.of(newPaths))
+                        changeSelection(vertexPosSelection = VertexPosSelection.ofFaces(newPaths))
                     } else {
                         changeSelection(vertexPosSelection = VertexPosSelection.EMPTY)
                     }
                 } else {
-                    changeSelection(vertexPosSelection = VertexPosSelection.of(vertexPosSelection.pathList + paths))
+                    changeSelection(
+                            vertexPosSelection = VertexPosSelection.ofFaces(vertexPosSelection.toFacePaths() + path))
                 }
             } else {
-                val paths = result.second
-                changeSelection(vertexPosSelection = VertexPosSelection.of(paths))
+                val path = result.second
+                changeSelection(vertexPosSelection = VertexPosSelection.ofFaces(listOf(path)))
             }
         }
     }
@@ -151,16 +155,17 @@ class SelectionManager(val modelEditor: ModelEditor) {
                 if (paths.all { vertexTexSelection.isSelected(it) }) {
                     val newPaths = vertexTexSelection.pathList - paths
                     if (newPaths.isNotEmpty()) {
-                        changeSelection(vertexTexSelection = VertexTexSelection.of(newPaths))
+                        changeSelection(vertexTexSelection = VertexTexSelection.ofVertex(newPaths))
                     } else {
                         changeSelection(vertexTexSelection = VertexTexSelection.EMPTY)
                     }
                 } else {
-                    changeSelection(vertexTexSelection = VertexTexSelection.of(vertexTexSelection.pathList + paths))
+                    changeSelection(
+                            vertexTexSelection = VertexTexSelection.ofVertex(vertexTexSelection.pathList + paths))
                 }
             } else {
                 val paths = result.second
-                changeSelection(vertexTexSelection = VertexTexSelection.of(paths))
+                changeSelection(vertexTexSelection = VertexTexSelection.ofVertex(paths))
             }
         }
     }

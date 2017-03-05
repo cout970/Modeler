@@ -18,11 +18,11 @@ data class ElementLeaf(
     override fun getVertices(): List<Vertex> = getQuads().flatMap(Quad::vertex).distinct()
     override fun getQuads(): List<Quad> = faces.map { it.toQuad(this) }
 
-    override fun transformPos(paths: VertexPosSelection.VertexPosPaths,
+    override fun transformPos(selection: VertexPosSelection,
                               func: (VertexPath, IVector3) -> IVector3): IElement {
 
         val newPos = positions.mapIndexed { index, pos ->
-            val path = paths.subPaths.find { it.vertexIndex == index }
+            val path = selection.pathList.find { it.vertexIndex == index }
             if (path != null) {
                 func(path, pos)
             } else pos
@@ -30,10 +30,10 @@ data class ElementLeaf(
         return ElementLeaf(newPos, textures, faces)
     }
 
-    override fun transformTex(paths: VertexTexSelection.VertexTexPaths,
+    override fun transformTex(selection: VertexTexSelection,
                               func: (VertexPath, IVector2) -> IVector2): IElement {
         val newTex = textures.mapIndexed { index, pos ->
-            val path = paths.subPaths.find { it.vertexIndex == index }
+            val path = selection.pathList.find { it.vertexIndex == index }
             if (path != null) {
                 func(path, pos)
             } else pos
@@ -42,6 +42,6 @@ data class ElementLeaf(
     }
 
     override fun removeFaces(faces: List<Int>): IElementLeaf {
-        return ElementLeaf(positions, textures, this.faces.filterIndexed { index, quadIndex -> index !in faces })
+        return ElementLeaf(positions, textures, this.faces.filterIndexed { index, _ -> index !in faces })
     }
 }

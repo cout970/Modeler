@@ -1,9 +1,11 @@
 package com.cout970.modeler.export
 
 import com.cout970.modeler.model.Model
+import com.cout970.modeler.model.api.IElementLeaf
 import com.cout970.modeler.model.util.getLeafElements
 import com.cout970.modeler.model.util.zipGroups
 import com.cout970.modeler.util.Direction
+import com.cout970.modeler.util.castTo
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.times
@@ -39,29 +41,27 @@ class McxExporter {
         val parts = mutableListOf<ModelData.Part>()
         var particleTexture: String? = null
 
-        model.zipGroups()
-        //TODO redo format
-//        for (group in model.groups) {
-//            val texture = "$domain:${group.material.name}"
-//            val localIndices = mutableListOf<QuadStorage.QuadIndices>()
-//            for (mesh in group.meshes) {
-//                localIndices += mesh.indices.map { i ->
-//                    QuadStorage.QuadIndices(
-//                            pos.indexOf(group.transform.matrix * mesh.positions[i.aP]),
-//                            pos.indexOf(group.transform.matrix * mesh.positions[i.bP]),
-//                            pos.indexOf(group.transform.matrix * mesh.positions[i.cP]),
-//                            pos.indexOf(group.transform.matrix * mesh.positions[i.dP]),
-//                            tex.indexOf(mesh.textures[i.aT]),
-//                            tex.indexOf(mesh.textures[i.bT]),
-//                            tex.indexOf(mesh.textures[i.cT]),
-//                            tex.indexOf(mesh.textures[i.dT])
-//                    )
-//                }
-//            }
-//            if (particleTexture == null) particleTexture = texture
-//            parts += ModelData.Part(indices.size, indices.size + localIndices.size, null, texture)
-//            indices += localIndices
-//        }
+        for ((name, elements) in model.zipGroups()) {
+            val texture = "$domain:${model.resources.materials[0].name}"
+            val localIndices = mutableListOf<QuadStorage.QuadIndices>()
+            for (mesh in elements.castTo<IElementLeaf>()) {
+                localIndices += mesh.faces.map { (a, b, c, d) ->
+                    QuadStorage.QuadIndices(
+                            pos.indexOf(mesh.positions[a.first]),
+                            pos.indexOf(mesh.positions[b.first]),
+                            pos.indexOf(mesh.positions[c.first]),
+                            pos.indexOf(mesh.positions[d.first]),
+                            tex.indexOf(mesh.textures[a.second]),
+                            tex.indexOf(mesh.textures[b.second]),
+                            tex.indexOf(mesh.textures[c.second]),
+                            tex.indexOf(mesh.textures[d.second])
+                    )
+                }
+            }
+            if (particleTexture == null) particleTexture = texture
+            parts += ModelData.Part(name, indices.size, indices.size + localIndices.size, null, texture)
+            indices += localIndices
+        }
 
         val data = ModelData(
                 useAmbientOcclusion = true,
@@ -83,7 +83,7 @@ class McxExporter {
             val quads: QuadStorage
     ) {
 
-        class Part(val from: Int, val to: Int, val side: Direction?, val texture: String)
+        class Part(val name: String, val from: Int, val to: Int, val side: Direction?, val texture: String)
     }
 
     class QuadStorage(val pos: List<IVector3>, val tex: List<IVector2>, val indices: List<QuadIndices>) {

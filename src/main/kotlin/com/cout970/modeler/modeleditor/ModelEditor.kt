@@ -6,7 +6,6 @@ import com.cout970.modeler.modeleditor.action.ActionModifyModel
 import com.cout970.modeler.modeleditor.clipboard.ElementClipboard
 import com.cout970.modeler.modeleditor.clipboard.IClipboard
 import com.cout970.modeler.modeleditor.clipboard.VertexClipboard
-import com.cout970.modeler.modeleditor.selection.SelectionManager
 import com.cout970.modeler.modeleditor.tool.EditTool
 import com.cout970.modeler.project.ProjectManager
 import com.cout970.modeler.util.ITickeable

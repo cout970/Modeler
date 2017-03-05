@@ -6,7 +6,7 @@ import com.cout970.modeler.model.AABB
 import com.cout970.modeler.model.api.IElementLeaf
 import com.cout970.modeler.model.util.getLeafElements
 import com.cout970.modeler.model.util.toAABB
-import com.cout970.modeler.modeleditor.selection.SelectionManager
+import com.cout970.modeler.modeleditor.SelectionManager
 import com.cout970.modeler.project.ProjectManager
 import com.cout970.modeler.selection.SelectionMode
 import com.cout970.modeler.selection.SelectionTarget

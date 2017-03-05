@@ -12,8 +12,8 @@ interface IElementLeaf : IElement {
     val textures: List<IVector2>
     val faces: List<QuadIndex>
 
-    fun transformPos(paths: VertexPosSelection.VertexPosPaths, func: (VertexPath, IVector3) -> IVector3): IElement
-    fun transformTex(paths: VertexTexSelection.VertexTexPaths, func: (VertexPath, IVector2) -> IVector2): IElement
+    fun transformPos(selection: VertexPosSelection, func: (VertexPath, IVector3) -> IVector3): IElement
+    fun transformTex(selection: VertexTexSelection, func: (VertexPath, IVector2) -> IVector2): IElement
     fun removeFaces(faces: List<Int>): IElementLeaf
 }
 

@@ -6,7 +6,9 @@ import com.cout970.modeler.model.api.IElementLeaf
 import com.cout970.modeler.model.util.getElement
 import com.cout970.modeler.model.util.getLeafPaths
 import com.cout970.modeler.model.util.rayTrace
+import com.cout970.modeler.selection.EdgePath
 import com.cout970.modeler.selection.ElementPath
+import com.cout970.modeler.selection.FacePath
 import com.cout970.modeler.selection.VertexPath
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
@@ -52,9 +54,9 @@ object Raytracer {
     }
 
     fun raytraceEdgePos(ray: Ray, model: Model, vertexSize: Float)
-            : Pair<RayTraceResult, Pair<VertexPath, VertexPath>>? {
+            : Pair<RayTraceResult, EdgePath>? {
 
-        val hits = mutableListOf<Pair<RayTraceResult, Pair<VertexPath, VertexPath>>>()
+        val hits = mutableListOf<Pair<RayTraceResult, EdgePath>>()
 
         model.getLeafPaths().forEach { path ->
             val obj = model.getElement(path) as IElementLeaf
@@ -69,7 +71,7 @@ object Raytracer {
                     val end = max + vec3Of(0.125) * vertexSize
 
                     RayTraceUtil.rayTraceBox3(start, end, ray, FakeRayObstacle)?.let {
-                        hits += it to Pair(VertexPath(path, edgeIndex.a.first), VertexPath(path, edgeIndex.b.first))
+                        hits += it to EdgePath(path, edgeIndex.a.first, edgeIndex.b.first)
                     }
                 }
             }
@@ -77,23 +79,18 @@ object Raytracer {
         return hits.getClosest(ray)
     }
 
-    fun raytraceQuadPos(ray: Ray, model: Model): Pair<RayTraceResult, List<VertexPath>>? {
+    fun raytraceQuadPos(ray: Ray, model: Model): Pair<RayTraceResult, FacePath>? {
 
-        val hits = mutableListOf<Pair<RayTraceResult, List<VertexPath>>>()
+        val hits = mutableListOf<Pair<RayTraceResult, FacePath>>()
 
         model.getLeafPaths().forEach { path ->
             val obj = model.getElement(path) as IElementLeaf
 
-            obj.faces.forEach { quadIndex ->
+            obj.faces.forEachIndexed { index, quadIndex ->
                 val pos = quadIndex.pos.map { obj.positions[it] }
 
                 RayTraceUtil.rayTraceQuad(ray, FakeRayObstacle, pos[0], pos[1], pos[2], pos[3])?.let {
-                    hits += it to listOf(
-                            VertexPath(path, quadIndex.pos[0]),
-                            VertexPath(path, quadIndex.pos[1]),
-                            VertexPath(path, quadIndex.pos[2]),
-                            VertexPath(path, quadIndex.pos[3])
-                    )
+                    hits += it to FacePath(path, index, quadIndex.pos)
                 }
             }
         }

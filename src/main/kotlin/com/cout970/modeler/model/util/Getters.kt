@@ -68,7 +68,7 @@ fun Model.getLeafPaths(): List<ElementPath> {
     val paths = mutableListOf<ElementPath>()
     for ((index, elem) in elements.withIndex()) {
         if (elem is IElementGroup) {
-            paths += elem.getLeafPaths()
+            paths += elem.getLeafPaths(ElementPath(intArrayOf(index)))
         } else {
             paths += ElementPath(intArrayOf(index))
         }

@@ -7,7 +7,6 @@ import com.cout970.modeler.model.Edge
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.model.Quad
 import com.cout970.modeler.model.material.MaterialNone
-import com.cout970.modeler.model.structure.zipVertexPaths
 import com.cout970.modeler.selection.VertexPosSelection
 import com.cout970.modeler.selection.VertexTexSelection
 import com.cout970.modeler.util.CursorParameters
@@ -146,13 +145,13 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
             GL11.glLineWidth(2f)
 
             draw(GL11.GL_QUADS, formatPCT) {
-                val structure = model.zipVertexPaths(modelSelection).toStructure(model)
-                structure.quads.forEach { quad ->
-                    renderQuad(this, quad)
-                }
-                structure.edges.forEach { edge ->
-                    renderEdge(this, edge)
-                }
+                //                val structure = model.zipVertexPaths(modelSelection).toStructure(model)
+//                structure.quads.forEach { quad ->
+//                    renderQuad(this, quad)
+//                }
+//                structure.edges.forEach { edge ->
+//                    renderEdge(this, edge)
+//                }
             }
 
             GL11.glLineWidth(1f)
