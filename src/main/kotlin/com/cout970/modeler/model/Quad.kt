@@ -49,4 +49,11 @@ data class Quad(
                 Vertex(d.pos, vec2Of(c.tex.x, d.tex.y))
         )
     }
+
+    fun toEdges(): List<Edge> = listOf(
+            Edge(a, b),
+            Edge(b, c),
+            Edge(c, d),
+            Edge(d, a)
+    )
 }

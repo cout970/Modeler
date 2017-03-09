@@ -4,10 +4,11 @@ import com.cout970.glutilities.event.EnumKeyState
 import com.cout970.glutilities.event.EventMouseClick
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.modeleditor.ModelEditor
-import com.cout970.modeler.modeleditor.action.ActionModifyModel
+import com.cout970.modeler.modeleditor.action.ActionModifyModelShape
 import com.cout970.modeler.modeleditor.moveTexture
 import com.cout970.modeler.modeleditor.scaleTexture
 import com.cout970.modeler.selection.VertexTexSelection
+import com.cout970.modeler.selection.vertexTexSelection
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.scene.SceneTexture
 import com.cout970.raytrace.Ray
@@ -84,7 +85,7 @@ class TextureSelector(val scene: SceneTexture, val controller: SceneController, 
                     cursor.reset()
 
                     controller.tmpModel?.let {
-                        modelEditor.historyRecord.doAction(ActionModifyModel(modelEditor, it))
+                        modelEditor.historyRecord.doAction(ActionModifyModelShape(modelEditor, it))
                     }
                     controller.tmpModel = null
                 }

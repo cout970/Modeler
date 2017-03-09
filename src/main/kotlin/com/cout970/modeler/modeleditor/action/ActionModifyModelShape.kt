@@ -6,7 +6,7 @@ import com.cout970.modeler.modeleditor.ModelEditor
 /**
  * Created by cout970 on 2016/12/10.
  */
-data class ActionModifyModel(val modelEditor: ModelEditor, val newModel: Model) : IAction {
+data class ActionModifyModelShape(val modelEditor: ModelEditor, val newModel: Model) : IAction {
 
     val model = modelEditor.model
 
@@ -19,6 +19,6 @@ data class ActionModifyModel(val modelEditor: ModelEditor, val newModel: Model) 
     }
 
     override fun toString(): String {
-        return "ActionModifyModel(oldModel=$model, newModel=$newModel)"
+        return "ActionModifyModelShape(oldModel=$model, newModel=$newModel)"
     }
 }

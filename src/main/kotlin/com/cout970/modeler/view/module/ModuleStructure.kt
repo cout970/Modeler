@@ -1,6 +1,7 @@
 package com.cout970.modeler.view.module
 
 import com.cout970.modeler.selection.ElementPath
+import com.cout970.modeler.selection.elementSelection
 import com.cout970.modeler.view.controller.ModuleController
 
 /**
@@ -13,7 +14,7 @@ class ModuleStructure(controller: ModuleController) : Module(controller, "Struct
 
     override fun tick() {
         val model = controller.modelProvider.model
-        val selection = controller.modelProvider.selectionManager.vertexPosSelection
+        val selection = controller.modelProvider.selectionManager.elementSelection
         val tmpHash = model.hashCode() xor selection.hashCode()
 //
         if (tmpHash != hash) {

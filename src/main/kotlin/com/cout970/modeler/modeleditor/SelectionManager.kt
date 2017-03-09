@@ -1,7 +1,7 @@
 package com.cout970.modeler.modeleditor
 
 import com.cout970.modeler.model.Model
-import com.cout970.modeler.modeleditor.action.ActionChangeModelSelection
+import com.cout970.modeler.modeleditor.action.ActionChangeSelection
 import com.cout970.modeler.selection.*
 import com.cout970.modeler.util.Raytracer
 import com.cout970.modeler.util.Raytracer.raytraceEdgePos
@@ -18,11 +18,11 @@ import com.cout970.vector.api.IVector3
  */
 class SelectionManager(val modelEditor: ModelEditor) {
 
-    var selectionMode: SelectionMode = SelectionMode.EDIT
+    var selectionMode: SelectionMode = SelectionMode.ELEMENT
 
-    var elementSelection: ElementSelection = ElementSelection.EMPTY
-    var vertexPosSelection: VertexPosSelection = VertexPosSelection.EMPTY
-    var vertexTexSelection: VertexTexSelection = VertexTexSelection.EMPTY
+    var selectionState = SelectionState(ElementSelection.EMPTY, VertexPosSelection.EMPTY, VertexTexSelection.EMPTY)
+
+
 
     var vertexPosTarget: SelectionTarget = SelectionTarget.QUAD
     var vertexTexTarget: SelectionTarget = SelectionTarget.QUAD
@@ -31,13 +31,12 @@ class SelectionManager(val modelEditor: ModelEditor) {
         changeSelection(ElementSelection.EMPTY, VertexPosSelection.EMPTY, VertexTexSelection.EMPTY)
     }
 
-    fun changeSelection(elementSelection: ElementSelection = this.elementSelection,
-                        vertexPosSelection: VertexPosSelection = this.vertexPosSelection,
-                        vertexTexSelection: VertexTexSelection = this.vertexTexSelection) {
+    fun changeSelection(elementSelection: ElementSelection = selectionState.element,
+                        vertexPosSelection: VertexPosSelection = selectionState.pos,
+                        vertexTexSelection: VertexTexSelection = selectionState.tex) {
 
-        val action = ActionChangeModelSelection(
-                this.elementSelection, this.vertexPosSelection, this.vertexTexSelection,
-                elementSelection, vertexPosSelection, vertexTexSelection,
+        val action = ActionChangeSelection(selectionState,
+                SelectionState(elementSelection, vertexPosSelection, vertexTexSelection),
                 modelEditor)
 
         modelEditor.historyRecord.doAction(action)

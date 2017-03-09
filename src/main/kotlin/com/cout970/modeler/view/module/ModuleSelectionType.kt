@@ -14,17 +14,17 @@ class ModuleSelectionType(controller: ModuleController, textureHandler: TextureH
 
     init {
         addSubComponent(CToggleButton(15f, 5f, 32f, 32f).apply {
-            leguiEventListeners.addListener(MouseClickEvent::class.java, Wrapper("menu.select.group", 0))
-            setImage(textureHandler.selectionModeGroup)
+            leguiEventListeners.addListener(MouseClickEvent::class.java, Wrapper("menu.select.element", 0))
+            setImage(textureHandler.selectionModeElement)
         })
         addSubComponent(CToggleButton(57f, 5f, 32f, 32f).apply {
-            leguiEventListeners.addListener(MouseClickEvent::class.java, Wrapper("menu.select.mesh", 1))
+            leguiEventListeners.addListener(MouseClickEvent::class.java, Wrapper("menu.select.quad", 1))
             isToggled = true
-            setImage(textureHandler.selectionModeMesh)
+            setImage(textureHandler.selectionModeQuad)
         })
         addSubComponent(CToggleButton(99f, 5f, 32f, 32f).apply {
-            leguiEventListeners.addListener(MouseClickEvent::class.java, Wrapper("menu.select.quad", 2))
-            setImage(textureHandler.selectionModeQuad)
+            leguiEventListeners.addListener(MouseClickEvent::class.java, Wrapper("menu.select.edge", 2))
+            setImage(textureHandler.selectionModeEdge)
         })
         addSubComponent(CToggleButton(141f, 5f, 32f, 32f).apply {
             leguiEventListeners.addListener(MouseClickEvent::class.java, Wrapper("menu.select.vertex", 3))

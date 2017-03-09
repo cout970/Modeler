@@ -32,14 +32,14 @@ class ButtonController(
 
     fun onClick(id: String) {
         when (id) {
-            "menu.select.group" -> {
+            "menu.select.element" -> {
                 selectionManager.selectionMode = SelectionMode.ELEMENT
             }
             "menu.select.quad" -> {
                 selectionManager.selectionMode = SelectionMode.EDIT
                 selectionManager.vertexPosTarget = SelectionTarget.QUAD
             }
-            "menu.select.mesh" -> {
+            "menu.select.edge" -> {
                 selectionManager.selectionMode = SelectionMode.EDIT
                 selectionManager.vertexPosTarget = SelectionTarget.EDGE
             }

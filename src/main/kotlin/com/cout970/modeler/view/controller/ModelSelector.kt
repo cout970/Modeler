@@ -4,8 +4,9 @@ import com.cout970.glutilities.event.EnumKeyState
 import com.cout970.glutilities.event.EventMouseClick
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.modeleditor.ModelEditor
-import com.cout970.modeler.modeleditor.action.ActionModifyModel
+import com.cout970.modeler.modeleditor.action.ActionModifyModelShape
 import com.cout970.modeler.selection.VertexPosSelection
+import com.cout970.modeler.selection.vertexPosSelection
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.scene.SceneModel
 import com.cout970.raytrace.Ray
@@ -89,7 +90,7 @@ class ModelSelector(val scene: SceneModel, val controller: SceneController, val 
                     cursor.reset()
 
                     controller.tmpModel?.let {
-                        modelEditor.historyRecord.doAction(ActionModifyModel(modelEditor, it))
+                        modelEditor.historyRecord.doAction(ActionModifyModelShape(modelEditor, it))
                     }
                     controller.tmpModel = null
                 }

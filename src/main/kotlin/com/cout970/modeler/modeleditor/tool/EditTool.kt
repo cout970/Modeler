@@ -4,11 +4,14 @@ import com.cout970.modeler.model.ElementLeaf
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.model.api.IElement
 import com.cout970.modeler.model.api.IElementGroup
+import com.cout970.modeler.model.api.QuadIndex
 import com.cout970.modeler.model.util.applyElementLeaves
 import com.cout970.modeler.model.util.applyVertexPos
+import com.cout970.modeler.model.util.getElement
 import com.cout970.modeler.selection.ElementPath
 import com.cout970.modeler.selection.ElementSelection
 import com.cout970.modeler.selection.VertexPosSelection
+import com.cout970.modeler.selection.subselection.SubSelectionFace
 import com.cout970.modeler.util.rotateAround
 import com.cout970.modeler.util.scale
 import com.cout970.modeler.view.controller.SelectionAxis
@@ -25,8 +28,9 @@ class EditTool : IModelTranslate, IModelRotate, IModelScale {
     var insertPath: ElementPath = ElementPath(intArrayOf())
     var insertPosition = vec3Of(0, 0, 0)
 
+    //
     // TRANSFORM
-
+    //
     override fun translate(source: Model, selection: VertexPosSelection, translation: IVector3): Model {
         return source.applyVertexPos(selection) { path, vertex ->
             vertex + translation
@@ -46,59 +50,72 @@ class EditTool : IModelTranslate, IModelRotate, IModelScale {
         }
     }
 
+    //
     // DELETE
-
+    //
     fun deleteElements(source: Model, selection: ElementSelection): Model {
         return source.applyElementLeaves(selection) { path, elem -> null }
     }
 
     fun deleteFaces(source: Model, selection: VertexPosSelection): Model {
-//        val structure = source.zipVertexPaths(selection)
-//
-//        val faceIndices = structure.quads.map { (vertex) ->
-//            val elem = source.getElement(vertex[0].first.elementPath) as IElementLeaf
-//
-//            val indices = vertex.map { it.first.vertexIndex }
-//            val quadIndex = elem.faces.indexOfFirst { it.pos.toSet() == indices.toSet() }
-//
-//            elem to quadIndex
-//        }
-//
-//        return source.applyElementLeaves(selection.toElementSelection()) { path, elem ->
-//            val quadsList = elem.faces.mapIndexed { index, quadIndex -> elem to index }
-//            if (faceIndices.containsAll(quadsList)) {
-//                null
-//            } else if (faceIndices.any { it in quadsList }) {
-//                elem.removeFaces(quadsList.filter { it in faceIndices }.map { it.second })
-//            } else {
-//                elem
-//            }
-//        }
-        //TODO
+        val handler = selection.subPathHandler
+        if (handler is SubSelectionFace) {
+            return source.applyElementLeaves(selection.toElementSelection()) { path, elem ->
+                val facesToRemove = handler.paths.filter { it.elementPath == path }
+                if (facesToRemove.isEmpty()) {
+                    elem
+                } else if (facesToRemove.size == elem.faces.size) {
+                    null
+                } else {
+                    elem.removeFaces(facesToRemove.map { it.faceIndex })
+                }
+            }
+        }
         return source
     }
 
+    //
     // PASTE
-
+    //
     fun pasteElement(currentModel: Model, oldModel: Model, oldSelection: ElementSelection): Model {
-        //TODO
-        return currentModel
+        val newElements = oldSelection.paths.map { oldModel.getElement(it) }
+        var model = currentModel
+        for (elem in newElements) {
+            model = insertElement(model, elem)
+        }
+        return model
     }
 
     fun pasteFaces(currentModel: Model, oldModel: Model, oldSelection: VertexPosSelection): Model {
-        //TODO
-        return currentModel
+        val handler = oldSelection.subPathHandler
+        if (handler is SubSelectionFace) {
+            val newFaces = handler.paths.map { it.toQuad(oldModel) }
+            val pos = newFaces.flatMap { it.vertex.map { it.pos } }.distinct()
+            val tex = newFaces.flatMap { it.vertex.map { it.tex } }.distinct()
+            val faces = newFaces.map {
+                QuadIndex(
+                        it.a.toIndex(pos, tex),
+                        it.b.toIndex(pos, tex),
+                        it.c.toIndex(pos, tex),
+                        it.d.toIndex(pos, tex)
+                )
+            }
+            val element = ElementLeaf(pos, tex, faces)
+            return insertElement(currentModel, element)
+        } else {
+            return currentModel
+        }
     }
 
+    //
     // INSERT
-
+    //
     fun insertElementLeaf(source: Model, elem: ElementLeaf): Model {
         val newElem = elem.copy(positions = elem.positions.map { it + insertPosition })
         return insertElement(source, newElem)
     }
 
     fun insertElement(source: Model, elem: IElement, path: ElementPath = insertPath): Model {
-
         return source.copy(elements = insert(source.elements, elem, path, 0))
     }
 

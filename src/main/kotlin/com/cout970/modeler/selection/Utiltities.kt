@@ -1,5 +1,6 @@
 package com.cout970.modeler.selection
 
+import com.cout970.modeler.modeleditor.SelectionManager
 import com.cout970.modeler.selection.subselection.ISubSelection
 import com.cout970.modeler.selection.subselection.SubSelectionEdge
 import com.cout970.modeler.selection.subselection.SubSelectionFace
@@ -21,3 +22,7 @@ fun ISubSelection.toFacePaths(): List<FacePath> {
     if (this is SubSelectionFace) return paths
     return listOf()
 }
+
+val SelectionManager.elementSelection: ElementSelection get() = selectionState.element
+val SelectionManager.vertexPosSelection: VertexPosSelection get() = selectionState.pos
+val SelectionManager.vertexTexSelection: VertexTexSelection get() = selectionState.tex

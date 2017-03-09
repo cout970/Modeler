@@ -10,8 +10,8 @@ import org.liquidengine.legui.component.ImageView
  */
 class TextureHandler(val loader: ResourceLoader) {
 
-    val selectionModeGroup: ImageView
-    val selectionModeMesh: ImageView
+    val selectionModeElement: ImageView
+    val selectionModeEdge: ImageView
     val selectionModeQuad: ImageView
     val selectionModeVertex: ImageView
     val cursorTranslate: ImageView
@@ -19,14 +19,18 @@ class TextureHandler(val loader: ResourceLoader) {
     val cursorScale: ImageView
 
     init {
-        selectionModeGroup = ImageView(
-                loader.getImage("assets/textures/selection_mode_group.png")).apply { size = Vector2f(32f) }
-        selectionModeMesh = ImageView(
-                loader.getImage("assets/textures/selection_mode_mesh.png")).apply { size = Vector2f(32f) }
+        selectionModeElement = ImageView(
+                loader.getImage("assets/textures/selection_mode_element.png")).apply { size = Vector2f(32f) }
+
         selectionModeQuad = ImageView(
                 loader.getImage("assets/textures/selection_mode_quad.png")).apply { size = Vector2f(32f) }
+
+        selectionModeEdge = ImageView(
+                loader.getImage("assets/textures/selection_mode_edge.png")).apply { size = Vector2f(32f) }
+
         selectionModeVertex = ImageView(
                 loader.getImage("assets/textures/selection_mode_vertex.png")).apply { size = Vector2f(32f) }
+
         cursorTranslate = ImageView(loader.getImage("assets/textures/translation.png")).apply {
             size = Vector2f(16f); position = Vector2f(5f, 2f)
         }

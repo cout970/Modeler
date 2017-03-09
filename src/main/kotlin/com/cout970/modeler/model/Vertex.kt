@@ -27,4 +27,6 @@ data class Vertex(
     fun transformTex(func: (IVector2) -> IVector2): Vertex {
         return Vertex(pos, func(tex))
     }
+
+    fun toIndex(pos: List<IVector3>, tex: List<IVector2>) = pos.indexOf(this.pos) to tex.indexOf(this.tex)
 }

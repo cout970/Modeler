@@ -6,9 +6,15 @@ import com.cout970.modeler.config.Config
 import com.cout970.modeler.model.Edge
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.model.Quad
+import com.cout970.modeler.model.Vertex
 import com.cout970.modeler.model.material.MaterialNone
 import com.cout970.modeler.selection.VertexPosSelection
 import com.cout970.modeler.selection.VertexTexSelection
+import com.cout970.modeler.selection.subselection.SubSelectionEdge
+import com.cout970.modeler.selection.subselection.SubSelectionFace
+import com.cout970.modeler.selection.subselection.SubSelectionVertex
+import com.cout970.modeler.selection.vertexPosSelection
+import com.cout970.modeler.selection.vertexTexSelection
 import com.cout970.modeler.util.CursorParameters
 import com.cout970.modeler.util.RenderUtil
 import com.cout970.modeler.util.absolutePosition
@@ -124,16 +130,14 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
     private fun drawTextureSelection(sh: ShaderHandler, model: Model, textureSelection: VertexTexSelection) {
         sh.apply {
             GLStateMachine.useBlend(0.25f) {
-                //TODO add zipVertexPaths for VertexTexSelection
-//                draw(GL11.GL_QUADS, formatPCT) {
-//                    val structure = model.zipVertexPaths(textureSelection).toStructure(model)
-//                    structure.quads.forEach { quad ->
-//                        renderQuad(this, quad)
-//                    }
-//                    structure.edges.forEach { edge ->
-//                        renderEdge(this, edge)
-//                    }
-//                }
+                draw(GL11.GL_QUADS, formatPCT) {
+                    val handler = textureSelection.subPathHandler
+                    when (handler) {
+                        is SubSelectionFace -> handler.paths.forEach { renderQuad(this, it.toQuad(model)) }
+                        is SubSelectionEdge -> handler.paths.forEach { renderEdge(this, it.toEdge(model)) }
+                        is SubSelectionVertex -> handler.paths.forEach { renderVertex(this, it.toVertex(model)) }
+                    }
+                }
             }
         }
     }
@@ -145,13 +149,12 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
             GL11.glLineWidth(2f)
 
             draw(GL11.GL_QUADS, formatPCT) {
-                //                val structure = model.zipVertexPaths(modelSelection).toStructure(model)
-//                structure.quads.forEach { quad ->
-//                    renderQuad(this, quad)
-//                }
-//                structure.edges.forEach { edge ->
-//                    renderEdge(this, edge)
-//                }
+                val handler = modelSelection.subPathHandler
+                when (handler) {
+                    is SubSelectionFace -> handler.paths.forEach { renderQuad(this, it.toQuad(model)) }
+                    is SubSelectionEdge -> handler.paths.forEach { renderEdge(this, it.toEdge(model)) }
+                    is SubSelectionVertex -> handler.paths.forEach { renderVertex(this, it.toVertex(model)) }
+                }
             }
 
             GL11.glLineWidth(1f)
@@ -171,6 +174,13 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
                 .map { it.copy(tex = vec2Of(it.tex.x, 1 - it.tex.yd)) }
                 .map { (it.tex * size) - offset }
                 .forEach { tes.set(0, it.x, it.yd, 0).setVec(1, color).set(2, 0.0, 0.0).endVertex() }
+    }
+
+    private fun renderVertex(tes: ITessellator, vertex: Vertex) {
+        vertex
+                .let { it.copy(tex = vec2Of(it.tex.x, 1 - it.tex.yd)) }
+                .let { (it.tex * size) - offset }
+                .let { tes.set(0, it.x, it.yd, 0).setVec(1, color).set(2, 0.0, 0.0).endVertex() }
     }
 
     fun renderTranslation(selection: VertexTexSelection, controller: SceneController, params: CursorParameters) {
