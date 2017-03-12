@@ -6,7 +6,7 @@ import com.cout970.modeler.util.ITickeable
 import com.cout970.modeler.view.controller.ButtonController
 import com.cout970.modeler.view.controller.ModuleController
 import com.cout970.modeler.view.controller.SceneController
-import com.cout970.modeler.view.gui.RootFrame
+import com.cout970.modeler.view.gui.Root
 import com.cout970.modeler.view.gui.TextureHandler
 import com.cout970.modeler.view.scene.SceneModel
 import com.cout970.modeler.view.scene.SceneTexture
@@ -15,7 +15,6 @@ import com.cout970.modeler.window.WindowHandler
 /**
  * Created by cout970 on 2016/12/27.
  */
-
 class UIManager(
         val windowHandler: WindowHandler,
         private val eventHandler: EventHandler,
@@ -27,12 +26,12 @@ class UIManager(
     val moduleController: ModuleController
     val buttonController: ButtonController
 
-    val rootFrame: RootFrame
+    val rootFrame: Root
 
     init {
         renderManager.uiManager = this
         buttonController = ButtonController(projectManager, this)
-        rootFrame = RootFrame(eventHandler, windowHandler, buttonController)
+        rootFrame = Root(eventHandler, windowHandler, buttonController, textureHandler)
         sceneController = SceneController(projectManager.modelEditor, eventHandler, rootFrame, windowHandler.timer)
         moduleController = ModuleController(projectManager.modelEditor, rootFrame, buttonController, eventHandler,
                 textureHandler)

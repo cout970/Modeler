@@ -13,7 +13,7 @@ import com.cout970.modeler.event.IInput
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.modeleditor.IModelProvider
 import com.cout970.modeler.util.*
-import com.cout970.modeler.view.gui.RootFrame
+import com.cout970.modeler.view.gui.Root
 import com.cout970.modeler.view.scene.Scene
 import com.cout970.modeler.view.scene.SceneModel
 import com.cout970.vector.api.IVector3
@@ -24,7 +24,7 @@ import org.joml.Vector2f
  * Created by cout970 on 2016/12/27.
  */
 
-class SceneController(val modelProvider: IModelProvider, val input: IInput, val rootFrame: RootFrame,
+class SceneController(val modelProvider: IModelProvider, val input: IInput, val rootFrame: Root,
                       val timer: Timer) {
 
     lateinit var selectedScene: Scene
@@ -159,7 +159,7 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
     }
 
     fun refreshScenes() {
-        rootFrame.contentPanel.apply {
+        rootFrame.bottomCenterPanel.apply {
             clearComponents()
             for (scene in scenes) {
                 addComponent(scene)
@@ -169,7 +169,7 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
     }
 
     fun scaleScenes() {
-        val contentPanel = rootFrame.contentPanel
+        val contentPanel = rootFrame.bottomCenterPanel
         when (scenes.size) {
             1 -> scenes[0].apply {
                 size = contentPanel.size

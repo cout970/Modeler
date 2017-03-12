@@ -12,7 +12,7 @@ import org.liquidengine.legui.render.nvg.NvgLeguiRenderer
 /**
  * Created by cout970 on 2016/12/02.
  */
-class GuiRenderer(rootFrame: RootFrame, window: Long) {
+class GuiRenderer(rootFrame: Frame, window: Long) {
 
     val context: LeguiContext
     val callbackKeeper: ILeguiCallbackKeeper

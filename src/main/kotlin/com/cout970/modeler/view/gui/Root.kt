@@ -5,85 +5,168 @@ import com.cout970.modeler.event.IInput
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.controller.ButtonController
 import com.cout970.modeler.view.gui.comp.CButton
+import com.cout970.modeler.view.gui.comp.CPanel
+import com.cout970.modeler.view.gui.comp.CToggleButton
 import com.cout970.modeler.window.WindowHandler
 import com.cout970.vector.extensions.minus
 import com.cout970.vector.extensions.plus
 import com.cout970.vector.extensions.vec2Of
 import org.joml.Vector2f
-import org.joml.Vector4f
 import org.liquidengine.legui.component.Frame
 import org.liquidengine.legui.component.Panel
-import org.liquidengine.legui.component.ScrollablePanel
+import org.liquidengine.legui.component.TextInput
+import org.liquidengine.legui.component.ToggleButton
+import org.liquidengine.legui.component.optional.align.HorizontalAlign
+import org.liquidengine.legui.event.component.MouseClickEvent
+import org.liquidengine.legui.listener.LeguiEventListener
+import org.liquidengine.legui.util.ColorConstants
 
 /**
- * Created by cout970 on 2016/12/03.
+ * Created by cout970 on 2017/03/09.
  */
+class Root(
+        val input: IInput,
+        val windowHandler: WindowHandler,
+        val buttonController: ButtonController,
+        val textureHandler: TextureHandler
+) : Frame(1f, 1f) {
 
-class RootFrame(val input: IInput,
-                val windowHandler: WindowHandler,
-                val buttonController: ButtonController) : Frame(1f, 1f) {
-
-    val dropdown = Panel(0f, 20f, 150f, 80f)
     val topBar = TopBar(this)
-    val leftBar = SideBar(this)
-    val rightBar = SideBar(this)
-    val contentPanel = ContentPanel(this)
+    val bottomBar = CPanel()
+    val leftBar = CPanel()
+    val rightBar = CPanel()
+    val centerPanel = CPanel()
+
+    val topCenterPanel = CPanel()
+    val bottomCenterPanel = CPanel()
+
+    val topLeftPanel = CPanel()
+    val bottomLeftPanel = CPanel()
+
+    val dropdown = CPanel(0f, 20f, 150f, 80f)
+
+    val searchBar = TextInput("")
 
     init {
         addComponent(topBar)
+        addComponent(bottomBar)
         addComponent(leftBar)
-        addComponent(contentPanel)
         addComponent(rightBar)
+        addComponent(centerPanel)
         addComponent(dropdown)
 
-        leftBar.apply { backgroundColor = Config.colorPalette.lightColor.toColor() }
-        rightBar.apply { backgroundColor = Config.colorPalette.lightColor.toColor() }
-        topBar.apply { backgroundColor = Config.colorPalette.lightColor.toColor() }
-        dropdown.apply { backgroundColor = Config.colorPalette.lightColor.toColor() }
+        centerPanel.addComponent(topCenterPanel)
+        centerPanel.addComponent(bottomCenterPanel)
 
-        leftBar.container.apply { backgroundColor = Config.colorPalette.lightColor.toColor() }
-        rightBar.container.apply { backgroundColor = Config.colorPalette.lightColor.toColor() }
-        contentPanel.apply { backgroundColor = Vector4f(0f, 0f, 0f, 0f) }
+        leftBar.addComponent(topLeftPanel)
+        leftBar.addComponent(bottomLeftPanel)
 
-        rightBar.isEnabled = false
+        topLeftPanel.addComponent(searchBar)
+
+        listOf(topBar, bottomBar, leftBar, rightBar, centerPanel,
+                topCenterPanel, topLeftPanel, dropdown, bottomLeftPanel
+        ).forEach {
+            it.backgroundColor = Config.colorPalette.lightColor.toColor()
+        }
+
+        centerPanel.backgroundColor = ColorConstants.transparent()
+        bottomCenterPanel.backgroundColor = ColorConstants.transparent()
         dropdown.isVisible = false
 
-        leftBar.verticalScrollBar.apply {
-            backgroundColor = Config.colorPalette.darkColor.toColor()
-            scrollColor = Config.colorPalette.lightColor.toColor()
-            isArrowsEnabled = false
+        topCenterPanel.apply {
+            addComponent(CToggleButton(5f, 0f, 32f, 32f).apply {
+                leguiEventListeners.addListener(MouseClickEvent::class.java, Wrapper("menu.select.element", 0, 0))
+                setImage(textureHandler.selectionModeElement)
+                isToggled = true
+            })
+            addComponent(CToggleButton(37f, 0f, 32f, 32f).apply {
+                leguiEventListeners.addListener(MouseClickEvent::class.java, Wrapper("menu.select.quad", 0, 1))
+                setImage(textureHandler.selectionModeQuad)
+            })
+            addComponent(CToggleButton(69f, 0f, 32f, 32f).apply {
+                leguiEventListeners.addListener(MouseClickEvent::class.java, Wrapper("menu.select.edge", 0, 2))
+                setImage(textureHandler.selectionModeEdge)
+            })
+            addComponent(CToggleButton(101f, 0f, 32f, 32f).apply {
+                leguiEventListeners.addListener(MouseClickEvent::class.java, Wrapper("menu.select.vertex", 0, 3))
+                setImage(textureHandler.selectionModeVertex)
+            })
+
+            addComponent(CToggleButton(140f, 0f, 32f, 32f).apply {
+                leguiEventListeners.addListener(MouseClickEvent::class.java, Wrapper("menu.cursor.translation", 1, 0))
+                textState.horizontalAlign = HorizontalAlign.LEFT
+                setImage(textureHandler.cursorTranslate)
+                isToggled = true
+            })
+            addComponent(CToggleButton(172f, 0f, 32f, 32f).apply {
+                leguiEventListeners.addListener(MouseClickEvent::class.java, Wrapper("menu.cursor.rotation", 1, 1))
+                textState.horizontalAlign = HorizontalAlign.LEFT
+                setImage(textureHandler.cursorRotate)
+            })
+            addComponent(CToggleButton(204f, 0f, 32f, 32f).apply {
+                leguiEventListeners.addListener(MouseClickEvent::class.java, Wrapper("menu.cursor.scale", 1, 2))
+                textState.horizontalAlign = HorizontalAlign.LEFT
+                setImage(textureHandler.cursorScale)
+            })
+        }
+    }
+
+    inner class Wrapper(val id: String, val category: Int, val pos: Int) : LeguiEventListener<MouseClickEvent> {
+
+        override fun update(e: MouseClickEvent) {
+            if (e.action == MouseClickEvent.MouseClickAction.CLICK) {
+                buttonController.onClick(id)
+                topCenterPanel.components.forEachIndexed { i, it ->
+                    if (it is ToggleButton) {
+                        val listener = it.leguiEventListeners.getListeners(MouseClickEvent::class.java)[0]
+                        val loc = when (category) {
+                            1 -> i - 4
+                            else -> i
+                        }
+                        if (listener is Wrapper && category == listener.category) {
+                            it.isToggled = loc == pos
+                        }
+                    }
+                }
+            }
         }
     }
 
     fun update() {
         size = windowHandler.window.getFrameBufferSize().toJoml2f()
-
+        // Size
         topBar.size = Vector2f(size.x, 20f)
-        leftBar.container.size.x = 200f
-        rightBar.container.size.x = 200f
+        bottomBar.size = Vector2f(size.x, 20f)
 
-        leftBar.size = Vector2f(if (leftBar.isEnabled) 200f else 0f, size.y - topBar.size.y)
-        rightBar.size = Vector2f(if (rightBar.isEnabled) 200f else 0f, size.y - topBar.size.y)
+        leftBar.size = Vector2f(if (leftBar.isEnabled) 120f else 0f, size.y - topBar.size.y - bottomBar.size.y)
+        rightBar.size = Vector2f(if (rightBar.isEnabled) 190f else 0f, size.y - topBar.size.y - bottomBar.size.y)
 
-        leftBar.resize()
-        rightBar.resize()
+        centerPanel.size = Vector2f(size.x - leftBar.size.x - rightBar.size.x,
+                size.y - topBar.size.y - bottomBar.size.y)
 
-        if (leftBar.container.size.y >= leftBar.size.y) {
-            leftBar.verticalScrollBar.isVisible = true
-        } else {
-            if (leftBar.isEnabled) {
-                leftBar.size.x = 190f
-            }
-            contentPanel.position
-            leftBar.verticalScrollBar.isVisible = false
-        }
+        topCenterPanel.size = Vector2f(centerPanel.size.x, 32f)
+        bottomCenterPanel.size = Vector2f(centerPanel.size.x, centerPanel.size.y - topCenterPanel.size.y)
 
-        contentPanel.size = Vector2f(size.x - leftBar.size.x - rightBar.size.x, size.y - topBar.size.y)
+        topLeftPanel.size = Vector2f(leftBar.size.x, 20f)
+        bottomLeftPanel.size = Vector2f(leftBar.size.x, leftBar.size.y - topLeftPanel.size.y)
+
+        searchBar.size = topLeftPanel.size
+        // Position
+        topBar.position = Vector2f(0f, 0f)
+        bottomBar.position = Vector2f(0f, size.y - bottomBar.size.y)
 
         leftBar.position = Vector2f(0f, topBar.size.y)
-        contentPanel.position = Vector2f(leftBar.size.x, topBar.size.y)
-        rightBar.position = Vector2f(leftBar.size.x + contentPanel.size.x, topBar.size.y)
+        rightBar.position = Vector2f(leftBar.size.x + centerPanel.size.x, topBar.size.y)
 
+        centerPanel.position = Vector2f(leftBar.size.x, topBar.size.y)
+
+        topCenterPanel.position = Vector2f(0f, 0f)
+        bottomCenterPanel.position = Vector2f(0f, topCenterPanel.size.y)
+
+        topLeftPanel.position = Vector2f(0f, 0f)
+        bottomLeftPanel.position = Vector2f(0f, topLeftPanel.size.y)
+
+        searchBar.position = Vector2f(0f, 0f)
         updateDropdownVisibility()
     }
 
@@ -101,15 +184,7 @@ class RootFrame(val input: IInput,
         }
     }
 
-    class ContentPanel(val root: RootFrame) : Panel()
-
-    data class SideBar(val root: RootFrame) : ScrollablePanel() {
-        init {
-            horizontalScrollBar.isVisible = false
-        }
-    }
-
-    inner class TopBar(val root: RootFrame) : Panel() {
+    inner class TopBar(val root: Root) : Panel() {
 
         val controller get() = root.buttonController
 

@@ -7,7 +7,7 @@ import com.cout970.modeler.event.IEventController
 import com.cout970.modeler.event.IEventListener
 import com.cout970.modeler.event.IInput
 import com.cout970.modeler.modeleditor.IModelProvider
-import com.cout970.modeler.view.gui.RootFrame
+import com.cout970.modeler.view.gui.Root
 import com.cout970.modeler.view.gui.TextureHandler
 import com.cout970.modeler.view.module.*
 
@@ -17,21 +17,19 @@ import com.cout970.modeler.view.module.*
 
 class ModuleController(
         val modelProvider: IModelProvider,
-        val rootFrame: RootFrame,
+        val rootFrame: Root,
         val buttonController: ButtonController,
         val input: IInput,
         textureHandler: TextureHandler) {
 
     val modules = listOf(
             ModuleAddElement(this),
-            ModuleSelectionType(this, textureHandler),
-            ModuleTransform(this, textureHandler),
             ModuleHistoric(this),
             ModuleTexture(this),
             ModuleBoundingBoxes(this),
             ModuleStructure(this)
     ).onEach {
-        rootFrame.leftBar.container.addComponent(it)
+        rootFrame.rightBar.addComponent(it)
     }
 
     init {
@@ -44,7 +42,7 @@ class ModuleController(
             it.position.y = last
             last = it.position.y + it.size.y + 1
         }
-        rootFrame.leftBar.container.size.y = last
+        rootFrame.rightBar.size.y = last
     }
 
     fun tick() {

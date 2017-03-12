@@ -34,18 +34,22 @@ class ButtonController(
         when (id) {
             "menu.select.element" -> {
                 selectionManager.selectionMode = SelectionMode.ELEMENT
+                selectionManager.clearSelection()
             }
             "menu.select.quad" -> {
                 selectionManager.selectionMode = SelectionMode.EDIT
                 selectionManager.vertexPosTarget = SelectionTarget.QUAD
+                selectionManager.clearSelection()
             }
             "menu.select.edge" -> {
                 selectionManager.selectionMode = SelectionMode.EDIT
                 selectionManager.vertexPosTarget = SelectionTarget.EDGE
+                selectionManager.clearSelection()
             }
             "menu.select.vertex" -> {
                 selectionManager.selectionMode = SelectionMode.EDIT
                 selectionManager.vertexPosTarget = SelectionTarget.VERTEX
+                selectionManager.clearSelection()
             }
             "menu.add.cube" -> modelEditor.addCube()
             "menu.add.plane" -> modelEditor.addPlane()

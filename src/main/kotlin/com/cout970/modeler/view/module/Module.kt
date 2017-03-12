@@ -22,7 +22,7 @@ abstract class Module(val controller: ModuleController, val name: String) : Widg
         title.textState.text = name
         container.border.isEnabled = false
         closeButton.isVisible = false
-        setDraggable(false)
+        isDraggable = false
         position = Vector2f(0f, 0f)
 
         title.textState.horizontalAlign = HorizontalAlign.CENTER

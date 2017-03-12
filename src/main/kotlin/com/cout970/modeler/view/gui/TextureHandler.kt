@@ -31,15 +31,9 @@ class TextureHandler(val loader: ResourceLoader) {
         selectionModeVertex = ImageView(
                 loader.getImage("assets/textures/selection_mode_vertex.png")).apply { size = Vector2f(32f) }
 
-        cursorTranslate = ImageView(loader.getImage("assets/textures/translation.png")).apply {
-            size = Vector2f(16f); position = Vector2f(5f, 2f)
-        }
-        cursorRotate = ImageView(loader.getImage("assets/textures/rotation.png")).apply {
-            size = Vector2f(16f); position = Vector2f(5f, 2f)
-        }
-        cursorScale = ImageView(loader.getImage("assets/textures/scale.png")).apply {
-            size = Vector2f(16f); position = Vector2f(5f, 2f)
-        }
+        cursorTranslate = ImageView(loader.getImage("assets/textures/translation.png")).apply { size = Vector2f(32f) }
+        cursorRotate = ImageView(loader.getImage("assets/textures/rotation.png")).apply { size = Vector2f(32f) }
+        cursorScale = ImageView(loader.getImage("assets/textures/scale.png")).apply { size = Vector2f(32f) }
     }
 
     fun updateMaterials(model: Model) {
