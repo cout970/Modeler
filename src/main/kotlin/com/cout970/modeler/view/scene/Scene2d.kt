@@ -15,7 +15,7 @@ import com.cout970.vector.extensions.*
 /**
  * Created by cout970 on 2017/01/02.
  */
-class SceneTexture(modelEditor: ModelEditor, windowHandler: WindowHandler, controller: SceneController) : Scene(
+class Scene2d(modelEditor: ModelEditor, windowHandler: WindowHandler, controller: SceneController) : Scene(
         modelEditor, windowHandler, controller) {
 
     val textureSelector = TextureSelector(this, controller, modelEditor)

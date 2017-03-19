@@ -37,7 +37,7 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
     private var offset: IVector2 = vec2Of(0)
     private var color: IVector3 = vec3Of(1)
 
-    fun render(scene: SceneTexture) {
+    fun render(scene: Scene2d) {
 
         if (scene.size.x < 1 || scene.size.y < 1) return
 

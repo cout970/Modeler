@@ -10,7 +10,7 @@ import com.cout970.modeler.modeleditor.scaleTexture
 import com.cout970.modeler.selection.VertexTexSelection
 import com.cout970.modeler.selection.vertexTexSelection
 import com.cout970.modeler.util.*
-import com.cout970.modeler.view.scene.SceneTexture
+import com.cout970.modeler.view.scene.Scene2d
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
 import com.cout970.raytrace.RayTraceUtil
@@ -22,7 +22,7 @@ import org.joml.Vector3d
 /**
  * Created by cout970 on 2017/01/27.
  */
-class TextureSelector(val scene: SceneTexture, val controller: SceneController, val modelEditor: ModelEditor) {
+class TextureSelector(val scene: Scene2d, val controller: SceneController, val modelEditor: ModelEditor) {
 
     val transformationMode get() = controller.transformationMode
     val selection get() = modelEditor.selectionManager.vertexTexSelection

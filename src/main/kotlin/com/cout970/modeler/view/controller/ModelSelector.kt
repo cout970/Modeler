@@ -8,10 +8,9 @@ import com.cout970.modeler.modeleditor.action.ActionModifyModelShape
 import com.cout970.modeler.selection.VertexPosSelection
 import com.cout970.modeler.selection.vertexPosSelection
 import com.cout970.modeler.util.*
-import com.cout970.modeler.view.scene.SceneModel
+import com.cout970.modeler.view.scene.Scene3d
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
-import com.cout970.raytrace.RayTraceUtil
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
@@ -21,16 +20,16 @@ import org.joml.Vector3d
 /**
  * Created by cout970 on 2016/12/17.
  */
-class ModelSelector(val scene: SceneModel, val controller: SceneController, val modelEditor: ModelEditor) {
+class ModelSelector(val scene: Scene3d, val controller: SceneController, val modelEditor: ModelEditor) {
 
     val transformationMode get() = controller.transformationMode
     val selection get() = modelEditor.selectionManager.vertexPosSelection
     val selectionCenter: IVector3 get() = selection.center3D(modelEditor.model)
     var time: Long = 0L
 
-    val translateCursor = TranslationCursor()
-    val rotateCursor = RotationCursor()
-    val scaleCursor = ScaleCursor()
+    val translateCursor = TranslationCursorTracker()
+    val rotateCursor = RotationCursorTracker()
+    val scaleCursor = ScaleCursorTracker()
 
     // view and projection matrix
     var matrix = Matrix4d()
@@ -39,11 +38,9 @@ class ModelSelector(val scene: SceneModel, val controller: SceneController, val 
     var viewportSize = vec2Of(1)
 
     fun update() {
-
         if (controller.selectedScene === scene && selection != VertexPosSelection.EMPTY) {
             controller.cursorCenter = selectionCenter + controller.selectedModelAxis.direction * translateCursor.offset
         }
-
         updateMouseRay()
     }
 
@@ -64,7 +61,7 @@ class ModelSelector(val scene: SceneModel, val controller: SceneController, val 
 
     fun updateUserInput() {
         if (selection != VertexPosSelection.EMPTY) {
-            val cursor = when (transformationMode) {
+            val tracker = when (transformationMode) {
                 TransformationMode.TRANSLATION -> translateCursor
                 TransformationMode.ROTATION -> rotateCursor
                 TransformationMode.SCALE -> scaleCursor
@@ -72,6 +69,8 @@ class ModelSelector(val scene: SceneModel, val controller: SceneController, val 
             // cursor not selecting an axis of the cursor
             if (capturedMouse == null) {
                 //try to get the axis hovered by the cursor
+                val cursorParams = scene.cursorParameters
+                val cursor = Cursor(selectionCenter, tracker.transformationMode, cursorParams)
                 controller.hoveredModelAxis = getHoveredAxis(cursor)
                 //try to select an axis
                 if (Config.keyBindings.selectModelControls.check(controller.input) &&
@@ -83,11 +82,11 @@ class ModelSelector(val scene: SceneModel, val controller: SceneController, val 
                 }
             } else {
                 if (Config.keyBindings.selectModelControls.check(controller.input)) {
-                    cursor.updateModel()
+                    tracker.updateModel()
                 } else {
                     capturedMouse = null
                     controller.selectedModelAxis = SelectionAxis.NONE
-                    cursor.reset()
+                    tracker.reset()
 
                     controller.tmpModel?.let {
                         modelEditor.historyRecord.doAction(ActionModifyModelShape(modelEditor, it))
@@ -101,14 +100,13 @@ class ModelSelector(val scene: SceneModel, val controller: SceneController, val 
         }
     }
 
-    fun getHoveredAxis(cursor: IModelCursor): SelectionAxis {
-        val cursorParams = CursorParameters(selectionCenter, scene.camera.zoom, scene.size.toIVector())
+    fun getHoveredAxis(cursor: Cursor): SelectionAxis {
 
         val ray = mouseSnapshot.mouseRay
 
-        val resX: RayTraceResult? = cursor.rayTrace(SelectionAxis.X, ray, cursorParams)
-        val resY: RayTraceResult? = cursor.rayTrace(SelectionAxis.Y, ray, cursorParams)
-        val resZ: RayTraceResult? = cursor.rayTrace(SelectionAxis.Z, ray, cursorParams)
+        val resX: RayTraceResult? = cursor.rayTrace(SelectionAxis.X, ray)
+        val resY: RayTraceResult? = cursor.rayTrace(SelectionAxis.Y, ray)
+        val resZ: RayTraceResult? = cursor.rayTrace(SelectionAxis.Z, ray)
 
         val list = mutableListOf<Pair<RayTraceResult, SelectionAxis>>()
         resX?.let { list += it to SelectionAxis.X }
@@ -163,29 +161,15 @@ class ModelSelector(val scene: SceneModel, val controller: SceneController, val 
         return false
     }
 
-    interface IModelCursor {
-        val mode: TransformationMode
+    interface ICursorTracker {
+        val transformationMode: TransformationMode
         fun updateModel()
-        fun rayTrace(axis: SelectionAxis, ray: Ray, params: CursorParameters): RayTraceResult?
-
         fun reset()
     }
 
-    inner abstract class AbstractCursor : IModelCursor {
+    inner abstract class AbstractCursorTracker : ICursorTracker {
         var offset = 0f
         var lastOffset = 0f
-
-        override fun rayTrace(axis: SelectionAxis, ray: Ray, params: CursorParameters): RayTraceResult? {
-            val center = params.center
-            val radius = params.distanceFromCenter
-            val start = radius - params.maxSizeOfSelectionBox / 2.0
-            val end = radius + params.maxSizeOfSelectionBox / 2.0
-
-            return RayTraceUtil.rayTraceBox3(
-                    center + axis.direction * start - Vector3.ONE * params.minSizeOfSelectionBox,
-                    center + axis.direction * end + Vector3.ONE * params.minSizeOfSelectionBox,
-                    ray, FakeRayObstacle)
-        }
 
         override fun reset() {
             offset = 0f
@@ -193,8 +177,8 @@ class ModelSelector(val scene: SceneModel, val controller: SceneController, val 
         }
     }
 
-    inner class TranslationCursor : AbstractCursor() {
-        override val mode: TransformationMode = TransformationMode.TRANSLATION
+    inner class TranslationCursorTracker : AbstractCursorTracker() {
+        override val transformationMode: TransformationMode = TransformationMode.TRANSLATION
 
         override fun updateModel() {
             val diff = projectAxis(matrix)
@@ -226,8 +210,8 @@ class ModelSelector(val scene: SceneModel, val controller: SceneController, val 
         }
     }
 
-    inner class RotationCursor : AbstractCursor() {
-        override val mode: TransformationMode = TransformationMode.ROTATION
+    inner class RotationCursorTracker : AbstractCursorTracker() {
+        override val transformationMode: TransformationMode = TransformationMode.ROTATION
 
         override fun updateModel() {
             val func = { mouseRay: Ray ->
@@ -275,21 +259,10 @@ class ModelSelector(val scene: SceneModel, val controller: SceneController, val 
                 }
             }
         }
-
-        override fun rayTrace(axis: SelectionAxis, ray: Ray, params: CursorParameters): RayTraceResult? {
-            val center = params.center
-            val radius = params.distanceFromCenter
-            val edgePoint = center + axis.direction * radius
-
-            return RayTraceUtil.rayTraceBox3(
-                    edgePoint - axis.rotationDirection * params.maxSizeOfSelectionBox / 2 - Vector3.ONE * params.minSizeOfSelectionBox,
-                    edgePoint + axis.rotationDirection * params.maxSizeOfSelectionBox / 2 + Vector3.ONE * params.minSizeOfSelectionBox,
-                    ray, FakeRayObstacle)
-        }
     }
 
-    inner class ScaleCursor : AbstractCursor() {
-        override val mode: TransformationMode = TransformationMode.SCALE
+    inner class ScaleCursorTracker : AbstractCursorTracker() {
+        override val transformationMode: TransformationMode = TransformationMode.SCALE
 
         override fun updateModel() {
             val diff = projectAxis(matrix)

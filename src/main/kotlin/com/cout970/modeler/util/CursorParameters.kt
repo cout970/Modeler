@@ -2,22 +2,25 @@ package com.cout970.modeler.util
 
 import com.cout970.modeler.config.Config
 import com.cout970.vector.api.IVector2
-import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.yd
 
 /**
  * Created by cout970 on 2017/02/04.
  */
-class CursorParameters(val center: IVector3, zoom: Double, containerSize: IVector2) {
+class CursorParameters(
+        val distanceFromCenter: Double,
+        val minSizeOfSelectionBox: Double,
+        val maxSizeOfSelectionBox: Double
+) {
 
-    val distanceFromCenter: Double
-    val minSizeOfSelectionBox: Double
-    val maxSizeOfSelectionBox: Double
+    companion object {
 
-    init {
-        val scale = zoom / 10 * Config.cursorArrowsScale * (1000 / containerSize.yd)
-        this.distanceFromCenter = Config.cursorArrowsDispersion * scale
-        this.minSizeOfSelectionBox = 0.0625 * scale
-        this.maxSizeOfSelectionBox = 0.0625 * scale * 5
+        fun create(zoom: Double, containerSize: IVector2): CursorParameters {
+            val scale = zoom / 10 * Config.cursorArrowsScale * (1000 / containerSize.yd)
+            val distanceFromCenter = Config.cursorArrowsDispersion * scale
+            val minSizeOfSelectionBox = 0.0625 * scale
+            val maxSizeOfSelectionBox = 0.0625 * scale * 5
+            return CursorParameters(distanceFromCenter, minSizeOfSelectionBox, maxSizeOfSelectionBox)
+        }
     }
 }

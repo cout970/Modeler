@@ -3,7 +3,9 @@ package com.cout970.modeler.view.scene
 import com.cout970.glutilities.event.EventMouseClick
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.modeler.modeleditor.IModelProvider
+import com.cout970.modeler.util.CursorParameters
 import com.cout970.modeler.util.toIMatrix
+import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.view.controller.SceneController
 import com.cout970.modeler.view.gui.comp.CBorderRenderer
 import com.cout970.modeler.window.WindowHandler
@@ -19,6 +21,7 @@ abstract class Scene(val modelProvider: IModelProvider, val windowHandler: Windo
 
     var camera = Camera.DEFAULT
     var desiredZoom = camera.zoom
+    val cursorParameters: CursorParameters get() = CursorParameters.create(camera.zoom, size.toIVector())
 
     open fun update() {
         if (Math.abs(desiredZoom - camera.zoom) > 0.01) {

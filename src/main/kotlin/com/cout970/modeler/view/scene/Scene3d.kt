@@ -12,7 +12,7 @@ import com.cout970.modeler.view.controller.SceneController
 import com.cout970.modeler.window.WindowHandler
 import org.joml.Matrix4d
 
-class SceneModel(modelEditor: ModelEditor, windowHandler: WindowHandler, sceneController: SceneController) : Scene(
+class Scene3d(modelEditor: ModelEditor, windowHandler: WindowHandler, sceneController: SceneController) : Scene(
         modelEditor, windowHandler, sceneController) {
 
     val modelSelector = ModelSelector(this, sceneController, modelEditor)

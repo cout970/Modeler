@@ -8,8 +8,8 @@ import com.cout970.modeler.view.controller.ModuleController
 import com.cout970.modeler.view.controller.SceneController
 import com.cout970.modeler.view.gui.Root
 import com.cout970.modeler.view.gui.TextureHandler
-import com.cout970.modeler.view.scene.SceneModel
-import com.cout970.modeler.view.scene.SceneTexture
+import com.cout970.modeler.view.scene.Scene2d
+import com.cout970.modeler.view.scene.Scene3d
 import com.cout970.modeler.window.WindowHandler
 
 /**
@@ -42,27 +42,27 @@ class UIManager(
         sceneController.scenes.clear()
         when (layout) {
             1 -> {
-                sceneController.scenes += SceneModel(projectManager.modelEditor, windowHandler, sceneController)
-                sceneController.scenes += SceneModel(projectManager.modelEditor, windowHandler, sceneController)
+                sceneController.scenes += Scene3d(projectManager.modelEditor, windowHandler, sceneController)
+                sceneController.scenes += Scene3d(projectManager.modelEditor, windowHandler, sceneController)
             }
             2 -> {
-                sceneController.scenes += SceneModel(projectManager.modelEditor, windowHandler, sceneController)
-                sceneController.scenes += SceneModel(projectManager.modelEditor, windowHandler, sceneController)
-                sceneController.scenes += SceneModel(projectManager.modelEditor, windowHandler, sceneController)
-                sceneController.scenes += SceneModel(projectManager.modelEditor, windowHandler, sceneController)
+                sceneController.scenes += Scene3d(projectManager.modelEditor, windowHandler, sceneController)
+                sceneController.scenes += Scene3d(projectManager.modelEditor, windowHandler, sceneController)
+                sceneController.scenes += Scene3d(projectManager.modelEditor, windowHandler, sceneController)
+                sceneController.scenes += Scene3d(projectManager.modelEditor, windowHandler, sceneController)
             }
             3 -> {
-                sceneController.scenes += SceneModel(projectManager.modelEditor, windowHandler, sceneController)
-                sceneController.scenes += SceneTexture(projectManager.modelEditor, windowHandler, sceneController)
+                sceneController.scenes += Scene3d(projectManager.modelEditor, windowHandler, sceneController)
+                sceneController.scenes += Scene2d(projectManager.modelEditor, windowHandler, sceneController)
             }
             4 -> {
-                sceneController.scenes += SceneModel(projectManager.modelEditor, windowHandler, sceneController)
-                sceneController.scenes += SceneTexture(projectManager.modelEditor, windowHandler, sceneController)
-                sceneController.scenes += SceneModel(projectManager.modelEditor, windowHandler, sceneController)
-                sceneController.scenes += SceneModel(projectManager.modelEditor, windowHandler, sceneController)
+                sceneController.scenes += Scene3d(projectManager.modelEditor, windowHandler, sceneController)
+                sceneController.scenes += Scene2d(projectManager.modelEditor, windowHandler, sceneController)
+                sceneController.scenes += Scene3d(projectManager.modelEditor, windowHandler, sceneController)
+                sceneController.scenes += Scene3d(projectManager.modelEditor, windowHandler, sceneController)
             }
             else -> {
-                sceneController.scenes += SceneModel(projectManager.modelEditor, windowHandler, sceneController)
+                sceneController.scenes += Scene3d(projectManager.modelEditor, windowHandler, sceneController)
             }
         }
         sceneController.refreshScenes()

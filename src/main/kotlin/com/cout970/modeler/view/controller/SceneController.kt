@@ -15,7 +15,7 @@ import com.cout970.modeler.modeleditor.IModelProvider
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.gui.Root
 import com.cout970.modeler.view.scene.Scene
-import com.cout970.modeler.view.scene.SceneModel
+import com.cout970.modeler.view.scene.Scene3d
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
 import org.joml.Vector2f
@@ -124,7 +124,7 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
         eventHandler.addListener(EventKeyUpdate::class.java, object : IEventListener<EventKeyUpdate> {
             override fun onEvent(e: EventKeyUpdate): Boolean {
                 if (e.keyState == EnumKeyState.PRESS) {
-                    if (Config.keyBindings.switchCameraAxis.check(e) && selectedScene is SceneModel) {
+                    if (Config.keyBindings.switchCameraAxis.check(e) && selectedScene is Scene3d) {
                         when (lastOption) {
                             0 -> selectedScene.camera = selectedScene.camera.copy(angleX = 0.0, angleY = 0.0)
                             1 -> selectedScene.camera = selectedScene.camera.copy(angleX = 0.0, angleY = -90.toRads())
@@ -137,7 +137,7 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
                             lastOption = 0
                         }
                     } else if (Config.keyBindings.switchOrthoProjection.check(e)) {
-                        (selectedScene as? SceneModel)?.apply {
+                        (selectedScene as? Scene3d)?.apply {
                             perspective = !perspective
                         }
                     } else if (Config.keyBindings.moveCameraToCursor.check(e)) {
