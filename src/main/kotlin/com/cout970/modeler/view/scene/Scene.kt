@@ -3,6 +3,7 @@ package com.cout970.modeler.view.scene
 import com.cout970.glutilities.event.EventMouseClick
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.modeler.modeleditor.IModelProvider
+import com.cout970.modeler.util.Cursor
 import com.cout970.modeler.util.CursorParameters
 import com.cout970.modeler.util.toIMatrix
 import com.cout970.modeler.util.toIVector
@@ -19,9 +20,13 @@ import org.liquidengine.legui.util.ColorConstants
 abstract class Scene(val modelProvider: IModelProvider, val windowHandler: WindowHandler,
                      val sceneController: SceneController) : Panel() {
 
+    abstract var perspective: Boolean
+
     var camera = Camera.DEFAULT
-    var desiredZoom = camera.zoom
     val cursorParameters: CursorParameters get() = CursorParameters.create(camera.zoom, size.toIVector())
+    val cursor: Cursor get() = sceneController.cursorTemplate.copy(parameters = cursorParameters)
+
+    var desiredZoom = camera.zoom
 
     open fun update() {
         if (Math.abs(desiredZoom - camera.zoom) > 0.01) {

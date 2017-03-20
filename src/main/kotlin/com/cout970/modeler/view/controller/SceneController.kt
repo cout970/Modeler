@@ -47,6 +47,8 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
     val showAllMeshUVs = BooleanProperty(true)
     val showBoundingBoxes = BooleanProperty(false)
 
+    val cursorTemplate: Cursor get() = Cursor(cursorCenter, transformationMode, CursorParameters.create(0.0, vec2Of(1)))
+
     fun tick() {
         scaleScenes()
         updateCamera()

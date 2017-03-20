@@ -18,6 +18,7 @@ import com.cout970.vector.extensions.*
 class Scene2d(modelEditor: ModelEditor, windowHandler: WindowHandler, controller: SceneController) : Scene(
         modelEditor, windowHandler, controller) {
 
+    override var perspective = false
     val textureSelector = TextureSelector(this, controller, modelEditor)
 
     init {

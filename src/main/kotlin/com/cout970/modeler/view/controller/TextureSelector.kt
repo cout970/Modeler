@@ -13,7 +13,6 @@ import com.cout970.modeler.util.*
 import com.cout970.modeler.view.scene.Scene2d
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
-import com.cout970.raytrace.RayTraceUtil
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.*
 import org.joml.Matrix4d
@@ -97,17 +96,17 @@ class TextureSelector(val scene: Scene2d, val controller: SceneController, val m
         }
     }
 
-    fun getHoveredAxis(cursor: ITextureCursor): SelectionAxis {
-        val center = scene.fromTextureToWorld(selectionCenter)
-        val cursorParams = CursorParameters(center, scene.camera.zoom, scene.size.toIVector())
+    fun getHoveredAxis(tracker: ITextureCursor): SelectionAxis {
+//        val center = scene.fromTextureToWorld(selectionCenter)
+        val cursor = scene.cursor
 
         val ray = mouseSnapshot.mouseRay
 
         val resX: RayTraceResult?
         val resY: RayTraceResult?
 
-        resX = cursor.rayTrace(SelectionAxis.X, ray, cursorParams)
-        resY = cursor.rayTrace(SelectionAxis.Y, ray, cursorParams)
+        resX = cursor.rayTrace(SelectionAxis.X, ray)
+        resY = cursor.rayTrace(SelectionAxis.Y, ray)
 
         val list = mutableListOf<Pair<RayTraceResult, SelectionAxis>>()
         resX?.let { list += it to SelectionAxis.X }
@@ -157,24 +156,24 @@ class TextureSelector(val scene: Scene2d, val controller: SceneController, val m
         val mode: TransformationMode
         fun updateModel()
         fun reset()
-        fun rayTrace(axis: SelectionAxis, ray: Ray, params: CursorParameters): RayTraceResult?
+//        fun rayTrace(axis: SelectionAxis, ray: Ray, params: CursorParameters): RayTraceResult?
     }
 
     inner abstract class AbstractCursor : ITextureCursor {
         var offset = 0f
         var lastOffset = 0f
 
-        override fun rayTrace(axis: SelectionAxis, ray: Ray, params: CursorParameters): RayTraceResult? {
-            val center = params.center
-            val radius = params.distanceFromCenter
-            val start = radius - params.maxSizeOfSelectionBox / 2.0
-            val end = radius + params.maxSizeOfSelectionBox / 2.0
-
-            return RayTraceUtil.rayTraceBox3(
-                    center + axis.direction * start - Vector3.ONE * params.minSizeOfSelectionBox,
-                    center + axis.direction * end + Vector3.ONE * params.minSizeOfSelectionBox,
-                    ray, FakeRayObstacle)
-        }
+//        override fun rayTrace(axis: SelectionAxis, ray: Ray, params: CursorParameters): RayTraceResult? {
+//            val center = params.center
+//            val radius = params.distanceFromCenter
+//            val start = radius - params.maxSizeOfSelectionBox / 2.0
+//            val end = radius + params.maxSizeOfSelectionBox / 2.0
+//
+//            return RayTraceUtil.rayTraceBox3(
+//                    center + axis.direction * start - Vector3.ONE * params.minSizeOfSelectionBox,
+//                    center + axis.direction * end + Vector3.ONE * params.minSizeOfSelectionBox,
+//                    ray, FakeRayObstacle)
+//        }
 
         override fun reset() {
             offset = 0f
@@ -225,16 +224,16 @@ class TextureSelector(val scene: Scene2d, val controller: SceneController, val m
 
         }
 
-        override fun rayTrace(axis: SelectionAxis, ray: Ray, params: CursorParameters): RayTraceResult? {
-            val center = params.center
-            val radius = params.distanceFromCenter
-            val edgePoint = center + axis.direction * radius
-
-            return RayTraceUtil.rayTraceBox3(
-                    edgePoint - axis.rotationDirection * params.maxSizeOfSelectionBox / 2 - Vector3.ONE * params.minSizeOfSelectionBox,
-                    edgePoint + axis.rotationDirection * params.maxSizeOfSelectionBox / 2 + Vector3.ONE * params.minSizeOfSelectionBox,
-                    ray, FakeRayObstacle)
-        }
+//        override fun rayTrace(axis: SelectionAxis, ray: Ray, params: CursorParameters): RayTraceResult? {
+//            val center = params.center
+//            val radius = params.distanceFromCenter
+//            val edgePoint = center + axis.direction * radius
+//
+//            return RayTraceUtil.rayTraceBox3(
+//                    edgePoint - axis.rotationDirection * params.maxSizeOfSelectionBox / 2 - Vector3.ONE * params.minSizeOfSelectionBox,
+//                    edgePoint + axis.rotationDirection * params.maxSizeOfSelectionBox / 2 + Vector3.ONE * params.minSizeOfSelectionBox,
+//                    ray, FakeRayObstacle)
+//        }
     }
 
     inner class ScaleCursor : AbstractCursor() {

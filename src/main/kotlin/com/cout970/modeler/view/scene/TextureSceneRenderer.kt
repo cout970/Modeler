@@ -15,7 +15,7 @@ import com.cout970.modeler.selection.subselection.SubSelectionFace
 import com.cout970.modeler.selection.subselection.SubSelectionVertex
 import com.cout970.modeler.selection.vertexPosSelection
 import com.cout970.modeler.selection.vertexTexSelection
-import com.cout970.modeler.util.CursorParameters
+import com.cout970.modeler.util.Cursor
 import com.cout970.modeler.util.RenderUtil
 import com.cout970.modeler.util.absolutePosition
 import com.cout970.modeler.util.toIVector
@@ -101,18 +101,17 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
 
                 if (textureSelection != VertexTexSelection.EMPTY) {
                     val center = scene.fromTextureToWorld(scene.textureSelector.selectionCenter)
-                    val cursorParams = CursorParameters(center, scene.camera.zoom, scene.size.toIVector())
 
                     when (scene.textureSelector.transformationMode) {
 
                         TransformationMode.TRANSLATION -> {
-                            renderTranslation(scene.textureSelector.selection, scene.sceneController, cursorParams)
+                            renderTranslation(scene.textureSelector.selection, scene.sceneController, scene.cursor)
                         }
                         TransformationMode.ROTATION -> {
-                            renderRotation(scene.textureSelector.selection, scene.sceneController, cursorParams)
+                            renderRotation(scene.textureSelector.selection, scene.sceneController, scene.cursor)
                         }
                         TransformationMode.SCALE -> {
-                            renderTranslation(scene.textureSelector.selection, scene.sceneController, cursorParams)
+                            renderTranslation(scene.textureSelector.selection, scene.sceneController, scene.cursor)
                         }
                     }
 
@@ -183,15 +182,15 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
                 .let { tes.set(0, it.x, it.yd, 0).setVec(1, color).set(2, 0.0, 0.0).endVertex() }
     }
 
-    fun renderTranslation(selection: VertexTexSelection, controller: SceneController, params: CursorParameters) {
+    fun renderTranslation(selection: VertexTexSelection, controller: SceneController, cursor: Cursor) {
 
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
         draw(GL11.GL_QUADS, shaderHandler.formatPC) {
 
-            val center = params.center
-            val radius = params.distanceFromCenter
-            val start = radius - params.maxSizeOfSelectionBox / 2.0
-            val end = radius + params.maxSizeOfSelectionBox / 2.0
+            val center = cursor.center
+            val radius = cursor.parameters.distanceFromCenter
+            val start = radius - cursor.parameters.maxSizeOfSelectionBox / 2.0
+            val end = radius + cursor.parameters.maxSizeOfSelectionBox / 2.0
 
 //            if (selection !is VertexSelection) {
 //                RenderUtil.renderBar(this, center, center, params.minSizeOfSelectionBox, vec3Of(1, 1, 1))
@@ -199,27 +198,28 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
 
             for (axis in SelectionAxis.selectedValues) {
                 val selected = controller.selectedModelAxis == axis || controller.hoveredModelAxis == axis
-                RenderUtil.renderBar(this,
-                        center + axis.direction * start,
-                        center + axis.direction * end,
-                        if (selected) params.minSizeOfSelectionBox * 3 else params.minSizeOfSelectionBox * 2,
+                RenderUtil.renderBar(tessellator = this,
+                        startPoint = center + axis.direction * start,
+                        endPoint = center + axis.direction * end,
+                        size = if (selected) cursor.parameters.minSizeOfSelectionBox * 3 else cursor.parameters.minSizeOfSelectionBox * 2,
                         color = Vector3.ONE)
-                RenderUtil.renderBar(this,
-                        center + axis.direction * start,
-                        center + axis.direction * end,
-                        if (selected) params.minSizeOfSelectionBox * 1.5 else params.minSizeOfSelectionBox,
+
+                RenderUtil.renderBar(tessellator = this,
+                        startPoint = center + axis.direction * start,
+                        endPoint = center + axis.direction * end,
+                        size = if (selected) cursor.parameters.minSizeOfSelectionBox * 1.5 else cursor.parameters.minSizeOfSelectionBox,
                         color = axis.direction)
             }
         }
     }
 
-    fun renderRotation(selection: VertexTexSelection, controller: SceneController, params: CursorParameters) {
+    fun renderRotation(selection: VertexTexSelection, controller: SceneController, cursor: Cursor) {
 
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
         draw(GL11.GL_QUADS, shaderHandler.formatPC) {
 
-            val center = params.center
-            val radius = params.distanceFromCenter
+            val center = cursor.center
+            val radius = cursor.parameters.distanceFromCenter
 
 //            if (selection !is VertexSelection) {
 //                RenderUtil.renderBar(this, center, center, params.minSizeOfSelectionBox, vec3Of(1, 1, 1))
@@ -234,16 +234,16 @@ class TextureSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderH
 
             RenderUtil.renderBar(
                     tessellator = this,
-                    startPoint = edgePoint - rotationDirection * params.maxSizeOfSelectionBox / 2,
-                    endPoint = edgePoint + rotationDirection * params.maxSizeOfSelectionBox / 2,
-                    size = if (selected) params.minSizeOfSelectionBox * 3 else params.minSizeOfSelectionBox * 2,
+                    startPoint = edgePoint - rotationDirection * cursor.parameters.maxSizeOfSelectionBox / 2,
+                    endPoint = edgePoint + rotationDirection * cursor.parameters.maxSizeOfSelectionBox / 2,
+                    size = if (selected) cursor.parameters.minSizeOfSelectionBox * 3 else cursor.parameters.minSizeOfSelectionBox * 2,
                     color = Vector3.ORIGIN
             )
             RenderUtil.renderBar(
                     tessellator = this,
-                    startPoint = edgePoint - rotationDirection * params.maxSizeOfSelectionBox / 2,
-                    endPoint = edgePoint + rotationDirection * params.maxSizeOfSelectionBox / 2,
-                    size = if (selected) params.minSizeOfSelectionBox * 1.5 else params.minSizeOfSelectionBox,
+                    startPoint = edgePoint - rotationDirection * cursor.parameters.maxSizeOfSelectionBox / 2,
+                    endPoint = edgePoint + rotationDirection * cursor.parameters.maxSizeOfSelectionBox / 2,
+                    size = if (selected) cursor.parameters.minSizeOfSelectionBox * 1.5 else cursor.parameters.minSizeOfSelectionBox,
                     color = Vector3.ONE
             )
         }

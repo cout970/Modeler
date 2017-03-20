@@ -1,4 +1,6 @@
-package com.cout970.modeler.view.scene.render
+package com.cout970.modeler.view.scene.render.comp
+
+import com.cout970.modeler.view.scene.render.RenderContext
 
 
 /**

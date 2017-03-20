@@ -16,7 +16,7 @@ class Scene3d(modelEditor: ModelEditor, windowHandler: WindowHandler, sceneContr
         modelEditor, windowHandler, sceneController) {
 
     val modelSelector = ModelSelector(this, sceneController, modelEditor)
-    var perspective = true
+    override var perspective = true
 
     override fun update() {
         super.update()

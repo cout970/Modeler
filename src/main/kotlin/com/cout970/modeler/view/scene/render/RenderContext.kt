@@ -11,6 +11,7 @@ import com.cout970.modeler.modeleditor.IModelProvider
 import com.cout970.modeler.modeleditor.SelectionManager
 import com.cout970.modeler.util.Cache
 import com.cout970.modeler.view.controller.SceneController
+import com.cout970.modeler.view.scene.Scene
 import com.cout970.modeler.view.util.ShaderHandler
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -26,9 +27,10 @@ import org.lwjgl.opengl.GL14
 class RenderContext(
         val shaderHandler: ShaderHandler,
         val modelProvider: IModelProvider,
-        val model: Model,
         val selectionManager: SelectionManager,
-        val sceneController: SceneController
+        val sceneController: SceneController,
+        val model: Model,
+        val scene: Scene
 ) {
 
     val tessellator: Tessellator get() = shaderHandler.tessellator
