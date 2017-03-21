@@ -1,4 +1,4 @@
-package com.cout970.modeler.view.scene.render
+package com.cout970.modeler.view.render
 
 /**
  * Created by cout970 on 2017/03/19.

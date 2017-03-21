@@ -10,9 +10,9 @@ import com.cout970.modeler.log.print
 import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.project.ProjectManager
 import com.cout970.modeler.resource.ResourceLoader
-import com.cout970.modeler.view.RenderManager
 import com.cout970.modeler.view.UIManager
 import com.cout970.modeler.view.gui.TextureHandler
+import com.cout970.modeler.view.render.RenderManager
 import com.cout970.modeler.window.Loop
 import com.cout970.modeler.window.WindowHandler
 import com.cout970.vector.extensions.vec3Of

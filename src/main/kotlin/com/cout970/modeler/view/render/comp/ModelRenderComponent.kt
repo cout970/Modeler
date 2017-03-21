@@ -1,7 +1,7 @@
-package com.cout970.modeler.view.scene.render.comp
+package com.cout970.modeler.view.render.comp
 
 import com.cout970.modeler.model.material.MaterialNone
-import com.cout970.modeler.view.scene.render.RenderContext
+import com.cout970.modeler.view.render.RenderContext
 import org.lwjgl.opengl.GL11
 
 /**

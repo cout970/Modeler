@@ -1,4 +1,4 @@
-package com.cout970.modeler.view.scene.render
+package com.cout970.modeler.view.render
 
 import com.cout970.glutilities.structure.GLStateMachine
 import com.cout970.glutilities.tessellator.IFormat
@@ -12,7 +12,6 @@ import com.cout970.modeler.modeleditor.SelectionManager
 import com.cout970.modeler.util.Cache
 import com.cout970.modeler.view.controller.SceneController
 import com.cout970.modeler.view.scene.Scene
-import com.cout970.modeler.view.util.ShaderHandler
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.vec2Of

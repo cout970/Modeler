@@ -1,13 +1,12 @@
-package com.cout970.modeler.view.scene.render
+package com.cout970.modeler.view.render
 
 import com.cout970.glutilities.structure.GLStateMachine
 import com.cout970.matrix.extensions.Matrix4
 import com.cout970.modeler.util.absolutePosition
 import com.cout970.modeler.util.toIVector
+import com.cout970.modeler.view.render.comp.*
 import com.cout970.modeler.view.scene.Scene3d
 import com.cout970.modeler.view.scene.SceneRenderer
-import com.cout970.modeler.view.scene.render.comp.*
-import com.cout970.modeler.view.util.ShaderHandler
 import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.vec3Of
@@ -16,13 +15,14 @@ import com.cout970.vector.extensions.yf
 /**
  * Created by cout970 on 2017/01/23.
  */
-class ModelSceneRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHandler) {
+class Scene3dRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHandler) {
 
-    val components = mapOf<ShaderType, List<IRenderableComponent>>(
-
+    override val components = mapOf(
             ShaderType.FULL_SHADER to listOf(ModelRenderComponent()),
-            ShaderType.PLAIN_3D_SHADER to listOf(GridsRenderComponent(), SelectionRenderComponent(),
-                    AABBRenderComponent(), Cursor3dRenderComponent()),
+            ShaderType.PLAIN_3D_SHADER to listOf(
+                    GridsRenderComponent(), SelectionRenderComponent(),
+                    AABBRenderComponent(), Cursor3dRenderComponent()
+            ),
             ShaderType.UV_SHADER to listOf(Cursor2dRenderComponent())
     )
 

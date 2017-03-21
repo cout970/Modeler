@@ -8,6 +8,7 @@ import com.cout970.modeler.view.controller.ModuleController
 import com.cout970.modeler.view.controller.SceneController
 import com.cout970.modeler.view.gui.Root
 import com.cout970.modeler.view.gui.TextureHandler
+import com.cout970.modeler.view.render.RenderManager
 import com.cout970.modeler.view.scene.Scene2d
 import com.cout970.modeler.view.scene.Scene3d
 import com.cout970.modeler.window.WindowHandler

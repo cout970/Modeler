@@ -97,23 +97,18 @@ object Raytracer {
         return hits.getClosest(ray)
     }
 
-    fun raytraceQuadTex(ray: Ray, model: Model, to3D: (IVector2) -> IVector3): Pair<RayTraceResult, List<VertexPath>>? {
+    fun raytraceQuadTex(ray: Ray, model: Model, to3D: (IVector2) -> IVector3): Pair<RayTraceResult, FacePath>? {
 
-        val hits = mutableListOf<Pair<RayTraceResult, List<VertexPath>>>()
+        val hits = mutableListOf<Pair<RayTraceResult, FacePath>>()
 
         model.getLeafPaths().forEach { path ->
             val obj = model.getElement(path) as IElementLeaf
 
-            obj.faces.forEach { quadIndex ->
+            obj.faces.forEachIndexed { index, quadIndex ->
                 val pos = quadIndex.tex.map { obj.textures[it] }.map(to3D)
 
                 RayTraceUtil.rayTraceQuad(ray, FakeRayObstacle, pos[0], pos[1], pos[2], pos[3])?.let {
-                    hits += it to listOf(
-                            VertexPath(path, quadIndex.tex[0]),
-                            VertexPath(path, quadIndex.tex[1]),
-                            VertexPath(path, quadIndex.tex[2]),
-                            VertexPath(path, quadIndex.tex[3])
-                    )
+                    hits += it to FacePath(path, index, quadIndex.pos)
                 }
             }
         }

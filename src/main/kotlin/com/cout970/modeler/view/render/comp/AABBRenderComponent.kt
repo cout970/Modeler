@@ -1,10 +1,10 @@
-package com.cout970.modeler.view.scene.render.comp
+package com.cout970.modeler.view.render.comp
 
 import com.cout970.modeler.model.api.IElementLeaf
 import com.cout970.modeler.model.util.getLeafElements
 import com.cout970.modeler.model.util.toAABB
 import com.cout970.modeler.util.RenderUtil
-import com.cout970.modeler.view.scene.render.RenderContext
+import com.cout970.modeler.view.render.RenderContext
 import org.lwjgl.opengl.GL11
 
 /**

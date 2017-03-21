@@ -1,8 +1,8 @@
-package com.cout970.modeler.view.scene.render.comp
+package com.cout970.modeler.view.render.comp
 
 import com.cout970.glutilities.structure.GLStateMachine
 import com.cout970.modeler.config.Config
-import com.cout970.modeler.view.scene.render.RenderContext
+import com.cout970.modeler.view.render.RenderContext
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.xd
 import com.cout970.vector.extensions.yd

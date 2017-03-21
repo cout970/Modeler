@@ -19,6 +19,14 @@ object RenderUtil {
 
     fun renderBar(tessellator: ITessellator, startPoint: IVector3, endPoint: IVector3, size: Double = 0.1,
                   color: IVector3 = vec3Of(1, 1, 0)) {
+        renderBar(startPoint, endPoint, size) { pos ->
+            tessellator.apply {
+                set(0, pos.x, pos.y, pos.z).set(1, color.x, color.y, color.z).endVertex()
+            }
+        }
+    }
+
+    fun renderBar(startPoint: IVector3, endPoint: IVector3, size: Double = 0.1, renderFunc: (IVector3) -> Unit) {
 
         val start = startPoint
         val end = endPoint
@@ -31,10 +39,8 @@ object RenderUtil {
         val matrix = Transformation(start, rot, vec3Of(1)).matrix
         val mesh = Meshes.createCube(vec3Of(start.distance(end) + size, size, size), offset = vec3Of(-size / 2))
 
-        tessellator.apply {
-            for ((pos) in mesh.getQuads().map { it.transform(matrix) }.flatMap(Quad::vertex)) {
-                set(0, pos.x, pos.y, pos.z).set(1, color.x, color.y, color.z).endVertex()
-            }
+        for ((pos) in mesh.getQuads().map { it.transform(matrix) }.flatMap(Quad::vertex)) {
+            renderFunc(pos)
         }
     }
 

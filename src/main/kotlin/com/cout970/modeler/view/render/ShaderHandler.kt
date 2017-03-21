@@ -1,4 +1,4 @@
-package com.cout970.modeler.view.util
+package com.cout970.modeler.view.render
 
 import com.cout970.glutilities.shader.ShaderBuilder
 import com.cout970.glutilities.shader.ShaderProgram

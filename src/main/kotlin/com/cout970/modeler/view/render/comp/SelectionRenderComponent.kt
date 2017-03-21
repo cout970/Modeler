@@ -1,4 +1,4 @@
-package com.cout970.modeler.view.scene.render.comp
+package com.cout970.modeler.view.render.comp
 
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.model.Quad
@@ -11,7 +11,7 @@ import com.cout970.modeler.selection.subselection.SubSelectionEdge
 import com.cout970.modeler.selection.subselection.SubSelectionFace
 import com.cout970.modeler.selection.subselection.SubSelectionVertex
 import com.cout970.modeler.util.RenderUtil
-import com.cout970.modeler.view.scene.render.RenderContext
+import com.cout970.modeler.view.render.RenderContext
 import org.lwjgl.opengl.GL11
 
 /**

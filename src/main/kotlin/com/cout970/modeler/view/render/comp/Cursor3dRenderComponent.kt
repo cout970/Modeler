@@ -1,4 +1,4 @@
-package com.cout970.modeler.view.scene.render.comp
+package com.cout970.modeler.view.render.comp
 
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.selection.VertexPosSelection
@@ -7,7 +7,7 @@ import com.cout970.modeler.util.Cursor
 import com.cout970.modeler.util.RenderUtil
 import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.modeler.view.controller.TransformationMode
-import com.cout970.modeler.view.scene.render.RenderContext
+import com.cout970.modeler.view.render.RenderContext
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
 import org.lwjgl.opengl.GL11
