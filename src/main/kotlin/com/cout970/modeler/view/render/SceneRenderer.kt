@@ -1,7 +1,5 @@
-package com.cout970.modeler.view.scene
+package com.cout970.modeler.view.render
 
-import com.cout970.modeler.view.render.ShaderHandler
-import com.cout970.modeler.view.render.ShaderType
 import com.cout970.modeler.view.render.comp.IRenderableComponent
 
 /**

@@ -1,4 +1,4 @@
-package com.cout970.modeler.view.gui
+package com.cout970.modeler.view.render
 
 import com.cout970.modeler.event.CustomCallbackKeeper
 import org.liquidengine.legui.component.Frame

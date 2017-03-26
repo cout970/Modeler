@@ -1,7 +1,6 @@
-package com.cout970.modeler.view.gui
+package com.cout970.modeler.resource
 
 import com.cout970.modeler.model.Model
-import com.cout970.modeler.resource.ResourceLoader
 import org.joml.Vector2f
 import org.liquidengine.legui.component.ImageView
 

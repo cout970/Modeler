@@ -7,7 +7,6 @@ import com.cout970.modeler.config.Config
 import com.cout970.modeler.resource.ResourceLoader
 import com.cout970.modeler.util.ITickeable
 import com.cout970.modeler.view.UIManager
-import com.cout970.modeler.view.gui.GuiRenderer
 import com.cout970.modeler.view.scene.Scene2d
 import com.cout970.modeler.view.scene.Scene3d
 import com.cout970.vector.extensions.xf

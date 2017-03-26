@@ -53,11 +53,6 @@ class ModelEditor(val projectManager: ProjectManager) : ITickeable, IModelProvid
         actionQueue.add(function)
     }
 
-    override fun preTick() {
-        super.preTick()
-
-    }
-
     override fun tick() = Unit
 
     override fun postTick() {

@@ -10,8 +10,8 @@ import com.cout970.modeler.log.print
 import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.project.ProjectManager
 import com.cout970.modeler.resource.ResourceLoader
+import com.cout970.modeler.resource.TextureHandler
 import com.cout970.modeler.view.UIManager
-import com.cout970.modeler.view.gui.TextureHandler
 import com.cout970.modeler.view.render.RenderManager
 import com.cout970.modeler.window.Loop
 import com.cout970.modeler.window.WindowHandler

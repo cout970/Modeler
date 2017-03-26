@@ -4,6 +4,7 @@ import com.cout970.modeler.config.Config
 import com.cout970.modeler.util.toColor
 import org.liquidengine.legui.component.ImageView
 import org.liquidengine.legui.component.ToggleButton
+import org.liquidengine.legui.util.ColorConstants
 
 /**
  * Created by cout970 on 2017/01/24.
@@ -22,5 +23,7 @@ class CToggleButton(posX: Number, posY: Number, sizeX: Number, sizeY: Number)
         focusedBbackgroundImage = img
         hoveredBackgroundImage = img
         pressedBackgroundImage = img
+        backgroundColor = ColorConstants.transparent()
+        border.isEnabled = false
     }
 }

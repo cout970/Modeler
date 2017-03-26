@@ -2,12 +2,13 @@ package com.cout970.modeler.view
 
 import com.cout970.modeler.event.EventHandler
 import com.cout970.modeler.project.ProjectManager
+import com.cout970.modeler.resource.TextureHandler
 import com.cout970.modeler.util.ITickeable
 import com.cout970.modeler.view.controller.ButtonController
 import com.cout970.modeler.view.controller.ModuleController
 import com.cout970.modeler.view.controller.SceneController
+import com.cout970.modeler.view.controller.selection.SceneSelector
 import com.cout970.modeler.view.gui.Root
-import com.cout970.modeler.view.gui.TextureHandler
 import com.cout970.modeler.view.render.RenderManager
 import com.cout970.modeler.view.scene.Scene2d
 import com.cout970.modeler.view.scene.Scene3d
@@ -18,12 +19,13 @@ import com.cout970.modeler.window.WindowHandler
  */
 class UIManager(
         val windowHandler: WindowHandler,
-        private val eventHandler: EventHandler,
+        eventHandler: EventHandler,
         renderManager: RenderManager,
         private val textureHandler: TextureHandler,
         private val projectManager: ProjectManager) : ITickeable {
 
     val sceneController: SceneController
+    val selector: SceneSelector
     val moduleController: ModuleController
     val buttonController: ButtonController
 
@@ -34,6 +36,7 @@ class UIManager(
         buttonController = ButtonController(projectManager, this)
         rootFrame = Root(eventHandler, windowHandler, buttonController, textureHandler)
         sceneController = SceneController(projectManager.modelEditor, eventHandler, rootFrame, windowHandler.timer)
+        selector = SceneSelector(sceneController, projectManager.modelEditor)
         moduleController = ModuleController(projectManager.modelEditor, rootFrame, buttonController, eventHandler,
                 textureHandler)
         showScenes(0)
@@ -72,11 +75,15 @@ class UIManager(
     override fun preTick() {
         super.preTick()
         textureHandler.updateMaterials(projectManager.modelEditor.model)
+
     }
 
     override fun tick() {
         windowHandler.resetViewport()
         moduleController.tick()
         sceneController.tick()
+        sceneController.scenes.forEach { scene ->
+            selector.update(scene)
+        }
     }
 }

@@ -1,8 +1,7 @@
 package com.cout970.modeler.view.render.comp
 
 import com.cout970.modeler.config.Config
-import com.cout970.modeler.selection.VertexPosSelection
-import com.cout970.modeler.selection.vertexPosSelection
+import com.cout970.modeler.selection.*
 import com.cout970.modeler.util.Cursor
 import com.cout970.modeler.util.RenderUtil
 import com.cout970.modeler.view.controller.SelectionAxis
@@ -19,35 +18,40 @@ import org.lwjgl.opengl.GL11
 class Cursor3dRenderComponent : IRenderableComponent {
 
     override fun render(ctx: RenderContext) {
-
         ctx.apply {
-            val cursor = scene.cursor
-            val selection = selectionManager.vertexPosSelection
-
-            if (selection != VertexPosSelection.EMPTY) {
-
-                when (cursor.type) {
-                    TransformationMode.TRANSLATION -> {
-                        if (Config.enableHelperGrid && scene.perspective &&
-                            sceneController.selectedModelAxis != SelectionAxis.NONE) {
-
-                            drawHelperGrids(ctx, cursor, sceneController.selectedModelAxis)
-                        }
-                        renderTranslation(ctx, cursor)
-                    }
-                    TransformationMode.ROTATION -> {
-                        renderRotation(ctx, cursor)
-                    }
-                    TransformationMode.SCALE -> {
-
-                        if (Config.enableHelperGrid && scene.perspective &&
-                            sceneController.selectedModelAxis != SelectionAxis.NONE) {
-
-                            drawHelperGrids(ctx, cursor, sceneController.selectedModelAxis)
-                        }
-                        renderTranslation(ctx, cursor)
-                    }
+            val axis = scene.selectorCache.selectedObject as? SelectionAxis ?: SelectionAxis.NONE
+            if (selectionManager.selectionMode == SelectionMode.EDIT) {
+                val selection = selectionManager.vertexPosSelection
+                if (selection != VertexPosSelection.EMPTY) {
+                    drawCursor(scene.cursor, axis)
                 }
+            } else {
+                val selection = selectionManager.elementSelection
+                if (selection != ElementSelection.EMPTY) {
+                    drawCursor(scene.cursor, axis)
+                }
+            }
+        }
+    }
+
+    fun RenderContext.drawCursor(cursor: Cursor, axis: SelectionAxis) {
+        when (cursor.type) {
+            TransformationMode.TRANSLATION -> {
+
+                if (Config.enableHelperGrid && scene.perspective && axis != SelectionAxis.NONE) {
+                    drawHelperGrids(this, cursor, axis)
+                }
+                renderTranslation(this, cursor)
+            }
+            TransformationMode.ROTATION -> {
+                renderRotation(this, cursor)
+            }
+            TransformationMode.SCALE -> {
+
+                if (Config.enableHelperGrid && scene.perspective && axis != SelectionAxis.NONE) {
+                    drawHelperGrids(this, cursor, axis)
+                }
+                renderTranslation(this, cursor)
             }
         }
     }
@@ -64,8 +68,8 @@ class Cursor3dRenderComponent : IRenderableComponent {
 
                 for (axis in SelectionAxis.selectedValues) {
 
-                    val selected = ctx.sceneController.selectedModelAxis == axis ||
-                                   ctx.sceneController.hoveredModelAxis == axis
+                    val selected = ctx.scene.selectorCache.selectedObject == axis ||
+                                   ctx.scene.selectorCache.hoveredObject == axis
 
                     RenderUtil.renderBar(
                             tessellator = this,
@@ -90,9 +94,9 @@ class Cursor3dRenderComponent : IRenderableComponent {
             draw(GL11.GL_QUADS, shaderHandler.formatPC) {
 
                 //if one of the axis is selected
-                if (sceneController.selectedModelAxis != SelectionAxis.NONE) {
+                if (scene.selectorCache.selectedObject != null) {
 
-                    val axis = sceneController.selectedModelAxis
+                    val axis = scene.selectorCache.selectedObject as? SelectionAxis ?: SelectionAxis.NONE
 
                     RenderUtil.renderCircle(t = this,
                             center = cursor.center,
@@ -118,8 +122,8 @@ class Cursor3dRenderComponent : IRenderableComponent {
                     for (axis in SelectionAxis.selectedValues) {
 
                         val edgePoint = cursor.center + axis.direction * radius
-                        val selected = sceneController.selectedModelAxis == axis ||
-                                       sceneController.hoveredModelAxis == axis
+                        val selected = scene.selectorCache.selectedObject == axis ||
+                                       scene.selectorCache.hoveredObject == axis
 
                         RenderUtil.renderBar(tessellator = this,
                                 startPoint = edgePoint - axis.rotationDirection * cursor.parameters.maxSizeOfSelectionBox / 2,

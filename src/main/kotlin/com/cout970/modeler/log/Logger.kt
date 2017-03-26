@@ -11,7 +11,7 @@ import java.util.*
 
 object Logger {
 
-    val DEBUG = false
+    val DEBUG = true
     var level = Config.logLevel
     val logs = File("logs").apply { if (!DEBUG && !exists()) mkdir() }
     val stream = (if (DEBUG) System.out else object : PrintStream(File(logs, getFileName())) {
@@ -51,7 +51,8 @@ object Logger {
     }
 }
 
-enum class Level(val priority: Int) { DEBUG(10000), CRITICAL(1000), ERROR(500), NORMAL(250), FINE(100), FINEST(50) }
+enum class Level(
+        val priority: Int) { DEBUG(10000), CRITICAL(1000), ERROR(500), NORMAL(250), FINE(100), FINEST(50), LOG_CLASSES(25) }
 
 
 inline fun log(level: Level, func: () -> String) {
@@ -64,7 +65,12 @@ inline fun log(level: Level, func: () -> String) {
         val minute = time[Calendar.MINUTE]
         val second = time[Calendar.SECOND]
 
-        Logger.stream.println("[$year-${month + 1}-$day][$hour:$minute:$second] " + func())
+        var extras = ""
+        if (Logger.level == Level.LOG_CLASSES) {
+            val clazz = Thread.currentThread().stackTrace[1].className
+            extras = "[$clazz]"
+        }
+        Logger.stream.println("[$year-${month + 1}-$day][$hour:$minute:$second]$extras " + func())
         Logger.stream.flush()
     }
 }

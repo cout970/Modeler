@@ -1,4 +1,4 @@
-package com.cout970.modeler.view.gui
+package com.cout970.modeler.config
 
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.div
@@ -30,7 +30,7 @@ data class ColorPalette(
                 primaryColor = hexToColor(0x545454),
                 lightColor = hexToColor(0x474747),
                 buttonColor = hexToColor(0x8b8b8b),
-                selectedButton = hexToColor(0xffffff),
+                selectedButton = hexToColor(0x707070),
                 textColor = hexToColor(0xffffff),
                 modelBackgroundColor = hexToColor(0x252525),
                 textureSelectionColor = hexToColor(0x0000ff),

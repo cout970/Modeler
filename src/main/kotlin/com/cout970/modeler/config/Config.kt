@@ -2,7 +2,6 @@ package com.cout970.modeler.config
 
 import com.cout970.modeler.log.Level
 import com.cout970.modeler.project.Author
-import com.cout970.modeler.view.gui.ColorPalette
 
 /**
  * Created by cout970 on 2016/12/27.

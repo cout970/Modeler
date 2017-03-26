@@ -66,9 +66,9 @@ class GridsRenderComponent : IRenderableComponent {
                     set(0, x, 160, dist).setVec(1, color).endVertex()
                 }
 
-                val selX = sceneController.selectedModelAxis == SelectionAxis.X
-                val selY = sceneController.selectedModelAxis == SelectionAxis.Y
-                val selZ = sceneController.selectedModelAxis == SelectionAxis.Z
+                val selX = scene.selectorCache.selectedObject == SelectionAxis.X
+                val selY = scene.selectorCache.selectedObject == SelectionAxis.Y
+                val selZ = scene.selectorCache.selectedObject == SelectionAxis.Z
 
                 if (!selX && !selY && !selZ || !perspective ||
                     sceneController.transformationMode != TransformationMode.TRANSLATION) {

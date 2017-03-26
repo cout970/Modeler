@@ -6,7 +6,6 @@ import com.cout970.modeler.util.absolutePosition
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.view.render.comp.*
 import com.cout970.modeler.view.scene.Scene3d
-import com.cout970.modeler.view.scene.SceneRenderer
 import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.vec3Of

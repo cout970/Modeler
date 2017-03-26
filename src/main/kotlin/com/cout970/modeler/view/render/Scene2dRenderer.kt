@@ -7,7 +7,6 @@ import com.cout970.modeler.view.render.comp.TextureRenderComponent
 import com.cout970.modeler.view.render.comp.UVOutlineRenderComponent
 import com.cout970.modeler.view.render.comp.UVSelectionRenderComponent
 import com.cout970.modeler.view.scene.Scene2d
-import com.cout970.modeler.view.scene.SceneRenderer
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.yf
 

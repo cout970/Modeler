@@ -22,9 +22,24 @@ class SelectionManager(val modelEditor: ModelEditor) {
 
     var selectionState = SelectionState(ElementSelection.EMPTY, VertexPosSelection.EMPTY, VertexTexSelection.EMPTY)
 
-
     var vertexPosTarget: SelectionTarget = SelectionTarget.QUAD
     var vertexTexTarget: SelectionTarget = SelectionTarget.QUAD
+
+    fun getSelectionCenter(model: Model): IVector3 {
+        return if (selectionMode == SelectionMode.EDIT) {
+            vertexPosSelection.center3D(model)
+        } else {
+            elementSelection.getSelectedVertexPos(model).center3D(model)
+        }
+    }
+
+    fun hasNoSelection(): Boolean {
+        return if (selectionMode == SelectionMode.EDIT) {
+            vertexPosSelection == VertexPosSelection.EMPTY
+        } else {
+            elementSelection == ElementSelection.EMPTY
+        }
+    }
 
     fun clearSelection() {
         changeSelection(ElementSelection.EMPTY, VertexPosSelection.EMPTY, VertexTexSelection.EMPTY)
@@ -170,5 +185,13 @@ class SelectionManager(val modelEditor: ModelEditor) {
 
     fun getMouseHit(ray: Ray, model: Model = modelEditor.model): RayTraceResult? {
         return raytraceElements(ray, model)?.first
+    }
+
+    fun getSelectedVertexPos(model: Model): VertexPosSelection {
+        if (selectionMode == SelectionMode.EDIT) {
+            return vertexPosSelection
+        } else {
+            return elementSelection.getSelectedVertexPos(model)
+        }
     }
 }

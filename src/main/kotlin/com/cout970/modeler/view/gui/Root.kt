@@ -2,6 +2,7 @@ package com.cout970.modeler.view.gui
 
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.event.IInput
+import com.cout970.modeler.resource.TextureHandler
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.controller.ButtonController
 import com.cout970.modeler.view.gui.comp.CButton
@@ -54,6 +55,8 @@ class Root(
         addComponent(rightBar)
         addComponent(centerPanel)
         addComponent(dropdown)
+
+        leftBar.isEnabled = false
 
         centerPanel.addComponent(topCenterPanel)
         centerPanel.addComponent(bottomCenterPanel)
@@ -135,11 +138,15 @@ class Root(
     fun update() {
         size = windowHandler.window.getFrameBufferSize().toJoml2f()
         // Size
-        topBar.size = Vector2f(size.x, 20f)
-        bottomBar.size = Vector2f(size.x, 20f)
+        topBar.apply { size = Vector2f(parent.size.x, if (isEnabled) 20f else 0f) }
+        bottomBar.apply { size = Vector2f(parent.size.x, if (isEnabled) 20f else 0f) }
 
-        leftBar.size = Vector2f(if (leftBar.isEnabled) 120f else 0f, size.y - topBar.size.y - bottomBar.size.y)
-        rightBar.size = Vector2f(if (rightBar.isEnabled) 190f else 0f, size.y - topBar.size.y - bottomBar.size.y)
+        leftBar.apply {
+            size = Vector2f(if (isEnabled) 120f else 0f, parent.size.y - topBar.size.y - bottomBar.size.y)
+        }
+        rightBar.apply {
+            size = Vector2f(if (rightBar.isEnabled) 190f else 0f, parent.size.y - topBar.size.y - bottomBar.size.y)
+        }
 
         centerPanel.size = Vector2f(size.x - leftBar.size.x - rightBar.size.x,
                 size.y - topBar.size.y - bottomBar.size.y)

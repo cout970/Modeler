@@ -30,19 +30,15 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
     lateinit var selectedScene: Scene
     val scenes = mutableListOf<Scene>()
 
-    var cursorCenter: IVector3 = vec3Of(0)
-    var tmpModel: Model? = null
+    val cursorCenter: IVector3 get() {
+        return modelProvider.selectionManager.getSelectionCenter(
+                selectedScene.selectorCache.model ?: modelProvider.model)
+    }
 
     val modelCache = Cache<Int, VAO>(1).apply { onRemove = { _, v -> v.close() } }
     val selectionCache = Cache<Int, VAO>(2).apply { onRemove = { _, v -> v.close() } }
 
     var transformationMode = TransformationMode.TRANSLATION
-
-    var selectedModelAxis = SelectionAxis.NONE
-    var hoveredModelAxis = SelectionAxis.NONE
-
-    var selectedTextureAxis = SelectionAxis.NONE
-    var hoveredTextureAxis = SelectionAxis.NONE
 
     val showAllMeshUVs = BooleanProperty(true)
     val showBoundingBoxes = BooleanProperty(false)
@@ -75,23 +71,20 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
                 a = a.normalize() * (diff.xd * Config.mouseTranslateSpeedX * speed * Math.sqrt(camera.zoom))
                 b = b.normalize() * (-diff.yd * Config.mouseTranslateSpeedY * speed * Math.sqrt(camera.zoom))
 
-                selectedScene.camera = selectedScene.camera.run { copy(position = position + a + b) }
+                selectedScene.cameraHandler.translate(a + b)
             } else if (rotate) {
                 selectedScene.apply {
                     val diff = input.mouse.getMousePosDiff()
-                    camera = camera.run {
-                        copy(angleY = angleY + diff.xd * Config.mouseRotationSpeedX * speed)
-                    }
-                    camera = camera.run {
-                        copy(angleX = angleX + diff.yd * Config.mouseRotationSpeedY * speed)
-                    }
+                    cameraHandler.rotate(
+                            diff.yd * Config.mouseRotationSpeedY * speed,
+                            diff.xd * Config.mouseRotationSpeedX * speed
+                    )
                 }
             }
         }
     }
 
     fun registerListeners(eventHandler: IEventController) {
-
         eventHandler.addListener(EventMouseScroll::class.java, object : IEventListener<EventMouseScroll> {
             override fun onEvent(e: EventMouseScroll): Boolean {
                 val mousePos = input.mouse.getMousePos()
@@ -100,7 +93,7 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
                         scene.run {
                             val scroll = -e.offsetY * Config.cameraScrollSpeed
                             if (camera.zoom > 0.5 || scroll > 0) {
-                                desiredZoom = camera.zoom + scroll * (camera.zoom / 60f)
+                                cameraHandler.makeZoom(camera.zoom + scroll * (camera.zoom / 60f))
                             }
                         }
                     }
@@ -108,7 +101,9 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
                 return true
             }
         })
+
         eventHandler.addListener(EventMouseClick::class.java, object : IEventListener<EventMouseClick> {
+            var lastJumpClickTime = 0L
             override fun onEvent(e: EventMouseClick): Boolean {
                 val mousePos = input.mouse.getMousePos()
                 scenes.forEach {
@@ -116,8 +111,38 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
                         selectedScene = it
                     }
                 }
-                scenes.any {
-                    it.onEvent(e)
+                scenes.any { scene ->
+                    if (e.keyState != EnumKeyState.PRESS) return@any false
+
+                    if (Config.keyBindings.selectModel.check(e)) {
+                        if (mousePos.isInside(scene.absolutePosition, scene.size.toIVector())) {
+                            if (scene.selectorCache.hoveredObject == null &&
+                                scene.selectorCache.selectedObject == null) {
+
+                                modelProvider.selectionManager.selectPos(
+                                        scene.selectorCache.currentContext!!.mouseRay,
+                                        scene.camera.zoom.toFloat(),
+                                        Config.keyBindings.multipleSelection.check(input)
+                                )
+                                return@any true
+                            }
+                        }
+                    }
+                    if (Config.keyBindings.jumpCameraToCursor.check(e)) {
+                        if (mousePos.isInside(scene.absolutePosition, scene.size.toIVector())) {
+                            if (System.currentTimeMillis() - lastJumpClickTime < 500) {
+                                val ray = scene.selectorCache.currentContext!!.mouseRay
+                                val hit = modelProvider.selectionManager.getMouseHit(ray)
+
+                                if (hit != null) {
+                                    scene.cameraHandler.moveTo(-hit.hit)
+                                    return@any true
+                                }
+                            }
+                            lastJumpClickTime = System.currentTimeMillis()
+                        }
+                    }
+                    return@any false
                 }
                 return false
             }
@@ -125,27 +150,25 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
         var lastOption = 0
         eventHandler.addListener(EventKeyUpdate::class.java, object : IEventListener<EventKeyUpdate> {
             override fun onEvent(e: EventKeyUpdate): Boolean {
-                if (e.keyState == EnumKeyState.PRESS) {
-                    if (Config.keyBindings.switchCameraAxis.check(e) && selectedScene is Scene3d) {
-                        when (lastOption) {
-                            0 -> selectedScene.camera = selectedScene.camera.copy(angleX = 0.0, angleY = 0.0)
-                            1 -> selectedScene.camera = selectedScene.camera.copy(angleX = 0.0, angleY = -90.toRads())
-                            2 -> selectedScene.camera = selectedScene.camera.copy(angleX = 90.toRads(), angleY = 0.0)
-                            3 -> selectedScene.camera = selectedScene.camera.copy(angleX = 45.toRads(),
-                                    angleY = -45.toRads())
-                        }
-                        lastOption++
-                        if (lastOption > 3) {
-                            lastOption = 0
-                        }
-                    } else if (Config.keyBindings.switchOrthoProjection.check(e)) {
-                        (selectedScene as? Scene3d)?.apply {
-                            perspective = !perspective
-                        }
-                    } else if (Config.keyBindings.moveCameraToCursor.check(e)) {
-                        selectedScene.apply {
-                            camera = camera.copy(position = -cursorCenter)
-                        }
+                if (e.keyState != EnumKeyState.PRESS) return false
+                if (Config.keyBindings.switchCameraAxis.check(e) && selectedScene is Scene3d) {
+                    when (lastOption) {
+                        0 -> selectedScene.cameraHandler.setRotation(angleX = 0.0, angleY = 0.0)
+                        1 -> selectedScene.cameraHandler.setRotation(angleX = 0.0, angleY = -90.toRads())
+                        2 -> selectedScene.cameraHandler.setRotation(angleX = 90.toRads(), angleY = 0.0)
+                        3 -> selectedScene.cameraHandler.setRotation(angleX = 45.toRads(), angleY = -45.toRads())
+                    }
+                    lastOption++
+                    if (lastOption > 3) {
+                        lastOption = 0
+                    }
+                } else if (Config.keyBindings.switchOrthoProjection.check(e)) {
+                    (selectedScene as? Scene3d)?.apply {
+                        perspective = !perspective
+                    }
+                } else if (Config.keyBindings.moveCameraToCursor.check(e)) {
+                    selectedScene.apply {
+                        cameraHandler.moveTo(-cursorCenter)
                     }
                 }
                 return false
@@ -154,8 +177,8 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
     }
 
     fun getModel(model: Model): Model {
-        if (tmpModel != null) {
-            return tmpModel!!
+        if (selectedScene.selectorCache.model != null) {
+            return selectedScene.selectorCache.model!!
         }
         return model
     }
