@@ -24,7 +24,6 @@ class Scene2d(modelEditor: ModelEditor, windowHandler: WindowHandler, controller
         cameraHandler.setRotation(angleX = 0.0, angleY = 0.0)
     }
 
-
     override fun getMatrixMVP(): IMatrix4 {
         return MatrixUtils.createOrthoMatrix(size.toIVector()) * camera.matrixForUV
     }

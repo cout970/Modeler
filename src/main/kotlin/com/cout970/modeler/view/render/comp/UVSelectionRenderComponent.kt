@@ -6,6 +6,7 @@ import com.cout970.modeler.model.Edge
 import com.cout970.modeler.model.Quad
 import com.cout970.modeler.model.Vertex
 import com.cout970.modeler.model.material.MaterialNone
+import com.cout970.modeler.model.util.getElement
 import com.cout970.modeler.selection.VertexPosSelection
 import com.cout970.modeler.selection.VertexTexSelection
 import com.cout970.modeler.selection.subselection.SubSelectionEdge
@@ -67,12 +68,23 @@ class UVSelectionRenderComponent : IRenderableComponent {
             GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE)
             GL11.glLineWidth(2f)
 
-            draw(GL11.GL_QUADS, shaderHandler.formatPCT) {
-                val handler = modelSelection.subPathHandler
-                when (handler) {
-                    is SubSelectionFace -> handler.paths.forEach { renderer.renderQuad(it.toQuad(model)) }
-                    is SubSelectionEdge -> handler.paths.forEach { renderer.renderEdge(it.toEdge(model)) }
-                    is SubSelectionVertex -> handler.paths.forEach { renderer.renderVertex(it.toVertex(model)) }
+            if (showAllMeshUVs) {
+                draw(GL11.GL_QUADS, shaderHandler.formatPCT) {
+                    modelSelection.pathList
+                            .map { it.elementPath }
+                            .distinct()
+                            .map { model.getElement(it) }
+                            .flatMap { it.getQuads() }
+                            .forEach { renderer.renderQuad(it) }
+                }
+            } else {
+                draw(GL11.GL_QUADS, shaderHandler.formatPCT) {
+                    val handler = modelSelection.subPathHandler
+                    when (handler) {
+                        is SubSelectionFace -> handler.paths.forEach { renderer.renderQuad(it.toQuad(model)) }
+                        is SubSelectionEdge -> handler.paths.forEach { renderer.renderEdge(it.toEdge(model)) }
+                        is SubSelectionVertex -> handler.paths.forEach { renderer.renderVertex(it.toVertex(model)) }
+                    }
                 }
             }
 

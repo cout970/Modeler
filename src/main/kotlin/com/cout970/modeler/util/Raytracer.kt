@@ -60,6 +60,7 @@ object Raytracer {
 
         model.getLeafPaths().forEach { path ->
             val obj = model.getElement(path) as IElementLeaf
+            val vertices = obj.getVertices()
 
             obj.faces.forEachIndexed { _, quadIndex ->
                 quadIndex.edges.forEach { edgeIndex ->
@@ -71,7 +72,7 @@ object Raytracer {
                     val end = max + vec3Of(0.125) * vertexSize
 
                     RayTraceUtil.rayTraceBox3(start, end, ray, FakeRayObstacle)?.let {
-                        hits += it to EdgePath(path, edgeIndex.a.first, edgeIndex.b.first)
+                        hits += it to EdgePath(path, vertices.indexOf(edge.a), vertices.indexOf(edge.b))
                     }
                 }
             }

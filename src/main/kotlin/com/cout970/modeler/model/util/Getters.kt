@@ -48,7 +48,7 @@ fun Model.getVertexPos(path: VertexPath): IVector3 {
     if (element !is IElementLeaf)
         throw IllegalArgumentException("Invalid path: $path, $element is not a ElementObject")
 
-    return element.positions[path.vertexIndex]
+    return element.getVertices()[path.vertexIndex].pos
 }
 
 fun Model.getVertexTex(path: VertexPath): IVector2 {
@@ -57,7 +57,7 @@ fun Model.getVertexTex(path: VertexPath): IVector2 {
     if (element !is IElementLeaf)
         throw IllegalArgumentException("Invalid path: $path, $element is not a ElementObject")
 
-    return element.textures[path.vertexIndex]
+    return element.getVertices()[path.vertexIndex].tex
 }
 
 fun Model.getLeafElements(): List<IElementLeaf> {
