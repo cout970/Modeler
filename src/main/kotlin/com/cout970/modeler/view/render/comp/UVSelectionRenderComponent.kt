@@ -2,9 +2,10 @@ package com.cout970.modeler.view.render.comp
 
 import com.cout970.glutilities.structure.GLStateMachine
 import com.cout970.modeler.config.Config
-import com.cout970.modeler.model.Edge
+import com.cout970.modeler.model.Model
 import com.cout970.modeler.model.Quad
 import com.cout970.modeler.model.Vertex
+import com.cout970.modeler.model.api.IElementLeaf
 import com.cout970.modeler.model.material.MaterialNone
 import com.cout970.modeler.model.util.getElement
 import com.cout970.modeler.selection.VertexPosSelection
@@ -54,7 +55,7 @@ class UVSelectionRenderComponent : IRenderableComponent {
                     val handler = textureSelection.subPathHandler
                     when (handler) {
                         is SubSelectionFace -> handler.paths.forEach { renderer.renderQuad(it.toQuad(model)) }
-                        is SubSelectionEdge -> handler.paths.forEach { renderer.renderEdge(it.toEdge(model)) }
+                        is SubSelectionEdge -> renderer.renderSelectedEdges(model, handler)
                         is SubSelectionVertex -> handler.paths.forEach { renderer.renderVertex(it.toVertex(model)) }
                     }
                 }
@@ -82,7 +83,7 @@ class UVSelectionRenderComponent : IRenderableComponent {
                     val handler = modelSelection.subPathHandler
                     when (handler) {
                         is SubSelectionFace -> handler.paths.forEach { renderer.renderQuad(it.toQuad(model)) }
-                        is SubSelectionEdge -> handler.paths.forEach { renderer.renderEdge(it.toEdge(model)) }
+                        is SubSelectionEdge -> renderer.renderSelectedEdges(model, handler)
                         is SubSelectionVertex -> handler.paths.forEach { renderer.renderVertex(it.toVertex(model)) }
                     }
                 }
@@ -100,6 +101,27 @@ class UVSelectionRenderComponent : IRenderableComponent {
             val ctx: RenderContext
     ) {
 
+        fun renderSelectedEdges(model: Model, sel: SubSelectionEdge) {
+            sel.paths
+                    .groupBy { it.elementPath }
+                    .map { model.getElement(it.key) as IElementLeaf to it.value }
+                    .forEach { (elem, list) ->
+
+                        val pos = list.flatMap {
+                            listOf(elem.positions[it.firstIndex], elem.positions[it.secondIndex])
+                        }
+
+                        elem.getQuads().forEach {
+                            it.toEdges().forEach {
+                                if (it.a.pos in pos && it.b.pos in pos) {
+                                    renderEdge(it.a.tex to it.b.tex)
+                                }
+                            }
+                        }
+                    }
+        }
+
+
         fun renderQuad(quad: Quad) {
             ctx.apply {
                 quad.vertex
@@ -109,14 +131,14 @@ class UVSelectionRenderComponent : IRenderableComponent {
             }
         }
 
-        fun renderEdge(edge: Edge) {
+        fun renderEdge(edge: Pair<IVector2, IVector2>) {
             ctx.apply {
-                edge.vertex
-                        .map { it.copy(tex = vec2Of(it.tex.x, 1 - it.tex.yd)) }
-                        .map { (it.tex * size) - offset }
+                edge.toList()
+                        .map { vec2Of(it.x, 1 - it.yd) }
+                        .map { (it * size) - offset }
                         .also {
                             RenderUtil.renderBar(it[0].toVector3(0), it[1].toVector3(0), 0.5) {
-                                tessellator.set(0, it.x, it.yd, it.zd).setVec(1, color).set(2, 0.0, 0.0).endVertex()
+                                tessellator.set(0, it.xd, it.yd, it.zd).setVec(1, color).set(2, 0.0, 0.0).endVertex()
                             }
                         }
             }
@@ -128,7 +150,7 @@ class UVSelectionRenderComponent : IRenderableComponent {
                         .map { it.copy(tex = vec2Of(it.tex.x, 1 - it.tex.yd)) }
                         .map { (it.tex * size) - offset }
                         .forEach {
-                            val pos = vec3Of(it.x, it.yd, 0)
+                            val pos = vec3Of(it.xd, it.yd, 0)
                             RenderUtil.renderBar(pos, pos, 0.5) {
                                 tessellator.set(0, it.x, it.yd, it.zd).setVec(1, color).set(2, 0.0, 0.0).endVertex()
                             }

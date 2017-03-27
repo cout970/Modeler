@@ -47,14 +47,14 @@ class McxExporter {
             for (mesh in elements.castTo<IElementLeaf>()) {
                 localIndices += mesh.faces.map { (a, b, c, d) ->
                     QuadStorage.QuadIndices(
-                            pos.indexOf(mesh.positions[a.first]),
-                            pos.indexOf(mesh.positions[b.first]),
-                            pos.indexOf(mesh.positions[c.first]),
-                            pos.indexOf(mesh.positions[d.first]),
-                            tex.indexOf(mesh.textures[a.second]),
-                            tex.indexOf(mesh.textures[b.second]),
-                            tex.indexOf(mesh.textures[c.second]),
-                            tex.indexOf(mesh.textures[d.second])
+                            pos.indexOf(mesh.positions[a.pos]),
+                            pos.indexOf(mesh.positions[b.pos]),
+                            pos.indexOf(mesh.positions[c.pos]),
+                            pos.indexOf(mesh.positions[d.pos]),
+                            tex.indexOf(mesh.textures[a.tex]),
+                            tex.indexOf(mesh.textures[b.tex]),
+                            tex.indexOf(mesh.textures[c.tex]),
+                            tex.indexOf(mesh.textures[d.tex])
                     )
                 }
             }

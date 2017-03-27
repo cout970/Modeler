@@ -1,6 +1,7 @@
 package com.cout970.modeler.model
 
 import com.cout970.modeler.model.api.QuadIndex
+import com.cout970.modeler.model.api.VertexIndex
 import com.cout970.modeler.modeleditor.setUVFromCuboid
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -17,7 +18,7 @@ object Meshes {
                     it * vec3Of(size.x, 1, size.y)
                 },
                 listOf(vec2Of(0, 0), vec2Of(1, 0), vec2Of(1, 1), vec2Of(0, 1)),
-                listOf(QuadIndex(0 to 0, 1 to 1, 2 to 2, 3 to 3)))
+                listOf(QuadIndex(VertexIndex(0, 0), VertexIndex(1, 1), VertexIndex(2, 2), VertexIndex(3, 3))))
     }
 
     fun quadsToMesh(quads: List<Quad>): ElementLeaf {
@@ -26,10 +27,10 @@ object Meshes {
 
         val quadIndex = quads.map { (a, b, c, d) ->
             QuadIndex(
-                    positions.indexOf(a.pos) to textures.indexOf(a.tex),
-                    positions.indexOf(b.pos) to textures.indexOf(b.tex),
-                    positions.indexOf(c.pos) to textures.indexOf(c.tex),
-                    positions.indexOf(d.pos) to textures.indexOf(d.tex)
+                    VertexIndex(positions.indexOf(a.pos), textures.indexOf(a.tex)),
+                    VertexIndex(positions.indexOf(b.pos), textures.indexOf(b.tex)),
+                    VertexIndex(positions.indexOf(c.pos), textures.indexOf(c.tex)),
+                    VertexIndex(positions.indexOf(d.pos), textures.indexOf(d.tex))
             )
         }
 

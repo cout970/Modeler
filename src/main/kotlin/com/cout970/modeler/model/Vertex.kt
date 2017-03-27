@@ -3,6 +3,7 @@ package com.cout970.modeler.model
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.times
 import com.cout970.modeler.model.api.IVertexCompound
+import com.cout970.modeler.model.api.VertexIndex
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.toVector4
@@ -28,5 +29,5 @@ data class Vertex(
         return Vertex(pos, func(tex))
     }
 
-    fun toIndex(pos: List<IVector3>, tex: List<IVector2>) = pos.indexOf(this.pos) to tex.indexOf(this.tex)
+    fun toIndex(pos: List<IVector3>, tex: List<IVector2>) = VertexIndex(pos.indexOf(this.pos), tex.indexOf(this.tex))
 }
