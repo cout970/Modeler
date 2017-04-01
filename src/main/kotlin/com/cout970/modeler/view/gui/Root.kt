@@ -47,6 +47,7 @@ class Root(
     val dropdown = CPanel(0f, 20f, 150f, 80f)
 
     val searchBar = TextInput("")
+    val searchPanel = CPanel()
 
     init {
         addComponent(topBar)
@@ -57,6 +58,9 @@ class Root(
         addComponent(dropdown)
 
         leftBar.isEnabled = false
+        rightBar.isEnabled = false
+        topBar.isEnabled = false
+        bottomBar.isEnabled = false
 
         centerPanel.addComponent(topCenterPanel)
         centerPanel.addComponent(bottomCenterPanel)
@@ -137,6 +141,9 @@ class Root(
 
     fun update() {
         size = windowHandler.window.getFrameBufferSize().toJoml2f()
+
+        topBar.isEnabled = Config.keyBindings.showTopMenu.check(input)
+
         // Size
         topBar.apply { size = Vector2f(parent.size.x, if (isEnabled) 20f else 0f) }
         bottomBar.apply { size = Vector2f(parent.size.x, if (isEnabled) 20f else 0f) }

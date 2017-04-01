@@ -30,4 +30,5 @@ class KeyBindings {
     var cut = KeyBind(Keyboard.KEY_X, CTRL)
     var copy = KeyBind(Keyboard.KEY_C, CTRL)
     var paste = KeyBind(Keyboard.KEY_V, CTRL)
+    var showTopMenu = KeyBind(Keyboard.KEY_LEFT_ALT)
 }
