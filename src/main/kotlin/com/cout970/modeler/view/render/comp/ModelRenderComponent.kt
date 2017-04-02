@@ -1,6 +1,8 @@
 package com.cout970.modeler.view.render.comp
 
 import com.cout970.modeler.model.material.MaterialNone
+import com.cout970.modeler.model.util.getElement
+import com.cout970.modeler.model.util.getLeafPaths
 import com.cout970.modeler.view.render.RenderContext
 import org.lwjgl.opengl.GL11
 
@@ -12,14 +14,22 @@ class ModelRenderComponent : IRenderableComponent {
     override fun render(ctx: RenderContext) {
         MaterialNone.bind()
         ctx.apply {
-            renderCache(sceneController.modelCache, model.hashCode()) {
-                tessellator.compile(GL11.GL_QUADS, shaderHandler.formatPTN) {
 
-                    model.getQuads().forEach { quad ->
-                        quad.tessellate(this)
+            model.getLeafPaths()
+                    .groupBy { model.resources.getMaterial(it) }
+                    .forEach { path ->
+                        path.key.bind()
+
+                        renderCache(sceneController.modelCache, model.hashCode()) {
+                            tessellator.compile(GL11.GL_QUADS, shaderHandler.formatPTN) {
+                                path.value
+                                        .flatMap { model.getElement(it).getQuads() }
+                                        .forEach { quad ->
+                                            quad.tessellate(this)
+                                        }
+                            }
+                        }
                     }
-                }
-            }
         }
     }
 }

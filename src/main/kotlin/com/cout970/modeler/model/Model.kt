@@ -14,7 +14,7 @@ data class Model(val elements: List<IElement>, val resources: ModelResources, va
     }
 
     //copies the model with a different modelId so the hashCode of the model is different
-    fun copy(elements: List<IElement> = this.elements): Model {
+    fun copy(elements: List<IElement> = this.elements, resources: ModelResources = this.resources): Model {
         return Model(elements, resources)
     }
 

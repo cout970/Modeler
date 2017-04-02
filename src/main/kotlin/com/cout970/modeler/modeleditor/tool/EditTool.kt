@@ -8,9 +8,10 @@ import com.cout970.modeler.model.api.QuadIndex
 import com.cout970.modeler.model.util.applyElementLeaves
 import com.cout970.modeler.model.util.applyVertexPos
 import com.cout970.modeler.model.util.getElement
-import com.cout970.modeler.selection.ElementPath
-import com.cout970.modeler.selection.ElementSelection
-import com.cout970.modeler.selection.VertexPosSelection
+import com.cout970.modeler.modeleditor.ModelEditor
+import com.cout970.modeler.modeleditor.action.ActionModifyModelShape
+import com.cout970.modeler.modeleditor.splitUV
+import com.cout970.modeler.selection.*
 import com.cout970.modeler.selection.subselection.SubSelectionFace
 import com.cout970.modeler.util.rotateAround
 import com.cout970.modeler.util.scale
@@ -125,6 +126,16 @@ class EditTool : IModelTranslate, IModelRotate, IModelScale {
         } else {
             val group = list[insertPath.indices[level]] as IElementGroup
             return insert(group.elements, elem, path, level + 1)
+        }
+    }
+
+    //
+    // SPLIT TEXTURE
+    //
+    fun splitTextures(editor: ModelEditor) {
+        if (editor.selectionManager.vertexTexSelection != VertexTexSelection.EMPTY) {
+            val newModel = editor.model.splitUV(editor.selectionManager.vertexTexSelection)
+            editor.historyRecord.doAction(ActionModifyModelShape(editor, newModel))
         }
     }
 }

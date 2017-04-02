@@ -7,6 +7,7 @@ import com.cout970.modeler.model.api.IElement
 import com.cout970.modeler.model.api.IElementGroup
 import com.cout970.modeler.model.api.IElementLeaf
 import com.cout970.modeler.selection.ElementPath
+import com.cout970.modeler.selection.ElementSelection
 import com.cout970.modeler.selection.VertexPath
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -90,3 +91,5 @@ fun IElementGroup.getLeafPaths(subPath: ElementPath = ElementPath(intArrayOf()))
     }
     return paths
 }
+
+fun Model.selectAllLeafs() = ElementSelection(getLeafPaths())

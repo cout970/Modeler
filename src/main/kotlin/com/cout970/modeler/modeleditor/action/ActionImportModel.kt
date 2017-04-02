@@ -20,9 +20,7 @@ class ActionImportModel(val modelEditor: ModelEditor,
         try {
             val newModel = function()
             modelEditor.selectionManager.clearSelection()
-            newModel.resources.materials.distinct().forEach {
-                it.loadTexture(resourceLoader)
-            }
+            newModel.resources.reloadResources(resourceLoader)
             modelEditor.updateModel(newModel)
         } catch(e: Exception) {
             e.print()

@@ -35,8 +35,8 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
                 selectedScene.selectorCache.model ?: modelProvider.model)
     }
 
-    val modelCache = Cache<Int, VAO>(1).apply { onRemove = { _, v -> v.close() } }
-    val selectionCache = Cache<Int, VAO>(2).apply { onRemove = { _, v -> v.close() } }
+    val modelCache = Cache<Int, VAO>(20).apply { onRemove = { _, v -> v.close() } }
+    val selectionCache = Cache<Int, VAO>(40).apply { onRemove = { _, v -> v.close() } }
 
     var transformationMode = TransformationMode.TRANSLATION
 

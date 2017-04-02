@@ -2,8 +2,14 @@ package com.cout970.modeler.view.popup
 
 import com.cout970.modeler.export.ExportFormat
 import com.cout970.modeler.log.print
+import com.cout970.modeler.model.material.IMaterial
+import com.cout970.modeler.model.material.MaterialNone
+import com.cout970.modeler.model.util.getLeafPaths
+import com.cout970.modeler.model.util.selectAllLeafs
 import com.cout970.modeler.project.Project
 import com.cout970.modeler.project.ProjectManager
+import com.cout970.modeler.selection.ElementPath
+import com.cout970.modeler.selection.ElementSelection
 import org.lwjgl.PointerBuffer
 import org.lwjgl.system.MemoryUtil
 import org.lwjgl.util.tinyfd.TinyFileDialogs
@@ -119,7 +125,8 @@ fun importTexture(projectManager: ProjectManager) {
     val file = TinyFileDialogs.tinyfd_openFileDialog("Import Texture", "",
             textureExtensions, "PNG texture (*.png)", false)
     if (file != null) {
-        projectManager.exportManager.importTexture(file)
+        val sel = projectManager.modelEditor.model.selectAllLeafs()
+        projectManager.exportManager.importTexture(file, sel)
     }
 }
 
@@ -127,7 +134,22 @@ fun exportTexture(projectManager: ProjectManager) {
     val file = TinyFileDialogs.tinyfd_saveFileDialog("Export Texture", "texture.png",
             textureExtensions, "PNG texture (*.png)")
     if (file != null) {
-        projectManager.exportManager.exportTexture(file)
+        val index = 0
+        val res = projectManager.modelEditor.model.resources
+        val mat: IMaterial
+        val paths: List<ElementPath>
+        if (res.materials.size > index) {
+            mat = res.materials[index]
+            paths = res.pathToMaterial
+                    .entries
+                    .filter { it.value == index }
+                    .map { it.key }
+                    .distinct()
+        } else {
+            mat = MaterialNone
+            paths = projectManager.modelEditor.model.getLeafPaths()
+        }
+        projectManager.exportManager.exportTexture(file, mat, ElementSelection(paths))
     }
 }
 

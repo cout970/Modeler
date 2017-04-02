@@ -82,7 +82,7 @@ class ButtonController(
 
             "menu.texture.import" -> importTexture(projectManager)
             "menu.texture.export" -> exportTexture(projectManager)
-            "menu.texture.split" -> modelEditor.texturizer.splitTextures()
+            "menu.texture.split" -> modelEditor.editTool.splitTextures(modelEditor)
 
             "menu.aabb.export" -> {
                 val aabb = projectManager.project.model.getLeafElements().map(IElementLeaf::toAABB)

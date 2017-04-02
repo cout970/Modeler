@@ -26,7 +26,6 @@ class ModelEditor(val projectManager: ProjectManager) : ITickeable, IModelProvid
     val historyLog = HistoryLog()
     val historyRecord = HistoricalRecord(historyLog, this)
     val editTool = EditTool()
-    val texturizer = ModelTexturizer(this)
 
     val clipboard: IClipboard get() = when (selectionManager.selectionMode) {
         SelectionMode.ELEMENT -> elementClipboard
