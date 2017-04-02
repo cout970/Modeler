@@ -13,7 +13,6 @@ import com.cout970.modeler.selection.VertexTexSelection
 import com.cout970.modeler.selection.subselection.SubSelectionEdge
 import com.cout970.modeler.selection.subselection.SubSelectionFace
 import com.cout970.modeler.selection.subselection.SubSelectionVertex
-import com.cout970.modeler.selection.vertexPosSelection
 import com.cout970.modeler.selection.vertexTexSelection
 import com.cout970.modeler.util.RenderUtil
 import com.cout970.modeler.view.render.RenderContext
@@ -31,8 +30,8 @@ class UVSelectionRenderComponent : IRenderableComponent {
         ctx.apply {
             GLStateMachine.depthTest.disable()
 
-            val modelSelection = scene.modelProvider.selectionManager.vertexPosSelection
-            val textureSelection = scene.modelProvider.selectionManager.vertexTexSelection
+            val modelSelection = selectionManager.getSelectedVertexPos(model)
+            val textureSelection = selectionManager.vertexTexSelection
             val texture = model.resources.materials.firstOrNull() ?: MaterialNone
 
             val size = texture.size

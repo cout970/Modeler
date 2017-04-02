@@ -1,21 +1,15 @@
 package com.cout970.modeler.view.controller
 
-import com.cout970.glutilities.event.EnumKeyState
-import com.cout970.glutilities.event.EventKeyUpdate
-import com.cout970.glutilities.event.EventMouseClick
-import com.cout970.glutilities.event.EventMouseScroll
 import com.cout970.glutilities.structure.Timer
 import com.cout970.glutilities.tessellator.VAO
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.event.IEventController
-import com.cout970.modeler.event.IEventListener
 import com.cout970.modeler.event.IInput
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.modeleditor.IModelProvider
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.gui.Root
 import com.cout970.modeler.view.scene.Scene
-import com.cout970.modeler.view.scene.Scene3d
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
 import org.joml.Vector2f
@@ -44,6 +38,12 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
     val showBoundingBoxes = BooleanProperty(false)
 
     val cursorTemplate: Cursor get() = Cursor(cursorCenter, transformationMode, CursorParameters.create(0.0, vec2Of(1)))
+
+    val listeners = ViewListeners(modelProvider, input, this)
+
+    fun registerListeners(eventHandler: IEventController) {
+        listeners.registerListeners(eventHandler)
+    }
 
     fun tick() {
         scaleScenes()
@@ -82,98 +82,6 @@ class SceneController(val modelProvider: IModelProvider, val input: IInput, val 
                 }
             }
         }
-    }
-
-    fun registerListeners(eventHandler: IEventController) {
-        eventHandler.addListener(EventMouseScroll::class.java, object : IEventListener<EventMouseScroll> {
-            override fun onEvent(e: EventMouseScroll): Boolean {
-                val mousePos = input.mouse.getMousePos()
-                scenes.forEach { scene ->
-                    if (mousePos.isInside(scene.absolutePosition, scene.size.toIVector())) {
-                        scene.run {
-                            val scroll = -e.offsetY * Config.cameraScrollSpeed
-                            if (camera.zoom > 0.5 || scroll > 0) {
-                                cameraHandler.makeZoom(camera.zoom + scroll * (camera.zoom / 60f))
-                            }
-                        }
-                    }
-                }
-                return true
-            }
-        })
-
-        eventHandler.addListener(EventMouseClick::class.java, object : IEventListener<EventMouseClick> {
-            var lastJumpClickTime = 0L
-            override fun onEvent(e: EventMouseClick): Boolean {
-                val mousePos = input.mouse.getMousePos()
-                scenes.forEach {
-                    if (mousePos.isInside(it.absolutePosition, it.size.toIVector())) {
-                        selectedScene = it
-                    }
-                }
-                scenes.any { scene ->
-                    if (e.keyState != EnumKeyState.PRESS) return@any false
-
-                    if (Config.keyBindings.selectModel.check(e)) {
-                        if (mousePos.isInside(scene.absolutePosition, scene.size.toIVector())) {
-                            if (scene.selectorCache.hoveredObject == null &&
-                                scene.selectorCache.selectedObject == null) {
-
-                                modelProvider.selectionManager.selectPos(
-                                        scene.selectorCache.currentContext!!.mouseRay,
-                                        scene.camera.zoom.toFloat(),
-                                        Config.keyBindings.multipleSelection.check(input)
-                                )
-                                return@any true
-                            }
-                        }
-                    }
-                    if (Config.keyBindings.jumpCameraToCursor.check(e)) {
-                        if (mousePos.isInside(scene.absolutePosition, scene.size.toIVector())) {
-                            if (System.currentTimeMillis() - lastJumpClickTime < 500) {
-                                val ray = scene.selectorCache.currentContext!!.mouseRay
-                                val hit = modelProvider.selectionManager.getMouseHit(ray)
-
-                                if (hit != null) {
-                                    scene.cameraHandler.moveTo(-hit.hit)
-                                    return@any true
-                                }
-                            }
-                            lastJumpClickTime = System.currentTimeMillis()
-                        }
-                    }
-                    return@any false
-                }
-                return false
-            }
-        })
-        var lastOption = 0
-        eventHandler.addListener(EventKeyUpdate::class.java, object : IEventListener<EventKeyUpdate> {
-            override fun onEvent(e: EventKeyUpdate): Boolean {
-                if (e.keyState != EnumKeyState.PRESS) return false
-                if (Config.keyBindings.switchCameraAxis.check(e) && selectedScene is Scene3d) {
-                    when (lastOption) {
-                        0 -> selectedScene.cameraHandler.setRotation(angleX = 0.0, angleY = 0.0)
-                        1 -> selectedScene.cameraHandler.setRotation(angleX = 0.0, angleY = -90.toRads())
-                        2 -> selectedScene.cameraHandler.setRotation(angleX = 90.toRads(), angleY = 0.0)
-                        3 -> selectedScene.cameraHandler.setRotation(angleX = 45.toRads(), angleY = -45.toRads())
-                    }
-                    lastOption++
-                    if (lastOption > 3) {
-                        lastOption = 0
-                    }
-                } else if (Config.keyBindings.switchOrthoProjection.check(e)) {
-                    (selectedScene as? Scene3d)?.apply {
-                        perspective = !perspective
-                    }
-                } else if (Config.keyBindings.moveCameraToCursor.check(e)) {
-                    selectedScene.apply {
-                        cameraHandler.moveTo(-cursorCenter)
-                    }
-                }
-                return false
-            }
-        })
     }
 
     fun getModel(model: Model): Model {

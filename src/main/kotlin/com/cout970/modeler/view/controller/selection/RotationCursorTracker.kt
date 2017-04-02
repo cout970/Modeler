@@ -2,7 +2,6 @@ package com.cout970.modeler.view.controller.selection
 
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.model.Model
-import com.cout970.modeler.selection.vertexPosSelection
 import com.cout970.modeler.util.getClosestPointOnLineSegment
 import com.cout970.modeler.view.controller.SceneSpaceContext
 import com.cout970.modeler.view.controller.SelectionAxis
@@ -54,7 +53,7 @@ object RotationCursorTracker : AbstractCursorTracker() {
             cache.lastOffset = cache.offset
 
             val model = selector.modelEditor.model
-            val selection = selector.modelEditor.selectionManager.vertexPosSelection
+            val selection = selector.modelEditor.selectionManager.getSelectedVertexPos(model)
             val editTool = selector.modelEditor.editTool
             val center = selector.modelEditor.selectionManager.getSelectionCenter(model)
 

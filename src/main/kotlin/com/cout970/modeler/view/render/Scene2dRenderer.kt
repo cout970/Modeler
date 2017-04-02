@@ -2,10 +2,7 @@ package com.cout970.modeler.view.render
 
 import com.cout970.modeler.util.absolutePosition
 import com.cout970.modeler.util.toIVector
-import com.cout970.modeler.view.render.comp.IRenderableComponent
-import com.cout970.modeler.view.render.comp.TextureRenderComponent
-import com.cout970.modeler.view.render.comp.UVOutlineRenderComponent
-import com.cout970.modeler.view.render.comp.UVSelectionRenderComponent
+import com.cout970.modeler.view.render.comp.*
 import com.cout970.modeler.view.scene.Scene2d
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.yf
@@ -18,7 +15,8 @@ class Scene2dRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHandle
     override val components: Map<ShaderType, List<IRenderableComponent>> = mapOf(
             ShaderType.UV_SHADER to listOf(UVOutlineRenderComponent(),
                     TextureRenderComponent(), UVSelectionRenderComponent()
-            )
+            ),
+            ShaderType.PLAIN_3D_SHADER to listOf(Cursor3dRenderComponent())
     )
 
     fun render(scene: Scene2d) {
