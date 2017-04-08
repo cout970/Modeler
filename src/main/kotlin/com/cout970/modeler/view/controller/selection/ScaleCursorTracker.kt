@@ -53,7 +53,7 @@ object ScaleCursorTracker : AbstractCursorTracker() {
                     source = model,
                     selection = selection,
                     center = selector.sceneController.cursorCenter,
-                    axis = obj as SelectionAxis,
+                    axis = (obj as SelectionAxis).direction,
                     offset = cache.offset
             )
         }

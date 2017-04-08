@@ -2,15 +2,15 @@ package com.cout970.modeler
 
 import com.cout970.glutilities.window.GLFWLoader
 import com.cout970.modeler.config.ConfigManager
-import com.cout970.modeler.event.EventHandler
+import com.cout970.modeler.event.EventController
 import com.cout970.modeler.export.ExportManager
 import com.cout970.modeler.log.Level
 import com.cout970.modeler.log.log
 import com.cout970.modeler.log.print
 import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.project.ProjectManager
+import com.cout970.modeler.resource.GuiResources
 import com.cout970.modeler.resource.ResourceLoader
-import com.cout970.modeler.resource.TextureHandler
 import com.cout970.modeler.view.UIManager
 import com.cout970.modeler.view.render.RenderManager
 import com.cout970.modeler.window.Loop
@@ -25,14 +25,14 @@ class Initializer(val programArguments: List<String>) {
 
     val resourceLoader: ResourceLoader
     val windowHandler: WindowHandler
-    val eventHandler: EventHandler
+    val eventController: EventController
     val projectManager: ProjectManager
     val modelEditor: ModelEditor
     val uiManager: UIManager
     val renderManager: RenderManager
     val mainLoop: Loop
     val exportManager: ExportManager
-    val textureHandler: TextureHandler
+    val guiResources: GuiResources
 
     init {
         Debugger.initializer = this
@@ -46,7 +46,7 @@ class Initializer(val programArguments: List<String>) {
         log(Level.FINEST) { "Creating WindowHandler" }
         windowHandler = WindowHandler()
         log(Level.FINEST) { "Creating EventController" }
-        eventHandler = EventHandler()
+        eventController = EventController()
 
         log(Level.FINEST) { "Creating ProjectManager" }
         projectManager = ProjectManager()
@@ -56,16 +56,16 @@ class Initializer(val programArguments: List<String>) {
         exportManager = ExportManager(projectManager, resourceLoader)
 
         log(Level.FINE) { "Loading Resources" }
-        textureHandler = TextureHandler(resourceLoader)
+        guiResources = GuiResources(resourceLoader)
 
         log(Level.FINEST) { "Creating RenderManager" }
         renderManager = RenderManager()
         log(Level.FINEST) { "Creating UIManager" }
-        uiManager = UIManager(windowHandler, eventHandler, renderManager, textureHandler, projectManager)
+        uiManager = UIManager(windowHandler, eventController, renderManager, guiResources, projectManager)
 
 
         log(Level.FINEST) { "Creating Loop" }
-        mainLoop = Loop(listOf(renderManager, uiManager, eventHandler, modelEditor, windowHandler),
+        mainLoop = Loop(listOf(renderManager, uiManager, eventController, modelEditor, windowHandler),
                 windowHandler.timer, windowHandler::shouldClose)
 
         parseArgs()
@@ -75,14 +75,14 @@ class Initializer(val programArguments: List<String>) {
         log(Level.FINEST) { "Starting GLFW window" }
         windowHandler.create()
         log(Level.FINEST) { "Binding listeners and callbacks to window" }
-        eventHandler.bindWindow(windowHandler.window)
+        eventController.bindWindow(windowHandler.window)
 
         log(Level.FINEST) { "Initializing renderers" }
         renderManager.initOpenGl(resourceLoader, mainLoop.timer, windowHandler.window)
         log(Level.FINEST) { "Registering listeners for sceneController" }
-        uiManager.sceneController.registerListeners(eventHandler)
+        uiManager.sceneController.registerListeners(eventController)
         log(Level.FINEST) { "Registering listeners for moduleController" }
-        uiManager.moduleController.registerListeners(eventHandler)
+        uiManager.moduleController.registerListeners(eventController)
 
         log(Level.FINE) { "Adding placeholder cube" }
         modelEditor.addCube(vec3Of(16, 16, 16))

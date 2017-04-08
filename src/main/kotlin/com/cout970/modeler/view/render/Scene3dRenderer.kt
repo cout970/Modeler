@@ -20,7 +20,7 @@ class Scene3dRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHandle
             ShaderType.FULL_SHADER to listOf(ModelRenderComponent()),
             ShaderType.PLAIN_3D_SHADER to listOf(
                     GridsRenderComponent(), SelectionRenderComponent(),
-                    AABBRenderComponent(), Cursor3dRenderComponent()
+                    AABBRenderComponent(), Scene3dCursorRenderComponent()
             ),
             ShaderType.UV_SHADER to listOf(Cursor2dRenderComponent())
     )

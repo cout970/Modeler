@@ -7,7 +7,7 @@ import com.cout970.modeler.event.IEventController
 import com.cout970.modeler.event.IEventListener
 import com.cout970.modeler.event.IInput
 import com.cout970.modeler.modeleditor.IModelProvider
-import com.cout970.modeler.resource.TextureHandler
+import com.cout970.modeler.resource.GuiResources
 import com.cout970.modeler.view.gui.Root
 import com.cout970.modeler.view.module.*
 
@@ -20,7 +20,7 @@ class ModuleController(
         val rootFrame: Root,
         val buttonController: ButtonController,
         val input: IInput,
-        textureHandler: TextureHandler) {
+        guiResources: GuiResources) {
 
     val modules = listOf(
             ModuleAddElement(this),

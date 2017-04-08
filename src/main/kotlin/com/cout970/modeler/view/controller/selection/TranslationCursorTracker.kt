@@ -2,6 +2,7 @@ package com.cout970.modeler.view.controller.selection
 
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.model.Model
+import com.cout970.modeler.selection.vertexTexSelection
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.view.controller.SceneSpaceContext
 import com.cout970.modeler.view.scene.Scene
@@ -45,12 +46,24 @@ object TranslationCursorTracker : AbstractCursorTracker() {
         if (cache.offset != cache.lastOffset) {
             cache.lastOffset = cache.offset
 
-            val model = selector.modelEditor.model
-            val selection = selector.modelEditor.selectionManager.getSelectedVertexPos(model)
-            val editTool = selector.modelEditor.editTool
-
-            cache.model = editTool.translate(model, selection, obj.translationAxis * cache.offset)
+            applyModel(selector, obj, cache)
         }
         return cache.model!!
+    }
+
+    fun applyModel(selector: SceneSelector, obj: ISelectable, cache: CursorTrackerCache) {
+        val model = selector.modelEditor.model
+        val selection = selector.modelEditor.selectionManager.getSelectedVertexPos(model)
+        val editTool = selector.modelEditor.editTool
+
+        cache.model = editTool.translate(model, selection, obj.translationAxis * cache.offset)
+    }
+
+    fun applyTexture(selector: SceneSelector, obj: ISelectable, cache: CursorTrackerCache) {
+        val model = selector.modelEditor.model
+        val selection = selector.modelEditor.selectionManager.vertexTexSelection
+        val editTool = selector.modelEditor.editTool
+
+        cache.model = editTool.translateTexture(model, selection, obj.translationAxis * cache.offset)
     }
 }

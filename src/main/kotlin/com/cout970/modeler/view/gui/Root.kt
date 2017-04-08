@@ -2,7 +2,7 @@ package com.cout970.modeler.view.gui
 
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.event.IInput
-import com.cout970.modeler.resource.TextureHandler
+import com.cout970.modeler.resource.GuiResources
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.controller.ButtonController
 import com.cout970.modeler.view.gui.comp.CButton
@@ -29,7 +29,7 @@ class Root(
         val input: IInput,
         val windowHandler: WindowHandler,
         val buttonController: ButtonController,
-        val textureHandler: TextureHandler
+        val guiResources: GuiResources
 ) : Frame(1f, 1f) {
 
     val topBar = TopBar(this)
@@ -83,37 +83,37 @@ class Root(
         topCenterPanel.apply {
             addComponent(CToggleButton(5f, 0f, 32f, 32f).apply {
                 leguiEventListeners.addListener(MouseClickEvent::class.java, Wrapper("menu.select.element", 0, 0))
-                setImage(textureHandler.selectionModeElement)
+                setImage(guiResources.selectionModeElement)
                 isToggled = true
             })
             addComponent(CToggleButton(37f, 0f, 32f, 32f).apply {
                 leguiEventListeners.addListener(MouseClickEvent::class.java, Wrapper("menu.select.quad", 0, 1))
-                setImage(textureHandler.selectionModeQuad)
+                setImage(guiResources.selectionModeQuad)
             })
             addComponent(CToggleButton(69f, 0f, 32f, 32f).apply {
                 leguiEventListeners.addListener(MouseClickEvent::class.java, Wrapper("menu.select.edge", 0, 2))
-                setImage(textureHandler.selectionModeEdge)
+                setImage(guiResources.selectionModeEdge)
             })
             addComponent(CToggleButton(101f, 0f, 32f, 32f).apply {
                 leguiEventListeners.addListener(MouseClickEvent::class.java, Wrapper("menu.select.vertex", 0, 3))
-                setImage(textureHandler.selectionModeVertex)
+                setImage(guiResources.selectionModeVertex)
             })
 
             addComponent(CToggleButton(140f, 0f, 32f, 32f).apply {
                 leguiEventListeners.addListener(MouseClickEvent::class.java, Wrapper("menu.cursor.translation", 1, 0))
                 textState.horizontalAlign = HorizontalAlign.LEFT
-                setImage(textureHandler.cursorTranslate)
+                setImage(guiResources.cursorTranslate)
                 isToggled = true
             })
             addComponent(CToggleButton(172f, 0f, 32f, 32f).apply {
                 leguiEventListeners.addListener(MouseClickEvent::class.java, Wrapper("menu.cursor.rotation", 1, 1))
                 textState.horizontalAlign = HorizontalAlign.LEFT
-                setImage(textureHandler.cursorRotate)
+                setImage(guiResources.cursorRotate)
             })
             addComponent(CToggleButton(204f, 0f, 32f, 32f).apply {
                 leguiEventListeners.addListener(MouseClickEvent::class.java, Wrapper("menu.cursor.scale", 1, 2))
                 textState.horizontalAlign = HorizontalAlign.LEFT
-                setImage(textureHandler.cursorScale)
+                setImage(guiResources.cursorScale)
             })
         }
     }
@@ -174,8 +174,8 @@ class Root(
 
         centerPanel.position = Vector2f(leftBar.size.x, topBar.size.y)
 
-        topCenterPanel.position = Vector2f(0f, 0f)
-        bottomCenterPanel.position = Vector2f(0f, topCenterPanel.size.y)
+        bottomCenterPanel.position = Vector2f(0f, 0f)
+        topCenterPanel.position = Vector2f(0f, bottomCenterPanel.size.y)
 
         topLeftPanel.position = Vector2f(0f, 0f)
         bottomLeftPanel.position = Vector2f(0f, topLeftPanel.size.y)

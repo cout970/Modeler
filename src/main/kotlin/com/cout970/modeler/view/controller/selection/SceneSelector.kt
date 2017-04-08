@@ -27,14 +27,14 @@ class SceneSelector(val sceneController: SceneController, val modelEditor: Model
         val selectionManager = sceneController.modelProvider.selectionManager
         cache.currentContext = context
 
-        // No selected elements
+        // No selection
         if (selectionManager.hasNoSelection()) {
             cache.hoveredObject = null
             cache.selectedObject = null
             return
         }
 
-        // No hovered element
+        // No selected element
         if (cache.oldContext == null) {
             cache.hoveredObject = getHoveredObject(context, scene.cursor)
 

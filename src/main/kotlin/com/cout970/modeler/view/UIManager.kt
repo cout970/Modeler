@@ -1,8 +1,8 @@
 package com.cout970.modeler.view
 
-import com.cout970.modeler.event.EventHandler
+import com.cout970.modeler.event.EventController
 import com.cout970.modeler.project.ProjectManager
-import com.cout970.modeler.resource.TextureHandler
+import com.cout970.modeler.resource.GuiResources
 import com.cout970.modeler.util.ITickeable
 import com.cout970.modeler.view.controller.ButtonController
 import com.cout970.modeler.view.controller.ModuleController
@@ -19,9 +19,9 @@ import com.cout970.modeler.window.WindowHandler
  */
 class UIManager(
         val windowHandler: WindowHandler,
-        eventHandler: EventHandler,
+        eventController: EventController,
         renderManager: RenderManager,
-        private val textureHandler: TextureHandler,
+        private val guiResources: GuiResources,
         private val projectManager: ProjectManager) : ITickeable {
 
     val sceneController: SceneController
@@ -34,11 +34,11 @@ class UIManager(
     init {
         renderManager.uiManager = this
         buttonController = ButtonController(projectManager, this)
-        rootFrame = Root(eventHandler, windowHandler, buttonController, textureHandler)
-        sceneController = SceneController(projectManager.modelEditor, eventHandler, rootFrame, windowHandler.timer)
+        rootFrame = Root(eventController, windowHandler, buttonController, guiResources)
+        sceneController = SceneController(projectManager.modelEditor, eventController, rootFrame, windowHandler.timer)
         selector = SceneSelector(sceneController, projectManager.modelEditor)
-        moduleController = ModuleController(projectManager.modelEditor, rootFrame, buttonController, eventHandler,
-                textureHandler)
+        moduleController = ModuleController(projectManager.modelEditor, rootFrame, buttonController, eventController,
+                guiResources)
         showScenes(0)
     }
 
@@ -74,8 +74,7 @@ class UIManager(
 
     override fun preTick() {
         super.preTick()
-        textureHandler.updateMaterials(projectManager.modelEditor.model)
-
+        guiResources.updateMaterials(projectManager.modelEditor.model)
     }
 
     override fun tick() {

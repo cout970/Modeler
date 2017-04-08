@@ -15,8 +15,8 @@ import com.cout970.modeler.selection.*
 import com.cout970.modeler.selection.subselection.SubSelectionFace
 import com.cout970.modeler.util.rotateAround
 import com.cout970.modeler.util.scale
-import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.vector.api.IQuaternion
+import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.plus
 import com.cout970.vector.extensions.vec3Of
@@ -44,7 +44,7 @@ class EditTool : IModelTranslate, IModelRotate, IModelScale {
         }
     }
 
-    override fun scale(source: Model, selection: VertexPosSelection, center: IVector3, axis: SelectionAxis,
+    override fun scale(source: Model, selection: VertexPosSelection, center: IVector3, axis: IVector3,
                        offset: Float): Model {
         return source.applyVertexPos(selection) { path, vertex ->
             vertex.scale(center, axis, offset)
@@ -137,5 +137,9 @@ class EditTool : IModelTranslate, IModelRotate, IModelScale {
             val newModel = editor.model.splitUV(editor.selectionManager.vertexTexSelection)
             editor.historyRecord.doAction(ActionModifyModelShape(editor, newModel))
         }
+    }
+
+    fun translateTexture(model: Model, selection: VertexTexSelection, vec: IVector2): Model {
+        return model
     }
 }

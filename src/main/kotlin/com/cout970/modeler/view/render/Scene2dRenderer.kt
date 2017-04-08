@@ -1,5 +1,6 @@
 package com.cout970.modeler.view.render
 
+import com.cout970.matrix.extensions.Matrix4
 import com.cout970.modeler.util.absolutePosition
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.view.render.comp.*
@@ -16,7 +17,7 @@ class Scene2dRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHandle
             ShaderType.UV_SHADER to listOf(UVOutlineRenderComponent(),
                     TextureRenderComponent(), UVSelectionRenderComponent()
             ),
-            ShaderType.PLAIN_3D_SHADER to listOf(Cursor3dRenderComponent())
+            ShaderType.PLAIN_3D_SHADER to listOf(Scene2dCursorRenderComponent())
     )
 
     fun render(scene: Scene2d) {
@@ -42,6 +43,19 @@ class Scene2dRenderer(shaderHandler: ShaderHandler) : SceneRenderer(shaderHandle
             if (uvShaderComponents.isNotEmpty()) {
                 shaderHandler.useUVShader(scene.getMatrixMVP()) {
                     uvShaderComponents.forEach { it.render(context) }
+                }
+            }
+            val plain3dShaderComponents = components[ShaderType.PLAIN_3D_SHADER] ?: emptyList()
+            if (plain3dShaderComponents.isNotEmpty()) {
+                shaderHandler.useSingleColorShader {
+
+                    matrixP = scene.getMatrixMVP()
+                    matrixV = Matrix4.IDENTITY
+                    matrixM = Matrix4.IDENTITY
+
+                    plain3dShaderComponents.forEach {
+                        it.render(context)
+                    }
                 }
             }
         }

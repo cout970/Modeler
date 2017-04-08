@@ -7,7 +7,7 @@ import org.liquidengine.legui.component.ImageView
 /**
  * Created by cout970 on 2017/01/24.
  */
-class TextureHandler(val loader: ResourceLoader) {
+class GuiResources(val loader: ResourceLoader) {
 
     val selectionModeElement: ImageView
     val selectionModeEdge: ImageView

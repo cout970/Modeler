@@ -2,7 +2,6 @@ package com.cout970.modeler.util
 
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.*
-import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -102,17 +101,13 @@ private fun IVector3.scale(center: IVector3, scale: IVector3): IVector3 {
     return newPos + center
 }
 
-fun IVector3.scale(center: IVector3, axis: SelectionAxis, offset: Float): IVector3 {
-    return scale(center, Vector3.ONE + axis.direction * offset / this.distanceInAxis(center, axis))
+fun IVector3.scale(center: IVector3, axis: IVector3, offset: Float): IVector3 {
+    return scale(center, Vector3.ONE + axis * offset / this.distanceInAxis(center, axis))
 }
 
-private fun IVector3.distanceInAxis(center: IVector3, axis: SelectionAxis): Double {
-    return when (axis) {
-        SelectionAxis.X -> Math.abs(this.xd - center.xd)
-        SelectionAxis.Y -> Math.abs(this.yd - center.yd)
-        SelectionAxis.Z -> Math.abs(this.zd - center.zd)
-        SelectionAxis.NONE -> 0.0
-    }
+fun IVector3.distanceInAxis(point: IVector3, axis: IVector3): Double {
+    val norm = axis.normalize()
+    return (norm dot point) - (norm dot this)
 }
 
 fun quatOfAngles(x: Number, y: Number, z: Number): IQuaternion {

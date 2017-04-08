@@ -1,7 +1,6 @@
 package com.cout970.modeler.view.render.comp
 
 import com.cout970.modeler.config.Config
-import com.cout970.modeler.selection.*
 import com.cout970.modeler.util.Cursor
 import com.cout970.modeler.util.RenderUtil
 import com.cout970.modeler.view.controller.SelectionAxis
@@ -12,33 +11,15 @@ import com.cout970.vector.extensions.*
 import org.lwjgl.opengl.GL11
 
 /**
- * Created by cout970 on 2017/03/20.
+ * Created by cout970 on 2017/04/03.
  */
+object CursorRenderer {
 
-class Cursor3dRenderComponent : IRenderableComponent {
-
-    override fun render(ctx: RenderContext) {
-        ctx.apply {
-            val axis = scene.selectorCache.selectedObject as? SelectionAxis ?: SelectionAxis.NONE
-            if (selectionManager.selectionMode == SelectionMode.EDIT) {
-                val selection = selectionManager.vertexPosSelection
-                if (selection != VertexPosSelection.EMPTY) {
-                    drawCursor(scene.cursor, axis)
-                }
-            } else {
-                val selection = selectionManager.elementSelection
-                if (selection != ElementSelection.EMPTY) {
-                    drawCursor(scene.cursor, axis)
-                }
-            }
-        }
-    }
-
-    fun RenderContext.drawCursor(cursor: Cursor, axis: SelectionAxis) {
+    fun RenderContext.drawCursor(cursor: Cursor, axis: SelectionAxis, allowGrids: Boolean) {
         when (cursor.type) {
             TransformationMode.TRANSLATION -> {
 
-                if (Config.enableHelperGrid && scene.perspective && axis != SelectionAxis.NONE) {
+                if (allowGrids && Config.enableHelperGrid && scene.perspective && axis != SelectionAxis.NONE) {
                     drawHelperGrids(this, cursor, axis)
                 }
                 renderTranslation(this, cursor)
@@ -48,7 +29,7 @@ class Cursor3dRenderComponent : IRenderableComponent {
             }
             TransformationMode.SCALE -> {
 
-                if (Config.enableHelperGrid && scene.perspective && axis != SelectionAxis.NONE) {
+                if (allowGrids && Config.enableHelperGrid && scene.perspective && axis != SelectionAxis.NONE) {
                     drawHelperGrids(this, cursor, axis)
                 }
                 renderTranslation(this, cursor)

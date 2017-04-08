@@ -19,6 +19,7 @@ abstract class AbstractCursorTracker {
     abstract fun updateCache(scene: Scene, obj: ISelectable, oldCache: CursorTrackerCache,
                              oldContext: SceneSpaceContext, newContext: SceneSpaceContext): CursorTrackerCache
 
+
     abstract fun getPhantomModel(selector: SceneSelector, obj: ISelectable, cache: CursorTrackerCache): Model
 
     fun projectAxis(matrix: Matrix4d, obj: ISelectable): Pair<IVector2, IVector2> {
