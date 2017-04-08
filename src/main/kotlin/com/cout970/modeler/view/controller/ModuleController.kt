@@ -7,8 +7,8 @@ import com.cout970.modeler.event.IEventController
 import com.cout970.modeler.event.IEventListener
 import com.cout970.modeler.event.IInput
 import com.cout970.modeler.modeleditor.IModelProvider
+import com.cout970.modeler.newView.gui.Root
 import com.cout970.modeler.resource.GuiResources
-import com.cout970.modeler.view.gui.Root
 import com.cout970.modeler.view.module.*
 
 /**

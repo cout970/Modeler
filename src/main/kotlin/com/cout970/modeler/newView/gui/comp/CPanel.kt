@@ -1,4 +1,4 @@
-package com.cout970.modeler.view.gui.comp
+package com.cout970.modeler.newView.gui.comp
 
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Panel
@@ -6,7 +6,7 @@ import org.liquidengine.legui.component.Panel
 /**
  * Created by cout970 on 2017/03/12.
  */
-class CPanel(
+open class CPanel(
         x: Float = 0f, y: Float = 0f, width: Float = 10f, height: Float = 10f
 ) : Panel(Vector2f(x, y), Vector2f(width, height)) {
 

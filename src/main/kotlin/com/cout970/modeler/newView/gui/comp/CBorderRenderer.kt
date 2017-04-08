@@ -1,4 +1,4 @@
-package com.cout970.modeler.view.gui.comp
+package com.cout970.modeler.newView.gui.comp
 
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.util.toColor

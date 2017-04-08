@@ -2,12 +2,12 @@ package com.cout970.modeler.view.scene
 
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.modeler.modeleditor.IModelProvider
+import com.cout970.modeler.newView.gui.comp.CBorderRenderer
 import com.cout970.modeler.util.Cursor
 import com.cout970.modeler.util.CursorParameters
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.view.controller.SceneController
 import com.cout970.modeler.view.controller.selection.SelectorCache
-import com.cout970.modeler.view.gui.comp.CBorderRenderer
 import com.cout970.modeler.window.WindowHandler
 import org.liquidengine.legui.component.Panel
 import org.liquidengine.legui.util.ColorConstants

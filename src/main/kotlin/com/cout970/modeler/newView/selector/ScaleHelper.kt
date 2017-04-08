@@ -3,7 +3,7 @@ package com.cout970.modeler.newView.selector
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.event.IInput
 import com.cout970.modeler.model.Model
-import com.cout970.modeler.newView.Scene
+import com.cout970.modeler.newView.gui.Scene
 import com.cout970.modeler.util.MatrixUtils
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.util.toJOML

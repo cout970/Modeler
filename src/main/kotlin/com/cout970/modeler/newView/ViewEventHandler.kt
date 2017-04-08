@@ -8,6 +8,7 @@ import com.cout970.glutilities.event.EventMouseScroll
 import com.cout970.modeler.event.IEventController
 import com.cout970.modeler.event.IEventListener
 import com.cout970.modeler.event.IInput
+import com.cout970.modeler.newView.gui.ContentPanel
 import com.cout970.vector.api.IVector2
 
 /**

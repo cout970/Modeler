@@ -7,11 +7,11 @@ import com.cout970.modeler.model.api.IElementLeaf
 import com.cout970.modeler.model.util.getLeafElements
 import com.cout970.modeler.model.util.toAABB
 import com.cout970.modeler.modeleditor.SelectionManager
+import com.cout970.modeler.newView.GuiInitializer
 import com.cout970.modeler.project.ProjectManager
 import com.cout970.modeler.selection.SelectionMode
 import com.cout970.modeler.selection.SelectionTarget
 import com.cout970.modeler.util.IPropertyBind
-import com.cout970.modeler.view.UIManager
 import com.cout970.modeler.view.popup.*
 import java.io.File
 
@@ -20,14 +20,15 @@ import java.io.File
  */
 class ButtonController(
         private val projectManager: ProjectManager,
-        private val uiManager: UIManager
+        private val uiManager: GuiInitializer
 ) {
 
     private val selectionManager: SelectionManager get() = projectManager.modelEditor.selectionManager
     private val historyRecord get() = projectManager.modelEditor.historyRecord
     private val clipboard get() = projectManager.modelEditor.clipboard
-    private val sceneController get() = uiManager.sceneController
-    private val rootFrame get() = uiManager.rootFrame
+    private val rootFrame get() = uiManager.root
+    private val contentPanel get() = uiManager.contentPanel
+    private val controllerState get() = uiManager.contentPanel.controllerState
     private val modelEditor get() = projectManager.modelEditor
 
     fun onClick(id: String) {
@@ -59,9 +60,9 @@ class ButtonController(
             "menu.clipboard.cut", "top.edit.cut", "input.cut" -> clipboard.cut()
             "menu.clipboard.paste", "top.edit.paste", "input.paste" -> clipboard.paste()
             "top.edit.delete", "input.delete" -> clipboard.delete()
-            "menu.cursor.translation" -> sceneController.transformationMode = TransformationMode.TRANSLATION
-            "menu.cursor.rotation" -> sceneController.transformationMode = TransformationMode.ROTATION
-            "menu.cursor.scale" -> sceneController.transformationMode = TransformationMode.SCALE
+            "menu.cursor.translation" -> controllerState.transformationMode = TransformationMode.TRANSLATION
+            "menu.cursor.rotation" -> controllerState.transformationMode = TransformationMode.ROTATION
+            "menu.cursor.scale" -> controllerState.transformationMode = TransformationMode.SCALE
 
             "top.file.new" -> newProject(projectManager)
             "top.file.open" -> loadProject(projectManager)
@@ -74,11 +75,11 @@ class ButtonController(
 
             "top.view.show_left" -> rootFrame.leftBar.isEnabled = !rootFrame.leftBar.isEnabled
             "top.view.show_right" -> rootFrame.rightBar.isEnabled = !rootFrame.rightBar.isEnabled
-            "top.view.one_model" -> uiManager.showScenes(0)
-            "top.view.two_model" -> uiManager.showScenes(1)
-            "top.view.four_model" -> uiManager.showScenes(2)
-            "top.view.model_and_texture" -> uiManager.showScenes(3)
-            "top.view.3_model_1_texture" -> uiManager.showScenes(4)
+            "top.view.one_model" -> contentPanel.showScenes(0)
+            "top.view.two_model" -> contentPanel.showScenes(1)
+            "top.view.four_model" -> contentPanel.showScenes(2)
+            "top.view.model_and_texture" -> contentPanel.showScenes(3)
+            "top.view.3_model_1_texture" -> contentPanel.showScenes(4)
 
             "menu.texture.import" -> importTexture(projectManager)
             "menu.texture.export" -> exportTexture(projectManager)
@@ -100,8 +101,8 @@ class ButtonController(
 
     fun getBindProperty(id: String): IPropertyBind<Boolean> {
         return when (id) {
-            "menu.texture.show_all_mesh" -> sceneController.showAllMeshUVs
-            "menu.aabb.show_aabb" -> sceneController.showBoundingBoxes
+            "menu.texture.show_all_mesh" -> controllerState.showAllMeshUVs
+            "menu.aabb.show_aabb" -> controllerState.showBoundingBoxes
 
             else -> {
                 log(Level.ERROR) { "Unregistered toggle button ID: $id" }

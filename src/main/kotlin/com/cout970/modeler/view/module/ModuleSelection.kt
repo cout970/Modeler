@@ -1,7 +1,7 @@
 package com.cout970.modeler.view.module
 
+import com.cout970.modeler.newView.gui.comp.CButton
 import com.cout970.modeler.view.controller.ModuleController
-import com.cout970.modeler.view.gui.comp.CButton
 import org.liquidengine.legui.event.component.MouseClickEvent
 
 /**

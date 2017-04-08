@@ -1,4 +1,4 @@
-package com.cout970.modeler.newView
+package com.cout970.modeler.newView.viewtarget
 
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.view.controller.selection.ISelectable

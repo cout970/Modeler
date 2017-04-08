@@ -8,10 +8,10 @@ import com.cout970.modeler.log.Level
 import com.cout970.modeler.log.log
 import com.cout970.modeler.log.print
 import com.cout970.modeler.modeleditor.ModelEditor
+import com.cout970.modeler.newView.GuiInitializer
 import com.cout970.modeler.project.ProjectManager
 import com.cout970.modeler.resource.GuiResources
 import com.cout970.modeler.resource.ResourceLoader
-import com.cout970.modeler.view.UIManager
 import com.cout970.modeler.view.render.RenderManager
 import com.cout970.modeler.window.Loop
 import com.cout970.modeler.window.WindowHandler
@@ -28,7 +28,7 @@ class Initializer(val programArguments: List<String>) {
     val eventController: EventController
     val projectManager: ProjectManager
     val modelEditor: ModelEditor
-    val uiManager: UIManager
+    val guiInitializer: GuiInitializer
     val renderManager: RenderManager
     val mainLoop: Loop
     val exportManager: ExportManager
@@ -61,11 +61,11 @@ class Initializer(val programArguments: List<String>) {
         log(Level.FINEST) { "Creating RenderManager" }
         renderManager = RenderManager()
         log(Level.FINEST) { "Creating UIManager" }
-        uiManager = UIManager(windowHandler, eventController, renderManager, guiResources, projectManager)
+        guiInitializer = GuiInitializer(eventController, windowHandler, projectManager, renderManager)
 
 
         log(Level.FINEST) { "Creating Loop" }
-        mainLoop = Loop(listOf(renderManager, uiManager, eventController, modelEditor, windowHandler),
+        mainLoop = Loop(listOf(renderManager, guiInitializer.root, eventController, modelEditor, windowHandler),
                 windowHandler.timer, windowHandler::shouldClose)
 
         parseArgs()
@@ -79,10 +79,8 @@ class Initializer(val programArguments: List<String>) {
 
         log(Level.FINEST) { "Initializing renderers" }
         renderManager.initOpenGl(resourceLoader, mainLoop.timer, windowHandler.window)
-        log(Level.FINEST) { "Registering listeners for sceneController" }
-        uiManager.sceneController.registerListeners(eventController)
-        log(Level.FINEST) { "Registering listeners for moduleController" }
-        uiManager.moduleController.registerListeners(eventController)
+        log(Level.FINEST) { "Registering listeners for ViewEventHandler" }
+        guiInitializer.viewEventHandler.registerListeners(eventController)
 
         log(Level.FINE) { "Adding placeholder cube" }
         modelEditor.addCube(vec3Of(16, 16, 16))

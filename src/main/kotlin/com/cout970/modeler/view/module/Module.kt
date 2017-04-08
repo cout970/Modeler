@@ -1,10 +1,10 @@
 package com.cout970.modeler.view.module
 
 import com.cout970.modeler.config.Config
+import com.cout970.modeler.newView.gui.comp.CBorderRenderer
 import com.cout970.modeler.util.toColor
 import com.cout970.modeler.view.controller.ButtonController
 import com.cout970.modeler.view.controller.ModuleController
-import com.cout970.modeler.view.gui.comp.CBorderRenderer
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Widget

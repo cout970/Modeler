@@ -3,7 +3,11 @@ package com.cout970.modeler.newView.selector
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.event.IInput
 import com.cout970.modeler.modeleditor.ModelEditor
-import com.cout970.modeler.newView.*
+import com.cout970.modeler.newView.ControllerState
+import com.cout970.modeler.newView.EventMouseDrag
+import com.cout970.modeler.newView.gui.ContentPanel
+import com.cout970.modeler.newView.gui.Scene
+import com.cout970.modeler.newView.viewtarget.ViewTarget
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.controller.SceneSpaceContext
 import com.cout970.modeler.view.controller.TransformationMode
