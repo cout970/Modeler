@@ -5,7 +5,6 @@ import com.cout970.modeler.event.IInput
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.util.getClosestPointOnLineSegment
 import com.cout970.modeler.view.controller.SceneSpaceContext
-import com.cout970.modeler.view.controller.selection.IRotable
 import com.cout970.raytrace.Ray
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.angle

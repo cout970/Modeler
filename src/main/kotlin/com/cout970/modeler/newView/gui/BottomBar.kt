@@ -1,9 +1,9 @@
 package com.cout970.modeler.newView.gui
 
+import com.cout970.modeler.newView.ButtonController
 import com.cout970.modeler.newView.gui.comp.CPanel
 import com.cout970.modeler.newView.gui.comp.CToggleButton
 import com.cout970.modeler.resource.GuiResources
-import com.cout970.modeler.view.controller.ButtonController
 import org.liquidengine.legui.component.ToggleButton
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.event.component.MouseClickEvent

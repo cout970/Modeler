@@ -1,7 +1,7 @@
 package com.cout970.modeler.util
 
+import com.cout970.modeler.newView.TransformationMode
 import com.cout970.modeler.view.controller.SelectionAxis
-import com.cout970.modeler.view.controller.TransformationMode
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
 import com.cout970.raytrace.RayTraceUtil

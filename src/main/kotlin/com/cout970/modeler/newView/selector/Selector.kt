@@ -5,14 +5,12 @@ import com.cout970.modeler.event.IInput
 import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.newView.ControllerState
 import com.cout970.modeler.newView.EventMouseDrag
+import com.cout970.modeler.newView.TransformationMode
 import com.cout970.modeler.newView.gui.ContentPanel
 import com.cout970.modeler.newView.gui.Scene
 import com.cout970.modeler.newView.viewtarget.ViewTarget
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.controller.SceneSpaceContext
-import com.cout970.modeler.view.controller.TransformationMode
-import com.cout970.modeler.view.controller.selection.ISelectable
-import com.cout970.modeler.view.controller.selection.ITranslatable
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
 import com.cout970.vector.api.IVector2
@@ -22,12 +20,11 @@ import org.joml.Vector3d
 /**
  * Created by cout970 on 2017/04/08.
  */
-class Selector(val modelEditor: ModelEditor) {
+class Selector(val modelEditor: ModelEditor, val contentPanel: ContentPanel, val input: IInput) {
 
     private var activeScene: Scene? = null
 
-    fun update(contentPanel: ContentPanel, input: IInput) {
-
+    fun update() {
         activeScene = contentPanel.selectedScene
 
         activeScene?.let { activeScene ->
@@ -51,7 +48,7 @@ class Selector(val modelEditor: ModelEditor) {
         }
     }
 
-    fun onDrag(state: ControllerState, input: IInput, event: EventMouseDrag) {
+    fun onDrag(state: ControllerState, event: EventMouseDrag) {
         activeScene?.let { activeScene ->
             activeScene.viewTarget.selectedObject?.let { selectedObject ->
 

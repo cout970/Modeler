@@ -1,6 +1,8 @@
 package com.cout970.modeler.view.controller
 
-import com.cout970.modeler.view.controller.selection.ISelectable
+import com.cout970.modeler.newView.selector.ISelectable
+import com.cout970.raytrace.Ray
+import com.cout970.raytrace.RayTraceResult
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.vec3Of
 
@@ -18,7 +20,8 @@ enum class SelectionAxis(val direction: IVector3, val rotationDirection: IVector
         val selectedValues = listOf(X, Y, Z)
     }
 
-    override val translationAxis: IVector3
-        get() = direction
+    override fun rayTrace(ray: Ray): RayTraceResult? {
+        return null
+    }
 }
 

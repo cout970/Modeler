@@ -1,6 +1,6 @@
 package com.cout970.modeler.util
 
-import com.cout970.modeler.view.controller.ButtonController
+import com.cout970.modeler.newView.ButtonController
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.plus
 import org.joml.Vector2f

@@ -1,7 +1,6 @@
 package com.cout970.modeler.view.controller
 
 import com.cout970.modeler.modeleditor.ModelEditor
-import com.cout970.modeler.view.scene.Scene2d
 
 /**
  * Created by cout970 on 2017/01/27.

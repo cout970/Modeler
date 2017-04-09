@@ -15,13 +15,12 @@ import org.liquidengine.legui.util.ColorConstants
 /**
  * Created by cout970 on 2017/03/09.
  */
-class Root(val initializer: GuiInitializer) : Frame(1f, 1f), ITickeable {
+class Root(val initializer: GuiInitializer, val centerPanel: ContentPanel) : Frame(1f, 1f), ITickeable {
 
     val topBar = TopBar()
     val bottomBar = BottomBar()
     val leftBar = CPanel()
     val rightBar = CPanel()
-    val centerPanel = ContentPanel()
 
     val dropdown = CPanel(0f, 20f, 150f, 80f)
 
@@ -57,8 +56,9 @@ class Root(val initializer: GuiInitializer) : Frame(1f, 1f), ITickeable {
         initializer.guiResources.updateMaterials(initializer.modelEditor.model)
         initializer.windowHandler.resetViewport()
 
-        centerPanel.updateCamera(initializer.eventController)
+        centerPanel.updateCamera(initializer.eventController, initializer.windowHandler)
         rescale()
+        centerPanel.scaleScenes()
     }
 
     fun rescale() {
@@ -68,7 +68,7 @@ class Root(val initializer: GuiInitializer) : Frame(1f, 1f), ITickeable {
 
         // Size
         topBar.apply { size = Vector2f(parent.size.x, if (isEnabled) 20f else 0f) }
-        bottomBar.apply { size = Vector2f(parent.size.x, if (isEnabled) 20f else 0f) }
+        bottomBar.apply { size = Vector2f(parent.size.x, if (isEnabled) 32f else 0f) }
 
         leftBar.apply {
             size = Vector2f(if (isEnabled) 120f else 0f, parent.size.y - topBar.size.y - bottomBar.size.y)
@@ -80,8 +80,6 @@ class Root(val initializer: GuiInitializer) : Frame(1f, 1f), ITickeable {
         centerPanel.size = Vector2f(size.x - leftBar.size.x - rightBar.size.x,
                 size.y - topBar.size.y - bottomBar.size.y)
 
-        bottomBar.size = Vector2f(centerPanel.size.x, 32f)
-
         // Position
         topBar.position = Vector2f(0f, 0f)
         bottomBar.position = Vector2f(0f, size.y - bottomBar.size.y)
@@ -90,8 +88,6 @@ class Root(val initializer: GuiInitializer) : Frame(1f, 1f), ITickeable {
         rightBar.position = Vector2f(leftBar.size.x + centerPanel.size.x, topBar.size.y)
 
         centerPanel.position = Vector2f(leftBar.size.x, topBar.size.y)
-
-        bottomBar.position = Vector2f(0f, centerPanel.size.y + topBar.size.y)
 
         searchBar.position = Vector2f(0f, 0f)
         updateDropdownVisibility()

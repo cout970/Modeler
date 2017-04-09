@@ -1,9 +1,9 @@
 package com.cout970.modeler.newView.gui
 
+import com.cout970.modeler.newView.ButtonController
 import com.cout970.modeler.newView.gui.comp.CButton
 import com.cout970.modeler.newView.gui.comp.CPanel
 import com.cout970.modeler.util.onClick
-import com.cout970.modeler.view.controller.ButtonController
 import org.liquidengine.legui.component.Panel
 
 /**

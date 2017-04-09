@@ -1,9 +1,9 @@
 package com.cout970.modeler.view.module
 
 import com.cout970.modeler.config.Config
+import com.cout970.modeler.newView.ButtonController
 import com.cout970.modeler.newView.gui.comp.CBorderRenderer
 import com.cout970.modeler.util.toColor
-import com.cout970.modeler.view.controller.ButtonController
 import com.cout970.modeler.view.controller.ModuleController
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Component

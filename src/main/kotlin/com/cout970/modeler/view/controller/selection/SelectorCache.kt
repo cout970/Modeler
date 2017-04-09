@@ -1,6 +1,7 @@
 package com.cout970.modeler.view.controller.selection
 
 import com.cout970.modeler.model.Model
+import com.cout970.modeler.newView.selector.ISelectable
 import com.cout970.modeler.view.controller.SceneSpaceContext
 
 /**

@@ -2,9 +2,14 @@ package com.cout970.modeler.newView.gui
 
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.event.IInput
+import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.newView.ControllerState
 import com.cout970.modeler.newView.gui.comp.CPanel
+import com.cout970.modeler.newView.viewtarget.ModelViewTarget
+import com.cout970.modeler.newView.viewtarget.TextureViewTarget
+import com.cout970.modeler.newView.viewtarget.ViewTarget
 import com.cout970.modeler.util.toRads
+import com.cout970.modeler.window.WindowHandler
 import com.cout970.vector.extensions.*
 import org.joml.Vector2f
 
@@ -17,33 +22,22 @@ class ContentPanel : CPanel() {
     val scenes = mutableListOf<Scene>()
     var selectedScene: Scene? = null
 
-    fun showScenes(layout: Int) {
-        scenes.clear()
-        when (layout) {
-            1 -> {
-                scenes += Scene()
-                scenes += Scene()
-            }
-            2 -> {
-                scenes += Scene()
-                scenes += Scene()
-                scenes += Scene()
-                scenes += Scene()
-            }
-            3 -> {
-                scenes += Scene()
-                scenes += Scene()
-            }
-            4 -> {
-                scenes += Scene()
-                scenes += Scene()
-                scenes += Scene()
-                scenes += Scene()
-            }
-            else -> {
-                scenes += Scene()
-            }
+    private val sceneBuffer = mutableListOf<Scene>()
+
+    fun addScene(viewTarget: ViewTarget, modelEditor: ModelEditor) {
+        if (sceneBuffer.isEmpty()) {
+            scenes.add(Scene(this, viewTarget, modelEditor))
+        } else {
+            val last = sceneBuffer.removeAt(sceneBuffer.size - 1)
+            last.viewTarget = viewTarget
+            scenes.add(last)
         }
+        refreshScenes()
+    }
+
+    fun removeScene(index: Int) {
+        val scene = scenes.removeAt(index)
+        sceneBuffer.add(scene)
         refreshScenes()
     }
 
@@ -55,7 +49,10 @@ class ContentPanel : CPanel() {
         selectedScene = scenes.first()
     }
 
-    fun updateCamera(input: IInput) {
+    fun updateCamera(input: IInput, windowHandler: WindowHandler) {
+        scenes.forEach {
+            it.cameraHandler.update(windowHandler.timer)
+        }
         selectedScene?.let { selectedScene ->
             val move = Config.keyBindings.moveCamera.check(input)
             val rotate = Config.keyBindings.rotateCamera.check(input)
@@ -138,6 +135,37 @@ class ContentPanel : CPanel() {
                     size = contentPanel.size.run { Vector2f(x / 2, y / 2) }
                     position = Vector2f(contentPanel.size.x / 2f, contentPanel.size.y / 2f)
                 }
+            }
+        }
+    }
+
+    fun setSceneLayout(layout: Int, modelEditor: ModelEditor, model: ModelViewTarget, tex: TextureViewTarget) {
+        repeat(scenes.size) {
+            removeScene(scenes.size - 1)
+        }
+        when (layout) {
+            1 -> {
+                addScene(model, modelEditor)
+                addScene(tex, modelEditor)
+            }
+            2 -> {
+                addScene(model, modelEditor)
+                addScene(model, modelEditor)
+                addScene(model, modelEditor)
+                addScene(model, modelEditor)
+            }
+            3 -> {
+                addScene(model, modelEditor)
+                addScene(model, modelEditor)
+            }
+            4 -> {
+                addScene(model, modelEditor)
+                addScene(model, modelEditor)
+                addScene(model, modelEditor)
+                addScene(tex, modelEditor)
+            }
+            else -> {
+                addScene(model, modelEditor)
             }
         }
     }
