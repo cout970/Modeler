@@ -11,12 +11,12 @@ import org.lwjgl.opengl.GL11
 /**
  * Created by cout970 on 2017/03/20.
  */
-class Cursor2dRenderComponent : IRenderableComponent {
+class GuiCursorRenderComponent : IRenderableComponent {
 
     override fun render(ctx: RenderContext) {
         ctx.apply {
-            if (Config.keyBindings.moveCamera.check(contentPanel.input) ||
-                Config.keyBindings.rotateCamera.check(contentPanel.input)) {
+            if (Config.keyBindings.moveCamera.check(input) ||
+                Config.keyBindings.rotateCamera.check(input)) {
 
                 val size = vec2Of(100)
                 GLStateMachine.depthTest.disable()

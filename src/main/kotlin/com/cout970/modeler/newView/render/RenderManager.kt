@@ -4,9 +4,14 @@ import com.cout970.glutilities.structure.GLStateMachine
 import com.cout970.glutilities.structure.Timer
 import com.cout970.glutilities.window.GLFWWindow
 import com.cout970.modeler.config.Config
+import com.cout970.modeler.event.IInput
+import com.cout970.modeler.log.Level
+import com.cout970.modeler.log.log
+import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.newView.gui.Root
 import com.cout970.modeler.resource.ResourceLoader
 import com.cout970.modeler.util.ITickeable
+import com.cout970.modeler.window.WindowHandler
 import com.cout970.vector.extensions.xf
 import com.cout970.vector.extensions.yf
 import com.cout970.vector.extensions.zf
@@ -22,16 +27,18 @@ class RenderManager : ITickeable {
     lateinit var guiRenderer: GuiRenderer
     lateinit var shaderHandler: ShaderHandler
     lateinit var timer: Timer
-    lateinit var scene3dRenderer: SceneRenderer
-    lateinit var scene2dRenderer: Scene2dRenderer
+    lateinit var sceneRenderer: SceneRenderer
 
-    fun initOpenGl(resourceLoader: ResourceLoader, timer: Timer, window: GLFWWindow) {
-        this.window = window
-        this.timer = timer
+    fun initOpenGl(resourceLoader: ResourceLoader, windowHandler: WindowHandler, modelEditor: ModelEditor,
+                   input: IInput) {
+        this.window = windowHandler.window
+        this.timer = windowHandler.timer
+        log(Level.FINE) { "[RenderManager] Creating GuiRenderer" }
         guiRenderer = GuiRenderer(rootFrame, window.id)
+        log(Level.FINE) { "[RenderManager] Creating ShaderHandler" }
         shaderHandler = ShaderHandler(resourceLoader)
-        scene3dRenderer = SceneRenderer(shaderHandler)
-        scene2dRenderer = Scene2dRenderer(shaderHandler)
+        log(Level.FINE) { "[RenderManager] Creating SceneRenderer" }
+        sceneRenderer = SceneRenderer(shaderHandler, modelEditor, windowHandler, input)
         val c = Config.colorPalette.modelBackgroundColor
         GLStateMachine.clearColor = Color(c.xf, c.yf, c.zf)
     }
@@ -42,9 +49,7 @@ class RenderManager : ITickeable {
 
     override fun tick() {
         GLStateMachine.clear()
-        rootFrame.centerPanel.scenes.forEach {
-            //TODO
-        }
+        rootFrame.centerPanel.scenes.forEach(sceneRenderer::render)
         guiRenderer.render(rootFrame)
     }
 }

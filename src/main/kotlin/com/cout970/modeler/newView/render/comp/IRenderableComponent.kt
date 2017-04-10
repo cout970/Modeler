@@ -9,4 +9,6 @@ import com.cout970.modeler.newView.render.RenderContext
 interface IRenderableComponent {
 
     fun render(ctx: RenderContext)
+
+    fun canRender(ctx: RenderContext): Boolean = true
 }

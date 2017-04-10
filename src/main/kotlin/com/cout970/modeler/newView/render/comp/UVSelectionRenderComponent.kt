@@ -41,7 +41,7 @@ class UVSelectionRenderComponent : IRenderableComponent {
             val renderer = Renderer(size, offset, color, ctx)
 
             MaterialNone.bind()
-            drawModelSelection(this, renderer, modelSelection, scene.sceneController.showAllMeshUVs.get())
+            drawModelSelection(this, renderer, modelSelection, controllerState.showAllMeshUVs.get())
             drawTextureSelection(this, renderer, textureSelection)
             GLStateMachine.depthTest.enable()
         }
@@ -101,23 +101,23 @@ class UVSelectionRenderComponent : IRenderableComponent {
     ) {
 
         fun renderSelectedEdges(model: Model, sel: SubSelectionEdge) {
-            sel.paths
+            val aux = sel.paths
                     .groupBy { it.elementPath }
                     .map { model.getElement(it.key) as IElementLeaf to it.value }
-                    .forEach { (elem, list) ->
 
-                        val pos = list.flatMap {
-                            listOf(elem.positions[it.firstIndex], elem.positions[it.secondIndex])
-                        }
+            aux.forEach { (elem, list) ->
+                val pos = list.flatMap {
+                    listOf(elem.positions[it.firstIndex], elem.positions[it.secondIndex])
+                }
 
-                        elem.getQuads().forEach {
-                            it.toEdges().forEach {
-                                if (it.a.pos in pos && it.b.pos in pos) {
-                                    renderEdge(it.a.tex to it.b.tex)
-                                }
-                            }
+                elem.getQuads().forEach {
+                    it.toEdges().forEach {
+                        if (it.a.pos in pos && it.b.pos in pos) {
+                            renderEdge(it.a.tex to it.b.tex)
                         }
                     }
+                }
+            }
         }
 
 

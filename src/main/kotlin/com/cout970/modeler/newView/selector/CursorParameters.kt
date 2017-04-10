@@ -1,4 +1,4 @@
-package com.cout970.modeler.util
+package com.cout970.modeler.newView.selector
 
 import com.cout970.modeler.config.Config
 import com.cout970.vector.api.IVector2

@@ -7,12 +7,15 @@ import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.newView.CameraHandler
 import com.cout970.modeler.newView.gui.comp.CBorderRenderer
 import com.cout970.modeler.newView.gui.comp.CPanel
+import com.cout970.modeler.newView.render.shader.Light
 import com.cout970.modeler.newView.selector.Cursor
 import com.cout970.modeler.newView.viewtarget.ViewTarget
 import com.cout970.modeler.util.MatrixUtils
 import com.cout970.modeler.util.toIMatrix
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.util.toRads
+import com.cout970.vector.extensions.Vector3
+import com.cout970.vector.extensions.vec3Of
 import org.joml.Matrix4d
 import org.liquidengine.legui.util.ColorConstants
 
@@ -26,6 +29,11 @@ class Scene(
 
     val cameraHandler = CameraHandler()
     val cursor: Cursor
+
+    val lights: List<Light> = listOf(
+            Light(vec3Of(500, 1000, 750), Vector3.ONE),
+            Light(vec3Of(-500, -1000, -750), Vector3.ONE)
+    )
 
     var perspective: Boolean = true
         private set

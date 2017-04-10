@@ -2,6 +2,8 @@ package com.cout970.modeler.resource
 
 import com.cout970.glutilities.texture.Texture
 import com.cout970.glutilities.texture.TextureLoader
+import com.cout970.modeler.log.Level
+import com.cout970.modeler.log.log
 import org.liquidengine.legui.image.Image
 import java.io.FileNotFoundException
 import java.io.InputStream
@@ -16,6 +18,7 @@ class ResourceLoader {
     }
 
     fun getTexture(name: String): Texture {
+        log(Level.FINEST) { "[ResourceLoader] Loading texture: '$name'" }
         val aux = TextureLoader.loadTexture(readResource(name))
         return TextureLoader.uploadTexture2D(aux)
     }

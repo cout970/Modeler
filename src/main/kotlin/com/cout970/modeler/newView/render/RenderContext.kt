@@ -5,6 +5,7 @@ import com.cout970.glutilities.tessellator.IFormat
 import com.cout970.glutilities.tessellator.ITessellator
 import com.cout970.glutilities.tessellator.Tessellator
 import com.cout970.glutilities.tessellator.VAO
+import com.cout970.modeler.event.IInput
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.model.Quad
 import com.cout970.modeler.modeleditor.IModelProvider
@@ -12,12 +13,9 @@ import com.cout970.modeler.modeleditor.SelectionManager
 import com.cout970.modeler.newView.gui.ContentPanel
 import com.cout970.modeler.newView.gui.Scene
 import com.cout970.modeler.util.Cache
-import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.xd
 import com.cout970.vector.extensions.yd
-import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL14
 
 /**
@@ -30,27 +28,12 @@ class RenderContext(
         val contentPanel: ContentPanel,
         val model: Model,
         val scene: Scene,
-        val renderer: SceneRenderer
+        val renderer: SceneRenderer,
+        val input: IInput
 ) {
 
+    val controllerState get() = contentPanel.controllerState
     val tessellator: Tessellator get() = shaderHandler.tessellator
-
-    fun renderCursor(size_: IVector2) {
-        shaderHandler.useFixedViewportShader(size_) {
-            val size = vec2Of(100)
-            GLStateMachine.depthTest.disable()
-            GLStateMachine.blend.enable()
-            cursorTexture.bind()
-            tessellator.draw(GL11.GL_QUADS, formatPT, consumer) {
-                set(0, -size.xd / 2, -size.yd / 2, 0.0).set(1, 0, 0).endVertex()
-                set(0, -size.xd / 2, +size.yd / 2, 0.0).set(1, 1, 0).endVertex()
-                set(0, +size.xd / 2, +size.yd / 2, 0.0).set(1, 1, 1).endVertex()
-                set(0, +size.xd / 2, -size.yd / 2, 0.0).set(1, 0, 1).endVertex()
-            }
-            GLStateMachine.blend.disable()
-            GLStateMachine.depthTest.enable()
-        }
-    }
 
     fun renderCache(cache: Cache<Int, VAO>, hash: Int, func: (Int) -> VAO) {
         shaderHandler.consumer.accept(cache.getOrCompute(hash, func))

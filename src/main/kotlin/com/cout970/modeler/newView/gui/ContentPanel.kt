@@ -46,7 +46,7 @@ class ContentPanel : CPanel() {
         for (scene in scenes) {
             addComponent(scene)
         }
-        selectedScene = scenes.first()
+        selectedScene = scenes.firstOrNull()
     }
 
     fun updateCamera(input: IInput, windowHandler: WindowHandler) {

@@ -1,6 +1,8 @@
 package com.cout970.modeler.newView
 
 import com.cout970.modeler.event.EventController
+import com.cout970.modeler.log.Level
+import com.cout970.modeler.log.log
 import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.newView.gui.ContentPanel
 import com.cout970.modeler.newView.gui.Root
@@ -21,14 +23,14 @@ class GuiInitializer(
         val windowHandler: WindowHandler,
         val projectManager: ProjectManager,
         val renderManager: RenderManager,
-        val resourceLoader: ResourceLoader
+        val resourceLoader: ResourceLoader,
+        val guiResources: GuiResources
 ) {
 
     lateinit var root: Root
     lateinit var contentPanel: ContentPanel
     lateinit var viewEventHandler: ViewEventHandler
     lateinit var buttonController: ButtonController
-    lateinit var guiResources: GuiResources
     lateinit var selector: Selector
     lateinit var modelViewTarget: ModelViewTarget
     lateinit var textureViewTarget: TextureViewTarget
@@ -36,18 +38,25 @@ class GuiInitializer(
     val modelEditor: ModelEditor get() = projectManager.modelEditor
 
     fun init() {
+        log(Level.FINE) { "[GuiInitializer] Initializing GUI" }
+        log(Level.FINE) { "[GuiInitializer] Creating ButtonController" }
         buttonController = ButtonController(projectManager, this)
-        guiResources = GuiResources(resourceLoader)
+        log(Level.FINE) { "[GuiInitializer] Creating ContentPanel" }
         contentPanel = ContentPanel()
+        log(Level.FINE) { "[GuiInitializer] Creating Gui root frame" }
         root = Root(this, contentPanel)
+        log(Level.FINE) { "[GuiInitializer] Creating scene element selector" }
         selector = Selector(projectManager.modelEditor, contentPanel, eventController)
 
         renderManager.rootFrame = root
+        log(Level.FINE) { "[GuiInitializer] Creating ViewEventHandler" }
         viewEventHandler = ViewEventHandler(contentPanel, eventController)
-
+        log(Level.FINE) { "[GuiInitializer] Creating ModelViewTarget" }
         modelViewTarget = ModelViewTarget(modelEditor)
+        log(Level.FINE) { "[GuiInitializer] Creating TextureViewTarget" }
         textureViewTarget = TextureViewTarget(modelEditor)
-
+        log(Level.FINE) { "[GuiInitializer] Adding primary scene" }
         contentPanel.addScene(modelViewTarget, modelEditor)
+        log(Level.FINE) { "[GuiInitializer] GUI Initialization done" }
     }
 }

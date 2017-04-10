@@ -3,7 +3,7 @@ package com.cout970.modeler.newView.render.comp
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.newView.TransformationMode
 import com.cout970.modeler.newView.render.RenderContext
-import com.cout970.modeler.util.Cursor
+import com.cout970.modeler.newView.selector.Cursor
 import com.cout970.modeler.util.RenderUtil
 import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.vector.api.IVector3
@@ -16,7 +16,7 @@ import org.lwjgl.opengl.GL11
 object CursorRenderer {
 
     fun RenderContext.drawCursor(cursor: Cursor, axis: SelectionAxis, allowGrids: Boolean) {
-        when (cursor.type) {
+        when (cursor.transformationMode) {
             TransformationMode.TRANSLATION -> {
 
                 if (allowGrids && Config.enableHelperGrid && scene.perspective && axis != SelectionAxis.NONE) {
@@ -49,8 +49,8 @@ object CursorRenderer {
 
                 for (axis in SelectionAxis.selectedValues) {
 
-                    val selected = ctx.scene.selectorCache.selectedObject == axis ||
-                                   ctx.scene.selectorCache.hoveredObject == axis
+                    val selected = ctx.scene.viewTarget.selectedObject == axis ||
+                                   ctx.scene.viewTarget.hoveredObject == axis
 
                     RenderUtil.renderBar(
                             tessellator = this,
@@ -75,9 +75,9 @@ object CursorRenderer {
             draw(GL11.GL_QUADS, shaderHandler.formatPC) {
 
                 //if one of the axis is selected
-                if (scene.selectorCache.selectedObject != null) {
+                if (scene.viewTarget.selectedObject != null) {
 
-                    val axis = scene.selectorCache.selectedObject as? SelectionAxis ?: SelectionAxis.NONE
+                    val axis = scene.viewTarget.selectedObject as? SelectionAxis ?: SelectionAxis.NONE
 
                     RenderUtil.renderCircle(t = this,
                             center = cursor.center,
@@ -95,7 +95,8 @@ object CursorRenderer {
                                 axis = axis,
                                 radius = cursor.parameters.distanceFromCenter,
                                 size = Config.cursorLinesSize * cursor.parameters.minSizeOfSelectionBox,
-                                color = axis.direction)
+                                color = axis.direction
+                        )
                     }
 
                     val radius = cursor.parameters.distanceFromCenter
@@ -103,8 +104,8 @@ object CursorRenderer {
                     for (axis in SelectionAxis.selectedValues) {
 
                         val edgePoint = cursor.center + axis.direction * radius
-                        val selected = scene.selectorCache.selectedObject == axis ||
-                                       scene.selectorCache.hoveredObject == axis
+                        val selected = scene.viewTarget.selectedObject == axis ||
+                                       scene.viewTarget.hoveredObject == axis
 
                         RenderUtil.renderBar(tessellator = this,
                                 startPoint = edgePoint - axis.rotationDirection * cursor.parameters.maxSizeOfSelectionBox / 2,
@@ -153,6 +154,5 @@ object CursorRenderer {
                 }
             }
         }
-
     }
 }

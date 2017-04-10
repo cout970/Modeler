@@ -13,7 +13,7 @@ class Scene3dCursorRenderComponent : IRenderableComponent {
 
     override fun render(ctx: RenderContext) {
         ctx.apply {
-            val axis = scene.selectorCache.selectedObject as? SelectionAxis ?: SelectionAxis.NONE
+            val axis = scene.viewTarget.selectedObject as? SelectionAxis ?: SelectionAxis.NONE
             if (selectionManager.selectionMode == SelectionMode.EDIT) {
                 val selection = selectionManager.vertexPosSelection
                 if (selection != VertexPosSelection.EMPTY) {

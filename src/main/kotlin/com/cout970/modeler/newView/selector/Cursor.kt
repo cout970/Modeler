@@ -3,7 +3,6 @@ package com.cout970.modeler.newView.selector
 import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.newView.TransformationMode
 import com.cout970.modeler.newView.gui.Scene
-import com.cout970.modeler.util.CursorParameters
 import com.cout970.modeler.util.toIVector
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.Vector3
@@ -16,13 +15,15 @@ class Cursor(val scene: Scene, val modelEditor: ModelEditor) {
     var enable = false
     var center: IVector3 = Vector3.ORIGIN
 
+    val transformationMode: TransformationMode
+        get() = scene.contentPanel.controllerState.transformationMode
     val parameters: CursorParameters
         get() = CursorParameters.create(scene.cameraHandler.camera.zoom, scene.size.toIVector())
 
     fun getSubParts(): List<ISelectable> {
         if (!enable) return emptyList()
 
-        return when (scene.contentPanel.controllerState.transformationMode) {
+        return when (transformationMode) {
             TransformationMode.TRANSLATION -> listOf(
                     CursorPartTranslate(this, Vector3.X_AXIS),
                     CursorPartTranslate(this, Vector3.Y_AXIS),

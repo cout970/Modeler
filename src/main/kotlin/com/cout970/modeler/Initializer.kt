@@ -55,14 +55,15 @@ class Initializer(val programArguments: List<String>) {
         log(Level.FINE) { "Creating ExportManager" }
         exportManager = ExportManager(projectManager, resourceLoader)
 
-        log(Level.FINE) { "Loading Resources" }
+        log(Level.FINE) { "Creating GuiResources" }
         guiResources = GuiResources(resourceLoader)
 
         log(Level.FINE) { "Creating RenderManager" }
         renderManager = RenderManager()
         log(Level.FINE) { "Creating GuiInitializer" }
-        guiInitializer = GuiInitializer(eventController, windowHandler, projectManager, renderManager, resourceLoader)
-        log(Level.FINE) { "Initializing GUI" }
+        guiInitializer = GuiInitializer(eventController, windowHandler, projectManager,
+                renderManager, resourceLoader, guiResources)
+
         guiInitializer.init()
 
         log(Level.FINE) { "Creating Loop" }
@@ -79,12 +80,13 @@ class Initializer(val programArguments: List<String>) {
         eventController.bindWindow(windowHandler.window)
 
         log(Level.FINE) { "Initializing renderers" }
-        renderManager.initOpenGl(resourceLoader, mainLoop.timer, windowHandler.window)
+        renderManager.initOpenGl(resourceLoader, windowHandler, modelEditor, eventController)
         log(Level.FINE) { "Registering listeners for ViewEventHandler" }
         guiInitializer.viewEventHandler.registerListeners(eventController)
 
         log(Level.FINE) { "Adding placeholder cube" }
         modelEditor.addCube(vec3Of(16, 16, 16))
+        log(Level.FINE) { "Initialization done" }
     }
 
     private fun parseArgs() {
@@ -104,6 +106,8 @@ class Initializer(val programArguments: List<String>) {
                 log(Level.ERROR) { "Invalid program argument: '${programArguments[0]}' is not a valid path to a save file" }
             }
             log(Level.FINE) { "Parsing arguments done" }
+        } else {
+            log(Level.FINE) { "No program arguments found, ignoring..." }
         }
     }
 

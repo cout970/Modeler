@@ -1,11 +1,10 @@
 package com.cout970.modeler.view.controller
 
-import com.cout970.modeler.modeleditor.ModelEditor
-
 /**
  * Created by cout970 on 2017/01/27.
  */
-class TextureSelector(val scene: Scene2d, val controller: SceneController, val modelEditor: ModelEditor) {
+class TextureSelector
+//(val scene: Scene2d, val controller: SceneController, val modelEditor: ModelEditor) {
 
 //    val transformationMode get() = controller.transformationMode
 //    val selection get() = modelEditor.selectionManager.vertexTexSelection
@@ -256,4 +255,4 @@ class TextureSelector(val scene: Scene2d, val controller: SceneController, val m
 //            }
 //        }
 //    }
-}
+//}

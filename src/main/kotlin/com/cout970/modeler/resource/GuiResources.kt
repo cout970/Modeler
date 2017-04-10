@@ -1,5 +1,7 @@
 package com.cout970.modeler.resource
 
+import com.cout970.modeler.log.Level
+import com.cout970.modeler.log.log
 import com.cout970.modeler.model.Model
 import org.joml.Vector2f
 import org.liquidengine.legui.component.ImageView
@@ -18,6 +20,7 @@ class GuiResources(val loader: ResourceLoader) {
     val cursorScale: ImageView
 
     init {
+        log(Level.FINE) { "[GuiResources] Loading resources..." }
         selectionModeElement = ImageView(
                 loader.getImage("assets/textures/selection_mode_element.png")).apply { size = Vector2f(32f) }
 
@@ -33,6 +36,8 @@ class GuiResources(val loader: ResourceLoader) {
         cursorTranslate = ImageView(loader.getImage("assets/textures/translation.png")).apply { size = Vector2f(32f) }
         cursorRotate = ImageView(loader.getImage("assets/textures/rotation.png")).apply { size = Vector2f(32f) }
         cursorScale = ImageView(loader.getImage("assets/textures/scale.png")).apply { size = Vector2f(32f) }
+
+        log(Level.FINE) { "[GuiResources] Resources loaded" }
     }
 
     fun updateMaterials(model: Model) {

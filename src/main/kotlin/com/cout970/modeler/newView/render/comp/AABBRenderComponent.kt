@@ -14,7 +14,7 @@ class AABBRenderComponent : IRenderableComponent {
 
     override fun render(ctx: RenderContext) {
         ctx.apply {
-            if (contentPanel.showBoundingBoxes.get()) {
+            if (controllerState.showBoundingBoxes.get()) {
                 draw(GL11.GL_LINES, shaderHandler.formatPC) {
                     model.getLeafElements().map(IElementLeaf::toAABB).forEach {
                         RenderUtil.renderBox(this, it)

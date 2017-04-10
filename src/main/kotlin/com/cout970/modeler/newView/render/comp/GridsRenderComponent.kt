@@ -66,12 +66,12 @@ class GridsRenderComponent : IRenderableComponent {
                     set(0, x, 160, dist).setVec(1, color).endVertex()
                 }
 
-                val selX = scene.selectorCache.selectedObject == SelectionAxis.X
-                val selY = scene.selectorCache.selectedObject == SelectionAxis.Y
-                val selZ = scene.selectorCache.selectedObject == SelectionAxis.Z
+                val selX = scene.viewTarget.selectedObject == SelectionAxis.X
+                val selY = scene.viewTarget.selectedObject == SelectionAxis.Y
+                val selZ = scene.viewTarget.selectedObject == SelectionAxis.Z
 
                 if (!selX && !selY && !selZ || !perspective ||
-                    contentPanel.transformationMode != TransformationMode.TRANSLATION) {
+                    controllerState.transformationMode != TransformationMode.TRANSLATION) {
 
                     color = Config.colorPalette.grid2Color
 

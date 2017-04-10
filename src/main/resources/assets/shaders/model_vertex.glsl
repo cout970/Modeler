@@ -21,11 +21,9 @@ out vec3 toLightVectorB;
 out vec3 toCameraVector;
 
 //matrix used to add perspective projection
-uniform mat4 projectionMatrix;
-//matrix used to move the camera
-uniform mat4 viewMatrix;
-//matrix used to move the model
-uniform mat4 transformationMatrix;
+uniform mat4 matrixMVP;
+//position of the camera
+uniform vec3 cameraPos;
 //position of the ligth A
 uniform vec3 lightPositionA;
 //position of the ligth B
@@ -34,11 +32,9 @@ uniform vec3 lightPositionB;
 void main(void){
 
     //world position of the vertex given using model coordinates
-    vec4 worldPos = transformationMatrix * vec4(in_position.xyz, 1.0);
-    //position of the vertex relative to the camera
-    vec4 viewPos = viewMatrix * worldPos;
+    vec4 worldPos = vec4(in_position.xyz, 1.0);
     //final position of the vertex using perpective projection
-    gl_Position = projectionMatrix * viewPos;
+    gl_Position = matrixMVP * worldPos;
 
     //values passed to openGL to interpoalte
     pass_texture = in_texture;
@@ -49,5 +45,5 @@ void main(void){
     toLightVectorB = lightPositionB - worldPos.xyz;
 
     //TODO optimize this, we only need to compute the inverse of viewMatrix once, not one per vertex
-    toCameraVector = (inverse(viewMatrix) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - worldPos.xyz;
+    toCameraVector = cameraPos - worldPos.xyz;
 }

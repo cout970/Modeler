@@ -13,7 +13,7 @@ internal class Scene2dCursorRenderComponent : IRenderableComponent {
 
     override fun render(ctx: RenderContext) {
         ctx.apply {
-            val axis = scene.selectorCache.selectedObject as? SelectionAxis ?: SelectionAxis.NONE
+            val axis = scene.viewTarget.selectedObject as? SelectionAxis ?: SelectionAxis.NONE
             val selection = selectionManager.vertexTexSelection
             if (selection != VertexTexSelection.EMPTY) {
                 drawCursor(scene.cursor, axis, true)
