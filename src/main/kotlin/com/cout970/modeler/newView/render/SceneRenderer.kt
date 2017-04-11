@@ -39,11 +39,11 @@ class SceneRenderer(
 
         val contentPanel = scene.contentPanel
 
-//        if (modelProvider.modelNeedRedraw) {
-//            modelProvider.modelNeedRedraw = false
-//            sceneController.modelCache.clear()
-//            sceneController.selectionCache.clear()
-//        }
+        if (modelEditor.modelNeedRedraw) {
+            modelEditor.modelNeedRedraw = false
+            modelCache.clear()
+            selectionCache.clear()
+        }
 
         val context = RenderContext(
                 shaderHandler = shaderHandler,

@@ -3,6 +3,7 @@ package com.cout970.modeler.newView.selector
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.event.IInput
 import com.cout970.modeler.modeleditor.ModelEditor
+import com.cout970.modeler.modeleditor.action.ActionModifyModelShape
 import com.cout970.modeler.newView.ControllerState
 import com.cout970.modeler.newView.EventMouseDrag
 import com.cout970.modeler.newView.SceneSpaceContext
@@ -33,17 +34,22 @@ class Selector(val modelEditor: ModelEditor, val contentPanel: ContentPanel, val
 
             val click = Config.keyBindings.selectModelControls.check(input)
             if (target.selectedObject == null) {
-                updateHovered(target, context)
+                updateHovered(target, context, activeScene)
 
                 val hovered = target.hoveredObject
 
                 if (click && hovered != null) {
+                    activeScene.tmpCursorCenter = activeScene.cursor.center
                     target.selectedObject = hovered
                     target.hoveredObject = null
                 }
             } else if (!click) {
+                activeScene.viewTarget.tmpModel?.let { model ->
+                    modelEditor.historyRecord.doAction(ActionModifyModelShape(modelEditor, model))
+                }
+                activeScene.tmpCursorCenter = null
                 target.selectedObject = null
-                updateHovered(target, context)
+                updateHovered(target, context, activeScene)
             }
         }
     }
@@ -63,7 +69,6 @@ class Selector(val modelEditor: ModelEditor, val contentPanel: ContentPanel, val
 
                     activeScene.viewTarget.tmpModel = model
                 }
-
             }
         }
     }
@@ -74,9 +79,9 @@ class Selector(val modelEditor: ModelEditor, val contentPanel: ContentPanel, val
         return oldContext to newContext
     }
 
-    private fun updateHovered(target: ViewTarget, context: SceneSpaceContext) {
+    private fun updateHovered(target: ViewTarget, context: SceneSpaceContext, scene: Scene) {
         if (target.hoveredObject == null) {
-            target.hoveredObject = getHoveredObject(context, target.selectableObjects)
+            target.hoveredObject = getHoveredObject(context, target.getSelectableObjects(scene))
         }
     }
 
@@ -92,7 +97,7 @@ class Selector(val modelEditor: ModelEditor, val contentPanel: ContentPanel, val
         return list.getClosest(ray)?.second
     }
 
-    private fun getMouseSpaceContext(scene: Scene, absMousePos: IVector2): SceneSpaceContext {
+    fun getMouseSpaceContext(scene: Scene, absMousePos: IVector2): SceneSpaceContext {
         val matrix = scene.getMatrixMVP().toJOML()
         val mousePos = absMousePos - scene.absolutePosition
         val viewportSize = scene.size.toIVector()

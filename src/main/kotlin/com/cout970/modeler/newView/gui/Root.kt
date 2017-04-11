@@ -9,13 +9,12 @@ import com.cout970.vector.extensions.plus
 import com.cout970.vector.extensions.vec2Of
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Frame
-import org.liquidengine.legui.component.TextInput
 import org.liquidengine.legui.util.ColorConstants
 
 /**
  * Created by cout970 on 2017/03/09.
  */
-class Root(val initializer: GuiInitializer, val centerPanel: ContentPanel) : Frame(1f, 1f), ITickeable {
+class Root(val initializer: GuiInitializer, val contentPanel: ContentPanel) : Frame(1f, 1f), ITickeable {
 
     val topBar = TopBar()
     val bottomBar = BottomBar()
@@ -24,8 +23,7 @@ class Root(val initializer: GuiInitializer, val centerPanel: ContentPanel) : Fra
 
     val dropdown = CPanel(0f, 20f, 150f, 80f)
 
-    val searchBar = TextInput("")
-    val searchPanel = CPanel()
+    val searchPanel = SearchPanel()
 
     init {
         leftBar.isEnabled = false
@@ -36,19 +34,19 @@ class Root(val initializer: GuiInitializer, val centerPanel: ContentPanel) : Fra
         topBar.init(initializer.buttonController, dropdown)
         bottomBar.init(initializer.buttonController, initializer.guiResources)
 
-        listOf(topBar, bottomBar, leftBar, rightBar, centerPanel, dropdown
+        listOf(topBar, bottomBar, leftBar, rightBar, contentPanel, dropdown
         ).forEach {
             it.backgroundColor = Config.colorPalette.lightColor.toColor()
         }
 
-        centerPanel.backgroundColor = ColorConstants.transparent()
+        contentPanel.backgroundColor = ColorConstants.transparent()
         dropdown.isVisible = false
 
         addComponent(topBar)
         addComponent(bottomBar)
         addComponent(leftBar)
         addComponent(rightBar)
-        addComponent(centerPanel)
+        addComponent(contentPanel)
         addComponent(dropdown)
     }
 
@@ -56,9 +54,10 @@ class Root(val initializer: GuiInitializer, val centerPanel: ContentPanel) : Fra
         initializer.guiResources.updateMaterials(initializer.modelEditor.model)
         initializer.windowHandler.resetViewport()
 
-        centerPanel.updateCamera(initializer.eventController, initializer.windowHandler)
+        contentPanel.updateCamera(initializer.eventController, initializer.windowHandler)
         rescale()
-        centerPanel.scaleScenes()
+        contentPanel.scaleScenes()
+        initializer.viewEventHandler.update()
     }
 
     fun rescale() {
@@ -77,7 +76,7 @@ class Root(val initializer: GuiInitializer, val centerPanel: ContentPanel) : Fra
             size = Vector2f(if (rightBar.isEnabled) 190f else 0f, parent.size.y - topBar.size.y - bottomBar.size.y)
         }
 
-        centerPanel.size = Vector2f(size.x - leftBar.size.x - rightBar.size.x,
+        contentPanel.size = Vector2f(size.x - leftBar.size.x - rightBar.size.x,
                 size.y - topBar.size.y - bottomBar.size.y)
 
         // Position
@@ -85,11 +84,10 @@ class Root(val initializer: GuiInitializer, val centerPanel: ContentPanel) : Fra
         bottomBar.position = Vector2f(0f, size.y - bottomBar.size.y)
 
         leftBar.position = Vector2f(0f, topBar.size.y)
-        rightBar.position = Vector2f(leftBar.size.x + centerPanel.size.x, topBar.size.y)
+        rightBar.position = Vector2f(leftBar.size.x + contentPanel.size.x, topBar.size.y)
 
-        centerPanel.position = Vector2f(leftBar.size.x, topBar.size.y)
+        contentPanel.position = Vector2f(leftBar.size.x, topBar.size.y)
 
-        searchBar.position = Vector2f(0f, 0f)
         updateDropdownVisibility()
     }
 

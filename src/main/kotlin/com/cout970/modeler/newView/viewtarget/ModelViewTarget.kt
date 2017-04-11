@@ -1,6 +1,7 @@
 package com.cout970.modeler.newView.viewtarget
 
 import com.cout970.modeler.modeleditor.ModelEditor
+import com.cout970.modeler.newView.gui.Scene
 import com.cout970.modeler.newView.selector.ISelectable
 
 /**
@@ -8,8 +9,7 @@ import com.cout970.modeler.newView.selector.ISelectable
  */
 class ModelViewTarget(modelEditor: ModelEditor) : ViewTarget(modelEditor) {
 
-    override val selectableObjects: List<ISelectable>
-        get() = emptyList()
-
     override val is3d: Boolean = true
+
+    override fun getSelectableObjects(scene: Scene): List<ISelectable> = scene.cursor.getSubParts()
 }

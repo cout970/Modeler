@@ -12,8 +12,7 @@ import com.cout970.vector.extensions.*
  * Created by cout970 on 2017/04/09.
  */
 
-
-abstract class CursorPart(val cursor: Cursor) : ISelectable {
+abstract class CursorPart(val cursor: Cursor, val color: IVector3) : ISelectable {
 
     override fun rayTrace(ray: Ray): RayTraceResult? {
         val (a, b) = calculateHitbox()
@@ -23,7 +22,8 @@ abstract class CursorPart(val cursor: Cursor) : ISelectable {
     abstract fun calculateHitbox(): Pair<IVector3, IVector3>
 }
 
-class CursorPartTranslate(cursor: Cursor, override val translationAxis: IVector3) : CursorPart(cursor), ITranslatable {
+class CursorPartTranslate(cursor: Cursor, color: IVector3, override val translationAxis: IVector3)
+    : CursorPart(cursor, color), ITranslatable {
 
     override fun calculateHitbox(): Pair<IVector3, IVector3> {
         val radius = cursor.parameters.distanceFromCenter
@@ -38,12 +38,28 @@ class CursorPartTranslate(cursor: Cursor, override val translationAxis: IVector3
 
     override fun applyTranslation(offset: Float, model: Model): Model {
         val selection = cursor.modelEditor.selectionManager.getSelectedVertexPos(model)
+        cursor.scene.tmpCursorCenter?.let { center ->
+            cursor.center = center + translationAxis * offset
+        }
         return cursor.modelEditor.editTool.translate(model, selection, translationAxis * offset)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is CursorPartTranslate) return false
+
+        if (translationAxis != other.translationAxis) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return translationAxis.hashCode()
     }
 }
 
-class CursorPartRotation(cursor: Cursor, override val normal: IVector3, val axis: IVector3) : CursorPart(
-        cursor), IRotable {
+class CursorPartRotation(cursor: Cursor, color: IVector3, override val normal: IVector3, val axis: IVector3)
+    : CursorPart(cursor, color), IRotable {
 
     override val center: IVector3 get() = cursor.center
 
@@ -62,9 +78,23 @@ class CursorPartRotation(cursor: Cursor, override val normal: IVector3, val axis
         val selection = cursor.modelEditor.selectionManager.getSelectedVertexPos(model)
         return cursor.modelEditor.editTool.rotate(model, selection, center, quat)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is CursorPartRotation) return false
+
+        if (normal != other.normal) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return normal.hashCode()
+    }
 }
 
-class CursorPartScale(cursor: Cursor, override val scaleAxis: IVector3) : CursorPart(cursor), IScalable {
+class CursorPartScale(cursor: Cursor, color: IVector3, override val scaleAxis: IVector3)
+    : CursorPart(cursor, color), IScalable {
 
     override val center: IVector3 get() = cursor.center
 
@@ -82,6 +112,19 @@ class CursorPartScale(cursor: Cursor, override val scaleAxis: IVector3) : Cursor
     override fun applyScale(offset: Float, model: Model): Model {
         val selection = cursor.modelEditor.selectionManager.getSelectedVertexPos(model)
         return cursor.modelEditor.editTool.scale(model, selection, center, scaleAxis, offset)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is CursorPartScale) return false
+
+        if (scaleAxis != other.scaleAxis) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return scaleAxis.hashCode()
     }
 }
 

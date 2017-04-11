@@ -49,7 +49,7 @@ class RenderManager : ITickeable {
 
     override fun tick() {
         GLStateMachine.clear()
-        rootFrame.centerPanel.scenes.forEach(sceneRenderer::render)
+        rootFrame.contentPanel.scenes.forEach(sceneRenderer::render)
         guiRenderer.render(rootFrame)
     }
 }

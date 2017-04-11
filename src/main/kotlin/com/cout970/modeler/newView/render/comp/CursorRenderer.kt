@@ -4,6 +4,8 @@ import com.cout970.modeler.config.Config
 import com.cout970.modeler.newView.TransformationMode
 import com.cout970.modeler.newView.render.RenderContext
 import com.cout970.modeler.newView.selector.Cursor
+import com.cout970.modeler.newView.selector.CursorPartRotation
+import com.cout970.modeler.newView.selector.CursorPartTranslate
 import com.cout970.modeler.util.RenderUtil
 import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.vector.api.IVector3
@@ -16,6 +18,7 @@ import org.lwjgl.opengl.GL11
 object CursorRenderer {
 
     fun RenderContext.drawCursor(cursor: Cursor, axis: SelectionAxis, allowGrids: Boolean) {
+        if (!cursor.enable) return
         when (cursor.transformationMode) {
             TransformationMode.TRANSLATION -> {
 
@@ -47,21 +50,22 @@ object CursorRenderer {
                 val start = radius - cursor.parameters.maxSizeOfSelectionBox / 2.0
                 val end = radius + cursor.parameters.maxSizeOfSelectionBox / 2.0
 
-                for (axis in SelectionAxis.selectedValues) {
+                for (part in cursor.getSubParts()) {
+                    (part as? CursorPartTranslate)?.let { part ->
+                        val selected = ctx.scene.viewTarget.selectedObject == part ||
+                                       ctx.scene.viewTarget.hoveredObject == part
 
-                    val selected = ctx.scene.viewTarget.selectedObject == axis ||
-                                   ctx.scene.viewTarget.hoveredObject == axis
-
-                    RenderUtil.renderBar(
-                            tessellator = this,
-                            startPoint = center + axis.direction * start,
-                            endPoint = center + axis.direction * end,
-                            color = axis.direction,
-                            size = if (selected)
-                                cursor.parameters.minSizeOfSelectionBox * 1.5
-                            else
-                                cursor.parameters.minSizeOfSelectionBox
-                    )
+                        RenderUtil.renderBar(
+                                tessellator = this,
+                                startPoint = center + part.translationAxis * start,
+                                endPoint = center + part.translationAxis * end,
+                                color = part.color,
+                                size = if (selected)
+                                    cursor.parameters.minSizeOfSelectionBox * 1.5
+                                else
+                                    cursor.parameters.minSizeOfSelectionBox
+                        )
+                    }
                 }
             }
         }
@@ -77,44 +81,52 @@ object CursorRenderer {
                 //if one of the axis is selected
                 if (scene.viewTarget.selectedObject != null) {
 
-                    val axis = scene.viewTarget.selectedObject as? SelectionAxis ?: SelectionAxis.NONE
-
-                    RenderUtil.renderCircle(t = this,
-                            center = cursor.center,
-                            axis = axis,
-                            radius = cursor.parameters.distanceFromCenter,
-                            size = Config.cursorLinesSize * cursor.parameters.minSizeOfSelectionBox,
-                            color = axis.direction)
-
-                } else {
-
-                    for (axis in SelectionAxis.selectedValues) {
-
-                        RenderUtil.renderCircle(t = this,
+                    (scene.viewTarget.selectedObject as? CursorPartRotation)?.let { part ->
+                        RenderUtil.renderCircle(
+                                t = this,
                                 center = cursor.center,
-                                axis = axis,
+                                axis = part.axis,
                                 radius = cursor.parameters.distanceFromCenter,
                                 size = Config.cursorLinesSize * cursor.parameters.minSizeOfSelectionBox,
-                                color = axis.direction
+                                color = part.color
                         )
+                    }
+                } else {
+                    for (part in cursor.getSubParts()) {
+                        (part as? CursorPartRotation)?.let { part ->
+
+                            RenderUtil.renderCircle(
+                                    t = this,
+                                    center = cursor.center,
+                                    axis = part.axis,
+                                    radius = cursor.parameters.distanceFromCenter,
+                                    size = Config.cursorLinesSize * cursor.parameters.minSizeOfSelectionBox,
+                                    color = part.color
+                            )
+                        }
                     }
 
                     val radius = cursor.parameters.distanceFromCenter
 
-                    for (axis in SelectionAxis.selectedValues) {
+                    for (part in cursor.getSubParts()) {
+                        (part as? CursorPartRotation)?.let { part ->
 
-                        val edgePoint = cursor.center + axis.direction * radius
-                        val selected = scene.viewTarget.selectedObject == axis ||
-                                       scene.viewTarget.hoveredObject == axis
+                            val edgePoint = cursor.center + part.axis * radius
+                            val selected = scene.viewTarget.selectedObject == part ||
+                                           scene.viewTarget.hoveredObject == part
 
-                        RenderUtil.renderBar(tessellator = this,
-                                startPoint = edgePoint - axis.rotationDirection * cursor.parameters.maxSizeOfSelectionBox / 2,
-                                endPoint = edgePoint + axis.rotationDirection * cursor.parameters.maxSizeOfSelectionBox / 2,
-                                color = vec3Of(1),
-                                size = if (selected)
-                                    cursor.parameters.minSizeOfSelectionBox * 1.5
-                                else
-                                    cursor.parameters.minSizeOfSelectionBox)
+                            RenderUtil.renderBar(
+                                    tessellator = this,
+                                    startPoint = edgePoint - part.normal * cursor.parameters.maxSizeOfSelectionBox / 2,
+                                    endPoint = edgePoint + part.normal * cursor.parameters.maxSizeOfSelectionBox / 2,
+                                    color = vec3Of(1),
+                                    size = if (selected) {
+                                        cursor.parameters.minSizeOfSelectionBox * 1.5
+                                    } else {
+                                        cursor.parameters.minSizeOfSelectionBox
+                                    }
+                            )
+                        }
                     }
                 }
             }

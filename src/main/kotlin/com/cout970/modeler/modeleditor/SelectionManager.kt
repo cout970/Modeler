@@ -21,9 +21,15 @@ class SelectionManager(val modelEditor: ModelEditor) {
     var selectionMode: SelectionMode = SelectionMode.ELEMENT
 
     var selectionState = SelectionState(ElementSelection.EMPTY, VertexPosSelection.EMPTY, VertexTexSelection.EMPTY)
+        set(value) {
+            listeners.forEach { it(field, value) }
+            field = value
+        }
 
     var vertexPosTarget: SelectionTarget = SelectionTarget.QUAD
     var vertexTexTarget: SelectionTarget = SelectionTarget.QUAD
+
+    val listeners = mutableListOf<(SelectionState, SelectionState) -> Unit>()
 
     fun getSelectionCenter(model: Model): IVector3 {
         return if (selectionMode == SelectionMode.EDIT) {

@@ -2,6 +2,7 @@ package com.cout970.modeler.newView.viewtarget
 
 import com.cout970.modeler.model.Model
 import com.cout970.modeler.modeleditor.ModelEditor
+import com.cout970.modeler.newView.gui.Scene
 import com.cout970.modeler.newView.selector.ISelectable
 
 /**
@@ -9,7 +10,6 @@ import com.cout970.modeler.newView.selector.ISelectable
  */
 abstract class ViewTarget(val modelEditor: ModelEditor) {
 
-    abstract val selectableObjects: List<ISelectable>
     var hoveredObject: ISelectable? = null
     var selectedObject: ISelectable? = null
 
@@ -18,4 +18,6 @@ abstract class ViewTarget(val modelEditor: ModelEditor) {
     var tmpModel: Model? = null
 
     fun getModel(): Model = tmpModel ?: modelEditor.model
+
+    abstract fun getSelectableObjects(scene: Scene): List<ISelectable>
 }

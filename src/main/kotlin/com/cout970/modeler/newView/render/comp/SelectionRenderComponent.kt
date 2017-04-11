@@ -26,7 +26,7 @@ class SelectionRenderComponent : IRenderableComponent {
                 val selection = selectionManager.elementSelection
 
                 if (selection != ElementSelection.EMPTY) {
-                    renderCache(renderer.modelCache, model.hashCode() xor selection.hashCode()) {
+                    renderCache(renderer.modelCache, model.hashCode() xor selection.hashCode() shr 1) {
                         val size = Config.selectionThickness.toDouble()
                         val color = Config.colorPalette.modelSelectionColor
 
@@ -48,7 +48,7 @@ class SelectionRenderComponent : IRenderableComponent {
                 if (selection != VertexPosSelection.EMPTY) {
 
                     // render selection
-                    renderCache(renderer.selectionCache, model.hashCode() xor selection.hashCode()) {
+                    renderCache(renderer.selectionCache, model.hashCode() xor selection.hashCode() shl 1) {
                         val size = Config.selectionThickness.toDouble()
                         val color = Config.colorPalette.modelSelectionColor
                         tessellator.compile(GL11.GL_QUADS, shaderHandler.formatPC) {

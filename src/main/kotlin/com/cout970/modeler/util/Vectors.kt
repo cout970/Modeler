@@ -146,3 +146,29 @@ fun IVector3.hasNaN() = xd.isNaN() || yd.isNaN() || zd.isNaN()
 fun IVector4.hasNaN() = xd.isNaN() || yd.isNaN() || zd.isNaN() || wd.isNaN()
 
 fun IQuaternion.invert() = toJOML().invert().toIQuaternion()
+
+// http://stackoverflow.com/questions/19649452/given-a-single-arbitrary-unit-vector-what-is-the-best-method-to-compute-an-arbi
+fun IVector3.getPerpendicularPlane(): Pair<IVector3, IVector3> {
+    val axis = getDominantAxis()
+    val aux = when (axis) {
+        0 -> vec3Of(-yd - zd, xd, xd)
+        1 -> vec3Of(yd, -xd - zd, yd)
+        else -> vec3Of(zd, zd, -xd - yd)
+    }
+    val a = (this cross aux).normalize()
+    val b = (a cross this).normalize()
+
+    return a to b
+}
+
+fun IVector3.getDominantAxis(): Int {
+    val x = Math.abs(xf)
+    val y = Math.abs(yf)
+    val z = Math.abs(zf)
+
+    return if (x > y) {
+        if (x > z) 0 else 2
+    } else {
+        if (y > z) 1 else 2
+    }
+}

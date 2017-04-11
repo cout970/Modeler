@@ -5,7 +5,6 @@ import com.cout970.modeler.model.AABB
 import com.cout970.modeler.model.Meshes
 import com.cout970.modeler.model.Quad
 import com.cout970.modeler.model.Transformation
-import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
@@ -44,28 +43,17 @@ object RenderUtil {
         }
     }
 
-    fun renderCircle(t: ITessellator, center: IVector3, axis: SelectionAxis, radius: Double, size: Double = 0.05,
+    fun renderCircle(t: ITessellator, center: IVector3, axis: IVector3, radius: Double, size: Double = 0.05,
                      color: IVector3 = vec3Of(1, 1, 1)) {
         val quality = 16
         for (i in 0..360 / quality) {
             val angle0 = Math.toRadians(i.toDouble() * quality)
             val angle1 = Math.toRadians((i.toDouble() + 1) * quality)
 
-            val start = if (axis == SelectionAxis.Y) {
-                vec3Of(Math.sin(angle0), Math.cos(angle0), 0)
-            } else if (axis == SelectionAxis.Z) {
-                vec3Of(0, Math.sin(angle0), Math.cos(angle0))
-            } else {
-                vec3Of(Math.sin(angle0), 0, Math.cos(angle0))
-            }
+            val (axis0, axis1) = axis.getPerpendicularPlane()
 
-            val end = if (axis == SelectionAxis.Y) {
-                vec3Of(Math.sin(angle1), Math.cos(angle1), 0)
-            } else if (axis == SelectionAxis.Z) {
-                vec3Of(0, Math.sin(angle1), Math.cos(angle1))
-            } else {
-                vec3Of(Math.sin(angle1), 0, Math.cos(angle1))
-            }
+            val start = axis0 * Math.sin(angle0) + axis1 * Math.cos(angle0)
+            val end = axis0 * Math.sin(angle1) + axis1 * Math.cos(angle1)
 
             renderBar(t, start * radius + center, end * radius + center, size, color)
         }

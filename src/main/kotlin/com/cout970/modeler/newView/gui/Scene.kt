@@ -14,6 +14,7 @@ import com.cout970.modeler.util.MatrixUtils
 import com.cout970.modeler.util.toIMatrix
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.util.toRads
+import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.vec3Of
 import org.joml.Matrix4d
@@ -36,7 +37,7 @@ class Scene(
     )
 
     var perspective: Boolean = true
-        private set
+    var tmpCursorCenter: IVector3? = null
 
     init {
         cursor = Cursor(this, modelEditor)
