@@ -2,6 +2,7 @@ package com.cout970.modeler.config
 
 import com.cout970.glutilities.device.Keyboard
 import com.cout970.glutilities.device.Mouse
+import com.cout970.modeler.config.KeyboardModifiers.ALT
 import com.cout970.modeler.config.KeyboardModifiers.CTRL
 
 /**
@@ -23,7 +24,7 @@ class KeyBindings {
     var switchCameraAxis = KeyBind(Keyboard.KEY_P)
     var switchOrthoProjection = KeyBind(Keyboard.KEY_O)
     var slowCameraMovements = KeyBind(Keyboard.KEY_LEFT_SHIFT)
-    var moveCameraToCursor = KeyBind(Keyboard.KEY_C)
+    var moveCameraToCursor = KeyBind(Keyboard.KEY_F)
     var delete = KeyBind(Keyboard.KEY_DELETE)
     var undo = KeyBind(Keyboard.KEY_Z, CTRL)
     var redo = KeyBind(Keyboard.KEY_Y, CTRL)
@@ -31,4 +32,11 @@ class KeyBindings {
     var copy = KeyBind(Keyboard.KEY_C, CTRL)
     var paste = KeyBind(Keyboard.KEY_V, CTRL)
     var showTopMenu = KeyBind(Keyboard.KEY_LEFT_ALT)
+    var showSearchBar = KeyBind(Keyboard.KEY_SPACE, CTRL)
+    val addCube = KeyBind(Keyboard.KEY_C, CTRL, ALT)
+    val addPlane = KeyBind(Keyboard.KEY_P, CTRL, ALT)
+    val setElementSelectionMode = KeyBind(Keyboard.KEY_1)
+    val setQuadSelectionMode = KeyBind(Keyboard.KEY_2)
+    val setEdgeSelectionMode = KeyBind(Keyboard.KEY_3)
+    val setVertexSelectionMode = KeyBind(Keyboard.KEY_4)
 }

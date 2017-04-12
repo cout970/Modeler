@@ -6,6 +6,7 @@ import com.cout970.vector.extensions.plus
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Frame
+import org.liquidengine.legui.context.LeguiContext
 import org.liquidengine.legui.event.component.MouseClickEvent
 
 val Component.absolutePosition: IVector2 get() {
@@ -44,3 +45,27 @@ var Frame.size: Vector2f
         }
         componentLayer.container.size = value
     }
+
+fun Component.hide() {
+    isEnabled = false
+    isVisible = false
+}
+
+fun Component.show() {
+    isEnabled = true
+    isVisible = true
+}
+
+fun LeguiContext.focus(component: Component) {
+    val focusedGui = focusedGui
+    if (component != focusedGui) component.state.isFocused = false
+
+    this.focusedGui = component
+    component.state.isFocused = true
+    component.state.isPressed = true
+}
+
+fun LeguiContext.unfocus() {
+    focusedGui.state.isFocused = false
+    this.focusedGui = null
+}

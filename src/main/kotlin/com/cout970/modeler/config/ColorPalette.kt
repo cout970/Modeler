@@ -20,7 +20,8 @@ data class ColorPalette(
         val modelSelectionColor: IVector3,
         val borderColor: IVector3,
         val grid1Color: IVector3,
-        val grid2Color: IVector3
+        val grid2Color: IVector3,
+        val selectedOption: IVector3
 ) {
 
     companion object {
@@ -37,7 +38,8 @@ data class ColorPalette(
                 modelSelectionColor = hexToColor(0xffff00),
                 borderColor = hexToColor(0xbcbcbc),
                 grid1Color = hexToColor(0x6f6f6f),
-                grid2Color = hexToColor(0xefefef)
+                grid2Color = hexToColor(0xefefef),
+                selectedOption = hexToColor(0x4b6eaf)
         )
 
         val defaultPalette = darkPalette

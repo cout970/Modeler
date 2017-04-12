@@ -3,7 +3,6 @@ package com.cout970.modeler.newView.render.comp
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.newView.TransformationMode
 import com.cout970.modeler.newView.render.RenderContext
-import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.vector.api.IVector3
 import org.lwjgl.opengl.GL11
 
@@ -72,11 +71,7 @@ class GridsRenderComponent : IRenderableComponent {
                     }
                 }
 
-                val selX = scene.viewTarget.selectedObject == SelectionAxis.X
-                val selY = scene.viewTarget.selectedObject == SelectionAxis.Y
-                val selZ = scene.viewTarget.selectedObject == SelectionAxis.Z
-
-                if (!selX && !selY && !selZ || !perspective ||
+                if (scene.viewTarget.selectedObject == null || !perspective ||
                     controllerState.transformationMode != TransformationMode.TRANSLATION) {
 
                     color = Config.colorPalette.grid2Color

@@ -3,9 +3,11 @@ package com.cout970.modeler.newView.gui
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.newView.GuiInitializer
 import com.cout970.modeler.newView.gui.comp.CPanel
+import com.cout970.modeler.newView.search.ModelView
 import com.cout970.modeler.util.*
 import com.cout970.vector.extensions.minus
 import com.cout970.vector.extensions.plus
+import com.cout970.vector.extensions.times
 import com.cout970.vector.extensions.vec2Of
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Frame
@@ -23,7 +25,7 @@ class Root(val initializer: GuiInitializer, val contentPanel: ContentPanel) : Fr
 
     val dropdown = CPanel(0f, 20f, 150f, 80f)
 
-    val searchPanel = SearchPanel()
+    val searchPanel = SearchPanel(ModelView(initializer.buttonController))
 
     init {
         leftBar.isEnabled = false
@@ -48,6 +50,8 @@ class Root(val initializer: GuiInitializer, val contentPanel: ContentPanel) : Fr
         addComponent(rightBar)
         addComponent(contentPanel)
         addComponent(dropdown)
+        addComponent(searchPanel)
+        addComponent(searchPanel.searchResults)
     }
 
     override fun tick() {
@@ -87,6 +91,12 @@ class Root(val initializer: GuiInitializer, val contentPanel: ContentPanel) : Fr
         rightBar.position = Vector2f(leftBar.size.x + contentPanel.size.x, topBar.size.y)
 
         contentPanel.position = Vector2f(leftBar.size.x, topBar.size.y)
+
+        val center = size.toIVector() * vec2Of(0.5, 0.11)
+        searchPanel.apply {
+            position = (center - size.toIVector() * 0.5).toJoml2f()
+            searchResults.position = Vector2f(position.x, position.y + size.y)
+        }
 
         updateDropdownVisibility()
     }

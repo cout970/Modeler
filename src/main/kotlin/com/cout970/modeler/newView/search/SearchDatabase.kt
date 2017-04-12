@@ -1,0 +1,43 @@
+package com.cout970.modeler.newView.search
+
+import com.cout970.modeler.config.Config
+import com.cout970.modeler.config.KeyBind
+
+/**
+ * Created by cout970 on 2017/04/12.
+ */
+
+object SearchDatabase : ISearchEngine {
+
+    private val keys get() = Config.keyBindings
+
+    // @formatter:off
+    private val options = listOf(
+            Entry("Set element selection mode", listOf("set", "change", "selection", "use", "element", "mode"), keys.setElementSelectionMode, "input.select.element"),
+            Entry("Set quad selection mode", listOf("set", "change", "selection", "use", "quad", "mode"), keys.setQuadSelectionMode, "input.select.quad"),
+            Entry("Set edge selection mode", listOf("set", "change", "selection", "use", "edge", "mode"), keys.setEdgeSelectionMode, "input.select.edge"),
+            Entry("Set vertex selection mode", listOf("set", "change", "selection", "use", "vertex", "mode"), keys.setVertexSelectionMode, "input.select.vertex"),
+            Entry("Add cube", listOf("add", "new", "cube"), keys.addCube, "input.add.cube"),
+            Entry("Add plane", listOf("add", "new", "plane"), keys.addPlane, "input.add.plane"),
+            Entry("Undo last action", listOf("undo", "action", "fix"), keys.undo, "input.undo"),
+            Entry("Redo last action", listOf("redo", "action", "fix"), keys.redo, "input.redo"),
+            Entry("Copy selected part", listOf("copy", "duplicate", "mirror"), keys.copy, "input.copy"),
+            Entry("Paste selected part", listOf("paste", "put", "set", "place"), keys.paste, "input.paste"),
+            Entry("Cut selected part", listOf("cut", "remove", "delete"), keys.cut, "input.cut"),
+            Entry("Delete selected part", listOf("delete", "remove", "clear"), keys.delete, "input.delete")
+    )
+    // @formatter:on
+
+    override fun search(field: String): List<SearchResult> {
+        val result = mutableListOf<SearchResult>()
+        val text = field.trim()
+        options.forEach { op ->
+            if (op.keyword.any { it.contains(text) || text.contains(it) }) {
+                result += SearchResult(op.text, op.keyBind.toString(), op.cmd)
+            }
+        }
+        return result
+    }
+
+    class Entry(val text: String, val keyword: List<String>, val keyBind: KeyBind, val cmd: String)
+}

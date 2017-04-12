@@ -12,6 +12,8 @@ import com.cout970.modeler.project.ProjectManager
 import com.cout970.modeler.selection.SelectionMode
 import com.cout970.modeler.selection.SelectionTarget
 import com.cout970.modeler.util.IPropertyBind
+import com.cout970.modeler.util.focus
+import com.cout970.modeler.util.show
 import java.io.File
 
 /**
@@ -32,27 +34,27 @@ class ButtonController(
 
     fun onClick(id: String) {
         when (id) {
-            "menu.select.element" -> {
+            "menu.select.element", "input.select.element" -> {
                 selectionManager.selectionMode = SelectionMode.ELEMENT
                 selectionManager.clearSelection()
             }
-            "menu.select.quad" -> {
+            "menu.select.quad", "input.select.quad" -> {
                 selectionManager.selectionMode = SelectionMode.EDIT
                 selectionManager.vertexPosTarget = SelectionTarget.QUAD
                 selectionManager.clearSelection()
             }
-            "menu.select.edge" -> {
+            "menu.select.edge", "input.select.edge" -> {
                 selectionManager.selectionMode = SelectionMode.EDIT
                 selectionManager.vertexPosTarget = SelectionTarget.EDGE
                 selectionManager.clearSelection()
             }
-            "menu.select.vertex" -> {
+            "menu.select.vertex", "input.select.vertex" -> {
                 selectionManager.selectionMode = SelectionMode.EDIT
                 selectionManager.vertexPosTarget = SelectionTarget.VERTEX
                 selectionManager.clearSelection()
             }
-            "menu.add.cube" -> modelEditor.addCube()
-            "menu.add.plane" -> modelEditor.addPlane()
+            "menu.add.cube", "input.add.cube" -> modelEditor.addCube()
+            "menu.add.plane", "input.add.plane" -> modelEditor.addPlane()
             "menu.history.undo", "top.edit.undo", "input.undo" -> historyRecord.undo()
             "menu.history.redo", "top.edit.redo", "input.redo" -> historyRecord.redo()
             "menu.clipboard.copy", "top.edit.copy", "input.copy" -> clipboard.copy()
@@ -113,5 +115,11 @@ class ButtonController(
                 ignore
             }
         }
+    }
+
+    fun openSearchBar() {
+        guiInitializer.renderManager.guiRenderer.context.focus(rootFrame.searchPanel.searchBar)
+        rootFrame.searchPanel.show()
+        rootFrame.searchPanel.searchResults.show()
     }
 }

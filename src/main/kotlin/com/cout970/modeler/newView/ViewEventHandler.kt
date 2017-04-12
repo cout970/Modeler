@@ -30,7 +30,7 @@ import com.cout970.vector.extensions.unaryMinus
  */
 
 class ViewEventHandler(val contentPanel: ContentPanel, val input: IInput, val modelEditor: ModelEditor,
-                       val selector: Selector) {
+                       val selector: Selector, val buttonController: ButtonController) {
 
     private var lastMousePos: IVector2? = null
     private var mousePress = false
@@ -116,6 +116,7 @@ class ViewEventHandler(val contentPanel: ContentPanel, val input: IInput, val mo
 
     private fun onKey(e: EventKeyUpdate): Boolean {
         if (e.keyState != EnumKeyState.PRESS) return false
+
         contentPanel.selectedScene?.let { selectedScene ->
             if (Config.keyBindings.switchCameraAxis.check(e) && selectedScene.viewTarget.is3d) {
                 val handler = selectedScene.cameraHandler
@@ -138,6 +139,15 @@ class ViewEventHandler(val contentPanel: ContentPanel, val input: IInput, val mo
                     cameraHandler.moveTo(-selectedScene.cursor.center)
                 }
             }
+        }
+        when {
+            Config.keyBindings.delete.check(input) -> buttonController.onClick("input.delete")
+            Config.keyBindings.undo.check(input) -> buttonController.onClick("input.undo")
+            Config.keyBindings.redo.check(input) -> buttonController.onClick("input.redo")
+            Config.keyBindings.copy.check(input) -> buttonController.onClick("input.copy")
+            Config.keyBindings.paste.check(input) -> buttonController.onClick("input.paste")
+            Config.keyBindings.cut.check(input) -> buttonController.onClick("input.cut")
+            Config.keyBindings.showSearchBar.check(input) -> buttonController.openSearchBar()
         }
         return false
     }
