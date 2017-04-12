@@ -2,7 +2,6 @@ package com.cout970.modeler.newView.selector
 
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.event.IInput
-import com.cout970.modeler.model.Model
 import com.cout970.modeler.newView.SceneSpaceContext
 import com.cout970.modeler.newView.gui.Scene
 import com.cout970.modeler.util.MatrixUtils
@@ -17,17 +16,10 @@ import org.joml.Matrix4d
  */
 object TranslationHelper {
 
-    fun applyTranslation(model: Model, scene: Scene, obj: ITranslatable, input: IInput,
-                         context: Pair<SceneSpaceContext, SceneSpaceContext>): Model {
-
-        val axis = getTranslationAxis(scene.getMatrixMVP().toJOML(), obj)
-        val offset = getOffset(axis, scene, input, context.first, context.second)
-        return obj.applyTranslation(offset, model)
-    }
-
-    fun getOffset(axis: IVector2, scene: Scene, input: IInput, oldContext: SceneSpaceContext,
+    fun getOffset(obj: ITranslatable, scene: Scene, input: IInput, oldContext: SceneSpaceContext,
                   newContext: SceneSpaceContext): Float {
 
+        val axis = getTranslationAxis(scene.getMatrixMVP().toJOML(), obj)
         val viewportSize = scene.size.toIVector()
 
         val oldMousePos = ((oldContext.mousePos / viewportSize) * 2 - 1).run { vec2Of(x, -yd) }

@@ -28,11 +28,12 @@ class SceneRenderer(
                     GridsRenderComponent(), SelectionRenderComponent(),
                     AABBRenderComponent(), Scene3dCursorRenderComponent()
             ),
-            ShaderType.GUI_SHADER to listOf(GuiCursorRenderComponent())
-    )
+            ShaderType.GUI_SHADER to listOf(GuiCursorRenderComponent()))
 
     val modelCache = Cache<Int, VAO>(20).apply { onRemove = { _, v -> v.close() } }
     val selectionCache = Cache<Int, VAO>(40).apply { onRemove = { _, v -> v.close() } }
+    val commonCache = Cache<Int, VAO>(100).apply { onRemove = { _, v -> v.close() } }
+    val volatileCache = Cache<Int, VAO>(10).apply { onRemove = { _, v -> v.close() } }
 
     fun render(scene: Scene) {
         if (scene.size.x < 1 || scene.size.y < 1) return

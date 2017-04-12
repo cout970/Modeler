@@ -42,4 +42,23 @@ class Cursor(val scene: Scene, val modelEditor: ModelEditor) {
         if (!enable) return emptyList()
         return axis[transformationMode]!!
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Cursor) return false
+
+        if (scene != other.scene) return false
+        if (enable != other.enable) return false
+        if (center != other.center) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = scene.hashCode()
+        result = 31 * result + enable.hashCode()
+        result = 31 * result + center.hashCode()
+        result = 31 * result + getSubParts().hashCode()
+        return result
+    }
 }

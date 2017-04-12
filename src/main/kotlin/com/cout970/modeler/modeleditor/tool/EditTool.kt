@@ -46,7 +46,7 @@ class EditTool : IModelTranslate, IModelRotate, IModelScale {
 
     override fun scale(source: Model, selection: VertexPosSelection, center: IVector3, axis: IVector3,
                        offset: Float): Model {
-        return source.applyVertexPos(selection) { path, vertex ->
+        return source.applyVertexPos(selection) { _, vertex ->
             vertex.scale(center, axis, offset)
         }
     }

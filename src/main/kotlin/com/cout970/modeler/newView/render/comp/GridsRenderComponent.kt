@@ -15,7 +15,10 @@ class GridsRenderComponent : IRenderableComponent {
     override fun render(ctx: RenderContext) {
         val perspective = ctx.scene.perspective
         ctx.apply {
-            draw(GL11.GL_LINES, shaderHandler.formatPC) {
+            val camera = scene.cameraHandler.camera
+
+            draw(GL11.GL_LINES, shaderHandler.formatPC, scene.viewTarget.selectedObject?.hashCode() ?: 0 xor 0xABCD,
+                    camera) {
                 set(0, -10, 0, 0).set(1, 1, 0, 0).endVertex()
                 set(0, 10, 0, 0).set(1, 1, 0, 0).endVertex()
 
@@ -30,40 +33,43 @@ class GridsRenderComponent : IRenderableComponent {
                 val grid2 = Config.colorPalette.grid2Color
                 var color: IVector3
 
-                //y
-                for (x in -160..160) {
-                    color = if (x % 16 == 0) grid2 else grid1
-                    set(0, x, dist, -160).setVec(1, color).endVertex()
-                    set(0, x, dist, 160).setVec(1, color).endVertex()
-                }
-                for (z in -160..160) {
-                    color = if (z % 16 == 0) grid2 else grid1
-                    set(0, -160, dist, z).setVec(1, color).endVertex()
-                    set(0, 160, dist, z).setVec(1, color).endVertex()
-                }
+                // ortho planes
+                if (!perspective && camera.angleX % 90 == 0.0 || camera.angleY % 90 == 0.0) {
+                    //y
+                    for (x in -160..160) {
+                        color = if (x % 16 == 0) grid2 else grid1
+                        set(0, x, dist, -160).setVec(1, color).endVertex()
+                        set(0, x, dist, 160).setVec(1, color).endVertex()
+                    }
+                    for (z in -160..160) {
+                        color = if (z % 16 == 0) grid2 else grid1
+                        set(0, -160, dist, z).setVec(1, color).endVertex()
+                        set(0, 160, dist, z).setVec(1, color).endVertex()
+                    }
 
-                //x
-                for (x in -160..160) {
-                    color = if (x % 16 == 0) grid2 else grid1
-                    set(0, dist, x, -160).setVec(1, color).endVertex()
-                    set(0, dist, x, 160).setVec(1, color).endVertex()
-                }
-                for (z in -160..160) {
-                    color = if (z % 16 == 0) grid2 else grid1
-                    set(0, dist, -160, z).setVec(1, color).endVertex()
-                    set(0, dist, 160, z).setVec(1, color).endVertex()
-                }
+                    //x
+                    for (x in -160..160) {
+                        color = if (x % 16 == 0) grid2 else grid1
+                        set(0, dist, x, -160).setVec(1, color).endVertex()
+                        set(0, dist, x, 160).setVec(1, color).endVertex()
+                    }
+                    for (z in -160..160) {
+                        color = if (z % 16 == 0) grid2 else grid1
+                        set(0, dist, -160, z).setVec(1, color).endVertex()
+                        set(0, dist, 160, z).setVec(1, color).endVertex()
+                    }
 
-                //z
-                for (z in -160..160) {
-                    color = if (z % 16 == 0) grid2 else grid1
-                    set(0, -160, z, dist).setVec(1, color).endVertex()
-                    set(0, 160, z, dist).setVec(1, color).endVertex()
-                }
-                for (x in -160..160) {
-                    color = if (x % 16 == 0) grid2 else grid1
-                    set(0, x, -160, dist).setVec(1, color).endVertex()
-                    set(0, x, 160, dist).setVec(1, color).endVertex()
+                    //z
+                    for (z in -160..160) {
+                        color = if (z % 16 == 0) grid2 else grid1
+                        set(0, -160, z, dist).setVec(1, color).endVertex()
+                        set(0, 160, z, dist).setVec(1, color).endVertex()
+                    }
+                    for (x in -160..160) {
+                        color = if (x % 16 == 0) grid2 else grid1
+                        set(0, x, -160, dist).setVec(1, color).endVertex()
+                        set(0, x, 160, dist).setVec(1, color).endVertex()
+                    }
                 }
 
                 val selX = scene.viewTarget.selectedObject == SelectionAxis.X

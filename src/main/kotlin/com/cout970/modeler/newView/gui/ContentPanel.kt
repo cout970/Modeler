@@ -169,4 +169,22 @@ class ContentPanel : CPanel() {
             }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ContentPanel) return false
+        if (!super.equals(other)) return false
+
+        if (scenes != other.scenes) return false
+        if (selectedScene != other.selectedScene) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + scenes.hashCode()
+        result = 31 * result + (selectedScene?.hashCode() ?: 0)
+        return result
+    }
 }

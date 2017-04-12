@@ -74,7 +74,7 @@ class ShaderHandler(resourceLoader: ResourceLoader) {
         set(value) = (currentShader as? UVShader)?.enableColor(value) ?: Unit
 
     object BufferSize {
-        val value = 67108864 //256 Mb
+        val value = 262144 //256 Mb
     }
 
     class FormatPC : IFormat {

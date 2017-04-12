@@ -54,20 +54,66 @@ class Selector(val modelEditor: ModelEditor, val contentPanel: ContentPanel, val
         }
     }
 
+
+    private var translationLastOffset = 0f
+    private var rotationLastOffset = 0f
+    private var scaleLastOffset = 0f
+
     fun onDrag(state: ControllerState, event: EventMouseDrag) {
         activeScene?.let { activeScene ->
             activeScene.viewTarget.selectedObject?.let { selectedObject ->
 
                 if (selectedObject is ITranslatable && state.transformationMode == TransformationMode.TRANSLATION) {
                     val context = getContext(activeScene, event)
-                    val model = TranslationHelper.applyTranslation(
-                            model = modelEditor.model,
+                    val offset = TranslationHelper.getOffset(
+                            obj = selectedObject,
                             scene = activeScene,
+                            input = input,
+                            newContext = context.first,
+                            oldContext = context.second
+                    )
+
+                    if (rotationLastOffset != offset) {
+                        rotationLastOffset = offset
+                        activeScene.viewTarget.tmpModel = selectedObject.applyTranslation(offset, modelEditor.model)
+                    }
+                } else {
+                    rotationLastOffset = 0f
+                }
+
+                if (selectedObject is IRotable && state.transformationMode == TransformationMode.ROTATION) {
+                    val context = getContext(activeScene, event)
+                    val offset = RotationHelper.getOffset(
                             obj = selectedObject,
                             input = input,
-                            context = context)
+                            newContext = context.first,
+                            oldContext = context.second
+                    )
 
-                    activeScene.viewTarget.tmpModel = model
+                    if (translationLastOffset != offset) {
+                        translationLastOffset = offset
+                        activeScene.viewTarget.tmpModel = selectedObject.applyRotation(offset, modelEditor.model)
+                    }
+                } else {
+                    translationLastOffset = 0f
+                }
+
+                if (selectedObject is IScalable && state.transformationMode == TransformationMode.SCALE) {
+                    val context = getContext(activeScene, event)
+                    val offset = ScaleHelper.getOffset(
+                            obj = selectedObject,
+                            scene = activeScene,
+                            input = input,
+                            newContext = context.first,
+                            oldContext = context.second
+                    )
+
+                    if (scaleLastOffset != offset) {
+                        scaleLastOffset = offset
+                        activeScene.viewTarget.tmpModel = selectedObject.applyScale(offset, modelEditor.model)
+                    }
+                } else {
+                    scaleLastOffset = 0f
                 }
             }
         }
@@ -76,13 +122,11 @@ class Selector(val modelEditor: ModelEditor, val contentPanel: ContentPanel, val
     private fun getContext(scene: Scene, event: EventMouseDrag): Pair<SceneSpaceContext, SceneSpaceContext> {
         val oldContext = getMouseSpaceContext(scene, event.oldPos)
         val newContext = getMouseSpaceContext(scene, event.newPos)
-        return oldContext to newContext
+        return newContext to oldContext
     }
 
     private fun updateHovered(target: ViewTarget, context: SceneSpaceContext, scene: Scene) {
-        if (target.hoveredObject == null) {
-            target.hoveredObject = getHoveredObject(context, target.getSelectableObjects(scene))
-        }
+        target.hoveredObject = getHoveredObject(context, target.getSelectableObjects(scene))
     }
 
     private fun getHoveredObject(ctx: SceneSpaceContext, objs: List<ISelectable>): ISelectable? {

@@ -3,11 +3,9 @@ package com.cout970.modeler.newView.render.comp
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.newView.TransformationMode
 import com.cout970.modeler.newView.render.RenderContext
-import com.cout970.modeler.newView.selector.Cursor
-import com.cout970.modeler.newView.selector.CursorPartRotation
-import com.cout970.modeler.newView.selector.CursorPartTranslate
+import com.cout970.modeler.newView.selector.*
 import com.cout970.modeler.util.RenderUtil
-import com.cout970.modeler.view.controller.SelectionAxis
+import com.cout970.modeler.util.getDominantAxis
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
 import org.lwjgl.opengl.GL11
@@ -17,13 +15,13 @@ import org.lwjgl.opengl.GL11
  */
 object CursorRenderer {
 
-    fun RenderContext.drawCursor(cursor: Cursor, axis: SelectionAxis, allowGrids: Boolean) {
+    fun RenderContext.drawCursor(cursor: Cursor, allowGrids: Boolean) {
         if (!cursor.enable) return
         when (cursor.transformationMode) {
             TransformationMode.TRANSLATION -> {
 
-                if (allowGrids && Config.enableHelperGrid && scene.perspective && axis != SelectionAxis.NONE) {
-                    drawHelperGrids(this, cursor, axis)
+                if (allowGrids && Config.enableHelperGrid && scene.perspective) {
+                    drawHelperGrids(this, cursor)
                 }
                 renderTranslation(this, cursor)
             }
@@ -32,10 +30,10 @@ object CursorRenderer {
             }
             TransformationMode.SCALE -> {
 
-                if (allowGrids && Config.enableHelperGrid && scene.perspective && axis != SelectionAxis.NONE) {
-                    drawHelperGrids(this, cursor, axis)
+                if (allowGrids && Config.enableHelperGrid && scene.perspective) {
+                    drawHelperGrids(this, cursor)
                 }
-                renderTranslation(this, cursor)
+                renderScale(this, cursor)
             }
         }
     }
@@ -85,7 +83,7 @@ object CursorRenderer {
                         RenderUtil.renderCircle(
                                 t = this,
                                 center = cursor.center,
-                                axis = part.axis,
+                                axis = part.normal,
                                 radius = cursor.parameters.distanceFromCenter,
                                 size = Config.cursorLinesSize * cursor.parameters.minSizeOfSelectionBox,
                                 color = part.color
@@ -98,7 +96,7 @@ object CursorRenderer {
                             RenderUtil.renderCircle(
                                     t = this,
                                     center = cursor.center,
-                                    axis = part.axis,
+                                    axis = part.normal,
                                     radius = cursor.parameters.distanceFromCenter,
                                     size = Config.cursorLinesSize * cursor.parameters.minSizeOfSelectionBox,
                                     color = part.color
@@ -117,8 +115,8 @@ object CursorRenderer {
 
                             RenderUtil.renderBar(
                                     tessellator = this,
-                                    startPoint = edgePoint - part.normal * cursor.parameters.maxSizeOfSelectionBox / 2,
-                                    endPoint = edgePoint + part.normal * cursor.parameters.maxSizeOfSelectionBox / 2,
+                                    startPoint = edgePoint - part.coaxis * cursor.parameters.maxSizeOfSelectionBox / 2,
+                                    endPoint = edgePoint + part.coaxis * cursor.parameters.maxSizeOfSelectionBox / 2,
                                     color = vec3Of(1),
                                     size = if (selected) {
                                         cursor.parameters.minSizeOfSelectionBox * 1.5
@@ -133,35 +131,82 @@ object CursorRenderer {
         }
     }
 
-    private fun drawHelperGrids(ctx: RenderContext, cursor: Cursor, axis: SelectionAxis) {
+    fun renderScale(ctx: RenderContext, cursor: Cursor) {
+        GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
         ctx.apply {
-            draw(GL11.GL_LINES, shaderHandler.formatPC) {
-                val grid1 = Config.colorPalette.grid1Color
-                val grid2 = Config.colorPalette.grid2Color
-                var col: IVector3
-                val center = cursor.center
+            draw(GL11.GL_QUADS, shaderHandler.formatPC) {
 
-                if (axis != SelectionAxis.Y) {
-                    for (x in -160..160) {
-                        col = if (x % 16 == 0) grid2 else grid1
-                        set(0, x, center.y, -160).set(1, col.x, col.y, col.z).endVertex()
-                        set(0, x, center.y, 160).set(1, col.x, col.y, col.z).endVertex()
+                val center = cursor.center
+                val radius = cursor.parameters.distanceFromCenter
+                val start = radius - cursor.parameters.maxSizeOfSelectionBox / 2.0
+                val end = radius + cursor.parameters.maxSizeOfSelectionBox / 2.0
+
+                for (part in cursor.getSubParts()) {
+                    (part as? CursorPartScale)?.let { part ->
+                        val selected = ctx.scene.viewTarget.selectedObject == part ||
+                                       ctx.scene.viewTarget.hoveredObject == part
+
+                        RenderUtil.renderBar(
+                                tessellator = this,
+                                startPoint = center + part.scaleAxis * start,
+                                endPoint = center + part.scaleAxis * end,
+                                color = part.color,
+                                size = if (selected)
+                                    cursor.parameters.minSizeOfSelectionBox * 1.5
+                                else
+                                    cursor.parameters.minSizeOfSelectionBox
+                        )
                     }
-                    for (z in -160..160) {
-                        col = if (z % 16 == 0) grid2 else grid1
-                        set(0, -160, center.y, z).set(1, col.x, col.y, col.z).endVertex()
-                        set(0, 160, center.y, z).set(1, col.x, col.y, col.z).endVertex()
-                    }
-                } else {
-                    for (z in -160..160) {
-                        col = if (z % 16 == 0) grid2 else grid1
-                        set(0, -160, z, center.z).set(1, col.x, col.y, col.z).endVertex()
-                        set(0, 160, z, center.z).set(1, col.x, col.y, col.z).endVertex()
-                    }
-                    for (x in -160..160) {
-                        col = if (x % 16 == 0) grid2 else grid1
-                        set(0, x, -160, center.z).set(1, col.x, col.y, col.z).endVertex()
-                        set(0, x, 160, center.z).set(1, col.x, col.y, col.z).endVertex()
+                }
+            }
+        }
+    }
+
+    // 0 -> X
+    // 1 -> Y
+    // 2 -> Z
+    private fun extractAxis(obj: ISelectable): Int {
+        return when (obj) {
+            is ITranslatable -> obj.translationAxis.getDominantAxis()
+            is IRotable -> obj.normal.getDominantAxis()
+            is IScalable -> obj.scaleAxis.getDominantAxis()
+            else -> 0
+        }
+    }
+
+    private fun drawHelperGrids(ctx: RenderContext, cursor: Cursor) {
+        ctx.apply {
+            val sel = ctx.scene.viewTarget.selectedObject
+            if (sel != null) {
+                draw(GL11.GL_LINES, shaderHandler.formatPC,
+                        sel.hashCode() xor cursor.hashCode() xor ctx.scene.viewTarget.hashSelection()) {
+                    val grid1 = Config.colorPalette.grid1Color
+                    val grid2 = Config.colorPalette.grid2Color
+                    var col: IVector3
+                    val center = cursor.center
+
+                    if (extractAxis(sel) != 1) {
+                        for (x in -160..160) {
+                            col = if (x % 16 == 0) grid2 else grid1
+                            set(0, x, center.y, -160).set(1, col.x, col.y, col.z).endVertex()
+                            set(0, x, center.y, 160).set(1, col.x, col.y, col.z).endVertex()
+                        }
+                        for (z in -160..160) {
+                            col = if (z % 16 == 0) grid2 else grid1
+                            set(0, -160, center.y, z).set(1, col.x, col.y, col.z).endVertex()
+                            set(0, 160, center.y, z).set(1, col.x, col.y, col.z).endVertex()
+                        }
+                    } else {
+                        for (z in -160..160) {
+                            col = if (z % 16 == 0) grid2 else grid1
+                            set(0, -160, z, center.z).set(1, col.x, col.y, col.z).endVertex()
+                            set(0, 160, z, center.z).set(1, col.x, col.y, col.z).endVertex()
+                        }
+                        for (x in -160..160) {
+                            col = if (x % 16 == 0) grid2 else grid1
+                            set(0, x, -160, center.z).set(1, col.x, col.y, col.z).endVertex()
+                            set(0, x, 160, center.z).set(1, col.x, col.y, col.z).endVertex()
+                        }
                     }
                 }
             }

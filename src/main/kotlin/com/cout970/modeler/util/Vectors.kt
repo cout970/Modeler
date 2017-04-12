@@ -102,12 +102,14 @@ private fun IVector3.scale(center: IVector3, scale: IVector3): IVector3 {
 }
 
 fun IVector3.scale(center: IVector3, axis: IVector3, offset: Float): IVector3 {
-    return scale(center, Vector3.ONE + axis * offset / this.distanceInAxis(center, axis))
+    val distance = this.distanceInAxis(center, axis)
+    if (distance == 0.0) return this
+    return scale(center, Vector3.ONE + axis * offset / distance)
 }
 
 fun IVector3.distanceInAxis(point: IVector3, axis: IVector3): Double {
     val norm = axis.normalize()
-    return (norm dot point) - (norm dot this)
+    return Math.abs((norm dot point) - (norm dot this))
 }
 
 fun quatOfAngles(x: Number, y: Number, z: Number): IQuaternion {
@@ -161,6 +163,9 @@ fun IVector3.getPerpendicularPlane(): Pair<IVector3, IVector3> {
     return a to b
 }
 
+// 0 -> X
+// 1 -> Y
+// 2 -> Z
 fun IVector3.getDominantAxis(): Int {
     val x = Math.abs(xf)
     val y = Math.abs(yf)

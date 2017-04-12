@@ -10,6 +10,7 @@ import com.cout970.modeler.model.Model
 import com.cout970.modeler.model.Quad
 import com.cout970.modeler.modeleditor.IModelProvider
 import com.cout970.modeler.modeleditor.SelectionManager
+import com.cout970.modeler.newView.Camera
 import com.cout970.modeler.newView.gui.ContentPanel
 import com.cout970.modeler.newView.gui.Scene
 import com.cout970.modeler.util.Cache
@@ -39,6 +40,18 @@ class RenderContext(
         shaderHandler.consumer.accept(cache.getOrCompute(hash, func))
     }
 
+    fun draw(drawMode: Int, format: IFormat, hash: Int, func: ITessellator.() -> Unit) {
+        renderCache(renderer.commonCache, hash) {
+            shaderHandler.tessellator.compile(drawMode, format, func)
+        }
+    }
+
+    fun draw(drawMode: Int, format: IFormat, hash: Int, camera: Camera, func: ITessellator.() -> Unit) {
+        renderCache(renderer.volatileCache, hash xor camera.hashCode()) {
+            shaderHandler.tessellator.compile(drawMode, format, func)
+        }
+    }
+
     fun draw(drawMode: Int, format: IFormat, func: ITessellator.() -> Unit) {
         shaderHandler.tessellator.draw(drawMode, format, shaderHandler.consumer, func)
     }
@@ -66,5 +79,27 @@ class RenderContext(
             tes.set(2, norm.x, norm.y, norm.z)
             tes.endVertex()
         }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is RenderContext) return false
+
+        if (modelProvider != other.modelProvider) return false
+        if (selectionManager != other.selectionManager) return false
+        if (contentPanel != other.contentPanel) return false
+        if (model != other.model) return false
+        if (scene != other.scene) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = modelProvider.hashCode()
+        result = 31 * result + selectionManager.hashCode()
+        result = 31 * result + contentPanel.hashCode()
+        result = 31 * result + model.hashCode()
+        result = 31 * result + scene.hashCode()
+        return result
     }
 }

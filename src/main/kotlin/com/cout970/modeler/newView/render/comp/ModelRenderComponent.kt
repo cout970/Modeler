@@ -15,21 +15,19 @@ class ModelRenderComponent : IRenderableComponent {
         MaterialNone.bind()
         ctx.apply {
 
-            model.getLeafPaths()
-                    .groupBy { model.resources.getMaterial(it) }
-                    .forEach { path ->
-                        path.key.bind()
+            val group = model.getLeafPaths().groupBy { model.resources.getMaterial(it) }
+            for ((material, elements) in group) {
+                material.bind()
 
-                        renderCache(renderer.modelCache, model.hashCode()) {
-                            tessellator.compile(GL11.GL_QUADS, shaderHandler.formatPTN) {
-                                path.value
-                                        .flatMap { model.getElement(it).getQuads() }
-                                        .forEach { quad ->
-                                            quad.tessellate(this)
-                                        }
-                            }
+                renderCache(renderer.modelCache, model.hashCode()) {
+                    tessellator.compile(GL11.GL_QUADS, shaderHandler.formatPTN) {
+                        val quads = elements.flatMap { model.getElement(it).getQuads() }
+                        quads.forEach { quad ->
+                            quad.tessellate(this)
                         }
                     }
+                }
+            }
         }
     }
 }

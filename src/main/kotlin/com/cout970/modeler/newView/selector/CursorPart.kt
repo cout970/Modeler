@@ -58,18 +58,19 @@ class CursorPartTranslate(cursor: Cursor, color: IVector3, override val translat
     }
 }
 
-class CursorPartRotation(cursor: Cursor, color: IVector3, override val normal: IVector3, val axis: IVector3)
+class CursorPartRotation(cursor: Cursor, color: IVector3, val axis: IVector3, override val normal: IVector3)
     : CursorPart(cursor, color), IRotable {
 
     override val center: IVector3 get() = cursor.center
+    val coaxis: IVector3 = axis cross normal
 
     override fun calculateHitbox(): Pair<IVector3, IVector3> {
         val radius = cursor.parameters.distanceFromCenter
         val edgePoint = center + axis * radius
 
         return Pair(
-                edgePoint - normal * cursor.parameters.maxSizeOfSelectionBox / 2 - Vector3.ONE * cursor.parameters.minSizeOfSelectionBox,
-                edgePoint + normal * cursor.parameters.maxSizeOfSelectionBox / 2 + Vector3.ONE * cursor.parameters.minSizeOfSelectionBox
+                edgePoint - coaxis * cursor.parameters.maxSizeOfSelectionBox / 2 - Vector3.ONE * cursor.parameters.minSizeOfSelectionBox,
+                edgePoint + coaxis * cursor.parameters.maxSizeOfSelectionBox / 2 + Vector3.ONE * cursor.parameters.minSizeOfSelectionBox
         )
     }
 
@@ -83,13 +84,13 @@ class CursorPartRotation(cursor: Cursor, color: IVector3, override val normal: I
         if (this === other) return true
         if (other !is CursorPartRotation) return false
 
-        if (normal != other.normal) return false
+        if (axis != other.axis) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        return normal.hashCode()
+        return axis.hashCode()
     }
 }
 

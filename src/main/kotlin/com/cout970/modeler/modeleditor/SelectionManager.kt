@@ -200,4 +200,24 @@ class SelectionManager(val modelEditor: ModelEditor) {
             return elementSelection.getSelectedVertexPos(model)
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is SelectionManager) return false
+
+        if (selectionMode != other.selectionMode) return false
+        if (selectionState != other.selectionState) return false
+        if (vertexPosTarget != other.vertexPosTarget) return false
+        if (vertexTexTarget != other.vertexTexTarget) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = selectionMode.hashCode()
+        result = 31 * result + selectionState.hashCode()
+        result = 31 * result + vertexPosTarget.hashCode()
+        result = 31 * result + vertexTexTarget.hashCode()
+        return result
+    }
 }

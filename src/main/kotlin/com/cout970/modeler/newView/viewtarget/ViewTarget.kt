@@ -20,4 +20,6 @@ abstract class ViewTarget(val modelEditor: ModelEditor) {
     fun getModel(): Model = tmpModel ?: modelEditor.model
 
     abstract fun getSelectableObjects(scene: Scene): List<ISelectable>
+
+    fun hashSelection(): Int = (hoveredObject?.hashCode() ?: 0xFEA) xor ((selectedObject?.hashCode() ?: 0xFEA) shl 1)
 }
