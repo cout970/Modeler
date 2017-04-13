@@ -9,10 +9,12 @@ import javax.swing.JOptionPane
 /**
  * Created by cout970 on 2017/01/02.
  */
-class ActionImportModel(val modelEditor: ModelEditor,
-                        val resourceLoader: ResourceLoader,
-                        val path: String,
-                        val function: () -> Model) : IAction {
+class ActionImportModel(
+        val modelEditor: ModelEditor,
+        val resourceLoader: ResourceLoader,
+        val path: String,
+        val function: () -> Model
+) : IAction {
 
     val oldModel = modelEditor.model
 

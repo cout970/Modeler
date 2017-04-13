@@ -11,6 +11,7 @@ import com.cout970.modeler.event.IEventListener
 import com.cout970.modeler.event.IInput
 import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.newView.gui.ContentPanel
+import com.cout970.modeler.newView.gui.Root
 import com.cout970.modeler.newView.gui.Scene
 import com.cout970.modeler.newView.selector.Selector
 import com.cout970.modeler.newView.viewtarget.TextureViewTarget
@@ -29,7 +30,7 @@ import com.cout970.vector.extensions.unaryMinus
  * Created by cout970 on 2017/04/08.
  */
 
-class ViewEventHandler(val contentPanel: ContentPanel, val input: IInput, val modelEditor: ModelEditor,
+class ViewEventHandler(val root: Root, val contentPanel: ContentPanel, val input: IInput, val modelEditor: ModelEditor,
                        val selector: Selector, val buttonController: ButtonController) {
 
     private var lastMousePos: IVector2? = null
@@ -117,6 +118,8 @@ class ViewEventHandler(val contentPanel: ContentPanel, val input: IInput, val mo
     private fun onKey(e: EventKeyUpdate): Boolean {
         if (e.keyState != EnumKeyState.PRESS) return false
 
+        if (root.searchPanel.isEnabled) return false
+
         contentPanel.selectedScene?.let { selectedScene ->
             if (Config.keyBindings.switchCameraAxis.check(e) && selectedScene.viewTarget.is3d) {
                 val handler = selectedScene.cameraHandler
@@ -130,14 +133,17 @@ class ViewEventHandler(val contentPanel: ContentPanel, val input: IInput, val mo
                 if (lastOption > 3) {
                     lastOption = 0
                 }
+                return false
             } else if (Config.keyBindings.switchOrthoProjection.check(e)) {
                 if (selectedScene.viewTarget.is3d) {
                     selectedScene.perspective = !selectedScene.perspective
+                    return false
                 }
             } else if (Config.keyBindings.moveCameraToCursor.check(e)) {
                 selectedScene.apply {
                     cameraHandler.moveTo(-selectedScene.cursor.center)
                 }
+                return false
             }
         }
         when {

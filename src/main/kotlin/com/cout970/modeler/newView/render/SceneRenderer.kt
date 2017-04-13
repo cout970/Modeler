@@ -44,6 +44,12 @@ class SceneRenderer(
             modelEditor.modelNeedRedraw = false
             modelCache.clear()
             selectionCache.clear()
+            commonCache.clear()
+            volatileCache.clear()
+            scene.contentPanel.scenes
+                    .map { it.viewTarget }
+                    .distinct()
+                    .forEach { it.tmpModel = null }
         }
 
         val context = RenderContext(

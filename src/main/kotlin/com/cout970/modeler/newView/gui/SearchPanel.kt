@@ -23,6 +23,7 @@ class SearchPanel(val modelview: ModelView) : CPanel(width = 400f, height = 60f)
     val searchBar = TextInput("", 10f, 28f, 380f, 20f)
     val searchResults = CPanel(0f, 0f, width = 400f, height = 60f)
     var selectedOption = -1
+    val maxSearchResults = 20
 
     init {
         searchBar.textState.fontSize = 20f
@@ -55,7 +56,9 @@ class SearchPanel(val modelview: ModelView) : CPanel(width = 400f, height = 60f)
 
         if (e.key == Keyboard.KEY_UP && selectedOption > 0) {
             selectedOption--
-        } else if (e.key == Keyboard.KEY_DOWN && modelview.searchResults.size > selectedOption + 1) {
+        } else if (e.key == Keyboard.KEY_DOWN && Math.min(modelview.searchResults.size,
+                maxSearchResults) > selectedOption + 1) {
+
             selectedOption++
         } else if (e.key == Keyboard.KEY_ENTER) {
             searchResults.hide()
@@ -82,7 +85,8 @@ class SearchPanel(val modelview: ModelView) : CPanel(width = 400f, height = 60f)
         searchResults.clearComponents()
         searchResults.show()
 
-        modelview.searchResults.take(20).forEachIndexed { index, searchResult ->
+        val displayedResults = modelview.searchResults.take(maxSearchResults)
+        displayedResults.forEachIndexed { index, (text, keyBind) ->
             val panel = CPanel(0f, index * 20f, 400f, 24f).also {
                 if (selectedOption == index) {
                     it.backgroundColor = Config.colorPalette.selectedOption.toColor()
@@ -91,17 +95,17 @@ class SearchPanel(val modelview: ModelView) : CPanel(width = 400f, height = 60f)
                 }
             }
 
-            panel.addComponent(Label(searchResult.text, 5f, 0f, 200f, 24f).also {
+            panel.addComponent(Label(text, 5f, 0f, 200f, 24f).also {
                 it.textState.textColor = Config.colorPalette.textColor.toColor()
             })
-            panel.addComponent(Label(searchResult.keyBind, 195f, 0f, 200f, 24f).also {
+            panel.addComponent(Label(keyBind, 195f, 0f, 200f, 24f).also {
                 it.textState.horizontalAlign = HorizontalAlign.RIGHT
                 it.textState.textColor = Config.colorPalette.textColor.toColor()
             })
 
             searchResults.addComponent(panel)
         }
-        searchResults.size.y = modelview.searchResults.size * 20f + 2f
+        searchResults.size.y = displayedResults.size * 20f + 2f
     }
 
 }

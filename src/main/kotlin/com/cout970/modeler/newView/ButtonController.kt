@@ -65,14 +65,14 @@ class ButtonController(
             "menu.cursor.rotation", "input.cursor.rotation" -> controllerState.transformationMode = TransformationMode.ROTATION
             "menu.cursor.scale", "input.cursor.scale" -> controllerState.transformationMode = TransformationMode.SCALE
 
-            "top.file.new" -> newProject(projectManager)
-            "top.file.open" -> loadProject(projectManager)
-            "top.file.save" -> saveProject(projectManager)
-            "top.file.save_as" -> saveProjectAs(projectManager)
-            "top.file.import" -> showImportModelPopup(projectManager)
-            "top.file.export" -> showExportModelPopup(projectManager)
-            "top.file.settings" -> Missing("settings")
-            "top.file.exit" -> guiInitializer.windowHandler.close()
+            "top.file.new", "input.file.new" -> newProject(projectManager)
+            "top.file.open", "input.file.open" -> loadProject(projectManager)
+            "top.file.save", "input.file.save" -> saveProject(projectManager)
+            "top.file.save_as", "input.file.save_as" -> saveProjectAs(projectManager)
+            "top.file.import", "input.file.import" -> showImportModelPopup(projectManager)
+            "top.file.export", "input.file.export" -> showExportModelPopup(projectManager)
+            "top.file.settings", "input.file.settings" -> Missing("settings")
+            "top.file.exit", "input.file.exit" -> guiInitializer.windowHandler.close()
 
             "top.view.show_left" -> rootFrame.leftBar.isEnabled = !rootFrame.leftBar.isEnabled
             "top.view.show_right" -> rootFrame.rightBar.isEnabled = !rootFrame.rightBar.isEnabled
@@ -87,9 +87,9 @@ class ButtonController(
             "top.view.3_model_1_texture" -> contentPanel.setSceneLayout(4, modelEditor, guiInitializer.modelViewTarget,
                     guiInitializer.textureViewTarget)
 
-            "menu.texture.import" -> importTexture(projectManager)
-            "menu.texture.export" -> exportTexture(projectManager)
-            "menu.texture.split" -> modelEditor.editTool.splitTextures(modelEditor)
+            "menu.texture.import", "input.texture.import" -> importTexture(projectManager)
+            "menu.texture.export", "input.texture.export" -> exportTexture(projectManager)
+            "menu.texture.split", "input.texture.split" -> modelEditor.editTool.splitTextures(modelEditor)
 
             "menu.aabb.export" -> {
                 val aabb = projectManager.project.model.getLeafElements().map(IElementLeaf::toAABB)

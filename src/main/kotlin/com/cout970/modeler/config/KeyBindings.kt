@@ -2,8 +2,7 @@ package com.cout970.modeler.config
 
 import com.cout970.glutilities.device.Keyboard
 import com.cout970.glutilities.device.Mouse
-import com.cout970.modeler.config.KeyboardModifiers.ALT
-import com.cout970.modeler.config.KeyboardModifiers.CTRL
+import com.cout970.modeler.config.KeyboardModifiers.*
 
 /**
  * Created by cout970 on 2016/12/07.
@@ -33,13 +32,22 @@ class KeyBindings {
     var paste = KeyBind(Keyboard.KEY_V, CTRL)
     var showTopMenu = KeyBind(Keyboard.KEY_LEFT_ALT)
     var showSearchBar = KeyBind(Keyboard.KEY_SPACE, CTRL)
-    val addCube = KeyBind(Keyboard.KEY_C, CTRL, ALT)
-    val addPlane = KeyBind(Keyboard.KEY_P, CTRL, ALT)
-    val setElementSelectionMode = KeyBind(Keyboard.KEY_1)
-    val setQuadSelectionMode = KeyBind(Keyboard.KEY_2)
-    val setEdgeSelectionMode = KeyBind(Keyboard.KEY_3)
-    val setVertexSelectionMode = KeyBind(Keyboard.KEY_4)
-    val setTranslationCursorMode = KeyBind(Keyboard.KEY_T)
-    val setRotationCursorMode = KeyBind(Keyboard.KEY_R)
-    val setScaleCursorMode = KeyBind(Keyboard.KEY_S)
+    var addCube = KeyBind(Keyboard.KEY_C, CTRL, ALT)
+    var addPlane = KeyBind(Keyboard.KEY_P, CTRL, ALT)
+    var setElementSelectionMode = KeyBind(Keyboard.KEY_1)
+    var setQuadSelectionMode = KeyBind(Keyboard.KEY_2)
+    var setEdgeSelectionMode = KeyBind(Keyboard.KEY_3)
+    var setVertexSelectionMode = KeyBind(Keyboard.KEY_4)
+    var setTranslationCursorMode = KeyBind(Keyboard.KEY_T)
+    var setRotationCursorMode = KeyBind(Keyboard.KEY_R)
+    var setScaleCursorMode = KeyBind(Keyboard.KEY_S)
+    var importTexture = KeyBind(Keyboard.KEY_T, CTRL, ALT)
+    var exportTexture = KeyBind(Keyboard.KEY_T, CTRL, ALT, SHIFT)
+
+    var newProject = KeyBind(Keyboard.KEY_N, CTRL, ALT, SHIFT)
+    var openProject = KeyBind(Keyboard.KEY_O, CTRL, ALT, SHIFT)
+    var saveProject = KeyBind(Keyboard.KEY_S, CTRL)
+    var saveProjectAs = KeyBind(Keyboard.KEY_S, CTRL, SHIFT)
+    var importModel = KeyBind(Keyboard.KEY_I, CTRL, SHIFT)
+    var exportModel = KeyBind(Keyboard.KEY_E, CTRL, SHIFT)
 }

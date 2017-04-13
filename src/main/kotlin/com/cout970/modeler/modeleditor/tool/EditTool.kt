@@ -24,7 +24,7 @@ import com.cout970.vector.extensions.vec3Of
 /**
  * Created by cout970 on 2017/02/11.
  */
-class EditTool : IModelTranslate, IModelRotate, IModelScale {
+class EditTool {
 
     var insertPath: ElementPath = ElementPath(intArrayOf())
     var insertPosition = vec3Of(0, 0, 0)
@@ -32,20 +32,20 @@ class EditTool : IModelTranslate, IModelRotate, IModelScale {
     //
     // TRANSFORM
     //
-    override fun translate(source: Model, selection: VertexPosSelection, translation: IVector3): Model {
+    fun translate(source: Model, selection: VertexPosSelection, translation: IVector3): Model {
         return source.applyVertexPos(selection) { path, vertex ->
             vertex + translation
         }
     }
 
-    override fun rotate(source: Model, selection: VertexPosSelection, pivot: IVector3, rotation: IQuaternion): Model {
+    fun rotate(source: Model, selection: VertexPosSelection, pivot: IVector3, rotation: IQuaternion): Model {
         return source.applyVertexPos(selection) { path, vertex ->
             vertex.rotateAround(pivot, rotation)
         }
     }
 
-    override fun scale(source: Model, selection: VertexPosSelection, center: IVector3, axis: IVector3,
-                       offset: Float): Model {
+    fun scale(source: Model, selection: VertexPosSelection, center: IVector3, axis: IVector3,
+              offset: Float): Model {
         return source.applyVertexPos(selection) { _, vertex ->
             vertex.scale(center, axis, offset)
         }

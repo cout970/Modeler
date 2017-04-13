@@ -50,7 +50,8 @@ class GuiInitializer(
 
         renderManager.rootFrame = root
         log(Level.FINE) { "[GuiInitializer] Creating ViewEventHandler" }
-        viewEventHandler = ViewEventHandler(contentPanel, eventController, modelEditor, selector, buttonController)
+        viewEventHandler = ViewEventHandler(root, contentPanel, eventController, modelEditor, selector,
+                buttonController)
         log(Level.FINE) { "[GuiInitializer] Creating ModelViewTarget" }
         modelViewTarget = ModelViewTarget(modelEditor)
         log(Level.FINE) { "[GuiInitializer] Creating TextureViewTarget" }
