@@ -39,4 +39,7 @@ class KeyBindings {
     val setQuadSelectionMode = KeyBind(Keyboard.KEY_2)
     val setEdgeSelectionMode = KeyBind(Keyboard.KEY_3)
     val setVertexSelectionMode = KeyBind(Keyboard.KEY_4)
+    val setTranslationCursorMode = KeyBind(Keyboard.KEY_T)
+    val setRotationCursorMode = KeyBind(Keyboard.KEY_R)
+    val setScaleCursorMode = KeyBind(Keyboard.KEY_S)
 }

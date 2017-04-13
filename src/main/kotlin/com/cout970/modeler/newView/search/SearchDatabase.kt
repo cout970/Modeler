@@ -24,7 +24,10 @@ object SearchDatabase : ISearchEngine {
             Entry("Copy selected part", listOf("copy", "duplicate", "mirror"), keys.copy, "input.copy"),
             Entry("Paste selected part", listOf("paste", "put", "set", "place"), keys.paste, "input.paste"),
             Entry("Cut selected part", listOf("cut", "remove", "delete"), keys.cut, "input.cut"),
-            Entry("Delete selected part", listOf("delete", "remove", "clear"), keys.delete, "input.delete")
+            Entry("Delete selected part", listOf("delete", "remove", "clear"), keys.delete, "input.delete"),
+            Entry("Set cursor to translation mode", listOf("move", "translate", "cursor"), keys.setTranslationCursorMode, "input.cursor.translation"),
+            Entry("Set cursor to rotation mode", listOf("angle", "rotate", "cursor"), keys.setRotationCursorMode, "input.cursor.rotation"),
+            Entry("Set cursor to scale mode", listOf("resize", "scale", "cursor"), keys.setScaleCursorMode, "input.cursor.scale")
     )
     // @formatter:on
 

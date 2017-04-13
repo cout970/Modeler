@@ -61,9 +61,9 @@ class ButtonController(
             "menu.clipboard.cut", "top.edit.cut", "input.cut" -> clipboard.cut()
             "menu.clipboard.paste", "top.edit.paste", "input.paste" -> clipboard.paste()
             "top.edit.delete", "input.delete" -> clipboard.delete()
-            "menu.cursor.translation" -> controllerState.transformationMode = TransformationMode.TRANSLATION
-            "menu.cursor.rotation" -> controllerState.transformationMode = TransformationMode.ROTATION
-            "menu.cursor.scale" -> controllerState.transformationMode = TransformationMode.SCALE
+            "menu.cursor.translation", "input.cursor.translation" -> controllerState.transformationMode = TransformationMode.TRANSLATION
+            "menu.cursor.rotation", "input.cursor.rotation" -> controllerState.transformationMode = TransformationMode.ROTATION
+            "menu.cursor.scale", "input.cursor.scale" -> controllerState.transformationMode = TransformationMode.SCALE
 
             "top.file.new" -> newProject(projectManager)
             "top.file.open" -> loadProject(projectManager)
