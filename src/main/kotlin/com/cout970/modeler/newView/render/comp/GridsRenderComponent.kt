@@ -3,6 +3,7 @@ package com.cout970.modeler.newView.render.comp
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.newView.TransformationMode
 import com.cout970.modeler.newView.render.RenderContext
+import com.cout970.modeler.util.toInt
 import com.cout970.vector.api.IVector3
 import org.lwjgl.opengl.GL11
 
@@ -16,8 +17,9 @@ class GridsRenderComponent : IRenderableComponent {
         ctx.apply {
             val camera = scene.cameraHandler.camera
 
-            draw(GL11.GL_LINES, shaderHandler.formatPC, scene.viewTarget.selectedObject?.hashCode() ?: 0 xor 0xABCD,
-                    camera) {
+            draw(GL11.GL_LINES, shaderHandler.formatPC,
+                    scene.viewTarget.selectedObject?.hashCode() ?: 0 xor 0xABCD xor perspective.toInt(), camera) {
+
                 set(0, -10, 0, 0).set(1, 1, 0, 0).endVertex()
                 set(0, 10, 0, 0).set(1, 1, 0, 0).endVertex()
 

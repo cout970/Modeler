@@ -39,7 +39,7 @@ class Selector(val modelEditor: ModelEditor, val contentPanel: ContentPanel, val
                 val hovered = target.hoveredObject
 
                 if (click && hovered != null) {
-                    activeScene.tmpCursorCenter = activeScene.cursor.center
+                    activeScene.viewTarget.tmpCursorCenter = activeScene.viewTarget.cursor.center
                     target.selectedObject = hovered
                     target.hoveredObject = null
                 }
@@ -47,7 +47,7 @@ class Selector(val modelEditor: ModelEditor, val contentPanel: ContentPanel, val
                 activeScene.viewTarget.tmpModel?.let { model ->
                     modelEditor.historyRecord.doAction(ActionModifyModelShape(modelEditor, model))
                 }
-                activeScene.tmpCursorCenter = null
+                activeScene.viewTarget.tmpCursorCenter = null
                 target.selectedObject = null
                 updateHovered(target, context, activeScene)
             }

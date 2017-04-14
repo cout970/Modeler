@@ -44,11 +44,11 @@ object CursorRenderer {
             draw(GL11.GL_QUADS, shaderHandler.formatPC) {
 
                 val center = cursor.center
-                val radius = cursor.parameters.distanceFromCenter
-                val start = radius - cursor.parameters.maxSizeOfSelectionBox / 2.0
-                val end = radius + cursor.parameters.maxSizeOfSelectionBox / 2.0
+                val radius = cursor.getCursorParameters(scene).distanceFromCenter
+                val start = radius - cursor.getCursorParameters(scene).maxSizeOfSelectionBox / 2.0
+                val end = radius + cursor.getCursorParameters(scene).maxSizeOfSelectionBox / 2.0
 
-                for (part in cursor.getSubParts()) {
+                for (part in cursor.getSubParts(scene)) {
                     (part as? CursorPartTranslate)?.let { part ->
                         val selected = ctx.scene.viewTarget.selectedObject == part ||
                                        ctx.scene.viewTarget.hoveredObject == part
@@ -59,9 +59,9 @@ object CursorRenderer {
                                 endPoint = center + part.translationAxis * end,
                                 color = part.color,
                                 size = if (selected)
-                                    cursor.parameters.minSizeOfSelectionBox * 1.5
+                                    cursor.getCursorParameters(scene).minSizeOfSelectionBox * 1.5
                                 else
-                                    cursor.parameters.minSizeOfSelectionBox
+                                    cursor.getCursorParameters(scene).minSizeOfSelectionBox
                         )
                     }
                 }
@@ -84,29 +84,30 @@ object CursorRenderer {
                                 t = this,
                                 center = cursor.center,
                                 axis = part.normal,
-                                radius = cursor.parameters.distanceFromCenter,
-                                size = Config.cursorLinesSize * cursor.parameters.minSizeOfSelectionBox,
+                                radius = cursor.getCursorParameters(scene).distanceFromCenter,
+                                size = Config.cursorLinesSize * cursor.getCursorParameters(scene).minSizeOfSelectionBox,
                                 color = part.color
                         )
                     }
                 } else {
-                    for (part in cursor.getSubParts()) {
+                    for (part in cursor.getSubParts(scene)) {
                         (part as? CursorPartRotation)?.let { part ->
 
                             RenderUtil.renderCircle(
                                     t = this,
                                     center = cursor.center,
                                     axis = part.normal,
-                                    radius = cursor.parameters.distanceFromCenter,
-                                    size = Config.cursorLinesSize * cursor.parameters.minSizeOfSelectionBox,
+                                    radius = cursor.getCursorParameters(scene).distanceFromCenter,
+                                    size = Config.cursorLinesSize * cursor.getCursorParameters(
+                                            scene).minSizeOfSelectionBox,
                                     color = part.color
                             )
                         }
                     }
 
-                    val radius = cursor.parameters.distanceFromCenter
+                    val radius = cursor.getCursorParameters(scene).distanceFromCenter
 
-                    for (part in cursor.getSubParts()) {
+                    for (part in cursor.getSubParts(scene)) {
                         (part as? CursorPartRotation)?.let { part ->
 
                             val edgePoint = cursor.center + part.axis * radius
@@ -115,13 +116,15 @@ object CursorRenderer {
 
                             RenderUtil.renderBar(
                                     tessellator = this,
-                                    startPoint = edgePoint - part.coaxis * cursor.parameters.maxSizeOfSelectionBox / 2,
-                                    endPoint = edgePoint + part.coaxis * cursor.parameters.maxSizeOfSelectionBox / 2,
+                                    startPoint = edgePoint - part.coaxis * cursor.getCursorParameters(
+                                            scene).maxSizeOfSelectionBox / 2,
+                                    endPoint = edgePoint + part.coaxis * cursor.getCursorParameters(
+                                            scene).maxSizeOfSelectionBox / 2,
                                     color = vec3Of(1),
                                     size = if (selected) {
-                                        cursor.parameters.minSizeOfSelectionBox * 1.5
+                                        cursor.getCursorParameters(scene).minSizeOfSelectionBox * 1.5
                                     } else {
-                                        cursor.parameters.minSizeOfSelectionBox
+                                        cursor.getCursorParameters(scene).minSizeOfSelectionBox
                                     }
                             )
                         }
@@ -137,11 +140,11 @@ object CursorRenderer {
             draw(GL11.GL_QUADS, shaderHandler.formatPC) {
 
                 val center = cursor.center
-                val radius = cursor.parameters.distanceFromCenter
-                val start = radius - cursor.parameters.maxSizeOfSelectionBox / 2.0
-                val end = radius + cursor.parameters.maxSizeOfSelectionBox / 2.0
+                val radius = cursor.getCursorParameters(scene).distanceFromCenter
+                val start = radius - cursor.getCursorParameters(scene).maxSizeOfSelectionBox / 2.0
+                val end = radius + cursor.getCursorParameters(scene).maxSizeOfSelectionBox / 2.0
 
-                for (part in cursor.getSubParts()) {
+                for (part in cursor.getSubParts(scene)) {
                     (part as? CursorPartScale)?.let { part ->
                         val selected = ctx.scene.viewTarget.selectedObject == part ||
                                        ctx.scene.viewTarget.hoveredObject == part
@@ -152,9 +155,9 @@ object CursorRenderer {
                                 endPoint = center + part.scaleAxis * end,
                                 color = part.color,
                                 size = if (selected)
-                                    cursor.parameters.minSizeOfSelectionBox * 1.5
+                                    cursor.getCursorParameters(scene).minSizeOfSelectionBox * 1.5
                                 else
-                                    cursor.parameters.minSizeOfSelectionBox
+                                    cursor.getCursorParameters(scene).minSizeOfSelectionBox
                         )
                     }
                 }

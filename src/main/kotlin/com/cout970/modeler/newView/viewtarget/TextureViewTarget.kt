@@ -2,6 +2,7 @@ package com.cout970.modeler.newView.viewtarget
 
 import com.cout970.modeler.model.material.MaterialNone
 import com.cout970.modeler.modeleditor.ModelEditor
+import com.cout970.modeler.newView.gui.ContentPanel
 import com.cout970.modeler.newView.gui.Scene
 import com.cout970.modeler.newView.selector.ISelectable
 import com.cout970.vector.api.IVector2
@@ -12,7 +13,7 @@ import com.cout970.vector.extensions.*
  * Created by cout970 on 2017/04/09.
  */
 
-class TextureViewTarget(modelEditor: ModelEditor) : ViewTarget(modelEditor) {
+class TextureViewTarget(modelEditor: ModelEditor, contentPanel: ContentPanel) : ViewTarget(modelEditor, contentPanel) {
 
     override val is3d: Boolean = false
 
@@ -27,5 +28,5 @@ class TextureViewTarget(modelEditor: ModelEditor) : ViewTarget(modelEditor) {
         return vec3Of(min.xd + (max.xd - min.xd) * point.xd, min.yd + (max.yd - min.yd) * (1 - point.yd), 0)
     }
 
-    override fun getSelectableObjects(scene: Scene): List<ISelectable> = scene.cursor.getSubParts()
+    override fun getSelectableObjects(scene: Scene): List<ISelectable> = cursor.getSubParts(scene)
 }

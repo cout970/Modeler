@@ -53,11 +53,11 @@ class GuiInitializer(
         viewEventHandler = ViewEventHandler(root, contentPanel, eventController, modelEditor, selector,
                 buttonController)
         log(Level.FINE) { "[GuiInitializer] Creating ModelViewTarget" }
-        modelViewTarget = ModelViewTarget(modelEditor)
+        modelViewTarget = ModelViewTarget(modelEditor, contentPanel)
         log(Level.FINE) { "[GuiInitializer] Creating TextureViewTarget" }
-        textureViewTarget = TextureViewTarget(modelEditor)
+        textureViewTarget = TextureViewTarget(modelEditor, contentPanel)
         log(Level.FINE) { "[GuiInitializer] Adding primary scene" }
-        contentPanel.addScene(modelViewTarget, modelEditor)
+        contentPanel.addScene(modelViewTarget)
         log(Level.FINE) { "[GuiInitializer] GUI Initialization done" }
     }
 }

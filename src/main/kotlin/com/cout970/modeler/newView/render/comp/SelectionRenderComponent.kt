@@ -27,7 +27,7 @@ class SelectionRenderComponent : IRenderableComponent {
 
                 if (selection != ElementSelection.EMPTY) {
                     renderCache(renderer.modelCache,
-                            model.hashCode() xor (selectionManager.selectionState.hashCode() shr 1) xor ctx.scene.cursor.hashCode()) {
+                            model.hashCode() xor (selectionManager.selectionState.hashCode() shr 1) xor ctx.scene.viewTarget.cursor.hashCode()) {
 
                         val size = Config.selectionThickness.toDouble()
                         val color = Config.colorPalette.modelSelectionColor

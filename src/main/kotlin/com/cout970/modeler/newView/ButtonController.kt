@@ -76,15 +76,15 @@ class ButtonController(
 
             "top.view.show_left" -> rootFrame.leftBar.isEnabled = !rootFrame.leftBar.isEnabled
             "top.view.show_right" -> rootFrame.rightBar.isEnabled = !rootFrame.rightBar.isEnabled
-            "top.view.one_model" -> contentPanel.setSceneLayout(0, modelEditor, guiInitializer.modelViewTarget,
+            "top.view.one_model" -> contentPanel.setSceneLayout(0, guiInitializer.modelViewTarget,
                     guiInitializer.textureViewTarget)
-            "top.view.two_model" -> contentPanel.setSceneLayout(1, modelEditor, guiInitializer.modelViewTarget,
+            "top.view.two_model" -> contentPanel.setSceneLayout(1, guiInitializer.modelViewTarget,
                     guiInitializer.textureViewTarget)
-            "top.view.four_model" -> contentPanel.setSceneLayout(2, modelEditor, guiInitializer.modelViewTarget,
+            "top.view.four_model" -> contentPanel.setSceneLayout(2, guiInitializer.modelViewTarget,
                     guiInitializer.textureViewTarget)
-            "top.view.model_and_texture" -> contentPanel.setSceneLayout(3, modelEditor, guiInitializer.modelViewTarget,
+            "top.view.model_and_texture" -> contentPanel.setSceneLayout(3, guiInitializer.modelViewTarget,
                     guiInitializer.textureViewTarget)
-            "top.view.3_model_1_texture" -> contentPanel.setSceneLayout(4, modelEditor, guiInitializer.modelViewTarget,
+            "top.view.3_model_1_texture" -> contentPanel.setSceneLayout(4, guiInitializer.modelViewTarget,
                     guiInitializer.textureViewTarget)
 
             "menu.texture.import", "input.texture.import" -> importTexture(projectManager)

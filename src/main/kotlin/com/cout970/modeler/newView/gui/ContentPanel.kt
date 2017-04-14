@@ -2,7 +2,6 @@ package com.cout970.modeler.newView.gui
 
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.event.IInput
-import com.cout970.modeler.modeleditor.ModelEditor
 import com.cout970.modeler.newView.ControllerState
 import com.cout970.modeler.newView.gui.comp.CPanel
 import com.cout970.modeler.newView.viewtarget.ModelViewTarget
@@ -24,9 +23,9 @@ class ContentPanel : CPanel() {
 
     private val sceneBuffer = mutableListOf<Scene>()
 
-    fun addScene(viewTarget: ViewTarget, modelEditor: ModelEditor) {
+    fun addScene(viewTarget: ViewTarget) {
         if (sceneBuffer.isEmpty()) {
-            scenes.add(Scene(this, viewTarget, modelEditor))
+            scenes.add(Scene(this, viewTarget))
         } else {
             val last = sceneBuffer.removeAt(sceneBuffer.size - 1)
             last.viewTarget = viewTarget
@@ -139,33 +138,33 @@ class ContentPanel : CPanel() {
         }
     }
 
-    fun setSceneLayout(layout: Int, modelEditor: ModelEditor, model: ModelViewTarget, tex: TextureViewTarget) {
+    fun setSceneLayout(layout: Int, model: ModelViewTarget, tex: TextureViewTarget) {
         repeat(scenes.size) {
             removeScene(scenes.size - 1)
         }
         when (layout) {
             1 -> {
-                addScene(model, modelEditor)
-                addScene(tex, modelEditor)
+                addScene(model)
+                addScene(tex)
             }
             2 -> {
-                addScene(model, modelEditor)
-                addScene(model, modelEditor)
-                addScene(model, modelEditor)
-                addScene(model, modelEditor)
+                addScene(model)
+                addScene(model)
+                addScene(model)
+                addScene(model)
             }
             3 -> {
-                addScene(model, modelEditor)
-                addScene(model, modelEditor)
+                addScene(model)
+                addScene(model)
             }
             4 -> {
-                addScene(model, modelEditor)
-                addScene(model, modelEditor)
-                addScene(model, modelEditor)
-                addScene(tex, modelEditor)
+                addScene(model)
+                addScene(model)
+                addScene(model)
+                addScene(tex)
             }
             else -> {
-                addScene(model, modelEditor)
+                addScene(model)
             }
         }
     }

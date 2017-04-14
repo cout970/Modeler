@@ -14,7 +14,7 @@ internal class Scene2dCursorRenderComponent : IRenderableComponent {
         ctx.apply {
             val selection = selectionManager.vertexTexSelection
             if (selection != VertexTexSelection.EMPTY) {
-                drawCursor(scene.cursor, true)
+                drawCursor(scene.viewTarget.cursor, true)
             }
         }
     }

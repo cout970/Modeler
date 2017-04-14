@@ -1,6 +1,7 @@
 package com.cout970.modeler.newView.selector
 
 import com.cout970.modeler.model.Model
+import com.cout970.modeler.newView.gui.Scene
 import com.cout970.modeler.util.FakeRayObstacle
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
@@ -12,7 +13,7 @@ import com.cout970.vector.extensions.*
  * Created by cout970 on 2017/04/09.
  */
 
-abstract class CursorPart(val cursor: Cursor, val color: IVector3) : ISelectable {
+abstract class CursorPart(val cursor: Cursor, val scene: Scene, val color: IVector3) : ISelectable {
 
     override fun rayTrace(ray: Ray): RayTraceResult? {
         val (a, b) = calculateHitbox()
@@ -22,23 +23,24 @@ abstract class CursorPart(val cursor: Cursor, val color: IVector3) : ISelectable
     abstract fun calculateHitbox(): Pair<IVector3, IVector3>
 }
 
-class CursorPartTranslate(cursor: Cursor, color: IVector3, override val translationAxis: IVector3)
-    : CursorPart(cursor, color), ITranslatable {
+class CursorPartTranslate(cursor: Cursor, scene: Scene, color: IVector3, override val translationAxis: IVector3)
+    : CursorPart(cursor, scene, color), ITranslatable {
 
     override fun calculateHitbox(): Pair<IVector3, IVector3> {
-        val radius = cursor.parameters.distanceFromCenter
-        val start = radius - cursor.parameters.maxSizeOfSelectionBox / 2.0
-        val end = radius + cursor.parameters.maxSizeOfSelectionBox / 2.0
+        val parameters = cursor.getCursorParameters(scene)
+        val radius = parameters.distanceFromCenter
+        val start = radius - parameters.maxSizeOfSelectionBox / 2.0
+        val end = radius + parameters.maxSizeOfSelectionBox / 2.0
 
         return Pair(
-                cursor.center + translationAxis * start - Vector3.ONE * cursor.parameters.minSizeOfSelectionBox,
-                cursor.center + translationAxis * end + Vector3.ONE * cursor.parameters.minSizeOfSelectionBox
+                cursor.center + translationAxis * start - Vector3.ONE * parameters.minSizeOfSelectionBox,
+                cursor.center + translationAxis * end + Vector3.ONE * parameters.minSizeOfSelectionBox
         )
     }
 
     override fun applyTranslation(offset: Float, model: Model): Model {
         val selection = cursor.modelEditor.selectionManager.getSelectedVertexPos(model)
-        cursor.scene.tmpCursorCenter?.let { center ->
+        scene.viewTarget.tmpCursorCenter?.let { center ->
             cursor.center = center + translationAxis * offset
         }
         return cursor.modelEditor.editTool.translate(model, selection, translationAxis * offset)
@@ -58,19 +60,21 @@ class CursorPartTranslate(cursor: Cursor, color: IVector3, override val translat
     }
 }
 
-class CursorPartRotation(cursor: Cursor, color: IVector3, val axis: IVector3, override val normal: IVector3)
-    : CursorPart(cursor, color), IRotable {
+class CursorPartRotation(cursor: Cursor, scene: Scene, color: IVector3, val axis: IVector3,
+                         override val normal: IVector3)
+    : CursorPart(cursor, scene, color), IRotable {
 
     override val center: IVector3 get() = cursor.center
     val coaxis: IVector3 = axis cross normal
 
     override fun calculateHitbox(): Pair<IVector3, IVector3> {
-        val radius = cursor.parameters.distanceFromCenter
+        val parameters = cursor.getCursorParameters(scene)
+        val radius = parameters.distanceFromCenter
         val edgePoint = center + axis * radius
 
         return Pair(
-                edgePoint - coaxis * cursor.parameters.maxSizeOfSelectionBox / 2 - Vector3.ONE * cursor.parameters.minSizeOfSelectionBox,
-                edgePoint + coaxis * cursor.parameters.maxSizeOfSelectionBox / 2 + Vector3.ONE * cursor.parameters.minSizeOfSelectionBox
+                edgePoint - coaxis * parameters.maxSizeOfSelectionBox / 2 - Vector3.ONE * parameters.minSizeOfSelectionBox,
+                edgePoint + coaxis * parameters.maxSizeOfSelectionBox / 2 + Vector3.ONE * parameters.minSizeOfSelectionBox
         )
     }
 
@@ -94,19 +98,20 @@ class CursorPartRotation(cursor: Cursor, color: IVector3, val axis: IVector3, ov
     }
 }
 
-class CursorPartScale(cursor: Cursor, color: IVector3, override val scaleAxis: IVector3)
-    : CursorPart(cursor, color), IScalable {
+class CursorPartScale(cursor: Cursor, scene: Scene, color: IVector3, override val scaleAxis: IVector3)
+    : CursorPart(cursor, scene, color), IScalable {
 
     override val center: IVector3 get() = cursor.center
 
     override fun calculateHitbox(): Pair<IVector3, IVector3> {
-        val radius = cursor.parameters.distanceFromCenter
-        val start = radius - cursor.parameters.maxSizeOfSelectionBox / 2.0
-        val end = radius + cursor.parameters.maxSizeOfSelectionBox / 2.0
+        val parameters = cursor.getCursorParameters(scene)
+        val radius = parameters.distanceFromCenter
+        val start = radius - parameters.maxSizeOfSelectionBox / 2.0
+        val end = radius + parameters.maxSizeOfSelectionBox / 2.0
 
         return Pair(
-                cursor.center + scaleAxis * start - Vector3.ONE * cursor.parameters.minSizeOfSelectionBox,
-                cursor.center + scaleAxis * end + Vector3.ONE * cursor.parameters.minSizeOfSelectionBox
+                cursor.center + scaleAxis * start - Vector3.ONE * parameters.minSizeOfSelectionBox,
+                cursor.center + scaleAxis * end + Vector3.ONE * parameters.minSizeOfSelectionBox
         )
     }
 

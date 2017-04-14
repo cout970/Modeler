@@ -11,6 +11,7 @@ object Debugger {
     lateinit var initializer: Initializer
 
     fun debug(code: Initializer.() -> Unit) {
+        
         log(Level.DEBUG) { "Debug Start" }
         initializer.code()
         log(Level.DEBUG) { "Debug End" }

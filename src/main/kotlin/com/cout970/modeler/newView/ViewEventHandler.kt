@@ -74,14 +74,14 @@ class ViewEventHandler(val root: Root, val contentPanel: ContentPanel, val input
                 new.element.getSelectedVertexPos(modelEditor.model).center3D(modelEditor.model)
             }
             contentPanel.scenes.forEach {
-                it.cursor.apply {
+                it.viewTarget.cursor.apply {
                     enable = true
                     this.center = center
                 }
             }
         } else {
             contentPanel.scenes.forEach {
-                it.cursor.enable = false
+                it.viewTarget.cursor.enable = false
             }
         }
     }
@@ -141,7 +141,7 @@ class ViewEventHandler(val root: Root, val contentPanel: ContentPanel, val input
                 }
             } else if (Config.keyBindings.moveCameraToCursor.check(e)) {
                 selectedScene.apply {
-                    cameraHandler.moveTo(-selectedScene.cursor.center)
+                    cameraHandler.moveTo(-selectedScene.viewTarget.cursor.center)
                 }
                 return false
             }
