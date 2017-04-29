@@ -17,7 +17,7 @@ switch (OperatingSystem.current()) {
 
 
 buildscript {
-    ext.kotlin_version = '1.1.0'
+    ext.kotlin_version = '1.1.1'
 
     repositories {
         mavenCentral()
@@ -68,6 +68,7 @@ dependencies {
     compile "org.liquidengine:legui:$legui_version"
     testCompile group: 'junit', name: 'junit', version: '4.11'
 
+    compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.14'
     compile "org.lwjgl:lwjgl:${lwjglVersion}"
     compile "org.lwjgl:lwjgl-egl:${lwjglVersion}"
     compile "org.lwjgl:lwjgl-glfw:${lwjglVersion}"
@@ -92,5 +93,10 @@ jar {
     }
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+kotlin {
+    experimental {
+        coroutines "enable"
     }
 }

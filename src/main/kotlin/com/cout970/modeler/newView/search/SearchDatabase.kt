@@ -43,16 +43,18 @@ object SearchDatabase : ISearchEngine {
     )
     // @formatter:on
 
+
     override fun search(field: String): List<SearchResult> {
         val result = mutableListOf<SearchResult>()
         val text = field.trim()
+
         options.forEach { op ->
-            if (op.keyword.any { it.contains(text) || text.contains(it) }) {
+            if (op.keywords.any { it.contains(text) || text.contains(it) }) {
                 result += SearchResult(op.text, op.keyBind.toString(), op.cmd)
             }
         }
         return result
     }
 
-    class Entry(val text: String, val keyword: List<String>, val keyBind: KeyBind, val cmd: String)
+    class Entry(val text: String, val keywords: List<String>, val keyBind: KeyBind, val cmd: String)
 }
