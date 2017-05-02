@@ -3,6 +3,7 @@ package com.cout970.modeler.newView.render
 import com.cout970.glutilities.tessellator.VAO
 import com.cout970.modeler.event.IInput
 import com.cout970.modeler.modeleditor.ModelEditor
+import com.cout970.modeler.newView.gui.ContentPanel
 import com.cout970.modeler.newView.gui.Scene
 import com.cout970.modeler.newView.render.comp.*
 import com.cout970.modeler.util.Cache
@@ -19,6 +20,7 @@ class SceneRenderer(
         val shaderHandler: ShaderHandler,
         val modelEditor: ModelEditor,
         val windowHandler: WindowHandler,
+        val contentPanel: ContentPanel,
         val input: IInput
 ) {
 
@@ -38,7 +40,6 @@ class SceneRenderer(
     fun render(scene: Scene) {
         if (scene.size.x < 1 || scene.size.y < 1) return
 
-        val contentPanel = scene.contentPanel
 
         if (modelEditor.modelNeedRedraw) {
             modelEditor.modelNeedRedraw = false
@@ -46,7 +47,7 @@ class SceneRenderer(
             selectionCache.clear()
             commonCache.clear()
             volatileCache.clear()
-            scene.contentPanel.scenes
+            contentPanel.scenes
                     .map { it.viewTarget }
                     .distinct()
                     .forEach { it.tmpModel = null }

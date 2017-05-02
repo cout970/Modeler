@@ -34,6 +34,7 @@ class GuiInitializer(
     lateinit var selector: Selector
     lateinit var modelViewTarget: ModelViewTarget
     lateinit var textureViewTarget: TextureViewTarget
+    lateinit var cameraUpdater: CameraUpdater
 
     val modelEditor: ModelEditor get() = projectManager.modelEditor
 
@@ -47,6 +48,8 @@ class GuiInitializer(
         root = Root(this, contentPanel)
         log(Level.FINE) { "[GuiInitializer] Creating scene element selector" }
         selector = Selector(projectManager.modelEditor, contentPanel, eventController)
+        log(Level.FINE) { "[GuiInitializer] Creating CameraUpdater" }
+        cameraUpdater = CameraUpdater(contentPanel.sceneHandler, eventController, windowHandler)
 
         renderManager.rootFrame = root
         log(Level.FINE) { "[GuiInitializer] Creating ViewEventHandler" }
@@ -56,8 +59,8 @@ class GuiInitializer(
         modelViewTarget = ModelViewTarget(modelEditor, contentPanel)
         log(Level.FINE) { "[GuiInitializer] Creating TextureViewTarget" }
         textureViewTarget = TextureViewTarget(modelEditor, contentPanel)
-        log(Level.FINE) { "[GuiInitializer] Adding primary scene" }
-        contentPanel.addScene(modelViewTarget)
+//        log(Level.FINE) { "[GuiInitializer] Adding primary scene" }
+//        contentPanel.addScene(modelViewTarget)
         log(Level.FINE) { "[GuiInitializer] GUI Initialization done" }
     }
 }

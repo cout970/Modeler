@@ -38,7 +38,7 @@ class RenderManager : ITickeable {
         log(Level.FINE) { "[RenderManager] Creating ShaderHandler" }
         shaderHandler = ShaderHandler(resourceLoader)
         log(Level.FINE) { "[RenderManager] Creating SceneRenderer" }
-        sceneRenderer = SceneRenderer(shaderHandler, modelEditor, windowHandler, input)
+        sceneRenderer = SceneRenderer(shaderHandler, modelEditor, windowHandler, rootFrame.contentPanel, input)
         val c = Config.colorPalette.modelBackgroundColor
         GLStateMachine.clearColor = Color(c.xf, c.yf, c.zf)
     }

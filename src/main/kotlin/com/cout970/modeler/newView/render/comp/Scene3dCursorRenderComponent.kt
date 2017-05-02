@@ -15,12 +15,12 @@ class Scene3dCursorRenderComponent : IRenderableComponent {
             if (selectionManager.selectionMode == SelectionMode.EDIT) {
                 val selection = selectionManager.vertexPosSelection
                 if (selection != VertexPosSelection.EMPTY) {
-                    drawCursor(scene.viewTarget.cursor, true)
+                    drawCursor(scene.viewTarget.cursor, ctx.scene.cameraHandler.camera, true)
                 }
             } else {
                 val selection = selectionManager.elementSelection
                 if (selection != ElementSelection.EMPTY) {
-                    drawCursor(scene.viewTarget.cursor, true)
+                    drawCursor(scene.viewTarget.cursor, ctx.scene.cameraHandler.camera, true)
                 }
             }
         }

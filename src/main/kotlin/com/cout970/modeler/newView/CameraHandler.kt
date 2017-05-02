@@ -18,7 +18,7 @@ class CameraHandler {
         }
     }
 
-    fun moveTo(pos: IVector3) {
+    fun setPosition(pos: IVector3) {
         camera = camera.copy(position = pos)
     }
 

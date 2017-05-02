@@ -38,7 +38,7 @@ data class ColorPalette(
                 modelSelectionColor = hexToColor(0xffff00),
                 borderColor = hexToColor(0xbcbcbc),
                 grid1Color = hexToColor(0x6f6f6f),
-                grid2Color = hexToColor(0xefefef),
+                grid2Color = hexToColor(0xf0f0f0),
                 selectedOption = hexToColor(0x4b6eaf)
         )
 

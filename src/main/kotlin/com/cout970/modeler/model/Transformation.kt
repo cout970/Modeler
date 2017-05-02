@@ -4,7 +4,6 @@ import com.cout970.matrix.extensions.*
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.util.toJOML
 import com.cout970.modeler.util.toJoml3d
-import com.cout970.modeler.view.controller.SelectionAxis
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
@@ -37,11 +36,6 @@ data class Transformation(
 
     fun translate(trans: IVector3): Transformation {
         return copy(position = position + trans)
-    }
-
-    fun scale(axis: SelectionAxis, offset: Float): Transformation {
-        val direction = axis.direction * offset
-        return copy(scale = scale + direction)
     }
 
     fun rotateAround(pivot: IVector3, rotation: IQuaternion): Transformation {

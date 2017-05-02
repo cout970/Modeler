@@ -2,8 +2,10 @@ package com.cout970.modeler.newView.gui
 
 import com.cout970.modeler.config.Config
 import com.cout970.modeler.newView.GuiInitializer
+import com.cout970.modeler.newView.gui.comp.CButton
 import com.cout970.modeler.newView.gui.comp.CPanel
 import com.cout970.modeler.newView.search.ModelView
+import com.cout970.modeler.newView.search.SearchDatabase
 import com.cout970.modeler.util.*
 import com.cout970.vector.extensions.minus
 import com.cout970.vector.extensions.plus
@@ -11,6 +13,7 @@ import com.cout970.vector.extensions.times
 import com.cout970.vector.extensions.vec2Of
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Frame
+import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.util.ColorConstants
 
 /**
@@ -22,6 +25,8 @@ class Root(val initializer: GuiInitializer, val contentPanel: ContentPanel) : Fr
     val bottomBar = BottomBar()
     val leftBar = CPanel()
     val rightBar = CPanel()
+    val arrow = CButton("", 0f, 0f, 16f, 16f)
+    val dropdown2 = CPanel(0f, 16f, 160f, 3000f)
 
     val dropdown = CPanel(0f, 20f, 150f, 80f)
 
@@ -36,13 +41,22 @@ class Root(val initializer: GuiInitializer, val contentPanel: ContentPanel) : Fr
         topBar.init(initializer.buttonController, dropdown)
         bottomBar.init(initializer.buttonController, initializer.guiResources)
 
-        listOf(topBar, bottomBar, leftBar, rightBar, contentPanel, dropdown
+        listOf(topBar, bottomBar, leftBar, rightBar, contentPanel, dropdown, arrow, dropdown2
         ).forEach {
             it.backgroundColor = Config.colorPalette.lightColor.toColor()
         }
 
         contentPanel.backgroundColor = ColorConstants.transparent()
-        dropdown.isVisible = false
+        SearchDatabase.options.take(10).forEachIndexed { index, entry ->
+            dropdown2.addComponent(
+                    CButton(entry.text, 0f, index * 24f, 160f, 24f).also {
+                        it.textState.horizontalAlign = HorizontalAlign.LEFT
+                        it.backgroundColor = Config.colorPalette.lightColor.toColor()
+                    }
+            )
+        }
+        dropdown.hide()
+        dropdown2.hide()
 
         addComponent(topBar)
         addComponent(bottomBar)
@@ -52,15 +66,25 @@ class Root(val initializer: GuiInitializer, val contentPanel: ContentPanel) : Fr
         addComponent(dropdown)
         addComponent(searchPanel)
         addComponent(searchPanel.searchResults)
+        addComponent(arrow)
+        addComponent(dropdown2)
+
+        arrow.onClick(0) {
+            if (dropdown2.isEnabled) {
+                dropdown2.hide()
+            } else {
+                dropdown2.show()
+            }
+        }
     }
 
     override fun tick() {
         initializer.guiResources.updateMaterials(initializer.modelEditor.model)
         initializer.windowHandler.resetViewport()
 
-        contentPanel.updateCamera(initializer.eventController, initializer.windowHandler)
+        initializer.cameraUpdater.updateCameras()
         rescale()
-        contentPanel.scaleScenes()
+        contentPanel.sceneHandler.scaleScenes()
         initializer.viewEventHandler.update()
     }
 
@@ -82,6 +106,10 @@ class Root(val initializer: GuiInitializer, val contentPanel: ContentPanel) : Fr
 
         contentPanel.size = Vector2f(size.x - leftBar.size.x - rightBar.size.x,
                 size.y - topBar.size.y - bottomBar.size.y)
+
+        dropdown2.apply {
+            size = Vector2f(160f, this@Root.size.y - (bottomBar.size.y + position.y + 1))
+        }
 
         // Position
         topBar.position = Vector2f(0f, 0f)
@@ -111,7 +139,7 @@ class Root(val initializer: GuiInitializer, val contentPanel: ContentPanel) : Fr
         val sizeDropdown = dropdown.size.toIVector() + vec2Of(40, 20)
 
         if (!mousePos.isInside(startTopBar, sizeTopBar) && !mousePos.isInside(startDropdown, sizeDropdown)) {
-            dropdown.isVisible = false
+            dropdown.hide()
         }
     }
 }

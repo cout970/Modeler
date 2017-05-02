@@ -12,7 +12,7 @@ object SearchDatabase : ISearchEngine {
     private val keys get() = Config.keyBindings
 
     // @formatter:off
-    private val options = listOf(
+    val options = listOf(
             Entry("Set element selection mode", listOf("set", "change", "selection", "use", "element", "mode"), keys.setElementSelectionMode, "input.select.element"),
             Entry("Set quad selection mode", listOf("set", "change", "selection", "use", "quad", "mode"), keys.setQuadSelectionMode, "input.select.quad"),
             Entry("Set edge selection mode", listOf("set", "change", "selection", "use", "edge", "mode"), keys.setEdgeSelectionMode, "input.select.edge"),

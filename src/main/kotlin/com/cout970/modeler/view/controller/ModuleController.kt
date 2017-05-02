@@ -33,10 +33,6 @@ class ModuleController(
         rootFrame.rightBar.addComponent(it)
     }
 
-    init {
-        modules
-    }
-
     fun recalculateModules() {
         var last = 0f
         modules.forEach {

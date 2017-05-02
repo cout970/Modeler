@@ -21,7 +21,6 @@ import org.liquidengine.legui.util.ColorConstants
  * Created by cout970 on 2017/04/08.
  */
 class Scene(
-        val contentPanel: ContentPanel,
         var viewTarget: ViewTarget
 ) : CPanel() {
 
@@ -43,6 +42,7 @@ class Scene(
         if (!viewTarget.is3d) {
             return MatrixUtils.createOrthoMatrix(size.toIVector()) * cameraHandler.camera.matrixForUV
         } else {
+            //TODO continue here, move this to CanvasController2D
             val projection: IMatrix4
             val view: IMatrix4
 

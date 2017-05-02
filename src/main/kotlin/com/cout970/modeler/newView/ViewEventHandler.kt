@@ -91,7 +91,7 @@ class ViewEventHandler(val root: Root, val contentPanel: ContentPanel, val input
         if (mousePos.isInside(contentPanel.absolutePosition, contentPanel.size.toIVector())) {
             contentPanel.scenes.forEach { scene ->
                 if (mousePos.isInside(scene.absolutePosition, scene.size.toIVector())) {
-                    contentPanel.selectedScene = scene
+                    contentPanel.sceneHandler.selectedScene = scene
                 }
             }
         }
@@ -141,7 +141,7 @@ class ViewEventHandler(val root: Root, val contentPanel: ContentPanel, val input
                 }
             } else if (Config.keyBindings.moveCameraToCursor.check(e)) {
                 selectedScene.apply {
-                    cameraHandler.moveTo(-selectedScene.viewTarget.cursor.center)
+                    cameraHandler.setPosition(-selectedScene.viewTarget.cursor.center)
                 }
                 return false
             }
@@ -210,7 +210,7 @@ class ViewEventHandler(val root: Root, val contentPanel: ContentPanel, val input
                     val hit = modelEditor.selectionManager.getMouseHit(ray)
 
                     if (hit != null) {
-                        scene.cameraHandler.moveTo(-hit.hit)
+                        scene.cameraHandler.setPosition(-hit.hit)
                         return true
                     }
                 }

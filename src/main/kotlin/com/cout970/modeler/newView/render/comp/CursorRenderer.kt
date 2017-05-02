@@ -1,6 +1,7 @@
 package com.cout970.modeler.newView.render.comp
 
 import com.cout970.modeler.config.Config
+import com.cout970.modeler.newView.Camera
 import com.cout970.modeler.newView.TransformationMode
 import com.cout970.modeler.newView.render.RenderContext
 import com.cout970.modeler.newView.selector.*
@@ -15,13 +16,13 @@ import org.lwjgl.opengl.GL11
  */
 object CursorRenderer {
 
-    fun RenderContext.drawCursor(cursor: Cursor, allowGrids: Boolean) {
+    fun RenderContext.drawCursor(cursor: Cursor, camera: Camera, allowGrids: Boolean) {
         if (!cursor.enable) return
         when (cursor.transformationMode) {
             TransformationMode.TRANSLATION -> {
 
                 if (allowGrids && Config.enableHelperGrid && scene.perspective) {
-                    drawHelperGrids(this, cursor)
+                    drawHelperGrids(this, cursor, camera)
                 }
                 renderTranslation(this, cursor)
             }
@@ -31,7 +32,7 @@ object CursorRenderer {
             TransformationMode.SCALE -> {
 
                 if (allowGrids && Config.enableHelperGrid && scene.perspective) {
-                    drawHelperGrids(this, cursor)
+                    drawHelperGrids(this, cursor, camera)
                 }
                 renderScale(this, cursor)
             }
@@ -177,16 +178,17 @@ object CursorRenderer {
         }
     }
 
-    private fun drawHelperGrids(ctx: RenderContext, cursor: Cursor) {
+    private fun drawHelperGrids(ctx: RenderContext, cursor: Cursor, camera: Camera) {
         ctx.apply {
             val sel = ctx.scene.viewTarget.selectedObject
             if (sel != null) {
-                draw(GL11.GL_LINES, shaderHandler.formatPC,
-                        sel.hashCode() xor cursor.hashCode() xor ctx.scene.viewTarget.hashSelection()) {
+                draw(GL11.GL_LINES, shaderHandler.formatPC) {
                     val grid1 = Config.colorPalette.grid1Color
                     val grid2 = Config.colorPalette.grid2Color
                     var col: IVector3
                     val center = cursor.center
+
+
 
                     if (extractAxis(sel) != 1) {
                         for (x in -160..160) {
@@ -200,15 +202,28 @@ object CursorRenderer {
                             set(0, 160, center.y, z).set(1, col.x, col.y, col.z).endVertex()
                         }
                     } else {
-                        for (z in -160..160) {
-                            col = if (z % 16 == 0) grid2 else grid1
-                            set(0, -160, z, center.z).set(1, col.x, col.y, col.z).endVertex()
-                            set(0, 160, z, center.z).set(1, col.x, col.y, col.z).endVertex()
+
+                        //test
+                        val vec0 = Vector3.X_AXIS.rotate(-camera.angleY, Vector3.Y_AXIS).normalize()
+                        val vec1 = Vector3.X_AXIS.rotate(camera.angleY, Vector3.Y_AXIS).normalize()
+
+                        for (i in -160..160) {
+                            col = if (i % 16 == 0) grid2 else grid1
+                            set(0, vec0.xf * -160f + center.xf, i, vec0.zf * -160f + center.zf)
+                                    .set(1, col.x, col.y, col.z)
+                                    .endVertex()
+                            set(0, vec0.xf * 160f + center.xf, i, vec0.zf * 160f + center.zf)
+                                    .set(1, col.x, col.y, col.z)
+                                    .endVertex()
                         }
-                        for (x in -160..160) {
-                            col = if (x % 16 == 0) grid2 else grid1
-                            set(0, x, -160, center.z).set(1, col.x, col.y, col.z).endVertex()
-                            set(0, x, 160, center.z).set(1, col.x, col.y, col.z).endVertex()
+                        for (i in -160..160) {
+                            col = if (i % 16 == 0) grid2 else grid1
+                            set(0, vec1.xf * i + center.xf, -160, vec1.zf * -i + center.zf)
+                                    .set(1, col.x, col.y, col.z)
+                                    .endVertex()
+                            set(0, vec1.xf * i + center.xf, 160, vec1.zf * -i + center.zf)
+                                    .set(1, col.x, col.y, col.z)
+                                    .endVertex()
                         }
                     }
                 }

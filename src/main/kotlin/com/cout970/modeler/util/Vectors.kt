@@ -47,6 +47,7 @@ fun getClosestPointOnLineSegment(A: IVector3, B: IVector3, P: IVector3): IVector
 }
 
 fun Number.toRads() = Math.toRadians(this.toDouble())
+fun Number.toDegrees() = Math.toDegrees(this.toDouble())
 
 fun Vector2d.toIVector(): IVector2 = vec2Of(x, y)
 fun Vector3d.toIVector(): IVector3 = vec3Of(x, y, z)
