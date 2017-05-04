@@ -29,7 +29,7 @@ class GuiInitializer(
 
     lateinit var root: Root
     lateinit var contentPanel: ContentPanel
-    lateinit var viewEventHandler: ViewEventHandler
+    lateinit var eventListeners: EventListeners
     lateinit var buttonController: ButtonController
     lateinit var selector: Selector
     lateinit var modelViewTarget: ModelViewTarget
@@ -53,7 +53,7 @@ class GuiInitializer(
 
         renderManager.rootFrame = root
         log(Level.FINE) { "[GuiInitializer] Creating ViewEventHandler" }
-        viewEventHandler = ViewEventHandler(root, contentPanel, eventController, modelEditor, selector,
+        eventListeners = EventListeners(root, contentPanel, eventController, modelEditor, selector,
                 buttonController)
         log(Level.FINE) { "[GuiInitializer] Creating ModelViewTarget" }
         modelViewTarget = ModelViewTarget(modelEditor, contentPanel)

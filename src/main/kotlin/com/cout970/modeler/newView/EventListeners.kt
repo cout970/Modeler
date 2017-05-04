@@ -30,8 +30,8 @@ import com.cout970.vector.extensions.unaryMinus
  * Created by cout970 on 2017/04/08.
  */
 
-class ViewEventHandler(val root: Root, val contentPanel: ContentPanel, val input: IInput, val modelEditor: ModelEditor,
-                       val selector: Selector, val buttonController: ButtonController) {
+class EventListeners(val root: Root, val contentPanel: ContentPanel, val input: IInput, val modelEditor: ModelEditor,
+                     val selector: Selector, val buttonController: ButtonController) {
 
     private var lastMousePos: IVector2? = null
     private var mousePress = false
@@ -57,6 +57,7 @@ class ViewEventHandler(val root: Root, val contentPanel: ContentPanel, val input
         eventHandler.addListener(EventMouseClick::class.java, object : IEventListener<EventMouseClick> {
             override fun onEvent(e: EventMouseClick): Boolean = onClick(e)
         })
+//        eventHandler.addListener(EventFrameBufferSize::class.java)
         modelEditor.selectionManager.listeners.add(this::onSelectionChange)
     }
 

@@ -1,5 +1,6 @@
 package com.cout970.modeler.newView.gui.canvas
 
+import com.cout970.modeler.newView.gui.canvas.layout.ICanvasLayout
 import org.liquidengine.legui.component.Panel
 
 /**
@@ -7,15 +8,15 @@ import org.liquidengine.legui.component.Panel
  */
 class CanvasContainer(val panel: Panel) {
 
-    var layout = CanvasLayout()
+    var layout: ICanvasLayout = TODO()
     val canvas = mutableListOf<Canvas>()
     var selectedCanvas: Canvas? = null
 
     private val canvasBuffer = mutableListOf<Canvas>()
 
-    fun addCanvas(func: () -> Canvas) {
+    fun newCanvas() {
         if (canvasBuffer.isEmpty()) {
-            canvas.add(func())
+            canvas.add(Canvas())
         } else {
             val last = canvasBuffer.removeAt(canvasBuffer.size - 1)
             canvas.add(last)

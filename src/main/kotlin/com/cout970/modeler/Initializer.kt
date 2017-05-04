@@ -82,7 +82,7 @@ class Initializer(val programArguments: List<String>) {
         log(Level.FINE) { "Initializing renderers" }
         renderManager.initOpenGl(resourceLoader, windowHandler, modelEditor, eventController)
         log(Level.FINE) { "Registering listeners for ViewEventHandler" }
-        guiInitializer.viewEventHandler.registerListeners(eventController)
+        guiInitializer.eventListeners.registerListeners(eventController)
 
         log(Level.FINE) { "Adding placeholder cube" }
         modelEditor.addCube(vec3Of(16, 16, 16))

@@ -85,7 +85,7 @@ class Root(val initializer: GuiInitializer, val contentPanel: ContentPanel) : Fr
         initializer.cameraUpdater.updateCameras()
         rescale()
         contentPanel.sceneHandler.scaleScenes()
-        initializer.viewEventHandler.update()
+        initializer.eventListeners.update()
     }
 
     fun rescale() {

@@ -8,7 +8,9 @@ import org.liquidengine.legui.util.ColorConstants
  * Created by cout970 on 2017/05/02.
  */
 
-class Canvas(val controller: CanvasController) : CPanel() {
+class Canvas : CPanel() {
+
+    val state = CanvasState()
 
     init {
         backgroundColor = ColorConstants.transparent()
