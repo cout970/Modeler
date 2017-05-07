@@ -9,7 +9,5 @@ interface ICanvasLayout {
 
     val container: CanvasContainer
 
-    fun update()
-
-    fun onWindowChange()
+    fun updateCanvas()
 }

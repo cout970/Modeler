@@ -1,0 +1,17 @@
+package com.cout970.modeler.api.model.mesh
+
+import com.cout970.vector.api.IVector2
+import com.cout970.vector.api.IVector3
+
+/**
+ * Created by cout970 on 2017/05/07.
+ */
+interface IMesh {
+
+    val pos: List<IVector3>
+    val tex: List<IVector2>
+    val faces: List<IFaceIndex>
+
+    fun transformPos(selection: List<Int>, func: (Int, IVector3) -> IVector3): IMesh
+    fun transformTex(selection: List<Int>, func: (Int, IVector2) -> IVector2): IMesh
+}
