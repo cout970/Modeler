@@ -1,8 +1,8 @@
 package com.cout970.modeler
 
-import com.cout970.modeler.log.Level
-import com.cout970.modeler.log.log
-import com.cout970.modeler.log.print
+import com.cout970.modeler.core.log.Level
+import com.cout970.modeler.core.log.log
+import com.cout970.modeler.core.log.print
 import javax.swing.JOptionPane
 import javax.swing.UIManager
 

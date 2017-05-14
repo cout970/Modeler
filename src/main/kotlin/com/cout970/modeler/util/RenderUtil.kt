@@ -1,10 +1,10 @@
 package com.cout970.modeler.util
 
 import com.cout970.glutilities.tessellator.ITessellator
-import com.cout970.modeler.model.AABB
-import com.cout970.modeler.model.Meshes
-import com.cout970.modeler.model.Quad
-import com.cout970.modeler.model.Transformation
+import com.cout970.modeler.core.model.AABB
+import com.cout970.modeler.to_redo.model.Meshes
+import com.cout970.modeler.to_redo.model.Quad
+import com.cout970.modeler.to_redo.model.Transformation
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*

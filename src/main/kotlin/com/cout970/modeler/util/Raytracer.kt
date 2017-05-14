@@ -1,15 +1,15 @@
 package com.cout970.modeler.util
 
 import com.cout970.matrix.extensions.Matrix4
-import com.cout970.modeler.model.Model
-import com.cout970.modeler.model.api.IElementLeaf
-import com.cout970.modeler.model.util.getElement
-import com.cout970.modeler.model.util.getLeafPaths
-import com.cout970.modeler.model.util.rayTrace
-import com.cout970.modeler.selection.EdgePath
-import com.cout970.modeler.selection.ElementPath
-import com.cout970.modeler.selection.FacePath
-import com.cout970.modeler.selection.VertexPath
+import com.cout970.modeler.to_redo.model.Model
+import com.cout970.modeler.to_redo.model.api.IElementLeaf
+import com.cout970.modeler.to_redo.model.util.getElement
+import com.cout970.modeler.to_redo.model.util.getLeafPaths
+import com.cout970.modeler.to_redo.model.util.rayTrace
+import com.cout970.modeler.to_redo.selection.EdgePath
+import com.cout970.modeler.to_redo.selection.ElementPath
+import com.cout970.modeler.to_redo.selection.FacePath
+import com.cout970.modeler.to_redo.selection.VertexPath
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
 import com.cout970.raytrace.RayTraceUtil

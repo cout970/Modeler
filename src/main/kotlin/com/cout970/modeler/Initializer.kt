@@ -1,20 +1,20 @@
 package com.cout970.modeler
 
 import com.cout970.glutilities.window.GLFWLoader
-import com.cout970.modeler.config.ConfigManager
-import com.cout970.modeler.event.EventController
-import com.cout970.modeler.export.ExportManager
-import com.cout970.modeler.log.Level
-import com.cout970.modeler.log.log
-import com.cout970.modeler.log.print
-import com.cout970.modeler.modeleditor.ModelEditor
-import com.cout970.modeler.newView.GuiInitializer
-import com.cout970.modeler.newView.render.RenderManager
-import com.cout970.modeler.project.ProjectManager
-import com.cout970.modeler.resource.GuiResources
-import com.cout970.modeler.resource.ResourceLoader
-import com.cout970.modeler.window.Loop
-import com.cout970.modeler.window.WindowHandler
+import com.cout970.modeler.core.config.ConfigManager
+import com.cout970.modeler.core.export.ExportManager
+import com.cout970.modeler.core.log.Level
+import com.cout970.modeler.core.log.log
+import com.cout970.modeler.core.log.print
+import com.cout970.modeler.core.project.ProjectManager
+import com.cout970.modeler.core.resource.ResourceLoader
+import com.cout970.modeler.to_redo.modeleditor.ModelEditor
+import com.cout970.modeler.view.event.EventController
+import com.cout970.modeler.view.newView.GuiInitializer
+import com.cout970.modeler.view.newView.GuiResources
+import com.cout970.modeler.view.newView.render.RenderManager
+import com.cout970.modeler.view.window.Loop
+import com.cout970.modeler.view.window.WindowHandler
 import com.cout970.vector.extensions.vec3Of
 import java.io.File
 
