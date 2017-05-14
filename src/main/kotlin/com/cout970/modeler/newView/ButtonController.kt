@@ -96,6 +96,10 @@ class ButtonController(
                 AABB.export(aabb, File("aabb.txt"))
             }
 
+            "exit" -> guiInitializer.windowHandler.close()
+            "window.maximize" -> guiInitializer.windowHandler.window.maximize()
+            "window.minimize" -> guiInitializer.windowHandler.window.minimize()
+
             else -> log(Level.ERROR) { "Unregistered button ID: $id" }
         }
     }

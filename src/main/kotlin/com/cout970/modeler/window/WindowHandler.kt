@@ -8,7 +8,7 @@ import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.xi
 import com.cout970.vector.extensions.yi
-import org.lwjgl.glfw.GLFW
+import org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose
 import org.lwjgl.opengl.GL11
 import java.util.*
 
@@ -35,6 +35,8 @@ class WindowHandler : ITickeable {
         window = WindowBuilder.build {
             title = WINDOW_TITLE
             size = vec2Of(800, 600)
+//            properties.put(GLFW_DECORATED, GLFW_FALSE)
+//            properties.put(GLFW_MAXIMIZED, GLFW_TRUE)
         }
         window.setVSync(true)
         window.center()
@@ -43,7 +45,7 @@ class WindowHandler : ITickeable {
     }
 
     fun close() {
-        GLFW.glfwSetWindowShouldClose(window.id, true)
+        glfwSetWindowShouldClose(window.id, true)
     }
 
     fun shouldClose() = window.shouldClose()

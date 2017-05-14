@@ -1,5 +1,6 @@
 package com.cout970.modeler.api.model.mesh
 
+import com.cout970.modeler.api.model.ITransformation
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 
@@ -14,4 +15,6 @@ interface IMesh {
 
     fun transformPos(selection: List<Int>, func: (Int, IVector3) -> IVector3): IMesh
     fun transformTex(selection: List<Int>, func: (Int, IVector2) -> IVector2): IMesh
+
+    fun transform(trans: ITransformation): IMesh
 }

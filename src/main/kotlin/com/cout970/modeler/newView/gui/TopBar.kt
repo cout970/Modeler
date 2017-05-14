@@ -23,7 +23,10 @@ class TopBar : Panel() {
         addComponent(CButton("Edit", i++ * 60f, 0f, 60f, 20f).onClick(1, this::onClickTopBar))
         addComponent(CButton("View", i++ * 60f, 0f, 60f, 20f).onClick(2, this::onClickTopBar))
         addComponent(CButton("Structure", i++ * 60f, 0f, 60f, 20f).onClick(3, this::onClickTopBar))
-        addComponent(CButton("Help", i * 60f, 0f, 60f, 20f).onClick(4, this::onClickTopBar))
+        addComponent(CButton("Help", i++ * 60f, 0f, 60f, 20f).onClick(4, this::onClickTopBar))
+        addComponent(CButton("max", i++ * 60f, 0f, 60f, 20f).onClick(5) { buttonController.onClick("window.maximize") })
+        addComponent(CButton("min", i++ * 60f, 0f, 60f, 20f).onClick(6) { buttonController.onClick("window.minimize") })
+        addComponent(CButton("X", i * 60f, 0f, 60f, 20f).onClick(7) { buttonController.onClick("exit") })
     }
 
     fun load(id: Int) {

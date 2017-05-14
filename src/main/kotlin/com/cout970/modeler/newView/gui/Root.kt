@@ -35,7 +35,7 @@ class Root(val initializer: GuiInitializer, val contentPanel: ContentPanel) : Fr
     init {
         leftBar.isEnabled = false
         rightBar.isEnabled = false
-        topBar.isEnabled = false
+//        topBar.isEnabled = false
         bottomBar.isEnabled = true
 
         topBar.init(initializer.buttonController, dropdown)

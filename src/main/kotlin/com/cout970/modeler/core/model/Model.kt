@@ -8,7 +8,7 @@ import com.cout970.modeler.api.model.TreeNode
 /**
  * Created by cout970 on 2017/05/07.
  */
-class Model : IModel {
-    override val hierarchy: Tree<Int> = TreeNode(emptyList())
-    override val objects: List<IObject> = emptyList()
-}
+class Model(
+        override val objects: List<IObject> = emptyList(),
+        override val hierarchy: Tree<Int> = TreeNode(emptyList())
+) : IModel

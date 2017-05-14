@@ -26,32 +26,34 @@ class AABB(a: IVector3, b: IVector3) {
     val maxY get() = max.yd
     val maxZ get() = max.zd
 
+    fun translate(a: IVector3): AABB = AABB(min + a, max + a)
+    fun rotate(rot: IQuaternion): AABB = AABB(rot.rotate(min).round(), rot.rotate(max).round())
+    fun scale(a: IVector3): AABB = AABB(min * a, max * a)
+
     override fun toString(): String {
         return "AABB(min=$min, max=$max)"
     }
 
-    fun translate(a: IVector3): AABB = AABB(min + a, max + a)
-
-    fun rotate(rot: IQuaternion): AABB = AABB(rot.rotate(min).round(), rot.rotate(max).round())
-
     companion object {
+
         fun export(list: List<AABB>, output: File) {
             val stream = FileOutputStream(output)
             val f = DecimalFormat("0.000", DecimalFormatSymbols.getInstance(Locale.US))
 
             stream.use {
                 val writer = stream.writer()
+                val vectorClass = "Vec3d"
 
                 writer.print("listOf(\n")
                 for (i in list.take(list.size - 1)) {
-                    writer.print("Vec3d(${f.format(i.min.x)}, ${f.format(i.min.y)}, ${f.format(
-                            i.min.z)}) * PIXEL ${"to Vec3d(" + f.format(i.max.x) + ", " + f.format(
+                    writer.print("$vectorClass(${f.format(i.min.x)}, ${f.format(i.min.y)}, ${f.format(
+                            i.min.z)}) * PIXEL ${"to $vectorClass(" + f.format(i.max.x) + ", " + f.format(
                             i.max.y) + ", " + f.format(i.max.z) + ") * PIXEL,\n"}")
                 }
                 val i = list.last()
-                writer.print("Vec3d(${f.format(i.min.x)}, ${f.format(i.min.y)}, ${f.format(
-                        i.min.z)}) * PIXEL ${"to Vec3d(" + f.format(i.max.x) + ", " + f.format(
-                        i.max.y) + ", " + f.format(i.max.z) + ") * PIXEL\n"}")
+                writer.print("$vectorClass(${f.format(i.min.x)}, ${f.format(i.min.y)}, ${f.format(i.min.z)}" +
+                             ") * PIXEL ${"to $vectorClass(" + f.format(i.max.x) + ", " + f.format(
+                                     i.max.y) + ", " + f.format(i.max.z) + ") * PIXEL\n"}")
 
                 writer.print(")\n")
                 writer.flush()

@@ -7,7 +7,11 @@ import com.cout970.modeler.api.model.mesh.IMesh
  */
 interface IObject {
 
+    val name: String
     val mesh: IMesh
     val transformation: ITransformation
+
     val transformedMesh: IMesh
+
+    fun transform(func: (IMesh) -> IMesh): IObject
 }

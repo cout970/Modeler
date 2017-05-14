@@ -6,6 +6,6 @@ package com.cout970.modeler.api.model
  */
 interface IModel {
 
-    val hierarchy: Tree<Int>
     val objects: List<IObject>
+    val hierarchy: Tree<Int>
 }
