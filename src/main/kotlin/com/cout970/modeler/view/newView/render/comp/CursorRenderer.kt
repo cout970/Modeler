@@ -3,7 +3,7 @@ package com.cout970.modeler.view.newView.render.comp
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.util.RenderUtil
 import com.cout970.modeler.util.getDominantAxis
-import com.cout970.modeler.view.newView.Camera
+import com.cout970.modeler.view.gui.camera.Camera
 import com.cout970.modeler.view.newView.TransformationMode
 import com.cout970.modeler.view.newView.render.RenderContext
 import com.cout970.modeler.view.newView.selector.*

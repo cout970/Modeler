@@ -1,4 +1,4 @@
-package com.cout970.modeler.view.newView
+package com.cout970.modeler.view.gui.camera
 
 import com.cout970.modeler.util.toIMatrix
 import com.cout970.modeler.util.toRads

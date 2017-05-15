@@ -1,4 +1,4 @@
-package com.cout970.modeler.view.newView.render
+package com.cout970.modeler.view.render
 
 import com.cout970.glutilities.structure.GLStateMachine
 import com.cout970.glutilities.structure.Timer
@@ -10,8 +10,9 @@ import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.to_redo.modeleditor.ModelEditor
 import com.cout970.modeler.util.ITickeable
 import com.cout970.modeler.view.event.IInput
-import com.cout970.modeler.view.newView.gui.Root
-import com.cout970.modeler.view.render.GuiRenderer
+import com.cout970.modeler.view.gui.Root
+import com.cout970.modeler.view.newView.render.SceneRenderer
+import com.cout970.modeler.view.newView.render.ShaderHandler
 import com.cout970.modeler.view.window.WindowHandler
 import com.cout970.vector.extensions.xf
 import com.cout970.vector.extensions.yf
@@ -38,8 +39,8 @@ class RenderManager : ITickeable {
         guiRenderer = GuiRenderer(rootFrame, window.id)
         log(Level.FINE) { "[RenderManager] Creating ShaderHandler" }
         shaderHandler = ShaderHandler(resourceLoader)
-        log(Level.FINE) { "[RenderManager] Creating SceneRenderer" }
-        sceneRenderer = SceneRenderer(shaderHandler, modelEditor, windowHandler, rootFrame.contentPanel, input)
+//        log(Level.FINE) { "[RenderManager] Creating SceneRenderer" }
+//        sceneRenderer = SceneRenderer(shaderHandler, modelEditor, windowHandler, rootFrame.contentPanel, input)
         val c = Config.colorPalette.modelBackgroundColor
         GLStateMachine.clearColor = Color(c.xf, c.yf, c.zf)
     }
@@ -50,7 +51,6 @@ class RenderManager : ITickeable {
 
     override fun tick() {
         GLStateMachine.clear()
-        rootFrame.contentPanel.scenes.forEach(sceneRenderer::render)
         guiRenderer.render(rootFrame)
     }
 }

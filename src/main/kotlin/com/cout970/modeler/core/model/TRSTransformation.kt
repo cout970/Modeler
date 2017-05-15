@@ -6,9 +6,7 @@ import com.cout970.modeler.util.toIMatrix
 import com.cout970.modeler.util.toJOML
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.xd
-import com.cout970.vector.extensions.yd
-import com.cout970.vector.extensions.zd
+import com.cout970.vector.extensions.*
 import org.joml.Matrix4d
 
 /**
@@ -19,6 +17,10 @@ class TRSTransformation(
         val rotation: IQuaternion,
         val scale: IVector3
 ) : ITransformation {
+
+    companion object {
+        val IDENTITY = TRSTransformation(Vector3.ORIGIN, Quaternion.IDENTITY, Vector3.ONE)
+    }
 
     override val matrix: IMatrix4 by lazy {
         Matrix4d().run {

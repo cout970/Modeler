@@ -1,10 +1,11 @@
-package com.cout970.modeler.view.newView
+package com.cout970.modeler.view.gui.camera
 
+import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.util.toRads
 import com.cout970.modeler.view.event.IInput
-import com.cout970.modeler.view.newView.gui.Scene
-import com.cout970.modeler.view.window.WindowHandler
+import com.cout970.modeler.view.gui.canvas.Canvas
+import com.cout970.modeler.view.gui.canvas.CanvasContainer
 import com.cout970.vector.extensions.*
 
 /**
@@ -12,19 +13,18 @@ import com.cout970.vector.extensions.*
  */
 
 class CameraUpdater(
-        val sceneHandler: SceneHandler,
+        val canvasContainer: CanvasContainer,
         val input: IInput,
-        val windowHandler: WindowHandler
+        val timer: Timer
 ) {
 
     fun updateCameras() {
-        sceneHandler.scenes.forEach {
-            it.cameraHandler.update(windowHandler.timer)
+        canvasContainer.canvas.forEach {
+            it.state.cameraHandler.update(timer)
         }
-        sceneHandler.selectedScene?.let(this::updateScene)
     }
 
-    private fun updateScene(selectedScene: Scene) {
+    private fun updateScene(selectedScene: Canvas) {
 
         val move = Config.keyBindings.moveCamera.check(input)
         val rotate = Config.keyBindings.rotateCamera.check(input)
@@ -34,7 +34,7 @@ class CameraUpdater(
         val speed = 1 / 60.0 * if (Config.keyBindings.slowCameraMovements.check(input)) 1 / 10f else 1f
 
         if (move) {
-            val camera = selectedScene.cameraHandler.camera
+            val camera = selectedScene.state.cameraHandler.camera
             val rotations = vec2Of(camera.angleY, camera.angleX).toDegrees()
             val axisX = vec2Of(Math.cos(rotations.x.toRads()), Math.sin(rotations.x.toRads()))
             var axisY = vec2Of(Math.cos((rotations.xd - 90).toRads()), Math.sin((rotations.xd - 90).toRads()))
@@ -46,15 +46,13 @@ class CameraUpdater(
             a = a.normalize() * (diff.xd * Config.mouseTranslateSpeedX * speed * Math.sqrt(camera.zoom))
             b = b.normalize() * (-diff.yd * Config.mouseTranslateSpeedY * speed * Math.sqrt(camera.zoom))
 
-            selectedScene.cameraHandler.translate(a + b)
+            selectedScene.state.cameraHandler.translate(a + b)
         } else if (rotate) {
-            selectedScene.apply {
-                val diff = input.mouse.getMousePosDiff()
-                cameraHandler.rotate(
-                        diff.yd * Config.mouseRotationSpeedY * speed,
-                        diff.xd * Config.mouseRotationSpeedX * speed
-                )
-            }
+            val diff = input.mouse.getMousePosDiff()
+            selectedScene.state.cameraHandler.rotate(
+                    diff.yd * Config.mouseRotationSpeedY * speed,
+                    diff.xd * Config.mouseRotationSpeedX * speed
+            )
         }
     }
 }

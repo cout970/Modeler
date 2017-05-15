@@ -1,12 +1,12 @@
-package com.cout970.modeler.view.newView.search
+package com.cout970.modeler.view.gui.search
 
-import com.cout970.modeler.view.newView.ButtonController
+import controller.CommandExecutor
 
 /**
  * Created by cout970 on 2017/04/12.
  */
 
-class ModelView(val buttonController: ButtonController) {
+class SearchFacade(val commandExecutor: CommandExecutor) {
 
     val searchEngine: ISearchEngine = SearchDatabase
     val searchResults = mutableListOf<SearchResult>()
@@ -17,6 +17,6 @@ class ModelView(val buttonController: ButtonController) {
     }
 
     fun execute(selectedOption: Int) {
-        buttonController.onClick(searchResults[selectedOption].cmd)
+        commandExecutor.execute(searchResults[selectedOption].cmd)
     }
 }

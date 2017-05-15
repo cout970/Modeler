@@ -2,11 +2,12 @@ package com.cout970.modeler.view.newView.gui
 
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.util.*
-import com.cout970.modeler.view.newView.GuiInitializer
+import com.cout970.modeler.view.gui.search.SearchDatabase
+import com.cout970.modeler.view.gui.search.SearchFacade
+import com.cout970.modeler.view.gui.search.SearchPanel
+import com.cout970.modeler.view.newView.GuiInitializerOld
 import com.cout970.modeler.view.newView.gui.comp.CButton
 import com.cout970.modeler.view.newView.gui.comp.CPanel
-import com.cout970.modeler.view.newView.search.ModelView
-import com.cout970.modeler.view.newView.search.SearchDatabase
 import com.cout970.vector.extensions.minus
 import com.cout970.vector.extensions.plus
 import com.cout970.vector.extensions.times
@@ -19,7 +20,7 @@ import org.liquidengine.legui.util.ColorConstants
 /**
  * Created by cout970 on 2017/03/09.
  */
-class Root(val initializer: GuiInitializer, val contentPanel: ContentPanel) : Frame(1f, 1f), ITickeable {
+class Root(val initializer: GuiInitializerOld, val contentPanel: ContentPanel) : Frame(1f, 1f), ITickeable {
 
     val topBar = TopBar()
     val bottomBar = BottomBar()
@@ -30,7 +31,9 @@ class Root(val initializer: GuiInitializer, val contentPanel: ContentPanel) : Fr
 
     val dropdown = CPanel(0f, 20f, 150f, 80f)
 
-    val searchPanel = SearchPanel(ModelView(initializer.buttonController))
+    val searchPanel = SearchPanel(
+            SearchFacade(TODO("Remove this"))
+    )
 
     init {
         leftBar.isEnabled = false

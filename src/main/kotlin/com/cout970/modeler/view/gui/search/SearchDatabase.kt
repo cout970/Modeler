@@ -1,4 +1,4 @@
-package com.cout970.modeler.view.newView.search
+package com.cout970.modeler.view.gui.search
 
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.config.KeyBind

@@ -1,4 +1,4 @@
-package com.cout970.modeler.view.newView.gui
+package com.cout970.modeler.view.gui.search
 
 import com.cout970.glutilities.device.Keyboard
 import com.cout970.modeler.core.config.Config
@@ -6,7 +6,6 @@ import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.show
 import com.cout970.modeler.util.toColor
 import com.cout970.modeler.view.newView.gui.comp.CPanel
-import com.cout970.modeler.view.newView.search.ModelView
 import org.liquidengine.legui.component.ComponentState
 import org.liquidengine.legui.component.Label
 import org.liquidengine.legui.component.TextInput
@@ -17,7 +16,7 @@ import org.lwjgl.glfw.GLFW
 /**
  * Created by cout970 on 2017/04/12.
  */
-class SearchPanel(val modelview: ModelView) : CPanel(width = 400f, height = 60f) {
+class SearchPanel(val modelview: SearchFacade) : CPanel(width = 400f, height = 60f) {
 
     val label = Label("Search", 5f, 2f, 100f, 24f)
     val searchBar = TextInput("", 10f, 28f, 380f, 20f)
@@ -80,7 +79,7 @@ class SearchPanel(val modelview: ModelView) : CPanel(width = 400f, height = 60f)
         renderResults(modelview)
     }
 
-    private fun renderResults(modelview: ModelView) {
+    private fun renderResults(modelview: SearchFacade) {
 
         searchResults.clearComponents()
         searchResults.show()

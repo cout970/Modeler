@@ -1,6 +1,6 @@
-package com.cout970.modeler.view.newView.gui.canvas.layout
+package com.cout970.modeler.view.gui.canvas.layout
 
-import com.cout970.modeler.view.newView.gui.canvas.CanvasContainer
+import com.cout970.modeler.view.gui.canvas.CanvasContainer
 
 /**
  * Created by cout970 on 2017/05/03.

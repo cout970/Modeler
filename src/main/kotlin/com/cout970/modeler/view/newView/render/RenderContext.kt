@@ -11,7 +11,7 @@ import com.cout970.modeler.to_redo.modeleditor.IModelProvider
 import com.cout970.modeler.to_redo.modeleditor.SelectionManager
 import com.cout970.modeler.util.Cache
 import com.cout970.modeler.view.event.IInput
-import com.cout970.modeler.view.newView.Camera
+import com.cout970.modeler.view.gui.camera.Camera
 import com.cout970.modeler.view.newView.gui.ContentPanel
 import com.cout970.modeler.view.newView.gui.Scene
 import com.cout970.vector.api.IVector3

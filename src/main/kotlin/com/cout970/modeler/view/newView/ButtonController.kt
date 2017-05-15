@@ -13,7 +13,7 @@ import com.cout970.modeler.to_redo.selection.SelectionTarget
 import com.cout970.modeler.util.IPropertyBind
 import com.cout970.modeler.util.focus
 import com.cout970.modeler.util.show
-import com.cout970.modeler.view.newView.popup.*
+import com.cout970.modeler.view.gui.popup.*
 import java.io.File
 
 /**
@@ -21,7 +21,7 @@ import java.io.File
  */
 class ButtonController(
         private val projectManager: ProjectManager,
-        private val guiInitializer: GuiInitializer
+        private val guiInitializer: GuiInitializerOld
 ) {
 
     private val selectionManager: SelectionManager get() = projectManager.modelEditor.selectionManager

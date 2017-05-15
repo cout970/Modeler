@@ -1,4 +1,4 @@
-package com.cout970.modeler.view.newView.search
+package com.cout970.modeler.view.gui.search
 
 /**
  * Created by cout970 on 2017/04/12.

@@ -7,7 +7,7 @@ import com.cout970.modeler.util.MatrixUtils
 import com.cout970.modeler.util.toIMatrix
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.util.toRads
-import com.cout970.modeler.view.newView.CameraHandler
+import com.cout970.modeler.view.gui.camera.CameraHandler
 import com.cout970.modeler.view.newView.gui.comp.CBorderRenderer
 import com.cout970.modeler.view.newView.gui.comp.CPanel
 import com.cout970.modeler.view.newView.render.shader.Light

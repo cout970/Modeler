@@ -1,4 +1,4 @@
-package com.cout970.modeler.view.newView.popup;
+package com.cout970.modeler.view.gui.popup;
 
 import com.cout970.modeler.core.export.ExportFormat;
 import com.cout970.modeler.core.export.ExportProperties;

@@ -1,4 +1,4 @@
-package com.cout970.modeler.view.newView.gui.canvas
+package com.cout970.modeler.view.gui.canvas
 
 import com.cout970.modeler.view.newView.gui.comp.CBorderRenderer
 import com.cout970.modeler.view.newView.gui.comp.CPanel

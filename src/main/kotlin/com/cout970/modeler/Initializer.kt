@@ -9,10 +9,10 @@ import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.to_redo.modeleditor.ModelEditor
+import com.cout970.modeler.view.GuiInitializer
 import com.cout970.modeler.view.event.EventController
-import com.cout970.modeler.view.newView.GuiInitializer
 import com.cout970.modeler.view.newView.GuiResources
-import com.cout970.modeler.view.newView.render.RenderManager
+import com.cout970.modeler.view.render.RenderManager
 import com.cout970.modeler.view.window.Loop
 import com.cout970.modeler.view.window.WindowHandler
 import com.cout970.vector.extensions.vec3Of
@@ -35,7 +35,7 @@ class Initializer(val programArguments: List<String>) {
     val guiResources: GuiResources
 
     init {
-        Debugger.initializer = this
+        Debugger.setInit(this)
 
         log(Level.FINE) { "Loading config" }
         ConfigManager.loadConfig()
@@ -67,7 +67,7 @@ class Initializer(val programArguments: List<String>) {
         guiInitializer.init()
 
         log(Level.FINE) { "Creating Loop" }
-        mainLoop = Loop(listOf(renderManager, guiInitializer.root, eventController, modelEditor, windowHandler),
+        mainLoop = Loop(listOf(renderManager, guiInitializer.guiUpdater, eventController, modelEditor, windowHandler),
                 windowHandler.timer, windowHandler::shouldClose)
 
         parseArgs()
@@ -81,8 +81,8 @@ class Initializer(val programArguments: List<String>) {
 
         log(Level.FINE) { "Initializing renderers" }
         renderManager.initOpenGl(resourceLoader, windowHandler, modelEditor, eventController)
-        log(Level.FINE) { "Registering listeners for ViewEventHandler" }
-        guiInitializer.eventListeners.registerListeners(eventController)
+//        log(Level.FINE) { "Registering listeners for ViewEventHandler" }
+//        guiInitializer.eventListeners.registerListeners(eventController)
 
         log(Level.FINE) { "Adding placeholder cube" }
         modelEditor.addCube(vec3Of(16, 16, 16))
