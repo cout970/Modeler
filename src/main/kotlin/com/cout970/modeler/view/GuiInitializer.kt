@@ -27,6 +27,7 @@ class GuiInitializer(
     lateinit var root: Root
     lateinit var guiUpdater: GuiUpdater
     lateinit var commandExecutor: CommandExecutor
+    lateinit var listeners: Listeners
 //    lateinit var eventListeners: EventListeners
 //    lateinit var selector: Selector
 //    lateinit var modelViewTarget: ModelViewTarget
@@ -42,6 +43,8 @@ class GuiInitializer(
         guiUpdater = GuiUpdater(this)
         root = guiUpdater.root
 
+        log(Level.FINE) { "[GuiInitializer] Creating Listeners" }
+        listeners = Listeners(eventController, guiUpdater)
 
 //        log(Level.FINE) { "[GuiInitializer] Creating ContentPanel" }
 //        contentPanel = ContentPanel()
