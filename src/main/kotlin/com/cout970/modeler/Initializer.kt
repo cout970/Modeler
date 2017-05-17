@@ -9,9 +9,9 @@ import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.to_redo.modeleditor.ModelEditor
+import com.cout970.modeler.to_redo.newView.GuiResources
 import com.cout970.modeler.view.GuiInitializer
 import com.cout970.modeler.view.event.EventController
-import com.cout970.modeler.view.newView.GuiResources
 import com.cout970.modeler.view.render.RenderManager
 import com.cout970.modeler.view.window.Loop
 import com.cout970.modeler.view.window.WindowHandler
@@ -80,7 +80,7 @@ class Initializer(val programArguments: List<String>) {
         eventController.bindWindow(windowHandler.window)
 
         log(Level.FINE) { "Initializing renderers" }
-        renderManager.initOpenGl(resourceLoader, windowHandler, modelEditor, eventController)
+        renderManager.initOpenGl(resourceLoader, windowHandler)
 //        log(Level.FINE) { "Registering listeners for ViewEventHandler" }
 //        guiInitializer.eventListeners.registerListeners(eventController)
 

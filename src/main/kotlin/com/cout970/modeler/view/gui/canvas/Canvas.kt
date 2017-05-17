@@ -1,7 +1,7 @@
 package com.cout970.modeler.view.gui.canvas
 
-import com.cout970.modeler.view.newView.gui.comp.CBorderRenderer
-import com.cout970.modeler.view.newView.gui.comp.CPanel
+import com.cout970.modeler.to_redo.newView.gui.comp.CBorderRenderer
+import com.cout970.modeler.to_redo.newView.gui.comp.CPanel
 import org.liquidengine.legui.util.ColorConstants
 
 /**

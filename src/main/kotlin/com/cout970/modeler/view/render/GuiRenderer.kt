@@ -38,5 +38,6 @@ class GuiRenderer(rootFrame: Frame, window: Long) {
 
     fun render(frame: Frame) {
         renderer.render(frame)
+
     }
 }

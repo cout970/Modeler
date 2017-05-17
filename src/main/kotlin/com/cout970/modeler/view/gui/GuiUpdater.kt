@@ -1,11 +1,11 @@
 package com.cout970.modeler.view.gui
 
+import com.cout970.modeler.to_redo.newView.gui.comp.CPanel
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.GuiInitializer
 import com.cout970.modeler.view.gui.canvas.CanvasContainer
 import com.cout970.modeler.view.gui.search.SearchFacade
 import com.cout970.modeler.view.gui.search.SearchPanel
-import com.cout970.modeler.view.newView.gui.comp.CPanel
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Label
 import org.liquidengine.legui.util.ColorConstants
