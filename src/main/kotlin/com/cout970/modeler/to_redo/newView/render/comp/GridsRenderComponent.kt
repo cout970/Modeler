@@ -3,7 +3,7 @@ package com.cout970.modeler.to_redo.newView.render.comp
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.to_redo.newView.TransformationMode
 import com.cout970.modeler.util.toInt
-import com.cout970.modeler.view.render.RenderContext
+import com.cout970.modeler.view.render.RenderContextOld
 import com.cout970.vector.api.IVector3
 import org.lwjgl.opengl.GL11
 
@@ -12,7 +12,7 @@ import org.lwjgl.opengl.GL11
  */
 class GridsRenderComponent : IRenderableComponent {
 
-    override fun render(ctx: RenderContext) {
+    override fun render(ctx: RenderContextOld) {
         val perspective = ctx.scene.perspective
         ctx.apply {
             val camera = scene.cameraHandler.camera

@@ -12,7 +12,6 @@ import com.cout970.modeler.to_redo.newView.gui.Root
 import com.cout970.modeler.util.ITickeable
 import com.cout970.modeler.view.event.IInput
 import com.cout970.modeler.view.render.GuiRenderer
-import com.cout970.modeler.view.render.ShaderHandler
 import com.cout970.modeler.view.window.WindowHandler
 import com.cout970.vector.extensions.xf
 import com.cout970.vector.extensions.yf
@@ -27,7 +26,7 @@ class RenderManager : ITickeable {
     lateinit var rootFrame: Root
     lateinit var window: GLFWWindow
     lateinit var guiRenderer: GuiRenderer
-    lateinit var shaderHandler: ShaderHandler
+    lateinit var shaderHandler: Unit
     lateinit var timer: Timer
     lateinit var sceneRenderer: SceneRenderer
 
@@ -38,7 +37,7 @@ class RenderManager : ITickeable {
         log(Level.FINE) { "[RenderManager] Creating GuiRenderer" }
         guiRenderer = GuiRenderer(rootFrame, window.id)
         log(Level.FINE) { "[RenderManager] Creating ShaderHandler" }
-        shaderHandler = ShaderHandler(resourceLoader)
+//        shaderHandler = ShaderHandler(resourceLoader)
         log(Level.FINE) { "[RenderManager] Creating SceneRenderer" }
         sceneRenderer = SceneRenderer(shaderHandler, modelEditor, windowHandler, rootFrame.contentPanel, input)
         val c = Config.colorPalette.modelBackgroundColor

@@ -15,7 +15,7 @@ import com.cout970.modeler.to_redo.selection.subselection.SubSelectionFace
 import com.cout970.modeler.to_redo.selection.subselection.SubSelectionVertex
 import com.cout970.modeler.to_redo.selection.vertexTexSelection
 import com.cout970.modeler.util.RenderUtil
-import com.cout970.modeler.view.render.RenderContext
+import com.cout970.modeler.view.render.RenderContextOld
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
@@ -26,7 +26,7 @@ import org.lwjgl.opengl.GL11
  */
 class UVSelectionRenderComponent : IRenderableComponent {
 
-    override fun render(ctx: RenderContext) {
+    override fun render(ctx: RenderContextOld) {
         ctx.apply {
             GLStateMachine.depthTest.disable()
 
@@ -47,7 +47,7 @@ class UVSelectionRenderComponent : IRenderableComponent {
         }
     }
 
-    private fun drawTextureSelection(ctx: RenderContext, renderer: Renderer, textureSelection: VertexTexSelection) {
+    private fun drawTextureSelection(ctx: RenderContextOld, renderer: Renderer, textureSelection: VertexTexSelection) {
         ctx.apply {
             GLStateMachine.useBlend(0.25f) {
                 draw(GL11.GL_QUADS, shaderHandler.formatPCT) {
@@ -62,7 +62,7 @@ class UVSelectionRenderComponent : IRenderableComponent {
         }
     }
 
-    private fun drawModelSelection(ctx: RenderContext, renderer: Renderer, modelSelection: VertexPosSelection,
+    private fun drawModelSelection(ctx: RenderContextOld, renderer: Renderer, modelSelection: VertexPosSelection,
                                    showAllMeshUVs: Boolean) {
         ctx.apply {
             GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE)
@@ -97,7 +97,7 @@ class UVSelectionRenderComponent : IRenderableComponent {
             val size: IVector2,
             val offset: IVector2,
             val color: IVector3,
-            val ctx: RenderContext
+            val ctx: RenderContextOld
     ) {
 
         fun renderSelectedEdges(model: Model, sel: SubSelectionEdge) {

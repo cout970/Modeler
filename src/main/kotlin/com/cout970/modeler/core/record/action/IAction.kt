@@ -5,6 +5,7 @@ package com.cout970.modeler.core.record.action
  *
  * Implementations of the interface must be idempotent
  */
+//TODO read all the actions
 interface IAction {
 
     fun run()

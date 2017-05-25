@@ -1,8 +1,8 @@
 package com.cout970.modeler.util
 
-import com.cout970.modeler.to_redo.newView.ButtonController
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.plus
+import controller.CommandExecutor
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Frame
@@ -19,10 +19,10 @@ val Component.absolutePosition: IVector2 get() {
     return sum
 }
 
-fun <T : Component> T.onClick(id: String, buttonController: ButtonController): T {
+fun <T : Component> T.onClick(id: String, commandExecutor: CommandExecutor): T {
     leguiEventListeners.addListener(MouseClickEvent::class.java, {
         if (it.action == MouseClickEvent.MouseClickAction.PRESS) {
-            buttonController.onClick(id)
+            commandExecutor.execute(id)
         }
     })
     return this

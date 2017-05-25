@@ -4,12 +4,6 @@ import com.cout970.modeler.core.export.ExportFormat
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.project.Project
 import com.cout970.modeler.core.project.ProjectManager
-import com.cout970.modeler.to_redo.model.material.IMaterial
-import com.cout970.modeler.to_redo.model.material.MaterialNone
-import com.cout970.modeler.to_redo.model.util.getLeafPaths
-import com.cout970.modeler.to_redo.model.util.selectAllLeafs
-import com.cout970.modeler.to_redo.selection.ElementPath
-import com.cout970.modeler.to_redo.selection.ElementSelection
 import org.lwjgl.PointerBuffer
 import org.lwjgl.system.MemoryUtil
 import org.lwjgl.util.tinyfd.TinyFileDialogs
@@ -79,7 +73,8 @@ fun newProject(projectManager: ProjectManager) {
             "Do you want to create a new project? \nAll unsaved changes will be lost!")
     if (res != JOptionPane.OK_OPTION) return
     projectManager.project = Project(projectManager.project.owner, "Unnamed")
-    projectManager.modelEditor.selectionManager.clearSelection()
+    //TODO
+//    projectManager.modelEditor.selectionManager.clearSelection()
 }
 
 fun loadProject(projectManager: ProjectManager) {
@@ -92,9 +87,9 @@ fun loadProject(projectManager: ProjectManager) {
     if (file != null) {
         lastSaveFile = file
         try {
-            val project = projectManager.exportManager.loadProject(lastSaveFile!!)
-            project.model = project.model.copy()
-            projectManager.project = project
+//            val project = projectManager.exportManager.loadProject(lastSaveFile!!)
+//            project.model = project.model.copy()
+//            projectManager.project = project
         } catch (e: Exception) {
             e.print()
         }
@@ -102,13 +97,13 @@ fun loadProject(projectManager: ProjectManager) {
 }
 
 private fun saveProject(projectManager: ProjectManager, project: Project) {
-    projectManager.exportManager.saveProject(lastSaveFile!!, project)
+//    projectManager.exportManager.saveProject(lastSaveFile!!, project)
 }
 
 fun showImportModelPopup(projectManager: ProjectManager) {
     ImportDialog.show { prop ->
         if (prop != null) {
-            projectManager.exportManager.importModel(prop)
+//            projectManager.exportManager.importModel(prop)
         }
     }
 }
@@ -116,7 +111,7 @@ fun showImportModelPopup(projectManager: ProjectManager) {
 fun showExportModelPopup(projectManager: ProjectManager) {
     ExportDialog.show { prop ->
         if (prop != null) {
-            projectManager.exportManager.exportModel(prop)
+//            projectManager.exportManager.exportModel(prop)
         }
     }
 }
@@ -125,33 +120,33 @@ fun importTexture(projectManager: ProjectManager) {
     val file = TinyFileDialogs.tinyfd_openFileDialog("Import Texture", "",
             textureExtensions, "PNG texture (*.png)", false)
     if (file != null) {
-        val sel = projectManager.modelEditor.model.selectAllLeafs()
-        projectManager.exportManager.importTexture(file, sel)
+//        val sel = projectManager.modelEditor.model.selectAllLeafs()
+//        projectManager.exportManager.importTexture(file, sel)
     }
 }
-
-fun exportTexture(projectManager: ProjectManager) {
-    val file = TinyFileDialogs.tinyfd_saveFileDialog("Export Texture", "texture.png",
-            textureExtensions, "PNG texture (*.png)")
-    if (file != null) {
-        val index = 0
-        val res = projectManager.modelEditor.model.resources
-        val mat: IMaterial
-        val paths: List<ElementPath>
-        if (res.materials.size > index) {
-            mat = res.materials[index]
-            paths = res.pathToMaterial
-                    .entries
-                    .filter { it.value == index }
-                    .map { it.key }
-                    .distinct()
-        } else {
-            mat = MaterialNone
-            paths = projectManager.modelEditor.model.getLeafPaths()
-        }
-        projectManager.exportManager.exportTexture(file, mat, ElementSelection(paths))
-    }
-}
+//
+//fun exportTexture(projectManager: ProjectManager) {
+//    val file = TinyFileDialogs.tinyfd_saveFileDialog("Export Texture", "texture.png",
+//            textureExtensions, "PNG texture (*.png)")
+//    if (file != null) {
+//        val index = 0
+//        val res = projectManager.modelEditor.model.resources
+//        val mat: IMaterial
+//        val paths: List<ElementPath>
+//        if (res.materials.size > index) {
+//            mat = res.materials[index]
+//            paths = res.pathToMaterial
+//                    .entries
+//                    .filter { it.value == index }
+//                    .map { it.key }
+//                    .distinct()
+//        } else {
+//            mat = MaterialNone
+//            paths = projectManager.modelEditor.model.getLeafPaths()
+//        }
+//        projectManager.exportManager.exportTexture(file, mat, ElementSelection(paths))
+//    }
+//}
 
 fun Missing(thing: String) {
     JOptionPane.showMessageDialog(null, "Operation not implemented yet: $thing")

@@ -21,6 +21,7 @@ class CameraUpdater(
     fun updateCameras() {
         canvasContainer.canvas.forEach {
             it.state.cameraHandler.update(timer)
+            updateScene(it)
         }
     }
 

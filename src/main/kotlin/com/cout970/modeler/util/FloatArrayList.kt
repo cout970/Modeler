@@ -1,5 +1,7 @@
 package com.cout970.modeler.util
 
+import org.lwjgl.system.MemoryUtil
+import java.nio.FloatBuffer
 import java.util.*
 
 /**
@@ -15,6 +17,50 @@ class FloatArrayList(capacity: Int = 10) : MutableList<Float>, RandomAccess {
 
     init {
         array = FloatArray(capacity)
+    }
+
+    fun fillBuffer(floatBuffer: FloatBuffer) {
+        floatBuffer.put(array, 0, size)
+    }
+
+    fun useAsBuffer(function: (FloatBuffer) -> Unit) {
+        val buffer = MemoryUtil.memAlloc(size shl 2)
+        val floatBuffer = buffer.asFloatBuffer()
+        fillBuffer(floatBuffer)
+        floatBuffer.flip()
+        function(floatBuffer)
+        MemoryUtil.memFree(buffer)
+    }
+
+    fun useAsBuffer(b: FloatArrayList, func: (FloatBuffer, FloatBuffer) -> Unit) {
+        useAsBuffer { a ->
+            b.useAsBuffer { b ->
+                func(a, b)
+            }
+        }
+    }
+
+    fun useAsBuffer(b: FloatArrayList, c: FloatArrayList, func: (FloatBuffer, FloatBuffer, FloatBuffer) -> Unit) {
+        useAsBuffer { a ->
+            b.useAsBuffer { b ->
+                c.useAsBuffer { c ->
+                    func(a, b, c)
+                }
+            }
+        }
+    }
+
+    fun useAsBuffer(b: FloatArrayList, c: FloatArrayList, d: FloatArrayList,
+                    func: (FloatBuffer, FloatBuffer, FloatBuffer, FloatBuffer) -> Unit) {
+        useAsBuffer { a ->
+            b.useAsBuffer { b ->
+                c.useAsBuffer { c ->
+                    d.useAsBuffer { d ->
+                        func(a, b, c, d)
+                    }
+                }
+            }
+        }
     }
 
     override fun contains(element: Float): Boolean {
@@ -54,9 +100,18 @@ class FloatArrayList(capacity: Int = 10) : MutableList<Float>, RandomAccess {
 
     override fun add(element: Float): Boolean {
         modCount++
+        if (array.size == size) {
+            growArray()
+        }
         array[size] = element
         size++
         return true
+    }
+
+    private fun growArray() {
+        val newArray = FloatArray(array.size * 2)
+        System.arraycopy(array, 0, newArray, 0, array.size)
+        array = newArray
     }
 
     override fun add(index: Int, element: Float) {

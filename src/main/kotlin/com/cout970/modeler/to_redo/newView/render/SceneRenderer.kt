@@ -9,8 +9,7 @@ import com.cout970.modeler.util.Cache
 import com.cout970.modeler.util.absolutePosition
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.view.event.IInput
-import com.cout970.modeler.view.render.RenderContext
-import com.cout970.modeler.view.render.ShaderHandler
+import com.cout970.modeler.view.render.RenderContextOld
 import com.cout970.modeler.view.render.ShaderType
 import com.cout970.modeler.view.window.WindowHandler
 import com.cout970.vector.extensions.vec2Of
@@ -56,7 +55,7 @@ class SceneRenderer(
                     .forEach { it.tmpModel = null }
         }
 
-        val context = RenderContext(
+        val context = RenderContextOld(
                 shaderHandler = shaderHandler,
                 modelProvider = modelEditor,
                 model = contentPanel.selectedScene?.viewTarget?.getModel() ?: modelEditor.model,

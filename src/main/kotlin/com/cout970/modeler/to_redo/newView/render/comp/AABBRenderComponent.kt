@@ -4,7 +4,7 @@ import com.cout970.modeler.to_redo.model.api.IElementLeaf
 import com.cout970.modeler.to_redo.model.util.getLeafElements
 import com.cout970.modeler.to_redo.model.util.toAABB
 import com.cout970.modeler.util.RenderUtil
-import com.cout970.modeler.view.render.RenderContext
+import com.cout970.modeler.view.render.RenderContextOld
 import org.lwjgl.opengl.GL11
 
 /**
@@ -12,7 +12,7 @@ import org.lwjgl.opengl.GL11
  */
 class AABBRenderComponent : IRenderableComponent {
 
-    override fun render(ctx: RenderContext) {
+    override fun render(ctx: RenderContextOld) {
         ctx.apply {
             if (controllerState.showBoundingBoxes.get()) {
                 draw(GL11.GL_LINES, shaderHandler.formatPC, model.hashCode() xor 0xFFF) {

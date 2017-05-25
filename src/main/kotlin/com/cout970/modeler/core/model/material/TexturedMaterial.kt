@@ -10,6 +10,7 @@ import com.google.gson.annotations.Expose
 import javax.swing.JOptionPane
 
 class TexturedMaterial(@Expose override val name: String, val path: ResourcePath) : IMaterial {
+
     var texture: Texture? = null
     private var lastModified = -1L
     override val size: IVector2 get() = texture?.size ?: vec2Of(1)

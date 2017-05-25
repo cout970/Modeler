@@ -3,7 +3,7 @@ package com.cout970.modeler.to_redo.newView.render.comp
 import com.cout970.modeler.to_redo.model.material.MaterialNone
 import com.cout970.modeler.to_redo.model.util.getElement
 import com.cout970.modeler.to_redo.model.util.getLeafPaths
-import com.cout970.modeler.view.render.RenderContext
+import com.cout970.modeler.view.render.RenderContextOld
 import org.lwjgl.opengl.GL11
 
 /**
@@ -11,7 +11,7 @@ import org.lwjgl.opengl.GL11
  */
 class ModelRenderComponent : IRenderableComponent {
 
-    override fun render(ctx: RenderContext) {
+    override fun render(ctx: RenderContextOld) {
         MaterialNone.bind()
         ctx.apply {
 

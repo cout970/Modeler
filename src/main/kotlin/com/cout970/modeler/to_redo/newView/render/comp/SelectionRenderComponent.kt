@@ -11,7 +11,7 @@ import com.cout970.modeler.to_redo.selection.subselection.SubSelectionEdge
 import com.cout970.modeler.to_redo.selection.subselection.SubSelectionFace
 import com.cout970.modeler.to_redo.selection.subselection.SubSelectionVertex
 import com.cout970.modeler.util.RenderUtil
-import com.cout970.modeler.view.render.RenderContext
+import com.cout970.modeler.view.render.RenderContextOld
 import org.lwjgl.opengl.GL11
 
 /**
@@ -19,7 +19,7 @@ import org.lwjgl.opengl.GL11
  */
 class SelectionRenderComponent : IRenderableComponent {
 
-    override fun render(ctx: RenderContext) {
+    override fun render(ctx: RenderContextOld) {
         ctx.apply {
             // selection outline
             if (selectionManager.selectionMode == SelectionMode.ELEMENT) {

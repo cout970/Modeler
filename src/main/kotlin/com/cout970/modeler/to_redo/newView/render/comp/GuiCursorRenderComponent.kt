@@ -2,7 +2,7 @@ package com.cout970.modeler.to_redo.newView.render.comp
 
 import com.cout970.glutilities.structure.GLStateMachine
 import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.view.render.RenderContext
+import com.cout970.modeler.view.render.RenderContextOld
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.xd
 import com.cout970.vector.extensions.yd
@@ -13,7 +13,7 @@ import org.lwjgl.opengl.GL11
  */
 class GuiCursorRenderComponent : IRenderableComponent {
 
-    override fun render(ctx: RenderContext) {
+    override fun render(ctx: RenderContextOld) {
         ctx.apply {
             if (Config.keyBindings.moveCamera.check(input) ||
                 Config.keyBindings.rotateCamera.check(input)) {

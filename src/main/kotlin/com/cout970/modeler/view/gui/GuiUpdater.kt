@@ -3,6 +3,7 @@ package com.cout970.modeler.view.gui
 import com.cout970.modeler.to_redo.newView.gui.comp.CPanel
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.GuiInitializer
+import com.cout970.modeler.view.gui.camera.CameraUpdater
 import com.cout970.modeler.view.gui.canvas.CanvasContainer
 import com.cout970.modeler.view.gui.search.SearchFacade
 import com.cout970.modeler.view.gui.search.SearchPanel
@@ -18,6 +19,7 @@ class GuiUpdater(private val initializer: GuiInitializer) : ITickeable {
 
     val root: Root = Root()
     val canvasContainer: CanvasContainer
+    val cameraUpdater: CameraUpdater
 
     init {
         root.apply {
@@ -36,6 +38,7 @@ class GuiUpdater(private val initializer: GuiInitializer) : ITickeable {
             refreshComponents()
         }
         canvasContainer = CanvasContainer(root.canvasPanel)
+        cameraUpdater = CameraUpdater(canvasContainer, initializer.eventController, initializer.windowHandler.timer)
     }
 
     fun updateComponents() {
@@ -62,6 +65,7 @@ class GuiUpdater(private val initializer: GuiInitializer) : ITickeable {
 
 //        initializer.guiResources.updateMaterials(initializer.modelEditor.model)
         initializer.windowHandler.resetViewport()
+        cameraUpdater.updateCameras()
 
 //        initializer.cameraUpdater.updateCameras()
 //        rescale()

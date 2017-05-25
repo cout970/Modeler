@@ -10,7 +10,6 @@ import com.cout970.vector.extensions.vec3Of
  */
 class CanvasState {
 
-    var perspective: Boolean = true
     val cameraHandler = CameraHandler()
 
     val lights: List<Light> = listOf(

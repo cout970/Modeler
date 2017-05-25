@@ -2,7 +2,7 @@ package com.cout970.modeler.to_redo.newView.render.comp
 
 import com.cout970.glutilities.structure.GLStateMachine
 import com.cout970.modeler.to_redo.model.material.MaterialNone
-import com.cout970.modeler.view.render.RenderContext
+import com.cout970.modeler.view.render.RenderContextOld
 import com.cout970.vector.extensions.div
 import com.cout970.vector.extensions.xi
 import com.cout970.vector.extensions.yi
@@ -14,7 +14,7 @@ import org.lwjgl.opengl.GL11
 
 class TextureRenderComponent : IRenderableComponent {
 
-    override fun render(ctx: RenderContext) {
+    override fun render(ctx: RenderContextOld) {
         ctx.apply {
             GLStateMachine.depthTest.disable()
             shaderHandler.enableColor = false

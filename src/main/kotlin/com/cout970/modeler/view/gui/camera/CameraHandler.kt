@@ -1,5 +1,7 @@
 package com.cout970.modeler.view.gui.camera
 
+import com.cout970.glutilities.structure.Timer
+import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.plus
 
 /**
@@ -10,17 +12,17 @@ class CameraHandler {
     var camera = Camera.Companion.DEFAULT
     var desiredZoom = camera.zoom
 
-    fun update(timer: com.cout970.glutilities.structure.Timer) {
+    fun update(timer: Timer) {
         if (Math.abs(desiredZoom - camera.zoom) > 0.01) {
             camera = camera.copy(zoom = camera.zoom + (desiredZoom - camera.zoom) * Math.min(1.0, timer.delta * 20))
         }
     }
 
-    fun setPosition(pos: com.cout970.vector.api.IVector3) {
+    fun setPosition(pos: IVector3) {
         camera = camera.copy(position = pos)
     }
 
-    fun translate(move: com.cout970.vector.api.IVector3) {
+    fun translate(move: IVector3) {
         camera = camera.copy(position = camera.position + move)
     }
 

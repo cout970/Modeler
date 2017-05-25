@@ -8,14 +8,11 @@ import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.resource.ResourceLoader
-import com.cout970.modeler.to_redo.modeleditor.ModelEditor
-import com.cout970.modeler.to_redo.newView.GuiResources
 import com.cout970.modeler.view.GuiInitializer
 import com.cout970.modeler.view.event.EventController
 import com.cout970.modeler.view.render.RenderManager
 import com.cout970.modeler.view.window.Loop
 import com.cout970.modeler.view.window.WindowHandler
-import com.cout970.vector.extensions.vec3Of
 import java.io.File
 
 /**
@@ -27,12 +24,12 @@ class Initializer(val programArguments: List<String>) {
     val windowHandler: WindowHandler
     val eventController: EventController
     val projectManager: ProjectManager
-    val modelEditor: ModelEditor
+    //    val modelEditor: ModelEditor
     val guiInitializer: GuiInitializer
     val renderManager: RenderManager
     val mainLoop: Loop
     val exportManager: ExportManager
-    val guiResources: GuiResources
+//    val guiResources: GuiResources
 
     init {
         Debugger.setInit(this)
@@ -51,23 +48,23 @@ class Initializer(val programArguments: List<String>) {
         log(Level.FINE) { "Creating ProjectManager" }
         projectManager = ProjectManager()
         log(Level.FINE) { "Creating ModelController" }
-        modelEditor = ModelEditor(projectManager)
+//        modelEditor = ModelEditor(projectManager)
         log(Level.FINE) { "Creating ExportManager" }
         exportManager = ExportManager(projectManager, resourceLoader)
 
         log(Level.FINE) { "Creating GuiResources" }
-        guiResources = GuiResources(resourceLoader)
+//        guiResources = GuiResources(resourceLoader)
 
         log(Level.FINE) { "Creating RenderManager" }
         renderManager = RenderManager()
         log(Level.FINE) { "Creating GuiInitializer" }
         guiInitializer = GuiInitializer(eventController, windowHandler, projectManager,
-                renderManager, resourceLoader, guiResources)
+                renderManager, resourceLoader)
 
         guiInitializer.init()
 
         log(Level.FINE) { "Creating Loop" }
-        mainLoop = Loop(listOf(renderManager, guiInitializer.guiUpdater, eventController, modelEditor, windowHandler),
+        mainLoop = Loop(listOf(renderManager, guiInitializer.guiUpdater, eventController, windowHandler),
                 windowHandler.timer, windowHandler::shouldClose)
 
         parseArgs()
@@ -80,12 +77,12 @@ class Initializer(val programArguments: List<String>) {
         eventController.bindWindow(windowHandler.window)
 
         log(Level.FINE) { "Initializing renderers" }
-        renderManager.initOpenGl(resourceLoader, windowHandler)
+        renderManager.initOpenGl(resourceLoader, windowHandler, eventController)
 //        log(Level.FINE) { "Registering listeners for ViewEventHandler" }
 //        guiInitializer.eventListeners.registerListeners(eventController)
 
         log(Level.FINE) { "Adding placeholder cube" }
-        modelEditor.addCube(vec3Of(16, 16, 16))
+//        modelEditor.addCube(vec3Of(16, 16, 16))
         log(Level.FINE) { "Initialization done" }
     }
 

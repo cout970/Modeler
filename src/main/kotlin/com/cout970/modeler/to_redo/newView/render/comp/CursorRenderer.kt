@@ -6,7 +6,7 @@ import com.cout970.modeler.to_redo.newView.selector.*
 import com.cout970.modeler.util.RenderUtil
 import com.cout970.modeler.util.getDominantAxis
 import com.cout970.modeler.view.gui.camera.Camera
-import com.cout970.modeler.view.render.RenderContext
+import com.cout970.modeler.view.render.RenderContextOld
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
 import org.lwjgl.opengl.GL11
@@ -16,7 +16,7 @@ import org.lwjgl.opengl.GL11
  */
 object CursorRenderer {
 
-    fun RenderContext.drawCursor(cursor: Cursor, camera: Camera, allowGrids: Boolean) {
+    fun RenderContextOld.drawCursor(cursor: Cursor, camera: Camera, allowGrids: Boolean) {
         if (!cursor.enable) return
         when (cursor.transformationMode) {
             TransformationMode.TRANSLATION -> {
@@ -39,7 +39,7 @@ object CursorRenderer {
         }
     }
 
-    fun renderTranslation(ctx: RenderContext, cursor: Cursor) {
+    fun renderTranslation(ctx: RenderContextOld, cursor: Cursor) {
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
         ctx.apply {
             draw(GL11.GL_QUADS, shaderHandler.formatPC) {
@@ -70,7 +70,7 @@ object CursorRenderer {
         }
     }
 
-    fun renderRotation(ctx: RenderContext, cursor: Cursor) {
+    fun renderRotation(ctx: RenderContextOld, cursor: Cursor) {
 
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
 
@@ -135,7 +135,7 @@ object CursorRenderer {
         }
     }
 
-    fun renderScale(ctx: RenderContext, cursor: Cursor) {
+    fun renderScale(ctx: RenderContextOld, cursor: Cursor) {
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
         ctx.apply {
             draw(GL11.GL_QUADS, shaderHandler.formatPC) {
@@ -178,7 +178,7 @@ object CursorRenderer {
         }
     }
 
-    private fun drawHelperGrids(ctx: RenderContext, cursor: Cursor, camera: Camera) {
+    private fun drawHelperGrids(ctx: RenderContextOld, cursor: Cursor, camera: Camera) {
         ctx.apply {
             val sel = ctx.scene.viewTarget.selectedObject
             if (sel != null) {

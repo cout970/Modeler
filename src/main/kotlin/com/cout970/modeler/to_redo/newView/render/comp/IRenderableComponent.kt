@@ -1,6 +1,6 @@
 package com.cout970.modeler.to_redo.newView.render.comp
 
-import com.cout970.modeler.view.render.RenderContext
+import com.cout970.modeler.view.render.RenderContextOld
 
 
 /**
@@ -8,7 +8,7 @@ import com.cout970.modeler.view.render.RenderContext
  */
 interface IRenderableComponent {
 
-    fun render(ctx: RenderContext)
+    fun render(ctx: RenderContextOld)
 
-    fun canRender(ctx: RenderContext): Boolean = true
+    fun canRender(ctx: RenderContextOld): Boolean = true
 }

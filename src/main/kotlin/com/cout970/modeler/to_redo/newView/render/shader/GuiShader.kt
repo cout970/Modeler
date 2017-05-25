@@ -5,7 +5,7 @@ import com.cout970.glutilities.shader.ShaderProgram
 import com.cout970.glutilities.shader.UniformVariable
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.util.toIVector
-import com.cout970.modeler.view.render.RenderContext
+import com.cout970.modeler.view.render.RenderContextOld
 import org.lwjgl.opengl.GL20
 
 /**
@@ -31,7 +31,7 @@ class GuiShader(resourceLoader: ResourceLoader) : IShader {
         viewport = guiShader.createUniformVariable("viewport")
     }
 
-    override fun useShader(ctx: RenderContext, func: () -> Unit) {
+    override fun useShader(ctx: RenderContextOld, func: () -> Unit) {
         guiShader.start()
         viewport.setVector2(ctx.scene.size.toIVector())
         func()

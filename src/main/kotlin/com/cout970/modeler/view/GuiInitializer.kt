@@ -4,7 +4,6 @@ import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.resource.ResourceLoader
-import com.cout970.modeler.to_redo.newView.GuiResources
 import com.cout970.modeler.view.event.EventController
 import com.cout970.modeler.view.gui.GuiUpdater
 import com.cout970.modeler.view.gui.Root
@@ -20,8 +19,8 @@ class GuiInitializer(
         val windowHandler: WindowHandler,
         val projectManager: ProjectManager,
         val renderManager: RenderManager,
-        val resourceLoader: ResourceLoader,
-        val guiResources: GuiResources
+        val resourceLoader: ResourceLoader
+//        val guiResources: GuiResources
 ) {
 
     lateinit var root: Root

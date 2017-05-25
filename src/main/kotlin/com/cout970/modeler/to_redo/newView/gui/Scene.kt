@@ -42,7 +42,6 @@ class Scene(
         if (!viewTarget.is3d) {
             return MatrixUtils.createOrthoMatrix(size.toIVector()) * cameraHandler.camera.matrixForUV
         } else {
-            //TODO continue here, move this to CanvasController2D
             val projection: IMatrix4
             val view: IMatrix4
 

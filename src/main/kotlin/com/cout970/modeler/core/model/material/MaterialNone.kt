@@ -6,6 +6,7 @@ import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.vec2Of
 
 object MaterialNone : IMaterial {
+
     override val name: String = "noTexture"
     override val size: IVector2 = vec2Of(64)
     lateinit var whiteTexture: Texture

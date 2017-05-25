@@ -4,7 +4,7 @@ import com.cout970.glutilities.shader.ShaderBuilder
 import com.cout970.glutilities.shader.ShaderProgram
 import com.cout970.glutilities.shader.UniformVariable
 import com.cout970.modeler.core.resource.ResourceLoader
-import com.cout970.modeler.view.render.RenderContext
+import com.cout970.modeler.view.render.RenderContextOld
 import org.lwjgl.opengl.GL20
 
 /**
@@ -30,7 +30,7 @@ class SelectionShader(resourceLoader: ResourceLoader) : IShader {
         matrixMVP = selectionShader.createUniformVariable("matrixMVP")
     }
 
-    override fun useShader(ctx: RenderContext, func: () -> Unit) {
+    override fun useShader(ctx: RenderContextOld, func: () -> Unit) {
         selectionShader.start()
         matrixMVP.setMatrix4(ctx.scene.getMatrixMVP())
         func()
