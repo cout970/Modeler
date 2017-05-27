@@ -1,4 +1,4 @@
-package com.cout970.modeler.to_redo.newView.render.shader
+package com.cout970.modeler.view.render
 
 import com.cout970.vector.api.IVector3
 

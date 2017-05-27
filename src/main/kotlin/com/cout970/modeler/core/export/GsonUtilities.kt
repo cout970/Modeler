@@ -1,9 +1,9 @@
 package com.cout970.modeler.core.export
 
+import com.cout970.modeler.core.model.material.IMaterial
+import com.cout970.modeler.core.model.material.MaterialNone
+import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.resource.ResourcePath
-import com.cout970.modeler.to_redo.model.material.IMaterial
-import com.cout970.modeler.to_redo.model.material.MaterialNone
-import com.cout970.modeler.to_redo.model.material.TexturedMaterial
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3

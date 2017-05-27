@@ -12,7 +12,7 @@ class CameraHandler {
     var camera = Camera.Companion.DEFAULT
     var desiredZoom = camera.zoom
 
-    fun update(timer: Timer) {
+    fun updateAnimation(timer: Timer) {
         if (Math.abs(desiredZoom - camera.zoom) > 0.01) {
             camera = camera.copy(zoom = camera.zoom + (desiredZoom - camera.zoom) * Math.min(1.0, timer.delta * 20))
         }
@@ -26,13 +26,6 @@ class CameraHandler {
         camera = camera.copy(position = camera.position + move)
     }
 
-    fun rotate(angleX: Double, angleY: Double) {
-        camera = camera.copy(
-                angleX = camera.angleX + angleX,
-                angleY = camera.angleY + angleY
-        )
-    }
-
     fun setRotation(angleX: Double, angleY: Double) {
         camera = camera.copy(
                 angleX = angleX,
@@ -40,7 +33,14 @@ class CameraHandler {
         )
     }
 
-    fun makeZoom(zoom: Double) {
+    fun rotate(angleX: Double, angleY: Double) {
+        camera = camera.copy(
+                angleX = camera.angleX + angleX,
+                angleY = camera.angleY + angleY
+        )
+    }
+
+    fun setZoom(zoom: Double) {
         desiredZoom = zoom
     }
 }

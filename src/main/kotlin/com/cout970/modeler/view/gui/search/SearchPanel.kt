@@ -2,10 +2,10 @@ package com.cout970.modeler.view.gui.search
 
 import com.cout970.glutilities.device.Keyboard
 import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.to_redo.newView.gui.comp.CPanel
 import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.show
 import com.cout970.modeler.util.toColor
+import com.cout970.modeler.view.gui.comp.CPanel
 import org.liquidengine.legui.component.ComponentState
 import org.liquidengine.legui.component.Label
 import org.liquidengine.legui.component.TextInput

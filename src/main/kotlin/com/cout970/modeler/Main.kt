@@ -23,7 +23,9 @@ fun main(args: Array<String>) {
     }
 
     try {
-        Initializer(args.toList()).start()
+        val init = Initializer()
+        val state = init.init(args.toList())
+        init.start(state)
     } catch (e: kotlin.Throwable) {
         e.print()
     } finally {

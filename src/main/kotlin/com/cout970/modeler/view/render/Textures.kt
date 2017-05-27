@@ -3,8 +3,8 @@ package com.cout970.modeler.view.render
 import com.cout970.glutilities.texture.Texture
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
+import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.resource.ResourceLoader
-import com.cout970.modeler.to_redo.model.material.MaterialNone
 
 /**
  * Created by cout970 on 2017/05/25.

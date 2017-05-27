@@ -1,6 +1,7 @@
 package com.cout970.modeler.view.gui.canvas.layout
 
 import com.cout970.glutilities.event.EventKeyUpdate
+import com.cout970.modeler.view.GuiState
 import com.cout970.modeler.view.gui.canvas.CanvasContainer
 
 /**
@@ -12,7 +13,7 @@ interface ICanvasLayout {
 
     fun updateCanvas()
 
-    fun onEvent(e: EventKeyUpdate): Boolean {
+    fun onEvent(guiState: GuiState, e: EventKeyUpdate): Boolean {
         return false
     }
 }

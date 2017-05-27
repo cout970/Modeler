@@ -20,12 +20,12 @@ class CameraUpdater(
 
     fun updateCameras() {
         canvasContainer.canvas.forEach {
-            it.state.cameraHandler.update(timer)
-            updateScene(it)
+            it.state.cameraHandler.updateAnimation(timer)
+            moveCamera(it)
         }
     }
 
-    private fun updateScene(selectedScene: Canvas) {
+    private fun moveCamera(selectedScene: Canvas) {
 
         val move = Config.keyBindings.moveCamera.check(input)
         val rotate = Config.keyBindings.rotateCamera.check(input)

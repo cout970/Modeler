@@ -2,8 +2,8 @@ package com.cout970.modeler.view.render
 
 import com.cout970.modeler.util.absolutePosition
 import com.cout970.modeler.util.toIVector
+import com.cout970.modeler.view.GuiState
 import com.cout970.modeler.view.event.IInput
-import com.cout970.modeler.view.gui.GuiUpdater
 import com.cout970.modeler.view.gui.canvas.Canvas
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.vec3Of
@@ -15,25 +15,24 @@ import org.lwjgl.opengl.GL11
  */
 class CanvasRenderer(val renderManager: RenderManager, val input: IInput) {
 
-    fun render(updater: GuiUpdater) {
+    fun render(state: GuiState) {
 
-        val windowHandler = renderManager.windowHandler
 
-        updater.canvasContainer.canvas.forEach { canvas ->
+        state.canvasContainer.canvas.forEach { canvas ->
             val ctx = RenderContext(
                     camera = canvas.state.cameraHandler.camera,
                     input = input,
                     lights = canvas.state.lights,
                     viewport = canvas.size.toIVector(),
-                    windowHandler = windowHandler,
-                    timer = windowHandler.timer,
+                    windowHandler = state.windowHandler,
+                    timer = state.timer,
                     shader = renderManager.shader
             )
             val viewportPos = vec2Of(
                     canvas.absolutePosition.x,
-                    windowHandler.window.size.yf - (canvas.absolutePosition.yf + canvas.size.y)
+                    state.windowHandler.window.size.yf - (canvas.absolutePosition.yf + canvas.size.y)
             )
-            windowHandler.saveViewport(viewportPos, canvas.size.toIVector()) {
+            state.windowHandler.saveViewport(viewportPos, canvas.size.toIVector()) {
                 renderCanvas(ctx, canvas)
             }
         }

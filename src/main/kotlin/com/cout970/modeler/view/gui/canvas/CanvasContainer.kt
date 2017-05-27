@@ -22,16 +22,16 @@ class CanvasContainer(val panel: Panel) {
             val last = canvasBuffer.removeAt(canvasBuffer.size - 1)
             canvas.add(last)
         }
-        refreshCanvass()
+        refreshCanvas()
     }
 
     fun removeCanvas(index: Int) {
         val canvas = canvas.removeAt(index)
         canvasBuffer.add(canvas)
-        refreshCanvass()
+        refreshCanvas()
     }
 
-    fun refreshCanvass() {
+    fun refreshCanvas() {
         panel.clearComponents()
         for (canvas in canvas) {
             panel.addComponent(canvas)

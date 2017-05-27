@@ -15,9 +15,8 @@ import java.util.*
 /**
  * Created by cout970 on 2016/11/29.
  */
-class WindowHandler : ITickeable {
+class WindowHandler(private val timer: Timer) : ITickeable {
 
-    val timer = Timer()
     lateinit var window: GLFWWindow
 
     var viewport = Pair(vec2Of(0), vec2Of(1))

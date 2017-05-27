@@ -61,13 +61,17 @@ project.ext.lwjglVersion = "3.1.2-SNAPSHOT"
 project.ext.legui_version = "0.2.19-SNAPSHOT"
 
 dependencies {
-    compile files("./lib/CollisionLib-0.0.1.jar", "./lib/GlUtilities-0.1.4.jar", "./lib/MatrixLib-0.1.0.jar",
-            "./lib/ObjLib-0.0.1.jar", "./lib/RaytraceLib-0.0.1.jar", "./lib/VectorLib-0.0.1.jar")
+    compile files(
+            "./lib/CollisionLib-0.0.1.jar",
+            "./lib/GlUtilities-0.1.4.jar",
+            "./lib/MatrixLib-0.1.0.jar",
+            "./lib/ObjLib-0.0.1.jar",
+            "./lib/RaytraceLib-0.0.1.jar",
+            "./lib/VectorLib-0.0.1.jar")
 
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "org.liquidengine:legui:$legui_version"
-    testCompile group: 'junit', name: 'junit', version: '4.11'
-
+    compile "org.funktionale:funktionale-all:1.0.1"
     compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.14'
     compile "org.lwjgl:lwjgl:${lwjglVersion}"
     compile "org.lwjgl:lwjgl-egl:${lwjglVersion}"
@@ -78,6 +82,10 @@ dependencies {
     compile "org.lwjgl:lwjgl-stb:${lwjglVersion}"
     compile "org.lwjgl:lwjgl-tinyfd:${lwjglVersion}"
     compile "org.lwjgl:lwjgl-xxhash:${lwjglVersion}"
+
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+
+    // Native bindings
     runtime "org.lwjgl:lwjgl:${lwjglVersion}:${lwjglNatives}"
     runtime "org.lwjgl:lwjgl-glfw:${lwjglVersion}:${lwjglNatives}"
     runtime "org.lwjgl:lwjgl-nanovg:${lwjglVersion}:${lwjglNatives}"

@@ -1,7 +1,6 @@
 package com.cout970.modeler.view.render
 
 import com.cout970.glutilities.structure.Timer
-import com.cout970.modeler.to_redo.newView.render.shader.Light
 import com.cout970.modeler.view.event.IInput
 import com.cout970.modeler.view.gui.camera.Camera
 import com.cout970.modeler.view.render.shader.UniversalShader

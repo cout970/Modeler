@@ -1,5 +1,6 @@
 package com.cout970.modeler
 
+import com.cout970.glutilities.structure.Timer
 import com.cout970.glutilities.window.GLFWLoader
 import com.cout970.modeler.core.config.ConfigManager
 import com.cout970.modeler.core.export.ExportManager
@@ -18,20 +19,10 @@ import java.io.File
 /**
  * Created by cout970 on 2016/11/29.
  */
-class Initializer(val programArguments: List<String>) {
+class Initializer {
 
-    val resourceLoader: ResourceLoader
-    val windowHandler: WindowHandler
-    val eventController: EventController
-    val projectManager: ProjectManager
-    //    val modelEditor: ModelEditor
-    val guiInitializer: GuiInitializer
-    val renderManager: RenderManager
-    val mainLoop: Loop
-    val exportManager: ExportManager
-//    val guiResources: GuiResources
+    fun init(programArguments: List<String>): ProgramSate {
 
-    init {
         Debugger.setInit(this)
 
         log(Level.FINE) { "Loading config" }
@@ -39,35 +30,47 @@ class Initializer(val programArguments: List<String>) {
         log(Level.FINE) { "Config loaded" }
 
         log(Level.FINE) { "Creating ResourceLoader" }
-        resourceLoader = ResourceLoader()
+        val resourceLoader = ResourceLoader()
+        log(Level.FINE) { "Creating Timer" }
+        val timer = Timer()
         log(Level.FINE) { "Creating WindowHandler" }
-        windowHandler = WindowHandler()
-        log(Level.FINE) { "Creating EventController" }
-        eventController = EventController()
+        val windowHandler = WindowHandler(timer)
 
+        log(Level.FINE) { "Creating EventController" }
+        val eventController = EventController()
         log(Level.FINE) { "Creating ProjectManager" }
-        projectManager = ProjectManager()
+        val projectManager = ProjectManager()
         log(Level.FINE) { "Creating ModelController" }
 //        modelEditor = ModelEditor(projectManager)
         log(Level.FINE) { "Creating ExportManager" }
-        exportManager = ExportManager(projectManager, resourceLoader)
+        val exportManager = ExportManager(projectManager, resourceLoader)
 
         log(Level.FINE) { "Creating GuiResources" }
 //        guiResources = GuiResources(resourceLoader)
 
         log(Level.FINE) { "Creating RenderManager" }
-        renderManager = RenderManager()
-        log(Level.FINE) { "Creating GuiInitializer" }
-        guiInitializer = GuiInitializer(eventController, windowHandler, projectManager,
-                renderManager, resourceLoader)
+        val renderManager = RenderManager()
 
-        guiInitializer.init()
+        log(Level.FINE) { "Creating GuiInitializer" }
+        val guiState = GuiInitializer(eventController, windowHandler,
+                projectManager, renderManager, resourceLoader, timer).init()
 
         log(Level.FINE) { "Creating Loop" }
-        mainLoop = Loop(listOf(renderManager, guiInitializer.guiUpdater, eventController, windowHandler),
-                windowHandler.timer, windowHandler::shouldClose)
+        val mainLoop = Loop(listOf(renderManager, guiState.listeners, eventController, windowHandler),
+                timer, windowHandler::shouldClose)
 
-        parseArgs()
+        parseArgs(programArguments, exportManager, projectManager)
+
+        val state = ProgramSate(
+                resourceLoader,
+                windowHandler,
+                eventController,
+                projectManager,
+                renderManager,
+                mainLoop,
+                exportManager,
+                guiState
+        )
 
         log(Level.FINE) { "Starting GLFW" }
         GLFWLoader.init()
@@ -78,15 +81,17 @@ class Initializer(val programArguments: List<String>) {
 
         log(Level.FINE) { "Initializing renderers" }
         renderManager.initOpenGl(resourceLoader, windowHandler, eventController)
-//        log(Level.FINE) { "Registering listeners for ViewEventHandler" }
-//        guiInitializer.eventListeners.registerListeners(eventController)
+        log(Level.FINE) { "Registering Input event listeners" }
+        guiState.listeners.initListeners(eventController, guiState)
 
         log(Level.FINE) { "Adding placeholder cube" }
 //        modelEditor.addCube(vec3Of(16, 16, 16))
         log(Level.FINE) { "Initialization done" }
+        return state
     }
 
-    private fun parseArgs() {
+    private fun parseArgs(programArguments: List<String>, exportManager: ExportManager,
+                          projectManager: ProjectManager) {
         if (programArguments.isNotEmpty()) {
             log(Level.FINE) { "Parsing arguments..." }
             if (File(programArguments[0]).exists()) {
@@ -108,9 +113,9 @@ class Initializer(val programArguments: List<String>) {
         }
     }
 
-    fun start() {
+    fun start(program: ProgramSate) {
         log(Level.FINE) { "Starting loop" }
-        mainLoop.run()
+        program.mainLoop.run()
         log(Level.FINE) { "Ending loop" }
         stop()
     }

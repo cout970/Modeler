@@ -8,4 +8,6 @@ import com.cout970.glutilities.event.Event
 interface IEventController {
 
     fun <T : Event> addListener(clazz: Class<T>, listener: IEventListener<T>)
+
+    fun <T : Event> addListener(clazz: Class<T>, listener: (T) -> Boolean)
 }

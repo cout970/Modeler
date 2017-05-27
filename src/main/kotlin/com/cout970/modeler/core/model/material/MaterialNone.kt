@@ -1,4 +1,4 @@
-package com.cout970.modeler.to_redo.model.material
+package com.cout970.modeler.core.model.material
 
 import com.cout970.glutilities.texture.Texture
 import com.cout970.modeler.core.resource.ResourceLoader

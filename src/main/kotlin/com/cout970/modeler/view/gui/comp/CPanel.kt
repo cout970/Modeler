@@ -1,4 +1,4 @@
-package com.cout970.modeler.to_redo.newView.gui.comp
+package com.cout970.modeler.view.gui.comp
 
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Panel
