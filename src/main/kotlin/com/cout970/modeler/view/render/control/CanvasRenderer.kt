@@ -1,10 +1,11 @@
-package com.cout970.modeler.view.render
+package com.cout970.modeler.view.render.control
 
 import com.cout970.modeler.util.absolutePosition
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.view.GuiState
 import com.cout970.modeler.view.event.IInput
 import com.cout970.modeler.view.gui.canvas.Canvas
+import com.cout970.modeler.view.render.tool.RenderContext
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.vec3Of
 import com.cout970.vector.extensions.yf
@@ -42,15 +43,23 @@ class CanvasRenderer(val renderManager: RenderManager, val input: IInput) {
 
         renderManager.shader.useShader(ctx) { buffer, consumer ->
             val tmp = buffer.build(GL11.GL_LINES) {
-                add(vec3Of(0, 0, 0), vec2Of(0, 0), vec3Of(1, 0, 0), vec3Of(1, 0, 0))
-                add(vec3Of(10, 0, 0), vec2Of(0, 0), vec3Of(1, 0, 0), vec3Of(0, 1, 0))
-                add(vec3Of(0, 0, 0), vec2Of(0, 0), vec3Of(1, 0, 0), vec3Of(1, 0, 0))
-                add(vec3Of(0, 10, 0), vec2Of(0, 0), vec3Of(1, 0, 0), vec3Of(0, 1, 0))
+                add(vec3Of(0, 0, 0), vec2Of(0, 0),
+                        vec3Of(1, 0, 0), vec3Of(1, 0, 0))
+                add(vec3Of(10, 0, 0), vec2Of(0, 0),
+                        vec3Of(1, 0, 0), vec3Of(0, 1, 0))
+                add(vec3Of(0, 0, 0), vec2Of(0, 0),
+                        vec3Of(1, 0, 0), vec3Of(1, 0, 0))
+                add(vec3Of(0, 10, 0), vec2Of(0, 0),
+                        vec3Of(1, 0, 0), vec3Of(0, 1, 0))
                 newRegion(GL11.GL_QUADS)
-                add(vec3Of(0, 0, 0), vec2Of(0, 0), vec3Of(1, 0, 0), vec3Of(1, 0, 0))
-                add(vec3Of(-10, 0, 0), vec2Of(0, 0), vec3Of(1, 0, 0), vec3Of(0, 1, 0))
-                add(vec3Of(-10, -10, 0), vec2Of(0, 0), vec3Of(1, 0, 0), vec3Of(1, 0, 0))
-                add(vec3Of(0, -10, 0), vec2Of(0, 0), vec3Of(1, 0, 0), vec3Of(0, 1, 0))
+                add(vec3Of(0, 0, 0), vec2Of(0, 0),
+                        vec3Of(1, 0, 0), vec3Of(1, 0, 0))
+                add(vec3Of(-10, 0, 0), vec2Of(0, 0),
+                        vec3Of(1, 0, 0), vec3Of(0, 1, 0))
+                add(vec3Of(-10, -10, 0), vec2Of(0, 0),
+                        vec3Of(1, 0, 0), vec3Of(1, 0, 0))
+                add(vec3Of(0, -10, 0), vec2Of(0, 0),
+                        vec3Of(1, 0, 0), vec3Of(0, 1, 0))
             }
             consumer.accept(tmp)
             tmp.close()

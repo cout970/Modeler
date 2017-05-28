@@ -1,7 +1,7 @@
 package com.cout970.modeler.view.gui.canvas
 
 import com.cout970.modeler.view.gui.camera.CameraHandler
-import com.cout970.modeler.view.render.Light
+import com.cout970.modeler.view.render.tool.Light
 import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.vec3Of
 

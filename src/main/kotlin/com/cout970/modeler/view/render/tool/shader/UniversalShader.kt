@@ -1,4 +1,4 @@
-package com.cout970.modeler.view.render.shader
+package com.cout970.modeler.view.render.tool.shader
 
 import com.cout970.glutilities.shader.ShaderBuilder
 import com.cout970.glutilities.shader.ShaderProgram
@@ -8,7 +8,7 @@ import com.cout970.glutilities.tessellator.VaoBuilder
 import com.cout970.matrix.extensions.Matrix4
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.util.FloatArrayList
-import com.cout970.modeler.view.render.RenderContext
+import com.cout970.modeler.view.render.tool.RenderContext
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.xf

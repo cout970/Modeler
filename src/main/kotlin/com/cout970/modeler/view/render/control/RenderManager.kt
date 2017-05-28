@@ -1,4 +1,4 @@
-package com.cout970.modeler.view.render
+package com.cout970.modeler.view.render.control
 
 import com.cout970.glutilities.structure.GLStateMachine
 import com.cout970.modeler.core.config.Config
@@ -8,7 +8,7 @@ import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.util.ITickeable
 import com.cout970.modeler.view.GuiState
 import com.cout970.modeler.view.event.IInput
-import com.cout970.modeler.view.render.shader.UniversalShader
+import com.cout970.modeler.view.render.tool.shader.UniversalShader
 import com.cout970.modeler.view.window.WindowHandler
 import com.cout970.vector.extensions.xf
 import com.cout970.vector.extensions.yf
