@@ -2,6 +2,7 @@ package com.cout970.modeler.view
 
 import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.controller.CommandExecutor
+import com.cout970.modeler.view.event.IInput
 import com.cout970.modeler.view.gui.GuiUpdater
 import com.cout970.modeler.view.gui.Root
 import com.cout970.modeler.view.gui.canvas.CanvasContainer
@@ -18,5 +19,6 @@ data class GuiState(
         val commandExecutor: CommandExecutor,
         val listeners: Listeners,
         val windowHandler: WindowHandler,
-        val timer: Timer
+        val timer: Timer,
+        val input: IInput
 )

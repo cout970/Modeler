@@ -1,4 +1,4 @@
-package com.cout970.modeler.view.gui.camera
+package com.cout970.modeler.view.render.tool.camera
 
 import com.cout970.glutilities.structure.Timer
 import com.cout970.vector.api.IVector3

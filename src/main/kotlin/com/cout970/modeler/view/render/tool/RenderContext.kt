@@ -2,7 +2,7 @@ package com.cout970.modeler.view.render.tool
 
 import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.view.event.IInput
-import com.cout970.modeler.view.gui.camera.Camera
+import com.cout970.modeler.view.render.tool.camera.Camera
 import com.cout970.modeler.view.render.tool.shader.UniversalShader
 import com.cout970.modeler.view.window.WindowHandler
 import com.cout970.vector.api.IVector2

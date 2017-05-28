@@ -1,4 +1,4 @@
-package com.cout970.modeler.view.gui.camera
+package com.cout970.modeler.view.render.tool.camera
 
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.times

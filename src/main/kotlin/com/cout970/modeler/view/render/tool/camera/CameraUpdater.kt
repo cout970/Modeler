@@ -1,7 +1,10 @@
-package com.cout970.modeler.view.gui.camera
+package com.cout970.modeler.view.render.tool.camera
 
 import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.util.absolutePosition
+import com.cout970.modeler.util.isInside
+import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.util.toRads
 import com.cout970.modeler.view.event.IInput
 import com.cout970.modeler.view.gui.canvas.Canvas
@@ -18,10 +21,30 @@ class CameraUpdater(
         val timer: Timer
 ) {
 
+    private var selectedCanvas: Canvas? = null
+
     fun updateCameras() {
-        canvasContainer.canvas.forEach {
-            it.state.cameraHandler.updateAnimation(timer)
-            moveCamera(it)
+        canvasContainer.canvas.forEach { canvas ->
+            canvas.state.cameraHandler.updateAnimation(timer)
+        }
+
+        updateSelectedCanvas()
+        selectedCanvas?.let { moveCamera(it) }
+    }
+
+    private fun updateSelectedCanvas() {
+        if (Config.keyBindings.moveCamera.check(input) ||
+            Config.keyBindings.rotateCamera.check(input)) {
+
+            if (selectedCanvas == null) {
+                val mousePos = input.mouse.getMousePos()
+                val hover = canvasContainer.canvas.indexOfFirst { canvas ->
+                    mousePos.isInside(canvas.absolutePosition, canvas.size.toIVector())
+                }
+                selectedCanvas = if (hover == -1) null else canvasContainer.canvas[hover]
+            }
+        } else {
+            selectedCanvas = null
         }
     }
 

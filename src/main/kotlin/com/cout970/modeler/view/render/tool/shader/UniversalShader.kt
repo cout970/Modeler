@@ -78,7 +78,6 @@ class UniversalShader(resourceLoader: ResourceLoader) : Consumer<VAO> {
             lightPos.setVector3(index, pos)
             lightColor.setVector3(index, color)
         }
-        textureSampler.setInt(0)
         useTexture.setBoolean(false)
         useColor.setBoolean(true)
         useLight.setInt(0)

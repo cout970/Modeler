@@ -42,7 +42,7 @@ class GuiInitializer(
 
         return GuiState(
                 root, guiUpdater, canvasContainer,
-                commandExecutor, listeners, windowHandler, timer
+                commandExecutor, listeners, windowHandler, timer, eventController
         ).also {
             renderManager.guiState = it
             guiUpdater.guiState = it
