@@ -1,6 +1,6 @@
 package com.cout970.modeler.view.gui.search
 
-import controller.CommandExecutor
+import com.cout970.modeler.controller.CommandExecutor
 
 /**
  * Created by cout970 on 2017/04/12.

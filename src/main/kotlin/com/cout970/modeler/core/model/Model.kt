@@ -8,7 +8,15 @@ import com.cout970.modeler.api.model.TreeNode
 /**
  * Created by cout970 on 2017/05/07.
  */
-class Model(
+
+data class Model(
         override val objects: List<IObject> = emptyList(),
         override val hierarchy: Tree<Int> = TreeNode(emptyList())
-) : IModel
+) : IModel {
+
+    val id: Int = lastId++
+
+    companion object {
+        private var lastId = 0
+    }
+}

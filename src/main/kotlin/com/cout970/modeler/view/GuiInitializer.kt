@@ -1,6 +1,7 @@
 package com.cout970.modeler.view
 
 import com.cout970.glutilities.structure.Timer
+import com.cout970.modeler.controller.CommandExecutor
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.project.ProjectManager
@@ -10,7 +11,6 @@ import com.cout970.modeler.view.gui.GuiUpdater
 import com.cout970.modeler.view.gui.canvas.CanvasContainer
 import com.cout970.modeler.view.render.control.RenderManager
 import com.cout970.modeler.view.window.WindowHandler
-import controller.CommandExecutor
 
 /**
  * Created by cout970 on 2017/04/08.

@@ -12,7 +12,7 @@ import org.joml.Matrix4d
 /**
  * Created by cout970 on 2017/05/14.
  */
-class TRSTransformation(
+data class TRSTransformation(
         val translation: IVector3,
         val rotation: IQuaternion,
         val scale: IVector3

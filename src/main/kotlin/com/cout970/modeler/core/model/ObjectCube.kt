@@ -4,6 +4,7 @@ import com.cout970.modeler.api.model.IObject
 import com.cout970.modeler.api.model.IObjectCube
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.mesh.IMesh
+import com.cout970.modeler.core.model.mesh.MeshFactory
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
 
@@ -24,7 +25,8 @@ data class ObjectCube(
     override val transformedMesh: IMesh by lazy { mesh.transform(transformation) }
 
     fun generateMesh(): IMesh {
-        TODO("Create a mesh with cube parameters")
+        val cube = MeshFactory.createCube(size, pos)
+        return cube.transform(TRSTransformation.IDENTITY.copy(rotation = rotation))
     }
 
     override fun transform(func: (IMesh) -> IMesh): IObject {

@@ -1,8 +1,8 @@
 package com.cout970.modeler.util
 
+import com.cout970.modeler.controller.CommandExecutor
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.plus
-import controller.CommandExecutor
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Frame

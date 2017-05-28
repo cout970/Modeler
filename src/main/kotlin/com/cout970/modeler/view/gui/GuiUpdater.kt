@@ -1,6 +1,7 @@
 package com.cout970.modeler.view.gui
 
 import com.cout970.glutilities.event.EventFrameBufferSize
+import com.cout970.modeler.controller.CommandExecutor
 import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.show
 import com.cout970.modeler.util.size
@@ -11,7 +12,6 @@ import com.cout970.modeler.view.gui.search.SearchFacade
 import com.cout970.modeler.view.gui.search.SearchPanel
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.vec2Of
-import controller.CommandExecutor
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Label
 import org.liquidengine.legui.util.ColorConstants
