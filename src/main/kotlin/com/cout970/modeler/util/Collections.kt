@@ -8,7 +8,7 @@ import com.cout970.vector.extensions.distance
  * Created by cout970 on 2016/12/09.
  */
 
-fun <T> Iterable<T>.replace(predicate: (T) -> Boolean, transform: (T) -> T): List<T> {
+inline fun <T> Iterable<T>.replace(predicate: (T) -> Boolean, transform: (T) -> T): List<T> {
     val list = mutableListOf<T>()
     for (i in this) {
         list += if (predicate(i)) transform(i) else i
@@ -49,5 +49,19 @@ fun <T> List<Pair<RayTraceResult, T>>.getClosest(ray: Ray): Pair<RayTraceResult,
         else -> {
             sortedBy { it.first.hit.distance(ray.start) }.first()
         }
+    }
+}
+
+infix fun <A, B> List<A>.join(other: List<B>): List<Pair<A, B>> {
+    require(size == other.size) { "Invalid list sizes: this.size = $size, other.size = ${other.size}" }
+    return this.mapIndexed { index, element ->
+        element to other[index]
+    }
+}
+
+infix fun IntArray.join(other: IntArray): List<Pair<Int, Int>> {
+    require(size == other.size) { "Invalid array sizes: this.size = $size, other.size = ${other.size}" }
+    return this.mapIndexed { index, element ->
+        element to other[index]
     }
 }

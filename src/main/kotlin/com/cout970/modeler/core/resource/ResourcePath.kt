@@ -19,7 +19,7 @@ class ResourcePath(val uri: URI) {
     fun inputStream() = uri.toURL().openStream()!!
 
     fun lastModifiedTime(): Long {
-        if (uri.scheme == "file") {
+        if (this.isFile()) {
             try {
                 val file = Paths.get(uri).toFile()
                 if (file.exists() && file.isFile) {
@@ -33,9 +33,23 @@ class ResourcePath(val uri: URI) {
         return -1
     }
 
+    fun isFile() = uri.scheme == "file"
+
     override fun toString(): String {
         return uri.toString()
     }
 
     fun toPath(): Path = Paths.get(uri)
+
+    fun isValid(): Boolean {
+        if (uri.scheme == "file") {
+            val file = toPath().toFile()
+            if (file.exists() && file.isFile) {
+                return true
+            }
+        } else if (uri.scheme == "zip") {
+            return true
+        }
+        return false
+    }
 }

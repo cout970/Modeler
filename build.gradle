@@ -42,6 +42,7 @@ targetCompatibility = "1.8"
 
 repositories {
     mavenCentral()
+    jcenter()
     maven {
         name = "Releases"
         url = "https://raw.github.com/LiquidEngine/repo/releases"
@@ -71,7 +72,7 @@ dependencies {
 
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "org.liquidengine:legui:$legui_version"
-    compile "org.funktionale:funktionale-all:1.0.1"
+    compile "org.funktionale:funktionale-all:1.1"
     compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.14'
     compile "org.lwjgl:lwjgl:${lwjglVersion}"
     compile "org.lwjgl:lwjgl-egl:${lwjglVersion}"

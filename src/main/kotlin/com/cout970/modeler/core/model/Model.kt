@@ -19,4 +19,12 @@ data class Model(
     companion object {
         private var lastId = 0
     }
+
+    override fun equals(other: Any?): Boolean {
+        return id == (other as? Model)?.id
+    }
+
+    override fun hashCode(): Int {
+        return id
+    }
 }
