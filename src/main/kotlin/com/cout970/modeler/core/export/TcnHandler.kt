@@ -95,25 +95,26 @@ class TcnImporter {
         var rotation: List<String> = listOf()
         var size: List<String> = listOf()
         var textureOffset: List<String> = listOf()
+        val shapeName = shape.attributes.getNamedItem("name").textContent
 
         val shapeChildren = shape.childNodes
         //extract properties
         for (j in 0..shapeChildren.length - 1) {
 
             val shapeChild = shapeChildren.item(j)
-            val shapeChildName = shapeChild.nodeName
-            var shapeChildValue: String? = shapeChild.textContent
+            val name = shapeChild.nodeName
+            var value = shapeChild.textContent
 
-            if (shapeChildValue != null) {
-                shapeChildValue = shapeChildValue.trim { it <= ' ' }
+            if (value != null) {
+                value = value.trim { it <= ' ' }
 
-                when (shapeChildName) {
-                    "IsMirrored" -> mirrored = shapeChildValue != "False"
-                    "Offset" -> offset = shapeChildValue.split(COMMA).dropLastWhile(String::isEmpty)
-                    "Position" -> position = shapeChildValue.split(COMMA).dropLastWhile(String::isEmpty)
-                    "Rotation" -> rotation = shapeChildValue.split(COMMA).dropLastWhile(String::isEmpty)
-                    "Size" -> size = shapeChildValue.split(COMMA).dropLastWhile(String::isEmpty)
-                    "TextureOffset" -> textureOffset = shapeChildValue.split(COMMA).dropLastWhile(String::isEmpty)
+                when (name) {
+                    "IsMirrored" -> mirrored = value != "False"
+                    "Offset" -> offset = value.split(COMMA).dropLastWhile(String::isEmpty)
+                    "Position" -> position = value.split(COMMA).dropLastWhile(String::isEmpty)
+                    "Rotation" -> rotation = value.split(COMMA).dropLastWhile(String::isEmpty)
+                    "Size" -> size = value.split(COMMA).dropLastWhile(String::isEmpty)
+                    "TextureOffset" -> textureOffset = value.split(COMMA).dropLastWhile(String::isEmpty)
                 }
             }
         }
@@ -134,7 +135,7 @@ class TcnImporter {
         val fOffset = rPos + rOffset + vec3Of(8, 24, 8)
 
         val cube = ObjectCube(
-                name = "TODO",
+                name = shapeName,
                 size = rSize,
                 pos = fOffset,
                 rotation = quatOfAngles(rRotation),

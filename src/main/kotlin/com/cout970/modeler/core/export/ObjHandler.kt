@@ -16,125 +16,100 @@ import com.cout970.modeler.core.resource.toResourcePath
 import com.cout970.modeler.util.join
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.Vector2
-import com.cout970.vector.extensions.Vector3
-import com.cout970.vector.extensions.vec2Of
-import com.cout970.vector.extensions.vec3Of
+import com.cout970.vector.extensions.*
 import java.io.File
+import java.io.OutputStream
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.*
 
 /**
  * Created by cout970 on 2016/12/25.
  */
-class ObjExporter
+class ObjExporter {
 
-//TODO
-//{
-//
-//    fun export(output: OutputStream, model: Model, mtllib: String) {
-//
-//        val vertex = LinkedList<IVector3>()
-//        val vertexMap = LinkedHashSet<IVector3>()
-//
-//        val texCoords = LinkedList<IVector2>()
-//        val texCoordsMap = LinkedHashSet<IVector2>()
-//
-//        val normals = LinkedList<IVector3>()
-//        val normalsMap = LinkedHashSet<IVector3>()
-//
-//        val objects: MutableList<ObjObject> = mutableListOf()
-//
-//        // begin model conversion
-//        val flatGroups: Map<String, List<IElement>> = model.zipGroups()
-//        for ((groupName, group) in flatGroups) {
-//            val groupsInObj = mutableListOf<ObjGroup>()
-//            for ((meshIndex, mesh) in group.withIndex()) {
-//                val quads = mutableListOf<ObjQuad>()
-//                val rawQuads = mesh.getQuads()
-//
-//                for (rawQuad in rawQuads) {
-//                    val objQuad = ObjQuad()
-//
-//                    for ((i, vertex1) in rawQuad.vertex.withIndex()) {
-//                        val vertPos = vertex1.pos
-//
-//                        if (vertexMap.contains(vertPos)) {
-//                            objQuad.vertexIndices[i] = vertex.indexOf(vertPos) + 1
-//                        } else {
-//                            objQuad.vertexIndices[i] = vertex.size + 1
-//                            vertex.add(vertPos)
-//                            vertexMap.add(vertPos)
-//                        }
-//
-//                        val vertTex = vertex1.tex
-//                        if (texCoordsMap.contains(vertTex)) {
-//                            objQuad.textureIndices[i] = texCoords.indexOf(vertTex) + 1
-//                        } else {
-//                            objQuad.textureIndices[i] = texCoords.size + 1
-//                            texCoords.add(vertTex)
-//                            texCoordsMap.add(vertTex)
-//                        }
-//
-//                        val vertNorm = rawQuad.normal
-//                        if (normalsMap.contains(vertNorm)) {
-//                            objQuad.normalIndices[i] = normals.indexOf(vertNorm) + 1
-//                        } else {
-//                            objQuad.normalIndices[i] = normals.size + 1
-//                            normals.add(vertNorm)
-//                            normalsMap.add(vertNorm)
-//                        }
-//                    }
-//                    quads += objQuad
-//                }
-//                groupsInObj += ObjGroup("Mesh_$meshIndex", quads)
-//            }
-//            //TODO update materials
-//            objects += ObjObject(groupName, model.resources.materials[0].name, groupsInObj)
-//        }
-//        //end of model conversion
-//
-//        val sym = DecimalFormatSymbols()
-//        sym.decimalSeparator = '.'
-//        val format = DecimalFormat("####0.000000", sym)
-//
-//        val writer = output.writer()
-//
-//        writer.write("mtllib $mtllib.mtl\n")
-//
-//        for (a in vertex.map { it * 0.0625 }) {
-//            writer.write(String.format("v %s %s %s\n", format.format(a.xd), format.format(a.yd), format.format(a.zd)))
-//        }
-//        writer.append('\n')
-//        for (a in texCoords) {
-//            writer.write(String.format("vt %s %s\n", format.format(a.xd), format.format(a.yd)))
-//        }
-//        writer.append('\n')
-//        for (a in normals) {
-//            writer.write(String.format("vn %s %s %s\n", format.format(a.xd), format.format(a.yd), format.format(a.zd)))
-//        }
-//        for (obj in objects) {
-//            if (obj.groups.isNotEmpty()) {
-//                writer.write("\no ${obj.name.replace(' ', '_')}\n")
-//                writer.write("usemtl ${obj.material.replace(' ', '_')}\n\n")
-//                for (group in obj.groups) {
-//                    writer.append("g ${group.name.replace(' ', '_')}\n")
-//                    for (quad in group.quads) {
-//                        val a = quad.vertexIndices
-//                        val b = quad.textureIndices
-//                        val c = quad.normalIndices
-//                        writer.write(String.format("f %d/%d/%d %d/%d/%d %d/%d/%d %d/%d/%d\n",
-//                                a[0], b[0], c[0], a[1], b[1], c[1],
-//                                a[2], b[2], c[2], a[3], b[3], c[3]))
-//                    }
-//                }
-//            }
-//        }
-//        writer.append('\n')
-//
-//        writer.flush()
-//        writer.close()
-//    }
-//}
-//
+    fun export(output: OutputStream, model: Model, mtllib: String) {
+
+        val vertex = LinkedList<IVector3>()
+        val vertexMap = LinkedHashSet<IVector3>()
+
+        val texCoords = LinkedList<IVector2>()
+        val texCoordsMap = LinkedHashSet<IVector2>()
+
+        val normals = LinkedList<IVector3>()
+        val normalsMap = LinkedHashSet<IVector3>()
+
+        val groups = mutableListOf<ObjGroup>()
+
+        model.objects.forEach { obj ->
+
+            val quads = mutableListOf<ObjQuad>()
+            obj.mesh.faces.forEach { face ->
+                val objQuad = ObjQuad()
+
+                for (i in 0 until face.vertexCount) {
+                    val vertPos = obj.mesh.pos[face.pos[i]]
+                    val vertTex = obj.mesh.tex[face.tex[i]]
+
+                    if (vertexMap.contains(vertPos)) {
+                        objQuad.vertexIndices[i] = vertex.indexOf(vertPos) + 1
+                    } else {
+                        objQuad.vertexIndices[i] = vertex.size + 1
+                        vertex.add(vertPos)
+                        vertexMap.add(vertPos)
+                    }
+
+                    if (texCoordsMap.contains(vertTex)) {
+                        objQuad.textureIndices[i] = texCoords.indexOf(vertTex) + 1
+                    } else {
+                        objQuad.textureIndices[i] = texCoords.size + 1
+                        texCoords.add(vertTex)
+                        texCoordsMap.add(vertTex)
+                    }
+                }
+                quads += objQuad
+            }
+            groups.add(ObjGroup(obj.name, "", quads))
+        }
+
+        val sym = DecimalFormatSymbols().apply { decimalSeparator = '.' }
+        val format = DecimalFormat("####0.000000", sym)
+
+        val writer = output.writer()
+
+        writer.write("mtllib $mtllib.mtl\n")
+
+        for (a in vertex.map { it * 0.0625 }) {
+            writer.write(String.format("v %s %s %s\n", format.format(a.xd), format.format(a.yd), format.format(a.zd)))
+        }
+        writer.append('\n')
+        for (a in texCoords) {
+            writer.write(String.format("vt %s %s\n", format.format(a.xd), format.format(a.yd)))
+        }
+        writer.append('\n')
+        for (a in normals) {
+            writer.write(String.format("vn %s %s %s\n", format.format(a.xd), format.format(a.yd), format.format(a.zd)))
+        }
+        for (group in groups) {
+            writer.write("usemtl ${group.material.replace(' ', '_')}\n\n")
+            writer.append("g ${group.name.replace(' ', '_')}\n")
+            for (quad in group.quads) {
+                val a = quad.vertexIndices
+                val b = quad.textureIndices
+                val c = quad.normalIndices
+                writer.write(String.format("f %d/%d/%d %d/%d/%d %d/%d/%d %d/%d/%d\n",
+                        a[0], b[0], c[0], a[1], b[1], c[1],
+                        a[2], b[2], c[2], a[3], b[3], c[3]))
+            }
+
+        }
+        writer.append('\n')
+
+        writer.flush()
+        writer.close()
+    }
+}
+
 class ObjImporter {
 
     internal val separator = "/"
