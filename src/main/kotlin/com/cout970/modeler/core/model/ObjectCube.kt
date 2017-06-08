@@ -4,6 +4,8 @@ import com.cout970.modeler.api.model.IObject
 import com.cout970.modeler.api.model.IObjectCube
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.mesh.IMesh
+import com.cout970.modeler.core.model.material.IMaterial
+import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.mesh.MeshFactory
@@ -23,6 +25,7 @@ data class ObjectCube(
         override val rotation: IQuaternion,
         override val size: IVector3,
         override val transformation: ITransformation = TRSTransformation.IDENTITY,
+        override val material: IMaterial = MaterialNone,
 
         val rotationPivot: IVector3 = Vector3.ORIGIN,
         val textureOffset: IVector2 = Vector2.ORIGIN,
@@ -40,7 +43,7 @@ data class ObjectCube(
     }
 
     override fun transform(func: (IMesh) -> IMesh): IObject {
-        return Object(name, func(mesh), transformation)
+        return Object(name, func(mesh), transformation, material)
     }
 
 //    fun Quad.setTexture0(uv0: IVector2, uv1: IVector2): Quad {

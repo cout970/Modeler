@@ -78,7 +78,7 @@ class TcnImporter {
             }
 
             try {
-                meshes += getMesh(shape, textureSize)
+                meshes += getMesh(shape, textureSize, texture)
             } catch (e: NumberFormatException) {
                 log(Level.ERROR) { "Tcn file contains malformed integers within its data, ignoring" }
                 e.print()
@@ -88,7 +88,7 @@ class TcnImporter {
     }
 
     @Throws(NumberFormatException::class)
-    private fun getMesh(shape: Node, textureSize: IVector2): IObjectCube {
+    private fun getMesh(shape: Node, textureSize: IVector2, texture: IMaterial): IObjectCube {
         var mirrored = false
         var offset: List<String> = listOf()
         var position: List<String> = listOf()
@@ -143,7 +143,8 @@ class TcnImporter {
                 transformation = TRSTransformation.IDENTITY,
                 textureOffset = rTexture,
                 textureSize = textureSize,
-                mirrored = mirrored
+                mirrored = mirrored,
+                material = texture
         )
         return cube
     }

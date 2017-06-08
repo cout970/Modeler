@@ -34,10 +34,10 @@ class Listeners : ITickeable {
         guiState.canvasContainer.canvas.forEach { canvas ->
             if (mousePos.isInside(canvas.absolutePosition, canvas.size.toIVector())) {
                 canvas.run {
-                    val camera = canvas.state.cameraHandler.camera
+                    val camera = canvas.cameraHandler.camera
                     val scroll = -e.offsetY * Config.cameraScrollSpeed
                     if (camera.zoom > 0.5 || scroll > 0) {
-                        canvas.state.cameraHandler.setZoom(camera.zoom + scroll * (camera.zoom / 60f))
+                        canvas.cameraHandler.setZoom(camera.zoom + scroll * (camera.zoom / 60f))
                     }
                 }
             }

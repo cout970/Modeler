@@ -25,7 +25,7 @@ class CameraUpdater(
 
     fun updateCameras() {
         canvasContainer.canvas.forEach { canvas ->
-            canvas.state.cameraHandler.updateAnimation(timer)
+            canvas.cameraHandler.updateAnimation(timer)
         }
 
         updateSelectedCanvas()
@@ -58,7 +58,7 @@ class CameraUpdater(
         val speed = 1 / 60.0 * if (Config.keyBindings.slowCameraMovements.check(input)) 1 / 10f else 1f
 
         if (move) {
-            val camera = selectedScene.state.cameraHandler.camera
+            val camera = selectedScene.cameraHandler.camera
             val rotations = vec2Of(camera.angleY, camera.angleX).toDegrees()
             val axisX = vec2Of(Math.cos(rotations.x.toRads()), Math.sin(rotations.x.toRads()))
             var axisY = vec2Of(Math.cos((rotations.xd - 90).toRads()), Math.sin((rotations.xd - 90).toRads()))
@@ -70,10 +70,10 @@ class CameraUpdater(
             a = a.normalize() * (diff.xd * Config.mouseTranslateSpeedX * speed * Math.sqrt(camera.zoom))
             b = b.normalize() * (-diff.yd * Config.mouseTranslateSpeedY * speed * Math.sqrt(camera.zoom))
 
-            selectedScene.state.cameraHandler.translate(a + b)
+            selectedScene.cameraHandler.translate(a + b)
         } else if (rotate) {
             val diff = input.mouse.getMousePosDiff()
-            selectedScene.state.cameraHandler.rotate(
+            selectedScene.cameraHandler.rotate(
                     diff.yd * Config.mouseRotationSpeedY * speed,
                     diff.xd * Config.mouseRotationSpeedX * speed
             )

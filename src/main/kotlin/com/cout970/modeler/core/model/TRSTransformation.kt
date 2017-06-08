@@ -13,9 +13,9 @@ import org.joml.Matrix4d
  * Created by cout970 on 2017/05/14.
  */
 data class TRSTransformation(
-        val translation: IVector3,
-        val rotation: IQuaternion,
-        val scale: IVector3
+        val translation: IVector3 = Vector3.ORIGIN,
+        val rotation: IQuaternion = Quaternion.IDENTITY,
+        val scale: IVector3 = Vector3.ONE
 ) : ITransformation {
 
     companion object {
