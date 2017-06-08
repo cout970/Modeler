@@ -1,10 +1,11 @@
 package com.cout970.modeler.view.render.control
 
+import com.cout970.glutilities.device.Keyboard
 import com.cout970.glutilities.tessellator.VAO
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.controller.World
-import com.cout970.modeler.core.export.TcnImporter
+import com.cout970.modeler.core.export.TblImporter
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.core.resource.toResourcePath
 import com.cout970.modeler.util.absolutePosition
@@ -44,22 +45,30 @@ class CanvasRenderer(val renderManager: RenderManager, val input: IInput) {
         }
     }
 
-    val model = TcnImporter().import(File("I:/newWorkspace/Proyectos/Java_Kotlin/Modeler/run/electric_sieve.tcn")
-            .toResourcePath())
+    //    val model = TcnImporter().import(File("I:/newWorkspace/Proyectos/Java_Kotlin/Modeler/run/electric_sieve.tcn")
+//            .toResourcePath())
+    lateinit var model: IModel
+    var world: World? = null
 
-    val world = World(listOf(model))
-//    model.copy(objects = model.objects.map {
-//        it.transform { it.transform(TRSTransformation(scale = vec3Of(3, 1, 3))) }
-//    })))
+    fun update() {
+        model = TblImporter().import(File("I:/newWorkspace/Proyectos/Java_Kotlin/Modeler/run/simple_brass_gear.tbl")
+                .toResourcePath())
+
+        world = World(listOf(model))
+    }
 
     fun renderCanvas(ctx: RenderContext) {
 
-        renderManager.shader.useShader(ctx) { buffer, shader ->
-            world.models.forEachIndexed { modelIndex, model ->
+        if (world == null || ctx.input.keyboard.isKeyPressed(Keyboard.KEY_0)) {
+            update()
+        }
 
-                if (world.cache[modelIndex].size != model.objects.size) {
-                    world.cache[modelIndex].forEach { it.close() }
-                    world.cache[modelIndex] = updateCache(buffer, model)
+        renderManager.shader.useShader(ctx) { buffer, shader ->
+            world!!.models.forEachIndexed { modelIndex, model ->
+
+                if (world!!.cache[modelIndex].size != model.objects.size) {
+                    world!!.cache[modelIndex].forEach { it.close() }
+                    world!!.cache[modelIndex] = updateCache(buffer, model)
                     model.objects.forEach { it.material.loadTexture(ResourceLoader()) }
                 }
                 model.objects
@@ -72,7 +81,7 @@ class CanvasRenderer(val renderManager: RenderManager, val input: IInput) {
                                 shader.useColor.setInt(0)
                                 shader.useLight.setInt(1)
                                 shader.matrixM.setMatrix4(obj.transformation.matrix)
-                                shader.accept(world.cache[modelIndex][index])
+                                shader.accept(world!!.cache[modelIndex][index])
                             }
                         }
             }
