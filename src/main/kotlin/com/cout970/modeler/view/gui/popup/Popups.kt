@@ -1,9 +1,10 @@
 package com.cout970.modeler.view.gui.popup
 
+import com.cout970.modeler.controller.ProjectController
 import com.cout970.modeler.core.export.ExportFormat
 import com.cout970.modeler.core.log.print
+import com.cout970.modeler.core.project.Author
 import com.cout970.modeler.core.project.Project
-import com.cout970.modeler.core.project.ProjectManager
 import org.lwjgl.PointerBuffer
 import org.lwjgl.system.MemoryUtil
 import org.lwjgl.util.tinyfd.TinyFileDialogs
@@ -52,32 +53,30 @@ private val saveFileExtension: PointerBuffer = MemoryUtil.memAllocPointer(1).app
 
 private var lastSaveFile: String? = null
 
-fun saveProject(projectManager: ProjectManager) {
+fun saveProject(projectManager: ProjectController) {
     if (lastSaveFile == null) {
         saveProjectAs(projectManager)
     } else {
-        saveProject(projectManager, projectManager.project)
+        saveProject(projectManager, projectManager.project!!)
     }
 }
 
-fun saveProjectAs(projectManager: ProjectManager) {
+fun saveProjectAs(projectManager: ProjectController) {
     val file = TinyFileDialogs.tinyfd_saveFileDialog("Save As", "", saveFileExtension, "Project File Format (*.pff)")
     if (file != null) {
         lastSaveFile = if (file.endsWith(".pff")) file else file + ".pff"
-        saveProject(projectManager, projectManager.project)
+        saveProject(projectManager, projectManager.project!!)
     }
 }
 
-fun newProject(projectManager: ProjectManager) {
+fun newProject(projectManager: ProjectController) {
     val res = JOptionPane.showConfirmDialog(null,
             "Do you want to create a new project? \nAll unsaved changes will be lost!")
     if (res != JOptionPane.OK_OPTION) return
-    projectManager.project = Project(projectManager.project.owner, "Unnamed")
-    //TODO
-//    projectManager.modelEditor.selectionManager.clearSelection()
+    projectManager.newProject("Unnamed", Author())
 }
 
-fun loadProject(projectManager: ProjectManager) {
+fun loadProject(projectManager: ProjectController) {
     val res = JOptionPane.showConfirmDialog(null,
             "Do you want to load a new project? \nAll unsaved changes will be lost!")
     if (res != JOptionPane.OK_OPTION) return
@@ -96,11 +95,11 @@ fun loadProject(projectManager: ProjectManager) {
     }
 }
 
-private fun saveProject(projectManager: ProjectManager, project: Project) {
+private fun saveProject(projectManager: ProjectController, project: Project) {
 //    projectManager.exportManager.saveProject(lastSaveFile!!, project)
 }
 
-fun showImportModelPopup(projectManager: ProjectManager) {
+fun showImportModelPopup(projectManager: ProjectController) {
     ImportDialog.show { prop ->
         if (prop != null) {
 //            projectManager.exportManager.importModel(prop)
@@ -108,7 +107,7 @@ fun showImportModelPopup(projectManager: ProjectManager) {
     }
 }
 
-fun showExportModelPopup(projectManager: ProjectManager) {
+fun showExportModelPopup(projectManager: ProjectController) {
     ExportDialog.show { prop ->
         if (prop != null) {
 //            projectManager.exportManager.exportModel(prop)
@@ -116,7 +115,7 @@ fun showExportModelPopup(projectManager: ProjectManager) {
     }
 }
 
-fun importTexture(projectManager: ProjectManager) {
+fun importTexture(projectManager: ProjectController) {
     val file = TinyFileDialogs.tinyfd_openFileDialog("Import Texture", "",
             textureExtensions, "PNG texture (*.png)", false)
     if (file != null) {
@@ -125,7 +124,7 @@ fun importTexture(projectManager: ProjectManager) {
     }
 }
 //
-//fun exportTexture(projectManager: ProjectManager) {
+//fun exportTexture(projectManager: ProjectController) {
 //    val file = TinyFileDialogs.tinyfd_saveFileDialog("Export Texture", "texture.png",
 //            textureExtensions, "PNG texture (*.png)")
 //    if (file != null) {

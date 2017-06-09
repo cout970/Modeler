@@ -7,8 +7,8 @@ import com.cout970.modeler.util.isInside
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.util.toRads
 import com.cout970.modeler.view.event.IInput
-import com.cout970.modeler.view.gui.canvas.Canvas
-import com.cout970.modeler.view.gui.canvas.CanvasContainer
+import com.cout970.modeler.view.gui.comp.canvas.Canvas
+import com.cout970.modeler.view.gui.comp.canvas.CanvasContainer
 import com.cout970.vector.extensions.*
 
 /**

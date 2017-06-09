@@ -2,7 +2,6 @@ package com.cout970.modeler.core.export
 
 import com.cout970.modeler.core.model.material.IMaterial
 import com.cout970.modeler.core.project.Project
-import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
@@ -10,12 +9,15 @@ import com.cout970.vector.api.IVector3
 import com.google.gson.GsonBuilder
 import com.google.gson.stream.JsonReader
 import java.awt.Color
+import java.io.File
+import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
+import java.util.zip.ZipOutputStream
 
 /**
  * Created by cout970 on 2017/01/02.
  */
-class ExportManager(val projectManager: ProjectManager, val resourceLoader: ResourceLoader) {
+class ExportManager(val resourceLoader: ResourceLoader) {
 
     //TODO
 //    val objImporter = ObjImporter()
@@ -33,11 +35,6 @@ class ExportManager(val projectManager: ProjectManager, val resourceLoader: Reso
             .registerTypeAdapter(IMaterial::class.java, MaterialSerializer())
             .create()!!
 
-    //
-//    init {
-//        projectManager.exportManager = this
-//    }
-//
     fun loadProject(path: String): Project {
         val zip = ZipFile(path)
         val entry = zip.getEntry("project.json") ?: throw java.lang.IllegalStateException(
@@ -46,17 +43,17 @@ class ExportManager(val projectManager: ProjectManager, val resourceLoader: Reso
         val reader = zip.getInputStream(entry).reader()
         return gson.fromJson(JsonReader(reader), Project::class.java)
     }
-//
-//    fun saveProject(path: String, project: Project) {
-//        val zip = ZipOutputStream(File(path).outputStream())
-//        val json = gson.toJson(project)
-//        zip.let {
-//            it.putNextEntry(ZipEntry("project.json"))
-//            it.write(json.toByteArray())
-//            it.closeEntry()
-//        }
-//        zip.close()
-//    }
+
+    fun saveProject(path: String, project: Project) {
+        val zip = ZipOutputStream(File(path).outputStream())
+        val json = gson.toJson(project)
+        zip.let {
+            it.putNextEntry(ZipEntry("project.json"))
+            it.write(json.toByteArray())
+            it.closeEntry()
+        }
+        zip.close()
+    }
 //
 //    fun importModel(prop: ImportProperties) {
 //        val file = File(prop.path)

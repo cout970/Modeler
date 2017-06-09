@@ -1,7 +1,6 @@
-package com.cout970.modeler.view.gui.canvas
+package com.cout970.modeler.view.gui.comp.canvas
 
-import com.cout970.modeler.view.gui.canvas.layout.ColumnLayout
-import com.cout970.modeler.view.gui.canvas.layout.ICanvasLayout
+import com.cout970.modeler.view.gui.comp.canvas.layout.*
 import org.liquidengine.legui.component.Panel
 
 /**
@@ -9,7 +8,12 @@ import org.liquidengine.legui.component.Panel
  */
 class CanvasContainer(val panel: Panel) {
 
-    var layout: ICanvasLayout = ColumnLayout(this)
+    val layoutOne = LayoutOne(this)
+    val layoutTwo = LayoutTwo(this)
+    val layoutThree = LayoutThree(this)
+    val layoutFourth = LayoutFourth(this)
+
+    var layout: ICanvasLayout = layoutOne
     val canvas = mutableListOf<Canvas>()
     var selectedCanvas: Canvas? = null
 
@@ -31,11 +35,21 @@ class CanvasContainer(val panel: Panel) {
         refreshCanvas()
     }
 
-    fun refreshCanvas() {
-        panel.clearComponents()
-        for (canvas in canvas) {
-            panel.addComponent(canvas)
+    fun selectLayout() {
+        layout = when (canvas.size) {
+            0, 1 -> layoutOne
+            2 -> layoutTwo
+            3 -> layoutThree
+            else -> layoutFourth
         }
+        refreshCanvas()
+    }
+
+    fun refreshCanvas() {
+        val nonCanvas = panel.components.filter { it !is Canvas }
+        panel.clearComponents()
+        nonCanvas.forEach { panel.addComponent(it) }
+        canvas.forEach { panel.addComponent(it) }
         selectedCanvas = canvas.firstOrNull()
     }
 }

@@ -2,12 +2,12 @@ package com.cout970.modeler
 
 import com.cout970.glutilities.structure.Timer
 import com.cout970.glutilities.window.GLFWLoader
+import com.cout970.modeler.controller.ProjectController
 import com.cout970.modeler.core.config.ConfigManager
 import com.cout970.modeler.core.export.ExportManager
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
-import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.view.GuiInitializer
 import com.cout970.modeler.view.event.EventController
@@ -38,12 +38,12 @@ class Initializer {
 
         log(Level.FINE) { "Creating EventController" }
         val eventController = EventController()
-        log(Level.FINE) { "Creating ProjectManager" }
-        val projectManager = ProjectManager()
-        log(Level.FINE) { "Creating ModelController" }
+        log(Level.FINE) { "Creating ProjectController" }
+        val projectController = ProjectController()
+//        log(Level.FINE) { "Creating ModelController" }
 //        modelEditor = ModelEditor(projectManager)
         log(Level.FINE) { "Creating ExportManager" }
-        val exportManager = ExportManager(projectManager, resourceLoader)
+        val exportManager = ExportManager(resourceLoader)
 
         log(Level.FINE) { "Creating GuiResources" }
 //        guiResources = GuiResources(resourceLoader)
@@ -52,24 +52,23 @@ class Initializer {
         val renderManager = RenderManager()
 
         log(Level.FINE) { "Creating GuiInitializer" }
-        val guiState = GuiInitializer(eventController, windowHandler,
-                projectManager, renderManager, resourceLoader, timer).init()
+        val guiState = GuiInitializer(eventController, windowHandler, renderManager, resourceLoader, timer).init()
 
         log(Level.FINE) { "Creating Loop" }
         val mainLoop = Loop(listOf(renderManager, guiState.listeners, eventController, windowHandler),
                 timer, windowHandler::shouldClose)
 
-        parseArgs(programArguments, exportManager, projectManager)
+        parseArgs(programArguments, exportManager, projectController)
 
         val state = ProgramSate(
                 resourceLoader,
                 windowHandler,
                 eventController,
-                projectManager,
                 renderManager,
                 mainLoop,
                 exportManager,
-                guiState
+                guiState,
+                projectController
         )
 
         log(Level.FINE) { "Starting GLFW" }
@@ -91,15 +90,14 @@ class Initializer {
     }
 
     private fun parseArgs(programArguments: List<String>, exportManager: ExportManager,
-                          projectManager: ProjectManager) {
+                          projectController: ProjectController) {
         if (programArguments.isNotEmpty()) {
             log(Level.FINE) { "Parsing arguments..." }
             if (File(programArguments[0]).exists()) {
                 try {
                     log(Level.NORMAL) { "Loading Project at '${programArguments[0]}'" }
-                    val project = exportManager.loadProject(programArguments[0])
+                    projectController.loadProject(exportManager, programArguments[0])
                     log(Level.NORMAL) { "Project loaded" }
-                    projectManager.project = project
                 } catch (e: Exception) {
                     log(Level.ERROR) { "Unable to load project file at '${programArguments[0]}'" }
                     e.print()

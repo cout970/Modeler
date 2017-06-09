@@ -15,5 +15,5 @@ class Project(
     @Expose var description: String = ""
     @Expose var creationTime: Long = Calendar.getInstance().timeInMillis
 
-    @Expose var model: Model = Model(listOf())
+    @Expose var model: Model = Model()
 }

@@ -1,5 +1,7 @@
 package com.cout970.modeler.view.gui.comp
 
+import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.util.toColor
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Panel
 
@@ -11,6 +13,10 @@ open class CPanel(
 ) : Panel(Vector2f(x, y), Vector2f(width, height)) {
 
     val id = lastID++
+
+    init {
+        backgroundColor = Config.colorPalette.lightColor.toColor()
+    }
 
     companion object {
         private var lastID = 0

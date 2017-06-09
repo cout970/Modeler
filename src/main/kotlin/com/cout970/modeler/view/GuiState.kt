@@ -5,7 +5,7 @@ import com.cout970.modeler.controller.CommandExecutor
 import com.cout970.modeler.view.event.IInput
 import com.cout970.modeler.view.gui.GuiUpdater
 import com.cout970.modeler.view.gui.Root
-import com.cout970.modeler.view.gui.canvas.CanvasContainer
+import com.cout970.modeler.view.gui.comp.canvas.CanvasContainer
 import com.cout970.modeler.view.window.WindowHandler
 
 /**

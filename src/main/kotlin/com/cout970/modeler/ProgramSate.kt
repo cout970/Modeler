@@ -1,7 +1,7 @@
 package com.cout970.modeler
 
+import com.cout970.modeler.controller.ProjectController
 import com.cout970.modeler.core.export.ExportManager
-import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.view.GuiState
 import com.cout970.modeler.view.event.EventController
@@ -16,9 +16,9 @@ data class ProgramSate(
         val resourceLoader: ResourceLoader,
         val windowHandler: WindowHandler,
         val eventController: EventController,
-        val projectManager: ProjectManager,
         val renderManager: RenderManager,
         val mainLoop: Loop,
         val exportManager: ExportManager,
-        val guiState: GuiState
+        val guiState: GuiState,
+        val projectController: ProjectController
 )

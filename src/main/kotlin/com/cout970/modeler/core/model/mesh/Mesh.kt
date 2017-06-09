@@ -20,8 +20,13 @@ class Mesh(
         require(faces.isEmpty() || pos.isNotEmpty() && tex.isNotEmpty())
     }
 
-    override fun transformPos(selection: List<Int>, func: (Int, IVector3) -> IVector3): IMesh = this
-    override fun transformTex(selection: List<Int>, func: (Int, IVector2) -> IVector2): IMesh = this
+    override fun transformPos(selection: List<Int>, func: (Int, IVector3) -> IVector3): IMesh {
+        return Mesh(pos.mapIndexed { index, vec -> if (index in selection) func(index, vec) else vec }, tex, faces)
+    }
+
+    override fun transformTex(selection: List<Int>, func: (Int, IVector2) -> IVector2): IMesh {
+        return Mesh(pos, tex.mapIndexed { index, vec -> if (index in selection) func(index, vec) else vec }, faces)
+    }
 
     override fun transform(trans: ITransformation): IMesh {
         return transformPos(pos.indices.toList()) { _, pos -> trans.matrix * pos }

@@ -27,7 +27,7 @@ class WindowHandler(private val timer: Timer) : ITickeable {
     private val viewportStack = Stack<Pair<IVector2, IVector2>>()
 
     companion object {
-        const val WINDOW_TITLE = "TO BE NAMED"
+        const val WINDOW_TITLE = ""
     }
 
     fun create() {
