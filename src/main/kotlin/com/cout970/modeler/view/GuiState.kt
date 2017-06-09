@@ -6,6 +6,7 @@ import com.cout970.modeler.view.event.IInput
 import com.cout970.modeler.view.gui.GuiUpdater
 import com.cout970.modeler.view.gui.Root
 import com.cout970.modeler.view.gui.comp.canvas.CanvasContainer
+import com.cout970.modeler.view.gui.editor.EditorPanel
 import com.cout970.modeler.view.window.WindowHandler
 
 /**
@@ -20,5 +21,6 @@ data class GuiState(
         val listeners: Listeners,
         val windowHandler: WindowHandler,
         val timer: Timer,
-        val input: IInput
+        val input: IInput,
+        val editorPanel: EditorPanel
 )

@@ -2,6 +2,7 @@ package com.cout970.modeler
 
 import com.cout970.glutilities.structure.Timer
 import com.cout970.glutilities.window.GLFWLoader
+import com.cout970.modeler.controller.ModelTransformer
 import com.cout970.modeler.controller.ProjectController
 import com.cout970.modeler.core.config.ConfigManager
 import com.cout970.modeler.core.export.ExportManager
@@ -35,13 +36,12 @@ class Initializer {
         val timer = Timer()
         log(Level.FINE) { "Creating WindowHandler" }
         val windowHandler = WindowHandler(timer)
-
         log(Level.FINE) { "Creating EventController" }
         val eventController = EventController()
         log(Level.FINE) { "Creating ProjectController" }
         val projectController = ProjectController()
-//        log(Level.FINE) { "Creating ModelController" }
-//        modelEditor = ModelEditor(projectManager)
+        log(Level.FINE) { "Creating ModelTransformer" }
+        val modelTransformer = ModelTransformer(projectController)
         log(Level.FINE) { "Creating ExportManager" }
         val exportManager = ExportManager(resourceLoader)
 
@@ -55,7 +55,7 @@ class Initializer {
         val guiState = GuiInitializer(eventController, windowHandler, renderManager, resourceLoader, timer).init()
 
         log(Level.FINE) { "Creating Loop" }
-        val mainLoop = Loop(listOf(renderManager, guiState.listeners, eventController, windowHandler),
+        val mainLoop = Loop(listOf(renderManager, guiState.listeners, eventController, windowHandler, modelTransformer),
                 timer, windowHandler::shouldClose)
 
         parseArgs(programArguments, exportManager, projectController)
@@ -68,7 +68,8 @@ class Initializer {
                 mainLoop,
                 exportManager,
                 guiState,
-                projectController
+                projectController,
+                modelTransformer
         )
 
         log(Level.FINE) { "Starting GLFW" }
@@ -79,9 +80,10 @@ class Initializer {
         eventController.bindWindow(windowHandler.window)
 
         log(Level.FINE) { "Initializing renderers" }
-        renderManager.initOpenGl(resourceLoader, windowHandler, eventController)
+        renderManager.initOpenGl(resourceLoader, windowHandler, eventController, projectController)
         log(Level.FINE) { "Registering Input event listeners" }
         guiState.listeners.initListeners(eventController, guiState)
+        guiState.commandExecutor.programState = state
 
         log(Level.FINE) { "Adding placeholder cube" }
 //        modelEditor.addCube(vec3Of(16, 16, 16))

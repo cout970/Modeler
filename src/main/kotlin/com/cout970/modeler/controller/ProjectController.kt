@@ -1,5 +1,6 @@
 package com.cout970.modeler.controller
 
+import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.core.export.ExportManager
 import com.cout970.modeler.core.project.Author
 import com.cout970.modeler.core.project.Project
@@ -9,22 +10,28 @@ import com.cout970.modeler.core.project.Project
  */
 class ProjectController {
 
-    var project: Project? = null
+    var project: Project = Project(Author(), "Unnamed")
         private set
+
+    var world: World = World(emptyList())
 
     fun newProject(name: String, author: Author) {
         project = Project(author, name)
+        world = World(listOf(project.model))
     }
 
-    fun saveProject() {
-
+    fun saveProject(exportManager: ExportManager, path: String) {
+        exportManager.saveProject(path, project)
     }
 
     fun loadProject(exportManager: ExportManager, path: String) {
         project = exportManager.loadProject(path)
+        world = World(listOf(project.model))
     }
 
-    fun deleteProject() {
 
+    fun updateModel(model: IModel) {
+        project.model = model
+        world = World(listOf(model))
     }
 }

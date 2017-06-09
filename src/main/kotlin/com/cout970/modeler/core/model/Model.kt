@@ -2,7 +2,6 @@ package com.cout970.modeler.core.model
 
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.IObject
-import com.cout970.modeler.api.model.Tree
 import com.cout970.modeler.api.model.TreeNode
 
 /**
@@ -11,10 +10,14 @@ import com.cout970.modeler.api.model.TreeNode
 
 data class Model(
         override val objects: List<IObject> = emptyList(),
-        override val hierarchy: Tree<Int> = TreeNode(emptyList())
+        override val hierarchy: TreeNode<Int> = TreeNode(emptyList())
 ) : IModel {
 
     val id: Int = lastId++
+
+    override fun transformObjects(func: (List<IObject>) -> List<IObject>): IModel {
+        return copy(objects = func(objects))
+    }
 
     companion object {
         private var lastId = 0

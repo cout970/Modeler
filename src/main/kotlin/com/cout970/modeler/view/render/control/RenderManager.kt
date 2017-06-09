@@ -1,6 +1,7 @@
 package com.cout970.modeler.view.render.control
 
 import com.cout970.glutilities.structure.GLStateMachine
+import com.cout970.modeler.controller.ProjectController
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
@@ -26,9 +27,12 @@ class RenderManager : ITickeable {
     lateinit var guiRenderer: GuiRenderer
     lateinit var shader: UniversalShader
     lateinit var canvasRenderer: CanvasRenderer
+    lateinit var projectController: ProjectController
 
-    fun initOpenGl(resourceLoader: ResourceLoader, windowHandler: WindowHandler, input: IInput) {
+    fun initOpenGl(resourceLoader: ResourceLoader, windowHandler: WindowHandler, input: IInput,
+                   projectController: ProjectController) {
 
+        this.projectController = projectController
         log(Level.FINE) { "[RenderManager] Creating GuiRenderer" }
         guiRenderer = GuiRenderer(guiState.root, windowHandler.window.id)
         log(Level.FINE) { "[RenderManager] Creating Universal Shader" }
@@ -45,9 +49,7 @@ class RenderManager : ITickeable {
 
     override fun tick() {
         GLStateMachine.clear()
-//        guiState.windowHandler.resetViewport()
-        canvasRenderer.render(guiState)
-//        guiState.windowHandler.resetViewport()
+        canvasRenderer.render(guiState, projectController)
         guiRenderer.render(guiState.root)
         guiState.windowHandler.resetViewport()
     }

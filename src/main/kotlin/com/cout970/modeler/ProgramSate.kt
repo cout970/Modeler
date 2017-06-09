@@ -1,5 +1,6 @@
 package com.cout970.modeler
 
+import com.cout970.modeler.controller.ModelTransformer
 import com.cout970.modeler.controller.ProjectController
 import com.cout970.modeler.core.export.ExportManager
 import com.cout970.modeler.core.resource.ResourceLoader
@@ -20,5 +21,6 @@ data class ProgramSate(
         val mainLoop: Loop,
         val exportManager: ExportManager,
         val guiState: GuiState,
-        val projectController: ProjectController
+        val projectController: ProjectController,
+        val modelTransformer: ModelTransformer
 )

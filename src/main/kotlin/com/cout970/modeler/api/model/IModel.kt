@@ -7,5 +7,7 @@ package com.cout970.modeler.api.model
 interface IModel {
 
     val objects: List<IObject>
-    val hierarchy: Tree<Int>
+    val hierarchy: TreeNode<Int>
+
+    fun transformObjects(func: (List<IObject>) -> List<IObject>): IModel
 }

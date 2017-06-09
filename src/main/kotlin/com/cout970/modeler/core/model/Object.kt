@@ -12,7 +12,7 @@ import com.cout970.modeler.core.model.material.MaterialNone
 data class Object(
         override val name: String,
         override val mesh: IMesh,
-        override val transformation: ITransformation,
+        override val transformation: ITransformation = TRSTransformation.IDENTITY,
         override val material: IMaterial = MaterialNone
 ) : IObject {
 

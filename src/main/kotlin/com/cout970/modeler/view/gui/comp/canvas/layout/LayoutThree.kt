@@ -39,7 +39,7 @@ class LayoutThree(override val container: CanvasContainer) : ICanvasLayout {
             Mode.RIGHT -> {
                 container.canvas[0].apply {
                     size = Vector2f(container.panel.size.x * horizontalSplitter, container.panel.size.y)
-                    position = Vector2f(container.panel.size.x * horizontalSplitter, 0f)
+                    position = Vector2f(container.panel.size.x * (1 - horizontalSplitter), 0f)
                 }
                 container.canvas[1].apply {
                     size = Vector2f(container.panel.size.x * (1 - horizontalSplitter),

@@ -2,6 +2,7 @@ package com.cout970.modeler.view.gui.popup
 
 import com.cout970.modeler.controller.ProjectController
 import com.cout970.modeler.core.export.ExportFormat
+import com.cout970.modeler.core.export.ExportManager
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.project.Author
 import com.cout970.modeler.core.project.Project
@@ -57,7 +58,7 @@ fun saveProject(projectManager: ProjectController) {
     if (lastSaveFile == null) {
         saveProjectAs(projectManager)
     } else {
-        saveProject(projectManager, projectManager.project!!)
+        saveProject(projectManager, projectManager.project)
     }
 }
 
@@ -65,30 +66,34 @@ fun saveProjectAs(projectManager: ProjectController) {
     val file = TinyFileDialogs.tinyfd_saveFileDialog("Save As", "", saveFileExtension, "Project File Format (*.pff)")
     if (file != null) {
         lastSaveFile = if (file.endsWith(".pff")) file else file + ".pff"
-        saveProject(projectManager, projectManager.project!!)
+        saveProject(projectManager, projectManager.project)
     }
 }
 
-fun newProject(projectManager: ProjectController) {
-    val res = JOptionPane.showConfirmDialog(null,
-            "Do you want to create a new project? \nAll unsaved changes will be lost!")
-    if (res != JOptionPane.OK_OPTION) return
-    projectManager.newProject("Unnamed", Author())
+fun newProject(projectManager: ProjectController, name: String): Boolean {
+    if (name.isBlank()) return false
+    if (projectManager.project.model.objects.isNotEmpty()) {
+        val res = JOptionPane.showConfirmDialog(null,
+                "Do you want to create a new project? \nAll unsaved changes will be lost!")
+        if (res != JOptionPane.OK_OPTION) return false
+    }
+    projectManager.newProject(name, Author())
+    return true
 }
 
-fun loadProject(projectManager: ProjectController) {
-    val res = JOptionPane.showConfirmDialog(null,
-            "Do you want to load a new project? \nAll unsaved changes will be lost!")
-    if (res != JOptionPane.OK_OPTION) return
+fun loadProject(projectManager: ProjectController, exportManager: ExportManager) {
+    if (projectManager.project.model.objects.isNotEmpty()) {
+        val res = JOptionPane.showConfirmDialog(null,
+                "Do you want to load a new project? \nAll unsaved changes will be lost!")
+        if (res != JOptionPane.OK_OPTION) return
+    }
 
     val file = TinyFileDialogs.tinyfd_openFileDialog("Load", "", saveFileExtension, "Project File Format (*.pff)",
             false)
     if (file != null) {
         lastSaveFile = file
         try {
-//            val project = projectManager.exportManager.loadProject(lastSaveFile!!)
-//            project.model = project.model.copy()
-//            projectManager.project = project
+            projectManager.loadProject(exportManager, file)
         } catch (e: Exception) {
             e.print()
         }

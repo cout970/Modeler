@@ -1,8 +1,17 @@
 package com.cout970.modeler.core.export
 
+import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.IObject
+import com.cout970.modeler.api.model.ITransformation
+import com.cout970.modeler.api.model.mesh.IFaceIndex
+import com.cout970.modeler.api.model.mesh.IMesh
+import com.cout970.modeler.controller.ProjectController
 import com.cout970.modeler.core.model.material.IMaterial
 import com.cout970.modeler.core.project.Project
+import com.cout970.modeler.core.record.HistoricalRecord
+import com.cout970.modeler.core.record.action.ActionImportModel
 import com.cout970.modeler.core.resource.ResourceLoader
+import com.cout970.modeler.core.resource.toResourcePath
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -20,19 +29,24 @@ import java.util.zip.ZipOutputStream
 class ExportManager(val resourceLoader: ResourceLoader) {
 
     //TODO
-//    val objImporter = ObjImporter()
-//    val objExporter = ObjExporter()
-//    val tcnImporter = TcnImporter()
-//    val jsonImporter = JsonImporter()
-//    val mcxExporter = McxExporter()
-//
+    val objImporter = ObjImporter()
+    val objExporter = ObjExporter()
+    val tcnImporter = TcnImporter()
+    val jsonImporter = JsonImporter()
+    val tblImporter = TblImporter()
+
     val gson = GsonBuilder()
-            .excludeFieldsWithoutExposeAnnotation()
+            .setExclusionStrategies(ProjectExclusionStrategy())
             .setPrettyPrinting()
             .registerTypeAdapter(IVector3::class.java, Vector3Serializer())
             .registerTypeAdapter(IVector2::class.java, Vector2Serializer())
             .registerTypeAdapter(IQuaternion::class.java, QuaternionSerializer())
             .registerTypeAdapter(IMaterial::class.java, MaterialSerializer())
+            .registerTypeAdapter(IModel::class.java, ModelSerializer())
+            .registerTypeAdapter(IObject::class.java, ObjectSerializer())
+            .registerTypeAdapter(IMesh::class.java, MeshSerializer())
+            .registerTypeAdapter(IFaceIndex::class.java, FaceSerializer())
+            .registerTypeAdapter(ITransformation::class.java, TransformationSerializer())
             .create()!!
 
     fun loadProject(path: String): Project {
@@ -54,30 +68,33 @@ class ExportManager(val resourceLoader: ResourceLoader) {
         }
         zip.close()
     }
-//
-//    fun importModel(prop: ImportProperties) {
-//        val file = File(prop.path)
-//        when (prop.format) {
-//            ImportFormat.OBJ -> {
-//                projectManager.modelEditor.historyRecord.doAction(
-//                        ActionImportModel(projectManager.modelEditor, resourceLoader, prop.path) {
-//                            objImporter.import(file.toResourcePath(), prop.flipUV)
-//                        })
-//            }
-//            ImportFormat.TCN -> {
-//                projectManager.modelEditor.historyRecord.doAction(
-//                        ActionImportModel(projectManager.modelEditor, resourceLoader, prop.path) {
-//                            tcnImporter.import(file.toResourcePath())
-//                        })
-//            }
+
+    fun importModel(prop: ImportProperties, historyRecord: HistoricalRecord, projectController: ProjectController) {
+        val file = File(prop.path)
+        when (prop.format) {
+            ImportFormat.OBJ -> {
+                historyRecord.doAction(ActionImportModel(projectController, resourceLoader, prop.path) {
+                    objImporter.import(file.toResourcePath(), prop.flipUV)
+                })
+            }
+            ImportFormat.TCN -> {
+                historyRecord.doAction(ActionImportModel(projectController, resourceLoader, prop.path) {
+                    tcnImporter.import(file.toResourcePath())
+                })
+            }
+        //TODO
 //            ImportFormat.JSON -> {
-//                projectManager.modelEditor.historyRecord.doAction(
-//                        ActionImportModel(projectManager.modelEditor, resourceLoader, prop.path) {
-//                            jsonImporter.import(file.toResourcePath())
-//                        })
+//                historyRecord.doAction(ActionImportModel(projectController, resourceLoader, prop.path) {
+//                    jsonImporter.import(file.toResourcePath())
+//                })
 //            }
-//        }
-//    }
+            ImportFormat.TBL -> {
+                historyRecord.doAction(ActionImportModel(projectController, resourceLoader, prop.path) {
+                    tblImporter.import(file.toResourcePath())
+                })
+            }
+        }
+    }
 //
 //    fun exportModel(prop: ExportProperties) {
 //        val file = File(prop.path)

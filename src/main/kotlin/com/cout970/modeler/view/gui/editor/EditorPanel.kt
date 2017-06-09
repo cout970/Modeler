@@ -16,9 +16,9 @@ import org.liquidengine.legui.util.ColorConstants
 /**
  * Created by cout970 on 2017/06/09.
  */
-class MainPanel : MutablePanel() {
+class EditorPanel : MutablePanel() {
 
-    val leftPanel = CPanel()
+    val leftPanel = LeftPanel()
     val rightPanel = CPanel()
     val centerPanel = CenterPanel()
 
