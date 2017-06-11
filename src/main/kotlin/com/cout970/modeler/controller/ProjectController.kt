@@ -10,7 +10,7 @@ import com.cout970.modeler.core.project.Project
  */
 class ProjectController {
 
-    var project: Project = Project(Author(), "Unnamed")
+    var project: Project = Project(Author(), "Unnamed").apply { creationTime = -1L }
         private set
 
     var world: World = World(emptyList())

@@ -161,7 +161,19 @@ class ObjectSerializer : JsonSerializer<IObject>, JsonDeserializer<IObject> {
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IObject {
         val obj = json.asJsonObject
         if (obj.has("size")) {
-            return context.deserialize(json, ObjectCube::class.java)
+
+            return ObjectCube(
+                    name = context.deserialize(obj["name"], String::class.java),
+                    pos = context.deserialize(obj["pos"], IVector3::class.java),
+                    rotation = context.deserialize(obj["rotation"], IQuaternion::class.java),
+                    size = context.deserialize(obj["size"], IVector3::class.java),
+                    transformation = context.deserialize(obj["transformation"], TRSTransformation::class.java),
+                    material = context.deserialize(obj["material"], IMaterial::class.java),
+                    rotationPivot = context.deserialize(obj["rotationPivot"], IVector3::class.java),
+                    textureOffset = context.deserialize(obj["textureOffset"], IVector2::class.java),
+                    textureSize = context.deserialize(obj["textureSize"], IVector2::class.java),
+                    mirrored = context.deserialize(obj["mirrored"], Boolean::class.java)
+            )
         } else {
             return context.deserialize(json, Object::class.java)
         }

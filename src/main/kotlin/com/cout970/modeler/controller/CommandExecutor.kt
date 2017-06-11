@@ -1,11 +1,8 @@
 package com.cout970.modeler.controller
 
 import com.cout970.modeler.ProgramSate
-import com.cout970.modeler.util.hide
-import com.cout970.modeler.util.show
 import com.cout970.modeler.view.gui.comp.CButton
-import com.cout970.modeler.view.gui.popup.loadProject
-import com.cout970.modeler.view.gui.popup.newProject
+import com.cout970.modeler.view.gui.popup.*
 import org.liquidengine.legui.component.Panel
 import org.liquidengine.legui.event.component.MouseClickEvent
 import org.liquidengine.legui.listener.LeguiEventListenerMap
@@ -21,17 +18,20 @@ class CommandExecutor {
     fun execute(command: String) {
         programState.apply {
             when (command) {
+                "gui.left.refresh" -> guiState.editorPanel.leftPanel.refresh(projectController)
                 "project.new" -> {
                     val panel = guiState.editorPanel.leftPanel
                     val res = newProject(projectController, panel.newProjectPanel.projectNameInput.textState.text)
                     if (res) {
-                        panel.newProjectPanel.hide()
-                        panel.createObjectPanel.show()
+                        saveProjectDirect(exportManager, projectController.project, "./saves/last.pff")
+                        panel.refresh(projectController)
                     }
                 }
                 "cube.template.new" -> modelTransformer.addCubeTemplate()
                 "cube.mesh.new" -> modelTransformer.addCubeMesh()
                 "project.load" -> loadProject(projectController, exportManager)
+                "project.save" -> saveProject(projectController, exportManager)
+                "project.save.as" -> saveProjectAs(projectController, exportManager)
             }
         }
     }

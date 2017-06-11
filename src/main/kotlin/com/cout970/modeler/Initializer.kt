@@ -45,7 +45,7 @@ class Initializer {
         log(Level.FINE) { "Creating ExportManager" }
         val exportManager = ExportManager(resourceLoader)
 
-        log(Level.FINE) { "Creating GuiResources" }
+//        log(Level.FINE) { "Creating GuiResources" }
 //        guiResources = GuiResources(resourceLoader)
 
         log(Level.FINE) { "Creating RenderManager" }
@@ -85,8 +85,9 @@ class Initializer {
         guiState.listeners.initListeners(eventController, guiState)
         guiState.commandExecutor.programState = state
 
-        log(Level.FINE) { "Adding placeholder cube" }
-//        modelEditor.addCube(vec3Of(16, 16, 16))
+        log(Level.FINE) { "Searching for last project" }
+        exportManager.loadLastProjectIfExists(projectController)
+        guiState.commandExecutor.execute("gui.left.refresh")
         log(Level.FINE) { "Initialization done" }
         return state
     }

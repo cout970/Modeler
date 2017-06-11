@@ -2,7 +2,6 @@ package com.cout970.modeler.core.project
 
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.core.model.Model
-import com.google.gson.annotations.Expose
 import java.io.Serializable
 import java.util.*
 
@@ -10,13 +9,13 @@ import java.util.*
  * Created by cout970 on 2017/01/04.
  */
 class Project(
-        @Expose val owner: Author,
-        @Expose var name: String
+        val owner: Author,
+        var name: String
 ) : Serializable {
-    @Expose var description: String = ""
-    @Expose var creationTime: Long = Calendar.getInstance().timeInMillis
+    var description: String = ""
+    var creationTime: Long = Calendar.getInstance().timeInMillis
 
-    @Expose var model: IModel = Model()
+    var model: IModel = Model()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

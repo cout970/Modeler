@@ -1,13 +1,11 @@
 package com.cout970.modeler.core.project
 
-import com.google.gson.annotations.Expose
-
 /**
  * Created by cout970 on 2017/01/04.
  */
-class Author(@Expose var name: String = "Anonymous", @Expose var email: String = "") {
+class Author(var name: String = "Anonymous", var email: String = "") {
 
-    @Expose var web: String? = null
+    var web: String? = null
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

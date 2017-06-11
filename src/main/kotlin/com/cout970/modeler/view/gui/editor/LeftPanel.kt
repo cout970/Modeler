@@ -1,6 +1,8 @@
 package com.cout970.modeler.view.gui.editor
 
+import com.cout970.modeler.controller.ProjectController
 import com.cout970.modeler.util.hide
+import com.cout970.modeler.util.show
 import com.cout970.modeler.view.gui.comp.CButton
 import com.cout970.modeler.view.gui.comp.CLabel
 import com.cout970.modeler.view.gui.comp.CPanel
@@ -16,7 +18,7 @@ class LeftPanel : CPanel() {
 
     init {
         addComponent(newProjectPanel)
-        addComponent(createObjectPanel.apply { hide() })
+        addComponent(createObjectPanel)
     }
 
     class CreateObjectPanel : CPanel(width = 190f, height = 100f) {
@@ -44,6 +46,16 @@ class LeftPanel : CPanel() {
             addComponent(projectNameInput)
             addComponent(projectCreateButton)
             addComponent(projectLoadButton)
+        }
+    }
+
+    fun refresh(projectController: ProjectController) {
+        if (projectController.project.creationTime == -1L) {
+            newProjectPanel.show()
+            createObjectPanel.hide()
+        } else {
+            newProjectPanel.hide()
+            createObjectPanel.show()
         }
     }
 }

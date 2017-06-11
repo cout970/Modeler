@@ -6,6 +6,9 @@ import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.controller.ProjectController
+import com.cout970.modeler.core.log.Level
+import com.cout970.modeler.core.log.log
+import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.material.IMaterial
 import com.cout970.modeler.core.project.Project
 import com.cout970.modeler.core.record.HistoricalRecord
@@ -182,5 +185,21 @@ class ExportManager(val resourceLoader: ResourceLoader) {
         }
         set.add((rand * 256).toInt())
         return Color.getHSBColor(rand.toFloat(), 0.5f, 1.0f)
+    }
+
+    fun loadLastProjectIfExists(projectController: ProjectController) {
+        val path = File("./saves/last.pff")
+        if (path.exists()) {
+            try {
+                log(Level.FINE) { "Found last project, loading..." }
+                projectController.loadProject(this, path.path)
+                log(Level.FINE) { "Last project loaded" }
+            } catch (e: Exception) {
+                log(Level.ERROR) { "Unable to load last project" }
+                e.print()
+            }
+        } else {
+            log(Level.FINE) { "No last project found, ignoring" }
+        }
     }
 }

@@ -3,6 +3,8 @@ package com.cout970.modeler.view.gui.popup
 import com.cout970.modeler.controller.ProjectController
 import com.cout970.modeler.core.export.ExportFormat
 import com.cout970.modeler.core.export.ExportManager
+import com.cout970.modeler.core.log.Level
+import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.project.Author
 import com.cout970.modeler.core.project.Project
@@ -54,19 +56,19 @@ private val saveFileExtension: PointerBuffer = MemoryUtil.memAllocPointer(1).app
 
 private var lastSaveFile: String? = null
 
-fun saveProject(projectManager: ProjectController) {
+fun saveProject(projectManager: ProjectController, exportManager: ExportManager) {
     if (lastSaveFile == null) {
-        saveProjectAs(projectManager)
+        saveProjectAs(projectManager, exportManager)
     } else {
-        saveProject(projectManager, projectManager.project)
+        saveProjectDirect(exportManager, projectManager.project, lastSaveFile!!)
     }
 }
 
-fun saveProjectAs(projectManager: ProjectController) {
+fun saveProjectAs(projectManager: ProjectController, exportManager: ExportManager) {
     val file = TinyFileDialogs.tinyfd_saveFileDialog("Save As", "", saveFileExtension, "Project File Format (*.pff)")
     if (file != null) {
         lastSaveFile = if (file.endsWith(".pff")) file else file + ".pff"
-        saveProject(projectManager, projectManager.project)
+        saveProjectDirect(exportManager, projectManager.project, lastSaveFile!!)
     }
 }
 
@@ -100,8 +102,15 @@ fun loadProject(projectManager: ProjectController, exportManager: ExportManager)
     }
 }
 
-private fun saveProject(projectManager: ProjectController, project: Project) {
-//    projectManager.exportManager.saveProject(lastSaveFile!!, project)
+fun saveProjectDirect(exportManager: ExportManager, project: Project, path: String) {
+    try {
+        log(Level.FINE) { "Saving project..." }
+        exportManager.saveProject(path, project)
+        log(Level.FINE) { "Saving done" }
+    } catch (e: Exception) {
+        log(Level.ERROR) { "Unable to save project" }
+        e.print()
+    }
 }
 
 fun showImportModelPopup(projectManager: ProjectController) {

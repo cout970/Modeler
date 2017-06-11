@@ -39,7 +39,7 @@ class EventController : ITickeable, IEventController, IInput {
 
     override fun tick() {
         EventManager.pollEvents()
-        eventQueue.forEach { it() }
+        eventQueue.toList().forEach { it() }
         eventQueue.clear()
         mouse.update()
     }

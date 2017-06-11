@@ -19,9 +19,11 @@ class Listeners : ITickeable {
 
     private lateinit var guiState: GuiState
     lateinit var cameraUpdater: CameraUpdater
+    lateinit var hotKeyHandler: HotKeyHandler
 
     fun initListeners(eventController: EventController, guiState: GuiState) {
         this.guiState = guiState
+        this.hotKeyHandler = HotKeyHandler(guiState.commandExecutor)
         eventController.addListener(EventKeyUpdate::class.java, this::onKeyPress)
         eventController.addListener(EventFrameBufferSize::class.java, guiState.guiUpdater::onFramebufferSizeUpdated)
         eventController.addListener(EventMouseScroll::class.java, this::onMouseScroll)
@@ -47,7 +49,8 @@ class Listeners : ITickeable {
 
     fun onKeyPress(e: EventKeyUpdate): Boolean {
         return if (e.keyState == EnumKeyState.PRESS) {
-            guiState.canvasContainer.layout.onEvent(guiState, e)
+            val ret = guiState.canvasContainer.layout.onEvent(guiState, e)
+            if (ret) true else hotKeyHandler.onPress(e)
         } else false
     }
 

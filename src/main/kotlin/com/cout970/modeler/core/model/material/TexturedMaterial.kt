@@ -6,10 +6,9 @@ import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.core.resource.ResourcePath
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.vec2Of
-import com.google.gson.annotations.Expose
 import javax.swing.JOptionPane
 
-class TexturedMaterial(@Expose override val name: String, val path: ResourcePath) : IMaterial {
+class TexturedMaterial(override val name: String, val path: ResourcePath) : IMaterial {
 
     var texture: Texture? = null
     private var lastModified = -1L
