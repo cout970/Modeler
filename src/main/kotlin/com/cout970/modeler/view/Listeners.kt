@@ -1,9 +1,6 @@
 package com.cout970.modeler.view
 
-import com.cout970.glutilities.event.EnumKeyState
-import com.cout970.glutilities.event.EventFrameBufferSize
-import com.cout970.glutilities.event.EventKeyUpdate
-import com.cout970.glutilities.event.EventMouseScroll
+import com.cout970.glutilities.event.*
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.util.ITickeable
 import com.cout970.modeler.util.absolutePosition
@@ -17,23 +14,24 @@ import com.cout970.modeler.view.render.tool.camera.CameraUpdater
  */
 class Listeners : ITickeable {
 
-    private lateinit var guiState: GuiState
+    private lateinit var gui: Gui
     lateinit var cameraUpdater: CameraUpdater
     lateinit var hotKeyHandler: HotKeyHandler
 
-    fun initListeners(eventController: EventController, guiState: GuiState) {
-        this.guiState = guiState
-        this.hotKeyHandler = HotKeyHandler(guiState.commandExecutor)
+    fun initListeners(eventController: EventController, gui: Gui) {
+        this.gui = gui
+        this.hotKeyHandler = HotKeyHandler(gui.commandExecutor)
         eventController.addListener(EventKeyUpdate::class.java, this::onKeyPress)
-        eventController.addListener(EventFrameBufferSize::class.java, guiState.guiUpdater::onFramebufferSizeUpdated)
+        eventController.addListener(EventFrameBufferSize::class.java, gui.guiUpdater::onFramebufferSizeUpdated)
         eventController.addListener(EventMouseScroll::class.java, this::onMouseScroll)
-        cameraUpdater = CameraUpdater(guiState.canvasContainer, eventController, guiState.timer)
-        guiState.guiUpdater.updateSizes(guiState.windowHandler.window.size)
+        eventController.addListener(EventMouseClick::class.java, this::onMouseClick)
+        cameraUpdater = CameraUpdater(gui.canvasContainer, eventController, gui.timer)
+        gui.guiUpdater.updateSizes(gui.windowHandler.window.size)
     }
 
     fun onMouseScroll(e: EventMouseScroll): Boolean {
-        val mousePos = guiState.input.mouse.getMousePos()
-        guiState.canvasContainer.canvas.forEach { canvas ->
+        val mousePos = gui.input.mouse.getMousePos()
+        gui.canvasContainer.canvas.forEach { canvas ->
             if (mousePos.isInside(canvas.absolutePosition, canvas.size.toIVector())) {
                 canvas.run {
                     val camera = canvas.cameraHandler.camera
@@ -49,12 +47,24 @@ class Listeners : ITickeable {
 
     fun onKeyPress(e: EventKeyUpdate): Boolean {
         return if (e.keyState == EnumKeyState.PRESS) {
-            val ret = guiState.canvasContainer.layout.onEvent(guiState, e)
+            val ret = gui.canvasContainer.layout.onEvent(gui, e)
             if (ret) true else hotKeyHandler.onPress(e)
         } else false
     }
 
+    fun onMouseClick(e: EventMouseClick): Boolean {
+        gui.canvasContainer.canvas.forEach { canvas ->
+            val pos = gui.input.mouse.getMousePos()
+            if (pos.isInside(canvas.absolutePosition, canvas.size.toIVector())) {
+                gui.selector.onClick(e, canvas)
+                return true
+            }
+        }
+        return false
+    }
+
     override fun tick() {
         cameraUpdater.updateCameras()
+        gui.selector.update(gui.canvasContainer, gui.modelTransformer.historicalRecord)
     }
 }

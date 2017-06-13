@@ -69,7 +69,7 @@ class ObjExporter {
                 }
                 quads += objQuad
             }
-            groups.add(ObjGroup(obj.name, "", quads))
+            groups.add(ObjGroup(obj.name, obj.material.name, quads))
         }
 
         val sym = DecimalFormatSymbols().apply { decimalSeparator = '.' }

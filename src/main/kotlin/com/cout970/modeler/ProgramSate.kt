@@ -4,7 +4,7 @@ import com.cout970.modeler.controller.ModelTransformer
 import com.cout970.modeler.controller.ProjectController
 import com.cout970.modeler.core.export.ExportManager
 import com.cout970.modeler.core.resource.ResourceLoader
-import com.cout970.modeler.view.GuiState
+import com.cout970.modeler.view.Gui
 import com.cout970.modeler.view.event.EventController
 import com.cout970.modeler.view.render.control.RenderManager
 import com.cout970.modeler.view.window.Loop
@@ -20,7 +20,7 @@ data class ProgramSate(
         val renderManager: RenderManager,
         val mainLoop: Loop,
         val exportManager: ExportManager,
-        val guiState: GuiState,
+        val gui: Gui,
         val projectController: ProjectController,
         val modelTransformer: ModelTransformer
 )

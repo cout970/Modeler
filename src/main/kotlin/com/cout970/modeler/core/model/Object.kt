@@ -5,6 +5,8 @@ import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.core.model.material.IMaterial
 import com.cout970.modeler.core.model.material.MaterialNone
+import com.cout970.vector.api.IQuaternion
+import com.cout970.vector.api.IVector3
 
 /**
  * Created by cout970 on 2017/05/07.
@@ -21,4 +23,11 @@ data class Object(
     override fun transform(func: (IMesh) -> IMesh): IObject {
         return copy(mesh = func(mesh))
     }
+
+    //TODO
+    override fun translate(translation: IVector3): IObject = this
+
+    override fun rotate(pivot: IVector3, rot: IQuaternion): IObject = this
+
+    override fun scale(center: IVector3, axis: IVector3, offset: Float): IObject = this
 }

@@ -7,7 +7,7 @@ import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.util.ITickeable
-import com.cout970.modeler.view.GuiState
+import com.cout970.modeler.view.Gui
 import com.cout970.modeler.view.event.IInput
 import com.cout970.modeler.view.render.tool.shader.UniversalShader
 import com.cout970.modeler.view.window.WindowHandler
@@ -22,7 +22,7 @@ import java.awt.Color
 class RenderManager : ITickeable {
 
     // @Injected
-    lateinit var guiState: GuiState
+    lateinit var gui: Gui
 
     lateinit var guiRenderer: GuiRenderer
     lateinit var shader: UniversalShader
@@ -34,7 +34,7 @@ class RenderManager : ITickeable {
 
         this.projectController = projectController
         log(Level.FINE) { "[RenderManager] Creating GuiRenderer" }
-        guiRenderer = GuiRenderer(guiState.root, windowHandler.window.id)
+        guiRenderer = GuiRenderer(gui.root, windowHandler.window.id)
         log(Level.FINE) { "[RenderManager] Creating Universal Shader" }
         shader = UniversalShader(resourceLoader)
         log(Level.FINE) { "[RenderManager] Creating CanvasRenderer" }
@@ -49,8 +49,8 @@ class RenderManager : ITickeable {
 
     override fun tick() {
         GLStateMachine.clear()
-        canvasRenderer.render(guiState, projectController)
-        guiRenderer.render(guiState.root)
-        guiState.windowHandler.resetViewport()
+        canvasRenderer.render(gui, projectController)
+        guiRenderer.render(gui.root)
+        gui.windowHandler.resetViewport()
     }
 }

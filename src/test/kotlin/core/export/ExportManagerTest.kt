@@ -43,4 +43,13 @@ class ExportManagerTest {
 
         exportManager.saveProject(savePath, project)
     }
+
+    @Test
+    fun `Convert tcn file to Obj`() {
+        val path = File("src/test/resources/model/conveyor_belt.tcn").toResourcePath()
+        val output = File("./run/output.obj")
+
+        val model = exportManager.tcnImporter.import(path)
+        exportManager.objExporter.export(output.outputStream(), model, "conveyor_belt")
+    }
 }

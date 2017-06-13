@@ -1,12 +1,11 @@
-package com.cout970.modeler.to_redo.newView.selector
+package com.cout970.modeler.controller.selector
 
 import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.to_redo.newView.SceneSpaceContext
-import com.cout970.modeler.to_redo.newView.gui.Scene
 import com.cout970.modeler.util.MatrixUtils
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.util.toJOML
 import com.cout970.modeler.view.event.IInput
+import com.cout970.modeler.view.gui.comp.canvas.Canvas
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.*
 import org.joml.Matrix4d
@@ -16,11 +15,12 @@ import org.joml.Matrix4d
  */
 object TranslationHelper {
 
-    fun getOffset(obj: ITranslatable, scene: Scene, input: IInput, oldContext: SceneSpaceContext,
+    fun getOffset(obj: ITranslatable, canvas: Canvas, input: IInput, oldContext: SceneSpaceContext,
                   newContext: SceneSpaceContext): Float {
 
-        val axis = getTranslationAxis(scene.getMatrixMVP().toJOML(), obj)
-        val viewportSize = scene.size.toIVector()
+        val matrix = canvas.cameraHandler.camera.getMatrix(canvas.size.toIVector()).toJOML()
+        val axis = getTranslationAxis(matrix, obj)
+        val viewportSize = canvas.size.toIVector()
 
         val oldMousePos = ((oldContext.mousePos / viewportSize) * 2 - 1).run { vec2Of(x, -yd) }
         val newMousePos = ((newContext.mousePos / viewportSize) * 2 - 1).run { vec2Of(x, -yd) }
@@ -28,7 +28,7 @@ object TranslationHelper {
         val old = axis.project(oldMousePos * viewportSize)
         val new = axis.project(newMousePos * viewportSize)
 
-        val move = (new - old) * scene.cameraHandler.camera.zoom / Config.cursorArrowsSpeed
+        val move = (new - old) * canvas.cameraHandler.camera.zoom / Config.cursorArrowsSpeed
 
         // Move using increments of 1, 1/4, 1/16
         val offset: Float

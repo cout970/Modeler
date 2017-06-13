@@ -1,7 +1,6 @@
-package com.cout970.modeler.to_redo.newView.selector
+package com.cout970.modeler.controller.selector
 
 import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.to_redo.newView.SceneSpaceContext
 import com.cout970.modeler.util.getClosestPointOnLineSegment
 import com.cout970.modeler.view.event.IInput
 import com.cout970.raytrace.Ray
@@ -51,17 +50,8 @@ object RotationHelper {
     fun projectToPlane(mouseRay: Ray, obj: IRotable): IVector3 {
         val closest = getClosestPointOnLineSegment(mouseRay.start, mouseRay.end, obj.center)
         val dir = (closest - obj.center).normalize()
-        val normal = (obj as CursorPartRotation).normal
+        val normal = obj.normal
 
-        //TODO test and replace if needed
         return (normal cross dir).normalize()
-        /*
-            return when (obj) {
-                    SelectionAxis.Z -> dir.run { Math.atan2(yd, zd) }
-                    SelectionAxis.X -> dir.run { Math.atan2(-xd, zd) }
-                    SelectionAxis.Y -> dir.run { Math.atan2(xd, yd) }
-                    else -> 0.0
-                }
-     */
     }
 }

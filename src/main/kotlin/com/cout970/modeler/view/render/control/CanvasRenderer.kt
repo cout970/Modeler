@@ -4,7 +4,7 @@ import com.cout970.modeler.controller.ProjectController
 import com.cout970.modeler.controller.World
 import com.cout970.modeler.util.absolutePosition
 import com.cout970.modeler.util.toIVector
-import com.cout970.modeler.view.GuiState
+import com.cout970.modeler.view.Gui
 import com.cout970.modeler.view.event.IInput
 import com.cout970.modeler.view.render.tool.RenderContext
 import com.cout970.vector.extensions.vec2Of
@@ -17,7 +17,7 @@ class CanvasRenderer(val renderManager: RenderManager, val input: IInput) {
 
     val modelRenderer = ModelRenderer()
 
-    fun render(state: GuiState, projectController: ProjectController) {
+    fun render(state: Gui, projectController: ProjectController) {
 
         state.canvasContainer.canvas.forEach { canvas ->
             val ctx = RenderContext(
@@ -27,7 +27,8 @@ class CanvasRenderer(val renderManager: RenderManager, val input: IInput) {
                     viewport = canvas.size.toIVector(),
                     windowHandler = state.windowHandler,
                     timer = state.timer,
-                    shader = renderManager.shader
+                    shader = renderManager.shader,
+                    guiState = projectController.guiState
             )
             val viewportPos = vec2Of(
                     canvas.absolutePosition.x,

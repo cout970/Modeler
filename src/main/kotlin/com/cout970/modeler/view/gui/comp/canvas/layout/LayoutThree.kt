@@ -4,7 +4,7 @@ import com.cout970.glutilities.device.Keyboard
 import com.cout970.glutilities.event.EventKeyUpdate
 import com.cout970.modeler.core.config.KeyboardModifiers
 import com.cout970.modeler.util.next
-import com.cout970.modeler.view.GuiState
+import com.cout970.modeler.view.Gui
 import com.cout970.modeler.view.gui.comp.canvas.CanvasContainer
 import org.joml.Vector2f
 
@@ -88,7 +88,7 @@ class LayoutThree(override val container: CanvasContainer) : ICanvasLayout {
         }
     }
 
-    override fun onEvent(guiState: GuiState, e: EventKeyUpdate): Boolean {
+    override fun onEvent(gui: Gui, e: EventKeyUpdate): Boolean {
         if (KeyboardModifiers.ALT.check(e)) {
             when (e.keycode) {
                 Keyboard.KEY_M -> mode = mode.next()
@@ -106,7 +106,7 @@ class LayoutThree(override val container: CanvasContainer) : ICanvasLayout {
                 }
                 else -> return false
             }
-            guiState.guiUpdater.updateSizes(guiState.windowHandler.window.size)
+            gui.guiUpdater.updateSizes(gui.windowHandler.window.size)
             return true
         }
         return false

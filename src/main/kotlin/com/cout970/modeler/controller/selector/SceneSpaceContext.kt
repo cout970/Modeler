@@ -1,4 +1,4 @@
-package com.cout970.modeler.to_redo.newView
+package com.cout970.modeler.controller.selector
 
 import com.cout970.raytrace.Ray
 import com.cout970.vector.api.IVector2

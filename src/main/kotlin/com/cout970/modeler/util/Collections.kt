@@ -52,6 +52,16 @@ fun <T> List<Pair<RayTraceResult, T>>.getClosest(ray: Ray): Pair<RayTraceResult,
     }
 }
 
+fun List<RayTraceResult>.getClosest(ray: Ray): RayTraceResult? {
+    return when {
+        isEmpty() -> null
+        size == 1 -> first()
+        else -> {
+            sortedBy { it.hit.distance(ray.start) }.first()
+        }
+    }
+}
+
 infix fun <A, B> List<A>.join(other: List<B>): List<Pair<A, B>> {
     require(size == other.size) { "Invalid list sizes: this.size = $size, other.size = ${other.size}" }
     return this.mapIndexed { index, element ->

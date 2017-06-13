@@ -1,4 +1,4 @@
-package com.cout970.modeler.to_redo.newView.selector
+package com.cout970.modeler.controller.selector
 
 import com.cout970.modeler.core.config.Config
 import com.cout970.vector.api.IVector2

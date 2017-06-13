@@ -18,9 +18,9 @@ class CommandExecutor {
     fun execute(command: String) {
         programState.apply {
             when (command) {
-                "gui.left.refresh" -> guiState.editorPanel.leftPanel.refresh(projectController)
+                "gui.left.refresh" -> gui.editorPanel.leftPanel.refresh(projectController)
                 "project.new" -> {
-                    val panel = guiState.editorPanel.leftPanel
+                    val panel = gui.editorPanel.leftPanel
                     val res = newProject(projectController, panel.newProjectPanel.projectNameInput.textState.text)
                     if (res) {
                         saveProjectDirect(exportManager, projectController.project, "./saves/last.pff")

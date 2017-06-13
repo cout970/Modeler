@@ -1,4 +1,4 @@
-package com.cout970.modeler.to_redo.newView
+package com.cout970.modeler.controller.selector
 
 enum class TransformationMode {
     TRANSLATION, ROTATION, SCALE

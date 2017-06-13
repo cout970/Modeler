@@ -135,4 +135,11 @@ data class ObjectCube(
                 vec2Of(offsetX + length + width + length, offsetY + length + height) * texelSize
         )
     }
+
+    //TODO
+    override fun translate(translation: IVector3): IObject = this
+
+    override fun rotate(pivot: IVector3, rot: IQuaternion): IObject = this
+
+    override fun scale(center: IVector3, axis: IVector3, offset: Float): IObject = this
 }

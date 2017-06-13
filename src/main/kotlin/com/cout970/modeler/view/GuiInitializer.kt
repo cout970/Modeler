@@ -2,6 +2,9 @@ package com.cout970.modeler.view
 
 import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.controller.CommandExecutor
+import com.cout970.modeler.controller.ModelTransformer
+import com.cout970.modeler.controller.ProjectController
+import com.cout970.modeler.controller.selector.Selector
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.resource.ResourceLoader
@@ -21,10 +24,12 @@ class GuiInitializer(
         val windowHandler: WindowHandler,
         val renderManager: RenderManager,
         val resourceLoader: ResourceLoader,
-        val timer: Timer
+        val timer: Timer,
+        val projectController: ProjectController,
+        val modelTransformer: ModelTransformer
 ) {
 
-    fun init(): GuiState {
+    fun init(): Gui {
         log(Level.FINE) { "[GuiInitializer] Initializing GUI" }
         log(Level.FINE) { "[GuiInitializer] Creating CommandExecutor" }
         val commandExecutor = CommandExecutor()
@@ -39,6 +44,8 @@ class GuiInitializer(
         val canvasContainer = CanvasContainer(editorPanel.centerPanel.canvasPanel)
         editorPanel.centerPanel.canvasContainer = canvasContainer
 
+        log(Level.FINE) { "[GuiInitializer] Creating Selector" }
+        val selector = Selector(projectController, eventController)
         log(Level.FINE) { "[GuiInitializer] Creating Listeners" }
         val listeners = Listeners()
         log(Level.FINE) { "[GuiInitializer] Binding buttons" }
@@ -48,12 +55,13 @@ class GuiInitializer(
         canvasContainer.newCanvas()
         log(Level.FINE) { "[GuiInitializer] GUI Initialization done" }
 
-        return GuiState(
+        return Gui(
                 root, guiUpdater, canvasContainer,
-                commandExecutor, listeners, windowHandler, timer, eventController, editorPanel
+                commandExecutor, listeners, windowHandler, timer, eventController,
+                editorPanel, projectController, selector, modelTransformer
         ).also {
-            renderManager.guiState = it
-            guiUpdater.guiState = it
+            renderManager.gui = it
+            guiUpdater.gui = it
         }
     }
 }

@@ -13,6 +13,7 @@ class ProjectController {
     var project: Project = Project(Author(), "Unnamed").apply { creationTime = -1L }
         private set
 
+    val guiState = GuiState()
     var world: World = World(emptyList())
 
     fun newProject(name: String, author: Author) {
@@ -28,7 +29,6 @@ class ProjectController {
         project = exportManager.loadProject(path)
         world = World(listOf(project.model))
     }
-
 
     fun updateModel(model: IModel) {
         project.model = model

@@ -3,7 +3,7 @@ package com.cout970.modeler.view.gui
 import com.cout970.glutilities.event.EventFrameBufferSize
 import com.cout970.modeler.util.size
 import com.cout970.modeler.util.toJoml2f
-import com.cout970.modeler.view.GuiState
+import com.cout970.modeler.view.Gui
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.vec2Of
 
@@ -13,7 +13,7 @@ import com.cout970.vector.extensions.vec2Of
 
 class GuiUpdater {
 
-    lateinit var guiState: GuiState
+    lateinit var gui: Gui
 
     fun onFramebufferSizeUpdated(event: EventFrameBufferSize): Boolean {
         if (event.height == 0 || event.width == 0) return false
@@ -22,10 +22,10 @@ class GuiUpdater {
     }
 
     fun updateSizes(newSize: IVector2) {
-        guiState.root.apply {
+        gui.root.apply {
             size = newSize.toJoml2f()
             mainPanel?.updateSizes(newSize)
         }
-        guiState.canvasContainer.layout.updateCanvas()
+        gui.canvasContainer.layout.updateCanvas()
     }
 }

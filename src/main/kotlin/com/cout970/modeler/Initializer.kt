@@ -52,7 +52,8 @@ class Initializer {
         val renderManager = RenderManager()
 
         log(Level.FINE) { "Creating GuiInitializer" }
-        val guiState = GuiInitializer(eventController, windowHandler, renderManager, resourceLoader, timer).init()
+        val guiState = GuiInitializer(eventController, windowHandler, renderManager, resourceLoader, timer,
+                projectController, modelTransformer).init()
 
         log(Level.FINE) { "Creating Loop" }
         val mainLoop = Loop(listOf(renderManager, guiState.listeners, eventController, windowHandler, modelTransformer),
