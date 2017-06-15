@@ -46,40 +46,7 @@ data class ObjectCube(
         return Object(name, func(mesh), transformation, material)
     }
 
-//    fun Quad.setTexture0(uv0: IVector2, uv1: IVector2): Quad {
-//        return Quad(
-//                a.copy(tex = vec2Of(uv1.x, uv0.y)),
-//                b.copy(tex = vec2Of(uv0.x, uv0.y)),
-//                c.copy(tex = vec2Of(uv0.x, uv1.y)),
-//                d.copy(tex = vec2Of(uv1.x, uv1.y))
-//        )
-//    }
-//
-//    fun Quad.setTexture1(uv0: IVector2, uv1: IVector2): Quad {
-//        return Quad(
-//                a.copy(tex = vec2Of(uv1.x, uv1.y)),
-//                b.copy(tex = vec2Of(uv1.x, uv0.y)),
-//                c.copy(tex = vec2Of(uv0.x, uv0.y)),
-//                d.copy(tex = vec2Of(uv0.x, uv1.y))
-//        )
-//    }
-
-//    fun ElementLeaf.setUVFromCuboid(size: IVector3, offset: IVector2, textureSize: IVector2): ElementLeaf {
-//        val uvs = generateUVs(size, offset, textureSize)
-//        return Meshes.quadsToMesh(getQuads().mapIndexed { index, quad ->
-//            val flag = when (index) {
-//                0 -> false; 1 -> true
-//                2 -> true; 3 -> false
-//                4 -> false; 5 -> true
-//                else -> false
-//            }
-//            if (flag) {
-//                quad.setTexture0(uvs[index * 2], uvs[index * 2 + 1])
-//            } else {
-//                quad.setTexture1(uvs[index * 2], uvs[index * 2 + 1])
-//            }
-//        })
-//    }
+    override fun getCenter(): IVector3 = pos + size * 0.5
 
     fun updateTextures(mesh: IMesh, size: IVector3, offset: IVector2, textureSize: IVector2): IMesh {
         val uvs = generateUVs(size, offset, textureSize)
@@ -137,7 +104,7 @@ data class ObjectCube(
     }
 
     //TODO
-    override fun translate(translation: IVector3): IObject = this
+    override fun translate(translation: IVector3): IObject = copy(pos = pos + translation)
 
     override fun rotate(pivot: IVector3, rot: IQuaternion): IObject = this
 

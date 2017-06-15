@@ -1,6 +1,6 @@
 package core.export
 
-import com.cout970.modeler.core.export.TblImporter
+import com.cout970.modeler.core.export.ModelImporters.tblImporter
 import com.cout970.modeler.core.resource.toResourcePath
 import org.junit.Test
 import java.io.File
@@ -9,8 +9,6 @@ import java.io.File
  * Created by cout970 on 2017/06/08.
  */
 class TblHandler {
-
-    val tblImporter = TblImporter()
 
     @Test
     fun `Try parse an gear model`() {

@@ -1,6 +1,7 @@
 package com.cout970.modeler.controller
 
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.controller.selector.Cursor
 import com.cout970.modeler.core.export.ExportManager
 import com.cout970.modeler.core.project.Author
 import com.cout970.modeler.core.project.Project
@@ -14,11 +15,11 @@ class ProjectController {
         private set
 
     val guiState = GuiState()
-    var world: World = World(emptyList())
+    var world: World = World(emptyList(), Cursor(this))
 
     fun newProject(name: String, author: Author) {
         project = Project(author, name)
-        world = World(listOf(project.model))
+        world = World(listOf(project.model), Cursor(this))
     }
 
     fun saveProject(exportManager: ExportManager, path: String) {
@@ -27,11 +28,11 @@ class ProjectController {
 
     fun loadProject(exportManager: ExportManager, path: String) {
         project = exportManager.loadProject(path)
-        world = World(listOf(project.model))
+        world = World(listOf(project.model), Cursor(this))
     }
 
     fun updateModel(model: IModel) {
         project.model = model
-        world = World(listOf(model))
+        world = World(listOf(model), Cursor(this))
     }
 }

@@ -12,7 +12,7 @@ import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.view.GuiInitializer
 import com.cout970.modeler.view.event.EventController
-import com.cout970.modeler.view.render.control.RenderManager
+import com.cout970.modeler.view.render.RenderManager
 import com.cout970.modeler.view.window.Loop
 import com.cout970.modeler.view.window.WindowHandler
 import java.io.File
@@ -45,18 +45,22 @@ class Initializer {
         log(Level.FINE) { "Creating ExportManager" }
         val exportManager = ExportManager(resourceLoader)
 
-//        log(Level.FINE) { "Creating GuiResources" }
-//        guiResources = GuiResources(resourceLoader)
-
         log(Level.FINE) { "Creating RenderManager" }
         val renderManager = RenderManager()
 
         log(Level.FINE) { "Creating GuiInitializer" }
-        val guiState = GuiInitializer(eventController, windowHandler, renderManager, resourceLoader, timer,
-                projectController, modelTransformer).init()
+        val gui = GuiInitializer(
+                eventController,
+                windowHandler,
+                renderManager,
+                resourceLoader,
+                timer,
+                projectController,
+                modelTransformer
+        ).init()
 
         log(Level.FINE) { "Creating Loop" }
-        val mainLoop = Loop(listOf(renderManager, guiState.listeners, eventController, windowHandler, modelTransformer),
+        val mainLoop = Loop(listOf(renderManager, gui.listeners, eventController, windowHandler, modelTransformer),
                 timer, windowHandler::shouldClose)
 
         parseArgs(programArguments, exportManager, projectController)
@@ -68,7 +72,7 @@ class Initializer {
                 renderManager,
                 mainLoop,
                 exportManager,
-                guiState,
+                gui,
                 projectController,
                 modelTransformer
         )
@@ -83,12 +87,14 @@ class Initializer {
         log(Level.FINE) { "Initializing renderers" }
         renderManager.initOpenGl(resourceLoader, windowHandler, eventController, projectController)
         log(Level.FINE) { "Registering Input event listeners" }
-        guiState.listeners.initListeners(eventController, guiState)
-        guiState.commandExecutor.programState = state
+        gui.listeners.initListeners(eventController, gui)
+        gui.commandExecutor.programState = state
+
+        gui.resources.reload(resourceLoader)
 
         log(Level.FINE) { "Searching for last project" }
         exportManager.loadLastProjectIfExists(projectController)
-        guiState.commandExecutor.execute("gui.left.refresh")
+        gui.commandExecutor.execute("gui.left.refresh")
         log(Level.FINE) { "Initialization done" }
         return state
     }

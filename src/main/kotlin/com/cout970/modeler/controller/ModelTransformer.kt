@@ -43,7 +43,7 @@ class ModelTransformer(val projectController: ProjectController) : ITickeable {
     fun addCubeTemplate(size: IVector3 = vec3Of(8, 8, 8)) {
         val obj = ObjectCube(
                 name = "Shape${model.objects.size}",
-                pos = Vector3.ORIGIN,
+                pos = vec3Of(8),
                 rotation = Quaternion.IDENTITY,
                 size = size,
                 material = MaterialNone

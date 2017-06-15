@@ -1,6 +1,6 @@
 package core.export
 
-import com.cout970.modeler.core.export.ObjImporter
+import com.cout970.modeler.core.export.ModelImporters.objImporter
 import com.cout970.modeler.core.resource.toResourcePath
 import org.junit.Assert.assertEquals
 import org.junit.Assert.fail
@@ -11,8 +11,6 @@ import java.io.File
  * Created by cout970 on 2017/06/04.
  */
 class ObjHandler {
-
-    val objImporter = ObjImporter()
 
     @Test
     fun `Try to import a cube model`() {

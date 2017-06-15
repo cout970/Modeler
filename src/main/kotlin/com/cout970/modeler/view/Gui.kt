@@ -28,5 +28,6 @@ data class Gui(
         val editorPanel: EditorPanel,
         val projectController: ProjectController,
         val selector: Selector,
-        val modelTransformer: ModelTransformer
+        val modelTransformer: ModelTransformer,
+        val resources: GuiResources
 )

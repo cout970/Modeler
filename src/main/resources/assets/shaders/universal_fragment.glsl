@@ -39,6 +39,8 @@ uniform float reflectivity = 0f;
 // Ambient light
 uniform float ambient = 0.1;
 
+uniform vec3 globalColor = vec3(1.0, 1.0, 1.0);
+
 vec3 getLight(vec3 color, vec3 lcolor, vec3 toLight, vec3 normal, vec3 toCamera);
 
 void main(void){
@@ -49,9 +51,8 @@ void main(void){
         out_color = vec4(1.0,1.0,1.0,1.0);
     }
 
-
     if(useColor) {
-        out_color = vec4(out_color.xyz * pass_color, out_color.w);
+        out_color = vec4(out_color.xyz * pass_color * globalColor, out_color.w);
     }
 
     if(useLight){

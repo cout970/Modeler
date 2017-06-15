@@ -1,4 +1,4 @@
-package com.cout970.modeler.view.render.control
+package com.cout970.modeler.view.render
 
 import com.cout970.glutilities.structure.GLStateMachine
 import com.cout970.modeler.controller.ProjectController
@@ -49,7 +49,7 @@ class RenderManager : ITickeable {
 
     override fun tick() {
         GLStateMachine.clear()
-        canvasRenderer.render(gui, projectController)
+        canvasRenderer.render(gui)
         guiRenderer.render(gui.root)
         gui.windowHandler.resetViewport()
     }

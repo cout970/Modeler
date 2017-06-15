@@ -17,8 +17,8 @@ class Canvas : CPanel() {
     val cameraHandler = CameraHandler()
 
     val lights: List<Light> = listOf(
-            Light(vec3Of(500, 1000, 750), Vector3.ONE),
-            Light(vec3Of(-500, -1000, -750), Vector3.ONE)
+            Light(vec3Of(250, 500, 400), Vector3.ONE),
+            Light(vec3Of(-250, -500, -400), Vector3.ONE)
     )
 
     init {

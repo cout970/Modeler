@@ -6,6 +6,9 @@ import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.controller.ProjectController
+import com.cout970.modeler.core.export.ModelImporters.objImporter
+import com.cout970.modeler.core.export.ModelImporters.tblImporter
+import com.cout970.modeler.core.export.ModelImporters.tcnImporter
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
@@ -30,14 +33,6 @@ import java.util.zip.ZipOutputStream
  * Created by cout970 on 2017/01/02.
  */
 class ExportManager(val resourceLoader: ResourceLoader) {
-
-    //TODO
-    val objImporter = ObjImporter()
-    val objExporter = ObjExporter()
-    val tcnImporter = TcnImporter()
-    val jsonImporter = JsonImporter()
-    val tblImporter = TblImporter()
-
     val gson = GsonBuilder()
             .setExclusionStrategies(ProjectExclusionStrategy())
             .setPrettyPrinting()
@@ -86,11 +81,11 @@ class ExportManager(val resourceLoader: ResourceLoader) {
                 })
             }
         //TODO
-//            ImportFormat.JSON -> {
+            ImportFormat.JSON -> {
 //                historyRecord.doAction(ActionImportModel(projectController, resourceLoader, prop.path) {
 //                    jsonImporter.import(file.toResourcePath())
 //                })
-//            }
+            }
             ImportFormat.TBL -> {
                 historyRecord.doAction(ActionImportModel(projectController, resourceLoader, prop.path) {
                     tblImporter.import(file.toResourcePath())

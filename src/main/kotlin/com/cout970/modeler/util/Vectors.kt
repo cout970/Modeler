@@ -179,5 +179,9 @@ fun IVector3.getDominantAxis(): Int {
     }
 }
 
-
 fun Boolean.toInt() = if (this) 1 else 0
+
+infix fun IVector3.rotationTo(other: IVector3): IQuaternion {
+    val q = Quaterniond().rotationTo(this.toJoml3d(), other.toJoml3d())
+    return q.toIQuaternion()
+}

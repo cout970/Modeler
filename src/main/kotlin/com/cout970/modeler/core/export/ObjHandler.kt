@@ -248,7 +248,7 @@ class ObjImporter {
                     log(Level.ERROR) { "Error reading the material library: ${e.message}" }
                 }
             } else if (!line.startsWith(sComment) && !line.isEmpty()) {
-                log(Level.NORMAL) { "Ignoring line: '$line'" }
+                // Ignoring line
             }
         }
         if (noGroup.quads.isNotEmpty()) {
@@ -284,7 +284,7 @@ class ObjImporter {
                     e.print()
                 }
             } else if (!line.startsWith(sComment) && !line.isEmpty()) {
-                log(Level.NORMAL) { "Ignoring line: '$line'" }
+                // Ignoring line
             }
         }
         material?.let { materialList += it }

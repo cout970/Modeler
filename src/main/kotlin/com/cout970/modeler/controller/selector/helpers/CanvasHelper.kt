@@ -1,5 +1,6 @@
-package com.cout970.modeler.controller.selector
+package com.cout970.modeler.controller.selector.helpers
 
+import com.cout970.modeler.controller.selector.SceneSpaceContext
 import com.cout970.modeler.util.absolutePosition
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.util.toJOML

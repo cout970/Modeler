@@ -2,6 +2,7 @@ package com.cout970.modeler.view.render.tool
 
 import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.controller.GuiState
+import com.cout970.modeler.view.GuiResources
 import com.cout970.modeler.view.event.IInput
 import com.cout970.modeler.view.render.tool.camera.Camera
 import com.cout970.modeler.view.render.tool.shader.UniversalShader
@@ -19,5 +20,7 @@ data class RenderContext(
         val input: IInput,
         val lights: List<Light>,
         val shader: UniversalShader,
-        val guiState: GuiState
+        val guiState: GuiState,
+        val buffer: UniversalShader.Buffer,
+        val resources: GuiResources
 )

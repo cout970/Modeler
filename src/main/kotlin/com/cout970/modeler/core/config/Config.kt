@@ -18,7 +18,7 @@ object Config {
     var cameraScrollSpeed: Float = 10f
     var logLevel: Level = Level.FINE
     var cursorArrowsDispersion: Float = 2f
-    var cursorArrowsScale: Float = 1.0f
+    var cursorArrowsScale: Float = 0.5f
     var cursorArrowsSpeed: Float = 900f
     var cursorRotationSpeed: Float = 1f
     var selectionThickness: Float = 0.2f

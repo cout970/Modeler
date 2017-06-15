@@ -3,17 +3,16 @@ package com.cout970.modeler.controller.selector
 import com.cout970.glutilities.device.Mouse
 import com.cout970.glutilities.event.EnumKeyState
 import com.cout970.glutilities.event.EventMouseClick
-import com.cout970.modeler.controller.GuiState
 import com.cout970.modeler.controller.ProjectController
-import com.cout970.modeler.controller.World
-import com.cout970.modeler.controller.selector.CanvasHelper.getMouseSpaceContext
+import com.cout970.modeler.controller.selector.helpers.CanvasHelper
+import com.cout970.modeler.controller.selector.helpers.CanvasHelper.getMouseSpaceContext
+import com.cout970.modeler.controller.selector.helpers.RotationHelper
+import com.cout970.modeler.controller.selector.helpers.ScaleHelper
+import com.cout970.modeler.controller.selector.helpers.TranslationHelper
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.record.HistoricalRecord
 import com.cout970.modeler.core.record.action.ActionModifyModelShape
-import com.cout970.modeler.util.absolutePosition
-import com.cout970.modeler.util.getClosest
-import com.cout970.modeler.util.isInside
-import com.cout970.modeler.util.toIVector
+import com.cout970.modeler.util.*
 import com.cout970.modeler.view.event.IInput
 import com.cout970.modeler.view.gui.comp.canvas.Canvas
 import com.cout970.modeler.view.gui.comp.canvas.CanvasContainer
@@ -44,7 +43,10 @@ class Selector(val projectController: ProjectController, val input: IInput) {
             if (state.holdingSelection == null) { // no selection
 
                 // update hoverObject
-                val objects = projectController.world.getSelectableObjects(state).filter { !it.isPersistent }
+                val cursor = projectController.world.cursor
+                val camera = activeScene.cameraHandler.camera
+                val viewport = activeScene.size.toIVector()
+                val objects = cursor.getSelectableParts(state, camera, viewport)
                 state.hoveredObject = getHoveredObject(context, objects)
 
                 // if clicked add object to selection
@@ -54,18 +56,19 @@ class Selector(val projectController: ProjectController, val input: IInput) {
                 }
             } else { // has selection
                 if (!click) { // end selection
-
                     // apply changes
                     state.tmpModel?.let { model ->
                         historyRecord.doAction(ActionModifyModelShape(projectController, model))
                     }
                     // reset selection
+                    state.tmpModel = null
                     state.holdingSelection = null
                 }
             }
         }
         val mousePos = input.mouse.getMousePos()
-        if (!input.mouse.isButtonPressed(Mouse.BUTTON_LEFT)) {
+        val click = input.mouse.isButtonPressed(Mouse.BUTTON_LEFT)
+        if (!click) {
             mousePress = false
             lastMousePos = null
             canvasContainer.canvas.forEach { canvas ->
@@ -74,28 +77,46 @@ class Selector(val projectController: ProjectController, val input: IInput) {
                 }
             }
         } else {
-            lastMousePos?.let { onDrag(EventMouseDrag(it, mousePos)) }
+            if (lastMousePos == null && click) {
+                lastMousePos = mousePos
+            } else {
+                lastMousePos?.let { onDrag(EventMouseDrag(it, mousePos)) }
+            }
         }
     }
 
     fun onClick(e: EventMouseClick, canvas: Canvas) {
+        val state = projectController.guiState
+        if (state.holdingSelection != null || state.hoveredObject != null) return
+
         val click = Config.keyBindings.selectModelControls.check(e)
         if (click && e.keyState == EnumKeyState.PRESS) {
-            val state = projectController.guiState
             val pos = input.mouse.getMousePos()
             val context = CanvasHelper.getMouseSpaceContext(canvas, pos)
-            val obj = projectController.world.getSelectableObjects(state)
-                    .filter { it.isPersistent }
-                    .find { it.hitbox.rayTrace(context.mouseRay) != null }
-            state.persistentSelection = obj
-            println(obj)
+            val obj = projectController.world.getModelParts()
+                    .find { it.second.rayTrace(context.mouseRay) != null }
+            state.selectionHandler.onSelect(obj?.first, state)
+
+            val selection = state.selectionHandler.selection
+            if (selection.isNotEmpty()) {
+                val model = projectController.world.models.firstOrNull() ?: return
+                val newCenter = selection.map { model.objects[it.objectIndex] }
+                        .map { it.getCenter() }
+                        .middle()
+
+                projectController.world.cursor.center = newCenter
+            }
         }
     }
 
     fun onDrag(event: EventMouseDrag) {
+
         activeCanvas?.let { activeScene ->
             val state = projectController.guiState
+            val sel = state.selectionHandler
+
             state.holdingSelection?.let { selectedObject ->
+                val cursor = projectController.world.cursor
 
                 if (selectedObject is ITranslatable && state.transformationMode == TransformationMode.TRANSLATION) {
                     val context = CanvasHelper.getContext(activeScene, event.oldPos to event.newPos)
@@ -107,9 +128,17 @@ class Selector(val projectController: ProjectController, val input: IInput) {
                             oldContext = context.second
                     )
 
+
                     if (rotationLastOffset != offset) {
                         rotationLastOffset = offset
-                        state.tmpModel = selectedObject.applyTranslation(offset, projectController.project.model)
+                        state.tmpModel = selectedObject.applyTranslation(offset, sel, projectController.project.model)
+                        val model = projectController.project.model
+                        val selection = state.selectionHandler.selection
+
+                        val newCenter = selection.map { model.objects[it.objectIndex] }
+                                .map { it.getCenter() }
+                                .middle()
+                        cursor.center = newCenter
                     }
                 } else {
                     rotationLastOffset = 0f
@@ -126,7 +155,7 @@ class Selector(val projectController: ProjectController, val input: IInput) {
 
                     if (translationLastOffset != offset) {
                         translationLastOffset = offset
-                        state.tmpModel = selectedObject.applyRotation(offset, projectController.project.model)
+                        state.tmpModel = selectedObject.applyRotation(offset, sel, projectController.project.model)
                     }
                 } else {
                     translationLastOffset = 0f
@@ -144,17 +173,13 @@ class Selector(val projectController: ProjectController, val input: IInput) {
 
                     if (scaleLastOffset != offset) {
                         scaleLastOffset = offset
-                        state.tmpModel = selectedObject.applyScale(offset, projectController.project.model)
+                        state.tmpModel = selectedObject.applyScale(offset, sel, projectController.project.model)
                     }
                 } else {
                     scaleLastOffset = 0f
                 }
             }
         }
-    }
-
-    private fun updateHovered(target: GuiState, context: SceneSpaceContext, world: World) {
-        target.hoveredObject = getHoveredObject(context, world.getSelectableObjects(target))
     }
 
     private fun getHoveredObject(ctx: SceneSpaceContext, objs: List<ISelectable>): ISelectable? {

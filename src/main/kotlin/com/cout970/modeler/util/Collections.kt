@@ -2,7 +2,11 @@ package com.cout970.modeler.util
 
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
+import com.cout970.vector.api.IVector3
+import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.distance
+import com.cout970.vector.extensions.div
+import com.cout970.vector.extensions.plus
 
 /**
  * Created by cout970 on 2016/12/09.
@@ -74,4 +78,12 @@ infix fun IntArray.join(other: IntArray): List<Pair<Int, Int>> {
     return this.mapIndexed { index, element ->
         element to other[index]
     }
+}
+
+fun List<IVector3>.middle(): IVector3 {
+    var acum = Vector3.ORIGIN
+    forEach {
+        acum += it
+    }
+    return acum / size
 }

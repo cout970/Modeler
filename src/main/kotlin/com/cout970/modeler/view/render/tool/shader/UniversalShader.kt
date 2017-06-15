@@ -11,6 +11,7 @@ import com.cout970.modeler.util.FloatArrayList
 import com.cout970.modeler.view.render.tool.RenderContext
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
+import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.xf
 import com.cout970.vector.extensions.yf
 import com.cout970.vector.extensions.zf
@@ -38,8 +39,7 @@ class UniversalShader(resourceLoader: ResourceLoader) : Consumer<VAO> {
     val shineDamper: UniformVariable
     val reflectivity: UniformVariable
     val ambient: UniformVariable
-
-    val buffer = Buffer()
+    val globalColor: UniformVariable
 
     init {
         program = ShaderBuilder.build {
@@ -65,9 +65,10 @@ class UniversalShader(resourceLoader: ResourceLoader) : Consumer<VAO> {
         shineDamper = program.createUniformVariable("shineDamper")
         reflectivity = program.createUniformVariable("reflectivity")
         ambient = program.createUniformVariable("ambient")
+        globalColor = program.createUniformVariable("globalColor")
     }
 
-    fun useShader(ctx: RenderContext, func: (buffer: Buffer, shader: UniversalShader) -> Unit) {
+    fun useShader(ctx: RenderContext, func: () -> Unit) {
         program.start()
         matrixVP.setMatrix4(ctx.camera.getMatrix(ctx.viewport))
         matrixM.setMatrix4(Matrix4.IDENTITY)
@@ -78,10 +79,11 @@ class UniversalShader(resourceLoader: ResourceLoader) : Consumer<VAO> {
             lightPos.setVector3(index, pos)
             lightColor.setVector3(index, color)
         }
-        useTexture.setBoolean(false)
-        useColor.setBoolean(true)
+        useTexture.setInt(0)
+        useColor.setInt(1)
         useLight.setInt(0)
-        func(buffer, this)
+        globalColor.setVector3(Vector3.ONE)
+        func()
         program.stop()
     }
 
@@ -176,10 +178,11 @@ class UniversalShader(resourceLoader: ResourceLoader) : Consumer<VAO> {
             norm.add(vnorm.zf)
         }
 
-        fun build(mode: Int, func: Buffer.() -> Unit): VAO {
+        fun build(mode: Int, longUse: Boolean = true, func: Buffer.() -> Unit): VAO {
             var vao: VAO? = null
             pos.clear()
             tex.clear()
+            norm.clear()
             col.clear()
             vertex = 0
             this.mode = mode
@@ -187,7 +190,7 @@ class UniversalShader(resourceLoader: ResourceLoader) : Consumer<VAO> {
             regions.add(Pair(this.mode, vertex))
 
             pos.useAsBuffer(tex, norm, col) { pos, tex, norm, col ->
-                val builder = VaoBuilder(true)
+                val builder = VaoBuilder(longUse)
                 builder.bindAttrib(0, pos, 3)
                 builder.bindAttrib(1, tex, 2)
                 builder.bindAttrib(2, norm, 3)

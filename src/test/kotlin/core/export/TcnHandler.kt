@@ -1,6 +1,6 @@
 package core.export
 
-import com.cout970.modeler.core.export.TcnImporter
+import com.cout970.modeler.core.export.ModelImporters.tcnImporter
 import com.cout970.modeler.core.resource.toResourcePath
 import org.junit.Assert
 import org.junit.Test
@@ -11,8 +11,6 @@ import java.io.File
  */
 
 class TcnHandler {
-
-    val tcnImporter = TcnImporter()
 
     @Test
     fun `Try importing a cube mode`() {

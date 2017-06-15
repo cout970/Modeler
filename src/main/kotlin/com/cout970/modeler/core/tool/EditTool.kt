@@ -1,7 +1,7 @@
 package com.cout970.modeler.core.tool
 
 import com.cout970.modeler.api.model.IModel
-import com.cout970.modeler.core.model.selection.PosSelection
+import com.cout970.modeler.api.model.selection.IObjectSelection
 import com.cout970.modeler.core.model.transformObjects
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
@@ -17,15 +17,16 @@ object EditTool {
     //
     // TRANSFORM
     //
-    fun translate(source: IModel, selection: List<PosSelection>, translation: IVector3): IModel {
+    fun translate(source: IModel, selection: List<IObjectSelection>, translation: IVector3): IModel {
         return source.transformObjects(selection) { it.translate(translation) }
     }
 
-    fun rotate(source: IModel, selection: List<PosSelection>, pivot: IVector3, rotation: IQuaternion): IModel {
+    fun rotate(source: IModel, selection: List<IObjectSelection>, pivot: IVector3, rotation: IQuaternion): IModel {
         return source.transformObjects(selection) { it.rotate(pivot, rotation) }
     }
 
-    fun scale(source: IModel, selection: List<PosSelection>, center: IVector3, axis: IVector3, offset: Float): IModel {
+    fun scale(source: IModel, selection: List<IObjectSelection>, center: IVector3, axis: IVector3,
+              offset: Float): IModel {
         return source.transformObjects(selection) { it.scale(center, axis, offset) }
     }
 

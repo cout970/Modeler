@@ -1,6 +1,9 @@
 package core.export
 
 import com.cout970.modeler.core.export.ExportManager
+import com.cout970.modeler.core.export.ModelImporters.objExporter
+import com.cout970.modeler.core.export.ModelImporters.objImporter
+import com.cout970.modeler.core.export.ModelImporters.tcnImporter
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.Object
 import com.cout970.modeler.core.project.Author
@@ -37,7 +40,7 @@ class ExportManagerTest {
         val path = File("src/test/resources/model/arrows.obj").toResourcePath()
         val savePath = "./run/test_obj_to_pff.pff"
 
-        val mesh = exportManager.objImporter.importAsMesh(path, true)
+        val mesh = objImporter.importAsMesh(path, true)
         val project = Project(Author(), "")
         project.model = Model(listOf(Object("Shape 1", mesh)))
 
@@ -49,7 +52,7 @@ class ExportManagerTest {
         val path = File("src/test/resources/model/conveyor_belt.tcn").toResourcePath()
         val output = File("./run/output.obj")
 
-        val model = exportManager.tcnImporter.import(path)
-        exportManager.objExporter.export(output.outputStream(), model, "conveyor_belt")
+        val model = tcnImporter.import(path)
+        objExporter.export(output.outputStream(), model, "conveyor_belt")
     }
 }

@@ -1,5 +1,7 @@
-package com.cout970.modeler.controller.selector
+package com.cout970.modeler.controller.selector.helpers
 
+import com.cout970.modeler.controller.selector.IScalable
+import com.cout970.modeler.controller.selector.SceneSpaceContext
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.util.MatrixUtils
 import com.cout970.modeler.util.toIVector
@@ -13,13 +15,13 @@ import org.joml.Matrix4d
 /**
  * Created by cout970 on 2017/04/08.
  */
-object TranslationHelper {
+object ScaleHelper {
 
-    fun getOffset(obj: ITranslatable, canvas: Canvas, input: IInput, oldContext: SceneSpaceContext,
+    fun getOffset(obj: IScalable, canvas: Canvas, input: IInput, oldContext: SceneSpaceContext,
                   newContext: SceneSpaceContext): Float {
 
         val matrix = canvas.cameraHandler.camera.getMatrix(canvas.size.toIVector()).toJOML()
-        val axis = getTranslationAxis(matrix, obj)
+        val axis = getScaleAxis(matrix, obj)
         val viewportSize = canvas.size.toIVector()
 
         val oldMousePos = ((oldContext.mousePos / viewportSize) * 2 - 1).run { vec2Of(x, -yd) }
@@ -43,13 +45,13 @@ object TranslationHelper {
         return offset
     }
 
-    fun getTranslationAxis(matrix: Matrix4d, obj: ITranslatable): IVector2 {
+    fun getScaleAxis(matrix: Matrix4d, obj: IScalable): IVector2 {
         val diff = projectAxis(matrix, obj)
 
         return diff.second - diff.first
     }
 
-    fun projectAxis(matrix: Matrix4d, obj: ITranslatable): Pair<IVector2, IVector2> {
-        return MatrixUtils.projectAxis(matrix, obj.translationAxis)
+    fun projectAxis(matrix: Matrix4d, obj: IScalable): Pair<IVector2, IVector2> {
+        return MatrixUtils.projectAxis(matrix, obj.scaleAxis)
     }
 }

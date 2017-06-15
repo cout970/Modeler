@@ -1,11 +1,16 @@
 package com.cout970.modeler.core.model.mesh
 
-import com.cout970.matrix.extensions.times
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
+import com.cout970.modeler.util.toIVector
+import com.cout970.modeler.util.toJOML
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
+import com.cout970.vector.extensions.xd
+import com.cout970.vector.extensions.yd
+import com.cout970.vector.extensions.zd
+import org.joml.Vector4d
 
 /**
  * Created by cout970 on 2017/05/07.
@@ -29,7 +34,9 @@ class Mesh(
     }
 
     override fun transform(trans: ITransformation): IMesh {
-        return transformPos(pos.indices.toList()) { _, pos -> trans.matrix * pos }
+        val matrix = trans.matrix.toJOML()
+        return Mesh(pos.map { matrix.transform(Vector4d(it.xd, it.yd, it.zd, 1.0)).toIVector() },
+                tex, faces)
     }
 
     override fun merge(other: IMesh): IMesh {
