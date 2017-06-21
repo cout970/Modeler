@@ -54,7 +54,7 @@ class ModelRenderer {
         if (selectionVao == null) {
             selectionVao = ctx.buffer.build(GL11.GL_QUADS) {
                 val model = world.models.first()
-                val selection = ctx.guiState.selectionHandler.selection
+                val selection = ctx.guiState.selectionHandler.ref
 
                 val objSel = model.objects.filterIndexed { index, _ -> selection.any { it.objectIndex == index } }
                 objSel.forEach {

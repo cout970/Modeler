@@ -1,5 +1,6 @@
 package com.cout970.modeler.core.export
 
+import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
@@ -28,7 +29,7 @@ import java.util.*
  */
 class ObjExporter {
 
-    fun export(output: OutputStream, model: Model, mtllib: String) {
+    fun export(output: OutputStream, model: IModel, mtllib: String) {
 
         val vertex = LinkedList<IVector3>()
         val vertexMap = LinkedHashSet<IVector3>()

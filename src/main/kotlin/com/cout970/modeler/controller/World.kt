@@ -4,7 +4,7 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.IObject
 import com.cout970.modeler.controller.selector.Cursor
 import com.cout970.modeler.controller.selector.ISelectable
-import com.cout970.modeler.core.model.selection.ObjectSelection
+import com.cout970.modeler.core.model.selection.ObjectRef
 import com.cout970.raytrace.IRayObstacle
 
 /**
@@ -12,9 +12,9 @@ import com.cout970.raytrace.IRayObstacle
  */
 data class World(val models: List<IModel>, val cursor: Cursor) {
 
-    fun getModelParts(): List<Pair<ObjectSelection, IRayObstacle>> {
+    fun getModelParts(): List<Pair<IRayObstacle, ObjectRef>> {
         return models.firstOrNull()?.objects?.mapIndexed { index, obj ->
-            ObjectSelection(index) to RayTracer.toRayObstacle(obj)
+            RayTracer.toRayObstacle(obj) to ObjectRef(index)
         } ?: emptyList()
     }
 }

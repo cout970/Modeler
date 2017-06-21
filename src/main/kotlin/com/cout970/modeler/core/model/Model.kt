@@ -15,8 +15,8 @@ data class Model(
 
     val id: Int = lastId++
 
-    override fun transformObjects(func: (List<IObject>) -> List<IObject>): IModel {
-        return copy(objects = func(objects))
+    override fun withObject(obj: List<IObject>): IModel {
+        return copy(objects = obj)
     }
 
     companion object {

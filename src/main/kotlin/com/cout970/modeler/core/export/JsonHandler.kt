@@ -1,10 +1,20 @@
 package com.cout970.modeler.core.export
 
+import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.IObject
+import com.cout970.modeler.api.model.mesh.IMesh
+import com.cout970.modeler.core.model.Model
+import com.cout970.modeler.core.model.Object
+import com.cout970.modeler.core.model.ObjectCube
+import com.cout970.modeler.core.model.TRSTransformation
+import com.cout970.modeler.core.model.material.IMaterial
+import com.cout970.modeler.core.model.material.TexturedMaterial
+import com.cout970.modeler.core.model.mesh.FaceIndex
+import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.resource.ResourcePath
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.api.IVector4
-import com.cout970.vector.extensions.Vector3
-import com.cout970.vector.extensions.vec3Of
+import com.cout970.vector.extensions.*
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
@@ -17,115 +27,184 @@ class JsonImporter {
 
     val gson = GsonBuilder().setPrettyPrinting().create()!!
 
-    //TODO
-//    fun import(path: ResourcePath): Model {
-//        val model = parse(path)
-//
-//        val materials = mutableMapOf<String, TexturedMaterial>()
-//        for ((name, subPath) in model.textures) {
-//            materials += name to TexturedMaterial(name, path.resolve(subPath + ".png"))
-//        }
-//
-//        val quads = mutableMapOf<String, MutableList<Quad>>()
-//        for (element in model.elements) {
-//            element.sides.forEach { side, face ->
-//                val list = quads[face.texture] ?: mutableListOf<Quad>().apply { quads.put(face.texture, this) }
-//                list += getQuad(element, side, face)
-//            }
-//        }
-//
-//        val groups = quads.map { (name, list) ->
-//            Meshes.quadsToMesh(list)
-//        }
-//
-//        return Model(groups, ModelResources(materials.values.toList()))
-//    }
-//
-//    private fun getQuad(element: Element, side: Side, face: Face): Quad {
-//        val n = vec3Of(
-//                Math.min(element.from.xf, element.to.xf),
-//                Math.min(element.from.yf, element.to.yf),
-//                Math.min(element.from.zf, element.to.zf)
-//        )
-//        val p = vec3Of(
-//                Math.max(element.from.xf, element.to.xf),
-//                Math.max(element.from.yf, element.to.yf),
-//                Math.max(element.from.zf, element.to.zf)
-//        )
-//
-//        return when (side) {
-//            JsonImporter.Side.DOWN -> {
-//                Quad.create(
-//                        vec3Of(p.x, n.y, n.z),
-//                        vec3Of(p.x, n.y, p.z),
-//                        vec3Of(n.x, n.y, p.z),
-//                        vec3Of(n.x, n.y, n.z)
-//                ).setTexture1(face)
-//            }
-//            JsonImporter.Side.UP -> {
-//                Quad.create(
-//                        vec3Of(n.x, p.y, p.z),
-//                        vec3Of(p.x, p.y, p.z),
-//                        vec3Of(p.x, p.y, n.z),
-//                        vec3Of(n.x, p.y, n.z)
-//                ).setTexture(face)
-//            }
-//            JsonImporter.Side.NORTH -> {
-//                Quad.create(
-//                        vec3Of(n.x, p.y, n.z),
-//                        vec3Of(p.x, p.y, n.z),
-//                        vec3Of(p.x, n.y, n.z),
-//                        vec3Of(n.x, n.y, n.z)
-//                ).setTexture(face)
-//            }
-//            JsonImporter.Side.SOUTH -> {
-//                Quad.create(
-//                        vec3Of(p.x, n.y, p.z),
-//                        vec3Of(p.x, p.y, p.z),
-//                        vec3Of(n.x, p.y, p.z),
-//                        vec3Of(n.x, n.y, p.z)
-//                ).setTexture1(face)
-//            }
-//            JsonImporter.Side.WEST -> {
-//                Quad.create(
-//                        vec3Of(n.x, n.y, p.z),
-//                        vec3Of(n.x, p.y, p.z),
-//                        vec3Of(n.x, p.y, n.z),
-//                        vec3Of(n.x, n.y, n.z)
-//                ).setTexture1(face)
-//            }
-//            JsonImporter.Side.EAST -> {
-//                Quad.create(
-//                        vec3Of(p.x, p.y, n.z),
-//                        vec3Of(p.x, p.y, p.z),
-//                        vec3Of(p.x, n.y, p.z),
-//                        vec3Of(p.x, n.y, n.z)
-//                ).setTexture(face)
-//            }
-//        }
-//    }
-//
-//    fun Quad.setTexture(face: Face): Quad {
-//        val uv0 = vec2Of(face.uv.x, face.uv.y) / 16
-//        val uv1 = vec2Of(face.uv.z, face.uv.w) / 16
-//        return Quad(
-//                a.copy(tex = vec2Of(uv1.x, uv0.y)),
-//                b.copy(tex = vec2Of(uv0.x, uv0.y)),
-//                c.copy(tex = vec2Of(uv0.x, uv1.y)),
-//                d.copy(tex = vec2Of(uv1.x, uv1.y))
-//        )
-//    }
-//
-//    fun Quad.setTexture1(face: Face): Quad {
-//        val uv0 = vec2Of(face.uv.x, face.uv.y) / 16
-//        val uv1 = vec2Of(face.uv.z, face.uv.w) / 16
-//        return Quad(
-//                a.copy(tex = vec2Of(uv1.x, uv1.y)),
-//                b.copy(tex = vec2Of(uv1.x, uv0.y)),
-//                c.copy(tex = vec2Of(uv0.x, uv0.y)),
-//                d.copy(tex = vec2Of(uv0.x, uv1.y))
-//        )
-//    }
+
+    fun import(path: ResourcePath): IModel {
+        val model = parse(path)
+
+        val materials = mutableMapOf<String, IMaterial>()
+        for ((name, subPath) in model.textures) {
+            materials += name to TexturedMaterial(name, path.resolve(subPath + ".png"))
+//            materials += name to MaterialNone
+        }
+
+        val obj = mutableListOf<IObject>()
+        for (element in model.elements) {
+            var isCube = false
+            if (element.sides.size == 6) {
+                val texture = element.sides[Side.NORTH]?.texture
+                if (element.sides.all { it.value.texture == texture }) {
+                    val cube = ObjectCube(
+                            name = "Shape_${obj.size}",
+                            pos = element.from,
+                            size = element.to - element.from,
+                            rotation = Quaternion.IDENTITY,
+                            material = materials[texture]!!,
+                            rotationPivot = Vector3.ORIGIN,
+                            textureSize = vec2Of(16),
+                            textureOffset = vec2Of(0),
+                            mirrored = false,
+                            transformation = TRSTransformation.IDENTITY
+                    )
+                    obj += cube
+                    isCube = true
+                }
+            }
+            if (!isCube) {
+                //TODO fixme
+                val groups = element.sides.entries.groupBy { it.value.texture }
+
+                groups.forEach { texture, sides ->
+                    val mesh = sides
+                            .map { getSide(element, it.key, it.value) }
+                            .reduce { acum, mesh -> acum.merge(mesh) }
+
+                    val shape = Object(
+                            name = "Shape_${obj.size}",
+                            mesh = mesh,
+                            transformation = TRSTransformation.IDENTITY,
+                            material = materials[texture]!!
+                    )
+                    obj += shape
+                }
+            }
+        }
+
+        return Model(obj)
+    }
+
+    private fun getSide(element: Element, side: Side, face: Face): IMesh {
+        val n = vec3Of(
+                Math.min(element.from.xf, element.to.xf),
+                Math.min(element.from.yf, element.to.yf),
+                Math.min(element.from.zf, element.to.zf)
+        )
+        val p = vec3Of(
+                Math.max(element.from.xf, element.to.xf),
+                Math.max(element.from.yf, element.to.yf),
+                Math.max(element.from.zf, element.to.zf)
+        )
+
+        return when (side) {
+            JsonImporter.Side.DOWN -> {
+                val uv0 = vec2Of(face.uv.x, face.uv.y) / 16
+                val uv1 = vec2Of(face.uv.z, face.uv.w) / 16
+                Mesh(
+                        pos = listOf(
+                                vec3Of(p.x, n.y, n.z),
+                                vec3Of(p.x, n.y, p.z),
+                                vec3Of(n.x, n.y, p.z),
+                                vec3Of(n.x, n.y, n.z)),
+                        tex = listOf(
+                                vec2Of(uv1.x, uv1.y),
+                                vec2Of(uv1.x, uv0.y),
+                                vec2Of(uv0.x, uv0.y),
+                                vec2Of(uv0.x, uv1.y)
+                        ),
+                        faces = listOf(FaceIndex(listOf(0 to 0, 1 to 1, 2 to 2, 3 to 3)))
+                )
+            }
+            JsonImporter.Side.UP -> {
+                val uv0 = vec2Of(face.uv.x, face.uv.y) / 16
+                val uv1 = vec2Of(face.uv.z, face.uv.w) / 16
+                Mesh(
+                        pos = listOf(
+                                vec3Of(n.x, p.y, p.z),
+                                vec3Of(p.x, p.y, p.z),
+                                vec3Of(p.x, p.y, n.z),
+                                vec3Of(n.x, p.y, n.z)),
+                        tex = listOf(
+                                vec2Of(uv1.x, uv0.y),
+                                vec2Of(uv0.x, uv0.y),
+                                vec2Of(uv0.x, uv1.y),
+                                vec2Of(uv1.x, uv1.y)
+                        ),
+                        faces = listOf(FaceIndex(listOf(0 to 0, 1 to 1, 2 to 2, 3 to 3)))
+                )
+            }
+            JsonImporter.Side.NORTH -> {
+                val uv0 = vec2Of(face.uv.x, face.uv.y) / 16
+                val uv1 = vec2Of(face.uv.z, face.uv.w) / 16
+                Mesh(
+                        pos = listOf(
+                                vec3Of(n.x, p.y, n.z),
+                                vec3Of(p.x, p.y, n.z),
+                                vec3Of(p.x, n.y, n.z),
+                                vec3Of(n.x, n.y, n.z)),
+                        tex = listOf(
+                                vec2Of(uv1.x, uv0.y),
+                                vec2Of(uv0.x, uv0.y),
+                                vec2Of(uv0.x, uv1.y),
+                                vec2Of(uv1.x, uv1.y)
+                        ),
+                        faces = listOf(FaceIndex(listOf(0 to 0, 1 to 1, 2 to 2, 3 to 3)))
+                )
+            }
+            JsonImporter.Side.SOUTH -> {
+                val uv0 = vec2Of(face.uv.x, face.uv.y) / 16
+                val uv1 = vec2Of(face.uv.z, face.uv.w) / 16
+                Mesh(
+                        pos = listOf(
+                                vec3Of(p.x, n.y, p.z),
+                                vec3Of(p.x, p.y, p.z),
+                                vec3Of(n.x, p.y, p.z),
+                                vec3Of(n.x, n.y, p.z)),
+                        tex = listOf(
+                                vec2Of(uv1.x, uv1.y),
+                                vec2Of(uv1.x, uv0.y),
+                                vec2Of(uv0.x, uv0.y),
+                                vec2Of(uv0.x, uv1.y)
+                        ),
+                        faces = listOf(FaceIndex(listOf(0 to 0, 1 to 1, 2 to 2, 3 to 3)))
+                )
+            }
+            JsonImporter.Side.WEST -> {
+                val uv0 = vec2Of(face.uv.x, face.uv.y) / 16
+                val uv1 = vec2Of(face.uv.z, face.uv.w) / 16
+                Mesh(
+                        pos = listOf(
+                                vec3Of(n.x, n.y, p.z),
+                                vec3Of(n.x, p.y, p.z),
+                                vec3Of(n.x, p.y, n.z),
+                                vec3Of(n.x, n.y, n.z)),
+                        tex = listOf(
+                                vec2Of(uv1.x, uv1.y),
+                                vec2Of(uv1.x, uv0.y),
+                                vec2Of(uv0.x, uv0.y),
+                                vec2Of(uv0.x, uv1.y)
+                        ),
+                        faces = listOf(FaceIndex(listOf(0 to 0, 1 to 1, 2 to 2, 3 to 3)))
+                )
+            }
+            JsonImporter.Side.EAST -> {
+                val uv0 = vec2Of(face.uv.x, face.uv.y) / 16
+                val uv1 = vec2Of(face.uv.z, face.uv.w) / 16
+                Mesh(
+                        pos = listOf(
+                                vec3Of(p.x, p.y, n.z),
+                                vec3Of(p.x, p.y, p.z),
+                                vec3Of(p.x, n.y, p.z),
+                                vec3Of(p.x, n.y, n.z)),
+                        tex = listOf(
+                                vec2Of(uv1.x, uv0.y),
+                                vec2Of(uv0.x, uv0.y),
+                                vec2Of(uv0.x, uv1.y),
+                                vec2Of(uv1.x, uv1.y)
+                        ),
+                        faces = listOf(FaceIndex(listOf(0 to 0, 1 to 1, 2 to 2, 3 to 3)))
+                )
+            }
+        }
+    }
 
     fun parse(path: ResourcePath): JsonModel {
         val model = JsonModel()

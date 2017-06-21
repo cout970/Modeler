@@ -94,10 +94,15 @@ class Selector(val projectController: ProjectController, val input: IInput) {
             val pos = input.mouse.getMousePos()
             val context = CanvasHelper.getMouseSpaceContext(canvas, pos)
             val obj = projectController.world.getModelParts()
-                    .find { it.second.rayTrace(context.mouseRay) != null }
-            state.selectionHandler.onSelect(obj?.first, state)
+                    .mapNotNull { pair ->
+                        val res = pair.first.rayTrace(context.mouseRay)
+                        res?.let { res -> res to pair.second }
+                    }
+                    .getClosest(context.mouseRay)
 
-            val selection = state.selectionHandler.selection
+            state.selectionHandler.onSelect(obj?.second, state)
+
+            val selection = state.selectionHandler.ref
             if (selection.isNotEmpty()) {
                 val model = projectController.world.models.firstOrNull() ?: return
                 val newCenter = selection.map { model.objects[it.objectIndex] }
@@ -133,7 +138,7 @@ class Selector(val projectController: ProjectController, val input: IInput) {
                         rotationLastOffset = offset
                         state.tmpModel = selectedObject.applyTranslation(offset, sel, projectController.project.model)
                         val model = projectController.project.model
-                        val selection = state.selectionHandler.selection
+                        val selection = state.selectionHandler.ref
 
                         val newCenter = selection.map { model.objects[it.objectIndex] }
                                 .map { it.getCenter() }

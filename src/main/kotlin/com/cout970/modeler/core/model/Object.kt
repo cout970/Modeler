@@ -21,8 +21,8 @@ data class Object(
 
     override val transformedMesh: IMesh by lazy { mesh.transform(transformation) }
 
-    override fun transform(func: (IMesh) -> IMesh): IObject {
-        return copy(mesh = func(mesh))
+    override fun withMesh(newMesh: IMesh): IObject {
+        return copy(mesh = newMesh)
     }
 
     //TODO

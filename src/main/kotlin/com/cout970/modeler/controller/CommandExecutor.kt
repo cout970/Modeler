@@ -32,6 +32,11 @@ class CommandExecutor {
                 "project.load" -> loadProject(projectController, exportManager)
                 "project.save" -> saveProject(projectController, exportManager)
                 "project.save.as" -> saveProjectAs(projectController, exportManager)
+                "project.export" -> showExportModelPopup(exportManager, modelTransformer, projectController)
+                "project.import" -> showImportModelPopup(exportManager, modelTransformer.historicalRecord,
+                        projectController)
+                "model.selection.delete" -> modelTransformer.delete(
+                        projectController.guiState.selectionHandler.getSelection())
             }
         }
     }

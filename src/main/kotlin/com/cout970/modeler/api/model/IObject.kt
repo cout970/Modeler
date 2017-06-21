@@ -17,10 +17,11 @@ interface IObject {
 
     val transformedMesh: IMesh
 
-    fun transform(func: (IMesh) -> IMesh): IObject
+    fun withMesh(newMesh: IMesh): IObject
 
     fun translate(translation: IVector3): IObject
     fun rotate(pivot: IVector3, rot: IQuaternion): IObject
     fun scale(center: IVector3, axis: IVector3, offset: Float): IObject
+
     fun getCenter(): IVector3
 }

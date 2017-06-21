@@ -1,5 +1,6 @@
 package com.cout970.modeler.view.gui.popup
 
+import com.cout970.modeler.controller.ModelTransformer
 import com.cout970.modeler.controller.ProjectController
 import com.cout970.modeler.core.export.ExportFormat
 import com.cout970.modeler.core.export.ExportManager
@@ -8,6 +9,7 @@ import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.project.Author
 import com.cout970.modeler.core.project.Project
+import com.cout970.modeler.core.record.HistoricalRecord
 import org.lwjgl.PointerBuffer
 import org.lwjgl.system.MemoryUtil
 import org.lwjgl.util.tinyfd.TinyFileDialogs
@@ -113,18 +115,21 @@ fun saveProjectDirect(exportManager: ExportManager, project: Project, path: Stri
     }
 }
 
-fun showImportModelPopup(projectManager: ProjectController) {
+fun showImportModelPopup(exportManager: ExportManager, historyRecord: HistoricalRecord,
+                         projectController: ProjectController) {
+
     ImportDialog.show { prop ->
         if (prop != null) {
-//            projectManager.exportManager.importModel(prop)
+            exportManager.importModel(prop, historyRecord, projectController)
         }
     }
 }
 
-fun showExportModelPopup(projectManager: ProjectController) {
+fun showExportModelPopup(exportManager: ExportManager, modelTransformer: ModelTransformer,
+                         projectController: ProjectController) {
     ExportDialog.show { prop ->
         if (prop != null) {
-//            projectManager.exportManager.exportModel(prop)
+            exportManager.exportModel(prop, modelTransformer, projectController.project.model)
         }
     }
 }

@@ -1,26 +1,50 @@
 package com.cout970.modeler.api.model.selection
 
-import com.cout970.modeler.api.model.IModel
-
 /**
  * Created by cout970 on 2017/05/14.
  */
-interface IObjectSelection {
+
+interface IRef
+
+interface IObjectRef : IRef {
     val objectIndex: Int
-    fun toPosSelection(model: IModel): List<IPosSelection>
 }
 
-interface IFaceSelection {
+interface IFaceRef : IRef {
     val objectIndex: Int
     val faceIndex: Int
 }
 
-interface IPosSelection {
+interface IEdgeRef : IRef {
+    val objectIndex: Int
+    val firstIndex: Int
+    val secondIndex: Int
+}
+
+interface IPosRef : IRef {
     val objectIndex: Int
     val posIndex: Int
 }
 
-interface ITexSelection {
-    val objectIndex: Int
-    val texIndex: Int
+interface ISelection {
+
+    val selectionTarget: SelectionTarget
+    val selectionType: SelectionType
+
+    fun isSelected(obj: IObjectRef): Boolean
+    fun isSelected(obj: IFaceRef): Boolean
+    fun isSelected(obj: IEdgeRef): Boolean
+    fun isSelected(obj: IPosRef): Boolean
+}
+
+enum class SelectionTarget {
+    MODEL,
+    TEXTURE
+}
+
+enum class SelectionType {
+    OBJECT,
+    FACE,
+    EDGE,
+    VERTEX
 }

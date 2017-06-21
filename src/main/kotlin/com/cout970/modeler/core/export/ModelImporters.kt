@@ -10,4 +10,5 @@ object ModelImporters {
     val tcnImporter = TcnImporter()
     val jsonImporter = JsonImporter()
     val tblImporter = TblImporter()
+    val mcxExporter = McxExporter()
 }

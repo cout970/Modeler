@@ -6,6 +6,9 @@ import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.controller.ProjectController
+import com.cout970.modeler.core.export.ModelImporters.jsonImporter
+import com.cout970.modeler.core.export.ModelImporters.mcxExporter
+import com.cout970.modeler.core.export.ModelImporters.objExporter
 import com.cout970.modeler.core.export.ModelImporters.objImporter
 import com.cout970.modeler.core.export.ModelImporters.tblImporter
 import com.cout970.modeler.core.export.ModelImporters.tcnImporter
@@ -18,6 +21,7 @@ import com.cout970.modeler.core.record.HistoricalRecord
 import com.cout970.modeler.core.record.action.ActionImportModel
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.core.resource.toResourcePath
+import com.cout970.modeler.util.IFutureExecutor
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -33,6 +37,7 @@ import java.util.zip.ZipOutputStream
  * Created by cout970 on 2017/01/02.
  */
 class ExportManager(val resourceLoader: ResourceLoader) {
+
     val gson = GsonBuilder()
             .setExclusionStrategies(ProjectExclusionStrategy())
             .setPrettyPrinting()
@@ -80,11 +85,10 @@ class ExportManager(val resourceLoader: ResourceLoader) {
                     tcnImporter.import(file.toResourcePath())
                 })
             }
-        //TODO
             ImportFormat.JSON -> {
-//                historyRecord.doAction(ActionImportModel(projectController, resourceLoader, prop.path) {
-//                    jsonImporter.import(file.toResourcePath())
-//                })
+                historyRecord.doAction(ActionImportModel(projectController, resourceLoader, prop.path) {
+                    jsonImporter.import(file.toResourcePath())
+                })
             }
             ImportFormat.TBL -> {
                 historyRecord.doAction(ActionImportModel(projectController, resourceLoader, prop.path) {
@@ -93,22 +97,22 @@ class ExportManager(val resourceLoader: ResourceLoader) {
             }
         }
     }
-//
-//    fun exportModel(prop: ExportProperties) {
-//        val file = File(prop.path)
-//        when (prop.format) {
-//            ExportFormat.OBJ -> {
-//                projectManager.modelEditor.addToQueue {
-//                    objExporter.export(file.outputStream(), projectManager.modelEditor.model, prop.materialLib)
-//                }
-//            }
-//            ExportFormat.MCX -> {
-//                projectManager.modelEditor.addToQueue {
-//                    mcxExporter.export(file.outputStream(), projectManager.modelEditor.model, prop.domain)
-//                }
-//            }
-//        }
-//    }
+
+    fun exportModel(prop: ExportProperties, exec: IFutureExecutor, model: IModel) {
+        val file = File(prop.path)
+        when (prop.format) {
+            ExportFormat.OBJ -> {
+                exec.addToQueue {
+                    objExporter.export(file.outputStream(), model, prop.materialLib)
+                }
+            }
+            ExportFormat.MCX -> {
+                exec.addToQueue {
+                    mcxExporter.export(file.outputStream(), model, prop.domain)
+                }
+            }
+        }
+    }
 //
 //
 //    fun importTexture(path: String, selection: ElementSelection) {

@@ -24,6 +24,7 @@ data class ObjectCube(
         override val pos: IVector3,
         override val rotation: IQuaternion,
         override val size: IVector3,
+
         override val transformation: ITransformation = TRSTransformation.IDENTITY,
         override val material: IMaterial = MaterialNone,
 
@@ -42,11 +43,11 @@ data class ObjectCube(
         return updateTextures(Mesh(pos, cube.tex, cube.faces), size, textureOffset, textureSize)
     }
 
-    override fun transform(func: (IMesh) -> IMesh): IObject {
-        return Object(name, func(mesh), transformation, material)
+    override fun withMesh(newMesh: IMesh): IObject {
+        return Object(name, newMesh, transformation, material)
     }
 
-    override fun getCenter(): IVector3 = pos + size * 0.5
+    override fun getCenter(): IVector3 = rotationPivot
 
     fun updateTextures(mesh: IMesh, size: IVector3, offset: IVector2, textureSize: IVector2): IMesh {
         val uvs = generateUVs(size, offset, textureSize)

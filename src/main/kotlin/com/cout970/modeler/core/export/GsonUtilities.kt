@@ -198,9 +198,9 @@ class MaterialSerializer : JsonSerializer<IMaterial>, JsonDeserializer<IMaterial
     }
 }
 
-class QuadIndicesSerializer : JsonSerializer<McxExporter.QuadStorage.QuadIndices> {
+class QuadIndicesSerializer : JsonSerializer<McxExporter.QuadIndices> {
 
-    override fun serialize(src: McxExporter.QuadStorage.QuadIndices, typeOfSrc: Type?,
+    override fun serialize(src: McxExporter.QuadIndices, typeOfSrc: Type?,
                            context: JsonSerializationContext?): JsonElement {
         val arr = JsonArray()
         arr.add(JsonArray().apply { add(src.a); add(src.b); add(src.c); add(src.d) })

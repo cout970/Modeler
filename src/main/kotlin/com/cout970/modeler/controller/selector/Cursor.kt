@@ -31,7 +31,7 @@ class Cursor(val projectController: ProjectController) {
     }
 
     fun getSelectableParts(state: GuiState, camera: Camera, viewport: IVector2): List<ISelectable> {
-        if (state.selectionHandler.selection.isEmpty()) {
+        if (state.selectionHandler.ref.isEmpty()) {
             return emptyList()
         }
         val parameters = CursorParameters.create(camera.zoom, viewport)
@@ -65,7 +65,7 @@ class Cursor(val projectController: ProjectController) {
 
         override fun applyTranslation(offset: Float, selHandler: SelectionHandler, model: IModel): IModel {
 
-            val sel = selHandler.selection
+            val sel = selHandler.ref
             return EditTool.translate(model, sel, translationAxis * offset)
         }
 

@@ -1,6 +1,7 @@
 package com.cout970.modeler.controller
 
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.core.model.Object
 import com.cout970.modeler.core.model.ObjectCube
 import com.cout970.modeler.core.model.material.MaterialNone
@@ -8,6 +9,9 @@ import com.cout970.modeler.core.model.mesh.MeshFactory
 import com.cout970.modeler.core.record.HistoricalRecord
 import com.cout970.modeler.core.record.HistoryLog
 import com.cout970.modeler.core.record.action.ActionAddObject
+import com.cout970.modeler.core.record.action.ActionDelete
+import com.cout970.modeler.core.tool.EditTool
+import com.cout970.modeler.util.IFutureExecutor
 import com.cout970.modeler.util.ITickeable
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.Quaternion
@@ -18,7 +22,7 @@ import java.util.*
 /**
  * Created by cout970 on 2017/06/09.
  */
-class ModelTransformer(val projectController: ProjectController) : ITickeable {
+class ModelTransformer(val projectController: ProjectController) : ITickeable, IFutureExecutor {
 
     var model: IModel get() = projectController.project.model
         set(value) = projectController.updateModel(value)
@@ -28,7 +32,7 @@ class ModelTransformer(val projectController: ProjectController) : ITickeable {
     val log = HistoryLog()
     val historicalRecord = HistoricalRecord(log, this::addToQueue)
 
-    fun addToQueue(function: () -> Unit) {
+    override fun addToQueue(function: () -> Unit) {
         actionQueue.add(function)
     }
 
@@ -43,7 +47,7 @@ class ModelTransformer(val projectController: ProjectController) : ITickeable {
     fun addCubeTemplate(size: IVector3 = vec3Of(8, 8, 8)) {
         val obj = ObjectCube(
                 name = "Shape${model.objects.size}",
-                pos = vec3Of(8),
+                pos = Vector3.ORIGIN,
                 rotation = Quaternion.IDENTITY,
                 size = size,
                 material = MaterialNone
@@ -55,5 +59,9 @@ class ModelTransformer(val projectController: ProjectController) : ITickeable {
         val mesh = MeshFactory.createCube(size, Vector3.ORIGIN)
         val obj = Object("Shape${model.objects.size}", mesh)
         historicalRecord.doAction(ActionAddObject(this, model, obj))
+    }
+
+    fun delete(selection: ISelection) {
+        historicalRecord.doAction(ActionDelete(this, EditTool.delete(model, selection)))
     }
 }

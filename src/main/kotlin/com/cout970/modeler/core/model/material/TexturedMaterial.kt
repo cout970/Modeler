@@ -6,7 +6,6 @@ import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.core.resource.ResourcePath
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.vec2Of
-import javax.swing.JOptionPane
 
 class TexturedMaterial(override val name: String, val path: ResourcePath) : IMaterial {
 
@@ -23,7 +22,6 @@ class TexturedMaterial(override val name: String, val path: ResourcePath) : IMat
             lastModified = path.lastModifiedTime()
         } catch (e: Exception) {
             e.print()
-            JOptionPane.showMessageDialog(null, "Error loading texture: Missing resource ($path)")
             texture = null
         }
     }

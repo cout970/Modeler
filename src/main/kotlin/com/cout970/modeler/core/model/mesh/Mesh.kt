@@ -40,7 +40,22 @@ class Mesh(
     }
 
     override fun merge(other: IMesh): IMesh {
-        return Mesh(pos + other.pos, tex + other.tex, faces + other.faces)
+        val newPos = (pos + other.pos).distinct()
+        val newTex = (tex + other.tex).distinct()
+
+        val newFaces = faces.map { face ->
+            val p = face.pos.map { newPos.indexOf(pos[it]) }
+            val t = face.tex.map { newTex.indexOf(tex[it]) }
+
+            FaceIndex(p, t)
+        } + other.faces.map { face ->
+            val p = face.pos.map { newPos.indexOf(other.pos[it]) }
+            val t = face.tex.map { newTex.indexOf(other.tex[it]) }
+
+            FaceIndex(p, t)
+        }
+
+        return Mesh(newPos, newTex, newFaces)
     }
 
     override fun optimize(): IMesh {
