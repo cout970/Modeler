@@ -77,6 +77,8 @@ class Initializer {
                 modelTransformer
         )
 
+        gui.state.selectionHandler.listeners.add(gui.guiUpdater::onSelectionChange)
+
         log(Level.FINE) { "Starting GLFW" }
         GLFWLoader.init()
         log(Level.FINE) { "Starting GLFW window" }

@@ -47,7 +47,7 @@ data class ObjectCube(
         return Object(name, newMesh, transformation, material)
     }
 
-    override fun getCenter(): IVector3 = rotationPivot
+    override fun getCenter(): IVector3 = pos + size * 0.5
 
     fun updateTextures(mesh: IMesh, size: IVector3, offset: IVector2, textureSize: IVector2): IMesh {
         val uvs = generateUVs(size, offset, textureSize)
@@ -105,7 +105,8 @@ data class ObjectCube(
     }
 
     //TODO
-    override fun translate(translation: IVector3): IObject = copy(pos = pos + translation)
+    override fun translate(translation: IVector3): IObject = copy(pos = pos + translation,
+            rotationPivot = rotationPivot + translation)
 
     override fun rotate(pivot: IVector3, rot: IQuaternion): IObject = this
 

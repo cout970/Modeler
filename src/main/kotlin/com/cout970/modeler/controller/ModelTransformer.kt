@@ -1,14 +1,18 @@
 package com.cout970.modeler.controller
 
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.IObject
+import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.core.model.Object
 import com.cout970.modeler.core.model.ObjectCube
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.mesh.MeshFactory
+import com.cout970.modeler.core.model.transformObjects
 import com.cout970.modeler.core.record.HistoricalRecord
 import com.cout970.modeler.core.record.HistoryLog
 import com.cout970.modeler.core.record.action.ActionAddObject
+import com.cout970.modeler.core.record.action.ActionChangeObject
 import com.cout970.modeler.core.record.action.ActionDelete
 import com.cout970.modeler.core.tool.EditTool
 import com.cout970.modeler.util.IFutureExecutor
@@ -58,10 +62,20 @@ class ModelTransformer(val projectController: ProjectController) : ITickeable, I
     fun addCubeMesh(size: IVector3 = vec3Of(8, 8, 8)) {
         val mesh = MeshFactory.createCube(size, Vector3.ORIGIN)
         val obj = Object("Shape${model.objects.size}", mesh)
+
         historicalRecord.doAction(ActionAddObject(this, model, obj))
     }
 
-    fun delete(selection: ISelection) {
-        historicalRecord.doAction(ActionDelete(this, EditTool.delete(model, selection)))
+    fun delete(selection: ISelection?) {
+        if (selection == null) return
+        val newModel = EditTool.delete(model, selection)
+
+        historicalRecord.doAction(ActionDelete(this, newModel))
+    }
+
+    fun changeObject(ref: IObjectRef, obj: IObject) {
+        val newModel = model.transformObjects(listOf(ref)) { obj }
+
+        historicalRecord.doAction(ActionChangeObject(this, newModel))
     }
 }

@@ -12,6 +12,8 @@ data class Selection(
         val list: List<IRef>
 ) : ISelection {
 
+    override val size: Int get() = list.size
+
     override fun isSelected(obj: IObjectRef): Boolean = obj in list
     override fun isSelected(obj: IFaceRef): Boolean = obj in list
     override fun isSelected(obj: IEdgeRef): Boolean = obj in list

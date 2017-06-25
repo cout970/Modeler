@@ -22,6 +22,10 @@ open class CPanel(
         private var lastID = 0
     }
 
+    fun setBorderless() {
+        getBorder().isEnabled = false
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is CPanel) return false

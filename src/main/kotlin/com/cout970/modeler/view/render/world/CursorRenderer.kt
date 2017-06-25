@@ -27,6 +27,9 @@ class CursorRenderer {
             translationArrowVao = ctx.resources.translationArrow.createVao(ctx.buffer, vec3Of(1, 1, 1))
         }
 
+        if (ctx.guiState.selectionHandler.getSelection() == null) {
+            return
+        }
         val cursor = world.cursor
         val parameters = cursor.getCursorParameters(ctx.camera, ctx.viewport)
 
@@ -36,9 +39,9 @@ class CursorRenderer {
                 useLight.setInt(0)
                 useTexture.setInt(0)
                 val hovered = ctx.guiState.hoveredObject
-                val holded = ctx.guiState.holdingSelection
+                val hold = ctx.guiState.holdingSelection
                 cursor.getSelectableParts(ctx.guiState, ctx.camera, ctx.viewport).forEach { part ->
-                    val selected = hovered == part || holded == part
+                    val selected = hovered == part || hold == part
                     if (part is ITranslatable) {
 
                         val scale = vec3Of(parameters.length) + if (selected)
@@ -58,7 +61,6 @@ class CursorRenderer {
                 }
             }
         }
-
     }
 
     fun renderDebugHitbox(ctx: RenderContext, world: World) {

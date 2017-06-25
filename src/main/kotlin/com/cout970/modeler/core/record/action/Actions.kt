@@ -12,6 +12,8 @@ class ActionDelete(transformer: ModelTransformer, newModel: IModel) : ActionUpda
 class ActionAddObject(transformer: ModelTransformer, model: IModel, obj: IObject)
     : ActionUpdateModel(transformer, model.withObject(model.objects + obj))
 
+class ActionChangeObject(transformer: ModelTransformer, newModel: IModel) : ActionUpdateModel(transformer, newModel)
+
 open class ActionUpdateModel(val transformer: ModelTransformer, val newModel: IModel) : IAction {
 
     val oldModel = transformer.model

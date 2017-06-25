@@ -2,6 +2,7 @@ package com.cout970.modeler.view
 
 import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.controller.CommandExecutor
+import com.cout970.modeler.controller.GuiState
 import com.cout970.modeler.controller.ModelTransformer
 import com.cout970.modeler.controller.ProjectController
 import com.cout970.modeler.controller.selector.Selector
@@ -29,5 +30,6 @@ data class Gui(
         val projectController: ProjectController,
         val selector: Selector,
         val modelTransformer: ModelTransformer,
-        val resources: GuiResources
+        val resources: GuiResources,
+        val state: GuiState
 )

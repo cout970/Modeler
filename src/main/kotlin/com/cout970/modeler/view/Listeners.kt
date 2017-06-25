@@ -40,15 +40,26 @@ class Listeners : ITickeable {
                         canvas.cameraHandler.setZoom(camera.zoom + scroll * (camera.zoom / 60f))
                     }
                 }
+                return true
             }
         }
+        if (gui.guiUpdater.handleScroll(e))
+            return true
         return false
     }
 
     fun onKeyPress(e: EventKeyUpdate): Boolean {
         return if (e.keyState == EnumKeyState.PRESS) {
             val ret = gui.canvasContainer.layout.onEvent(gui, e)
-            if (ret) true else hotKeyHandler.onPress(e)
+            if (ret) {
+                true
+            } else {
+                if (gui.guiUpdater.leguiContext.focusedGui == null) {
+                    hotKeyHandler.onPress(e)
+                } else {
+                    false
+                }
+            }
         } else false
     }
 

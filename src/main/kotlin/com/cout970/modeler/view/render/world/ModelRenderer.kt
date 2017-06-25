@@ -25,13 +25,15 @@ class ModelRenderer {
     val modelCache: MutableList<List<VAO>> = mutableListOf()
     var selectionVao: VAO? = null
     var axis: VAO? = null
-    var lastModified = -1L
+    var lastModifiedSelection = -1L
+    var lastModifiedModel = -1L
 
     fun renderModels(ctx: RenderContext, world: World) {
 
         if (world.models.isEmpty()) return
 
-        if (modelCache.size != world.models.size) {
+        if (modelCache.size != world.models.size || world.lastModified != lastModifiedModel) {
+            lastModifiedModel = world.lastModified
             modelCache.clear()
             world.models.forEach { modelCache.add(listOf()) }
         }
@@ -47,13 +49,13 @@ class ModelRenderer {
             }
         }
 
-        if (ctx.guiState.selectionHandler.lastModified != lastModified) {
+        if (ctx.guiState.selectionHandler.lastModified != lastModifiedSelection || ctx.guiState.tmpModel != null) {
             selectionVao?.close()
             selectionVao = null
         }
         if (selectionVao == null) {
             selectionVao = ctx.buffer.build(GL11.GL_QUADS) {
-                val model = world.models.first()
+                val model = ctx.guiState.tmpModel ?: world.models.first()
                 val selection = ctx.guiState.selectionHandler.ref
 
                 val objSel = model.objects.filterIndexed { index, _ -> selection.any { it.objectIndex == index } }

@@ -29,7 +29,7 @@ class CanvasRenderer(val renderManager: RenderManager, val input: IInput) {
                     windowHandler = gui.windowHandler,
                     timer = gui.timer,
                     shader = renderManager.shader,
-                    guiState = gui.projectController.guiState,
+                    guiState = gui.state,
                     buffer = buffer,
                     resources = gui.resources
             )

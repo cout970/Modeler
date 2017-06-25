@@ -11,10 +11,15 @@ import com.cout970.modeler.core.model.selection.Selection
  */
 class SelectionHandler {
 
+    val listeners: MutableList<(ISelection?, ISelection?) -> Unit> = mutableListOf()
+
     var ref: List<IObjectRef> = emptyList()
         private set(value) {
+            val old = getSelection()
             field = value
             lastModified = System.currentTimeMillis()
+            val new = getSelection()
+            listeners.forEach { it.invoke(old, new) }
         }
     var lastModified = 0L
         private set
@@ -33,7 +38,8 @@ class SelectionHandler {
         }
     }
 
-    fun getSelection(): ISelection {
+    fun getSelection(): ISelection? {
+        if (ref.isEmpty()) return null
         return Selection(SelectionTarget.MODEL, SelectionType.OBJECT, ref)
     }
 }

@@ -10,7 +10,6 @@ import com.cout970.modeler.controller.selector.TransformationMode
 class GuiState {
 
     val selectionHandler = SelectionHandler()
-    var editMode = EditMode.OBJECT
     var transformationMode = TransformationMode.TRANSLATION
 
     var useTexture = false
@@ -22,11 +21,4 @@ class GuiState {
     var holdingSelection: ISelectable? = null
     var hoveredObject: ISelectable? = null
     var tmpModel: IModel? = null
-}
-
-enum class EditMode {
-    OBJECT,
-    FACE,
-    EDGE,
-    VERTEX
 }

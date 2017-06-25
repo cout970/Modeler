@@ -12,6 +12,8 @@ import com.cout970.raytrace.IRayObstacle
  */
 data class World(val models: List<IModel>, val cursor: Cursor) {
 
+    var lastModified = -1L
+
     fun getModelParts(): List<Pair<IRayObstacle, ObjectRef>> {
         return models.firstOrNull()?.objects?.mapIndexed { index, obj ->
             RayTracer.toRayObstacle(obj) to ObjectRef(index)

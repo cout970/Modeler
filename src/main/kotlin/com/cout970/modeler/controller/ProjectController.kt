@@ -14,12 +14,14 @@ class ProjectController {
     var project: Project = Project(Author(), "Unnamed").apply { creationTime = -1L }
         private set
 
-    val guiState = GuiState()
-    var world: World = World(emptyList(), Cursor(this))
+    private val modelList = mutableListOf<IModel>()
+
+    var world: World = World(modelList, Cursor(this))
 
     fun newProject(name: String, author: Author) {
         project = Project(author, name)
-        world = World(listOf(project.model), Cursor(this))
+        modelList.clear()
+        modelList.add(project.model)
     }
 
     fun saveProject(exportManager: ExportManager, path: String) {
@@ -28,11 +30,14 @@ class ProjectController {
 
     fun loadProject(exportManager: ExportManager, path: String) {
         project = exportManager.loadProject(path)
-        world = World(listOf(project.model), Cursor(this))
+        modelList.clear()
+        modelList.add(project.model)
     }
 
     fun updateModel(model: IModel) {
         project.model = model
-        world = World(listOf(model), Cursor(this))
+        modelList.clear()
+        modelList.add(project.model)
+        world.lastModified = System.currentTimeMillis()
     }
 }

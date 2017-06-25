@@ -30,6 +30,7 @@ interface ISelection {
 
     val selectionTarget: SelectionTarget
     val selectionType: SelectionType
+    val size: Int
 
     fun isSelected(obj: IObjectRef): Boolean
     fun isSelected(obj: IFaceRef): Boolean

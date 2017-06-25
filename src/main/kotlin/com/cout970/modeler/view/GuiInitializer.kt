@@ -2,6 +2,7 @@ package com.cout970.modeler.view
 
 import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.controller.CommandExecutor
+import com.cout970.modeler.controller.GuiState
 import com.cout970.modeler.controller.ModelTransformer
 import com.cout970.modeler.controller.ProjectController
 import com.cout970.modeler.controller.selector.Selector
@@ -46,11 +47,15 @@ class GuiInitializer(
         val canvasContainer = CanvasContainer(editorPanel.centerPanel.canvasPanel)
         editorPanel.centerPanel.canvasContainer = canvasContainer
         log(Level.FINE) { "[GuiInitializer] Creating Selector" }
-        val selector = Selector(projectController, eventController)
+        val selector = Selector()
         log(Level.FINE) { "[GuiInitializer] Creating Listeners" }
         val listeners = Listeners()
         log(Level.FINE) { "[GuiInitializer] Binding buttons" }
         commandExecutor.bindButtons(editorPanel)
+        log(Level.FINE) { "[GuiInitializer] Binding text inputs" }
+        guiUpdater.bindTextInputs(editorPanel)
+        log(Level.FINE) { "[GuiInitializer] Vreating GuiState" }
+        val guiState = GuiState()
 
         log(Level.FINE) { "[GuiInitializer] Creating initial canvas" }
         canvasContainer.newCanvas()
@@ -60,10 +65,11 @@ class GuiInitializer(
                 root, guiUpdater, canvasContainer,
                 commandExecutor, listeners, windowHandler, timer, eventController,
                 editorPanel, projectController, selector, modelTransformer,
-                guiResources
+                guiResources, guiState
         ).also {
             renderManager.gui = it
             guiUpdater.gui = it
+            selector.gui = it
         }
     }
 }

@@ -35,8 +35,7 @@ class CommandExecutor {
                 "project.export" -> showExportModelPopup(exportManager, modelTransformer, projectController)
                 "project.import" -> showImportModelPopup(exportManager, modelTransformer.historicalRecord,
                         projectController)
-                "model.selection.delete" -> modelTransformer.delete(
-                        projectController.guiState.selectionHandler.getSelection())
+                "model.selection.delete" -> modelTransformer.delete(gui.state.selectionHandler.getSelection())
             }
         }
     }

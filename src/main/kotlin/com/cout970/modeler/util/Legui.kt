@@ -6,6 +6,8 @@ import com.cout970.vector.extensions.plus
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Frame
+import org.liquidengine.legui.component.Panel
+import org.liquidengine.legui.component.TextInput
 import org.liquidengine.legui.context.LeguiContext
 import org.liquidengine.legui.event.component.MouseClickEvent
 
@@ -55,6 +57,26 @@ fun Component.show() {
     isEnabled = true
     isVisible = true
 }
+
+fun Component.disable() {
+    isEnabled = false
+    if (this is Panel) {
+        components.forEach(Component::disable)
+    }
+}
+
+fun Component.enable() {
+    isEnabled = true
+    if (this is Panel) {
+        components.forEach(Component::enable)
+    }
+}
+
+var TextInput.text: String
+    get() = textState.text
+    set(value) {
+        textState.text = value
+    }
 
 fun LeguiContext.focus(component: Component) {
     val focusedGui = focusedGui
