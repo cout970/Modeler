@@ -8,9 +8,7 @@ import com.cout970.modeler.core.resource.ResourcePath
 import com.cout970.modeler.util.quatOfAngles
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.plus
-import com.cout970.vector.extensions.toRadians
-import com.cout970.vector.extensions.vec2Of
+import com.cout970.vector.extensions.*
 import com.google.gson.GsonBuilder
 
 /**
@@ -41,12 +39,14 @@ class TblImporter {
     }
 
     fun mapCubes(list: List<Cube>, material: IMaterial, texSize: IVector2): List<ObjectCube> {
+        val offset = vec3Of(8, 16 + 8, 8)
         return list.map { cube ->
+            val pos = offset - (cube.position + cube.offset + cube.dimensions)
             ObjectCube(
                     name = cube.name,
-                    pos = cube.position + cube.offset,
+                    pos = pos,
                     rotation = quatOfAngles(cube.rotation.toRadians()),
-                    rotationPivot = cube.position,
+                    rotationPivot = offset - cube.position,
                     size = cube.dimensions,
                     material = material,
                     textureOffset = cube.txOffset,

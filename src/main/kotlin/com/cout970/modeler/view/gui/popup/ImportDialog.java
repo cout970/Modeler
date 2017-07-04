@@ -28,6 +28,7 @@ public class ImportDialog {
         dialog.comboBox1.addItem("Obj (*.obj)");
         dialog.comboBox1.addItem("Techne (*.tcn, *.zip)");
         dialog.comboBox1.addItem("Minecraft (*.json)");
+        dialog.comboBox1.addItem("Tabula (*.tbl)");
         //buttons
         dialog.cancelButton.addActionListener(e -> {
             returnFun.invoke(null);
@@ -43,7 +44,7 @@ public class ImportDialog {
         dialog.selectButton.addActionListener(e -> {
             frame.toBack();
             String file = TinyFileDialogs.tinyfd_openFileDialog("Import", "",
-                    PopupsKt.getImportFileExtensions(), "Model Files (*.tcn, *.obj, *.json)",
+                    PopupsKt.getImportFileExtensions(), "Model Files (*.tcn, *.obj, *.json, *.tbl)",
                     false);
             if (file != null) {
                 if (file.endsWith(".obj")) {
@@ -52,6 +53,8 @@ public class ImportDialog {
                     dialog.comboBox1.setSelectedIndex(1);
                 } else if (file.endsWith(".json")) {
                     dialog.comboBox1.setSelectedIndex(2);
+                } else if (file.endsWith(".tbl")) {
+                    dialog.comboBox1.setSelectedIndex(3);
                 }
             }
             dialog.textField1.setText(file);

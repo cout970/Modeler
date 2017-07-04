@@ -4,7 +4,9 @@ import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
+import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.selection.Selection
+import com.cout970.modeler.view.Gui
 
 /**
  * Created by cout970 on 2017/06/15.
@@ -24,16 +26,22 @@ class SelectionHandler {
     var lastModified = 0L
         private set
 
-    fun onSelect(first: IObjectRef?, state: GuiState) {
+    fun onSelect(first: IObjectRef?, gui: Gui) {
         if (ref.isEmpty()) {
             if (first != null) {
                 ref = listOf(first)
             }
         } else {
             if (first != null) {
-                ref = listOf(first)
+                if (Config.keyBindings.multipleSelection.check(gui.input)) {
+                    ref += listOf(first)
+                } else {
+                    ref = listOf(first)
+                }
             } else {
-                ref = listOf()
+                if (!Config.keyBindings.multipleSelection.check(gui.input)) {
+                    ref = listOf()
+                }
             }
         }
     }

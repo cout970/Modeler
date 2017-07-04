@@ -11,6 +11,8 @@ import com.cout970.modeler.core.project.Project
  */
 class ProjectController {
 
+
+    val listeners = mutableListOf<(old: IModel, new: IModel) -> Unit>()
     var project: Project = Project(Author(), "Unnamed").apply { creationTime = -1L }
         private set
 
@@ -20,8 +22,7 @@ class ProjectController {
 
     fun newProject(name: String, author: Author) {
         project = Project(author, name)
-        modelList.clear()
-        modelList.add(project.model)
+        updateModel(project.model)
     }
 
     fun saveProject(exportManager: ExportManager, path: String) {
@@ -30,14 +31,15 @@ class ProjectController {
 
     fun loadProject(exportManager: ExportManager, path: String) {
         project = exportManager.loadProject(path)
-        modelList.clear()
-        modelList.add(project.model)
+        updateModel(project.model)
     }
 
     fun updateModel(model: IModel) {
+        val old = project.model
         project.model = model
         modelList.clear()
         modelList.add(project.model)
         world.lastModified = System.currentTimeMillis()
+        listeners.forEach { it.invoke(old, model) }
     }
 }

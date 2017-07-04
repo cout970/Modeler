@@ -3,6 +3,7 @@ package com.cout970.modeler.view.gui.editor
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.core.model.material.IMaterial
 import com.cout970.modeler.util.toColor
 import com.cout970.modeler.view.GuiResources
 import com.cout970.modeler.view.gui.comp.CButton
@@ -52,9 +53,21 @@ class RightPanel : CPanel() {
     class MaterialListPanel : CPanel(width = 180f, height = 200f) {
 
         val titleLabel = CLabel("Materials", 5f, 5f, 180f, 24f)
+        val listPanel = CPanel(0f, 35f, 180f, 700f)
 
         init {
             addComponent(titleLabel)
+            addComponent(listPanel)
+        }
+
+        fun clear() {
+            listPanel.clearComponents()
+        }
+
+        fun addItem(material: IMaterial, resources: GuiResources) {
+            val item = MaterialListItem(material, resources)
+            item.position.y = listPanel.components.size * item.size.y
+            listPanel.addComponent(item)
         }
     }
 
@@ -75,6 +88,16 @@ class RightPanel : CPanel() {
             delButton.backgroundColor = ColorConstants.transparent()
             delButton.border.isEnabled = false
             delButton.setImage(ImageView(resources.deleteIcon).apply { size = Vector2f(18f); position = Vector2f(3f) })
+        }
+    }
+
+    class MaterialListItem(val material: IMaterial, resources: GuiResources) : CPanel(width = 180f, height = 24f) {
+
+        val label = CLabel(material.name, 0f, 0f, 120f, 24f)
+
+        init {
+            backgroundColor = Config.colorPalette.primaryColor.toColor()
+            addComponent(label)
         }
     }
 }

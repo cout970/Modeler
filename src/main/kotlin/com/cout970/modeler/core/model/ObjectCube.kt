@@ -47,7 +47,7 @@ data class ObjectCube(
         return Object(name, newMesh, transformation, material)
     }
 
-    override fun getCenter(): IVector3 = pos + size * 0.5
+    override fun getCenter(): IVector3 = rotationPivot//pos + size * 0.5
 
     fun updateTextures(mesh: IMesh, size: IVector3, offset: IVector2, textureSize: IVector2): IMesh {
         val uvs = generateUVs(size, offset, textureSize)

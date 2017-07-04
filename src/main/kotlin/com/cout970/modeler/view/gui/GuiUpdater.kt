@@ -105,13 +105,21 @@ class GuiUpdater {
     }
 
     fun updateObjectList() {
-        val panel = gui.editorPanel.rightPanel.treeViewPanel
+        val tree = gui.editorPanel.rightPanel.treeViewPanel
         val model = gui.modelTransformer.model
 
-        panel.clear()
+        tree.clear()
         model.objects
                 .mapIndexed { index, _ -> ObjectRef(index) }
-                .forEach { panel.addItem(it, model, gui.resources) }
+                .forEach { tree.addItem(it, model, gui.resources) }
+
+        val materials = gui.editorPanel.rightPanel.materialListPanel
+
+        materials.clear()
+        model.objects
+                .map { it.material }
+                .distinct()
+                .forEach { materials.addItem(it, gui.resources) }
     }
 
     fun findTextInput(id: String, panel: Panel): CTextInput? {

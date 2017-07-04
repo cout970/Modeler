@@ -157,7 +157,7 @@ class ObjImporter {
         val faces = quads.map {
             FaceIndex(it.vertexIndices join it.textureIndices)
         }
-        var pos = data.vertices
+        var pos = data.vertices.map { it * 16 }
         var tex = data.texCoords
         if (faces.isNotEmpty()) {
             if (pos.isEmpty()) pos += Vector3.ORIGIN

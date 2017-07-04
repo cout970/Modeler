@@ -44,10 +44,10 @@ class CursorRenderer {
                     val selected = hovered == part || hold == part
                     if (part is ITranslatable) {
 
-                        val scale = vec3Of(parameters.length) + if (selected)
-                            vec3Of(0, 1, 1) * parameters.length / 2
+                        val scale = vec3Of(parameters.length / 16f) + if (selected)
+                            vec3Of(0, 1, 1) * parameters.length / 2 * 1 / 16f
                         else
-                            Vector3.ORIGIN
+                            vec3Of(0f)
 
                         matrixM.setMatrix4(TRSTransformation(
                                 translation = cursor.center,

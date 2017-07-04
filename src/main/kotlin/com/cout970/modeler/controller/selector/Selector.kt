@@ -107,7 +107,7 @@ class Selector {
                     }
                     .getClosest(context.mouseRay)
 
-            state.selectionHandler.onSelect(obj?.second, state)
+            state.selectionHandler.onSelect(obj?.second, gui)
             updateCursorCenter(state.selectionHandler.getSelection())
         }
     }
@@ -130,7 +130,6 @@ class Selector {
             val sel = state.selectionHandler
 
             state.holdingSelection?.let { selectedObject ->
-                val cursor = projectController.world.cursor
 
                 if (selectedObject is ITranslatable && state.transformationMode == TransformationMode.TRANSLATION) {
                     val context = CanvasHelper.getContext(activeScene, event.oldPos to event.newPos)

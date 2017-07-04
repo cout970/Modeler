@@ -49,7 +49,7 @@ class WorldRenderer {
                 ctx.lights.forEach { light ->
                     matrixM.setMatrix4(TRSTransformation(
                             translation = light.pos,
-                            scale = Vector3.ONE * 16 * 8
+                            scale = Vector3.ONE * 8
                     ).matrix)
                     accept(it)
                 }
@@ -68,7 +68,7 @@ class WorldRenderer {
                 useTexture.setInt(1)
                 matrixM.setMatrix4(TRSTransformation(
                         translation = vec3Of(8, -8, 8),
-                        scale = Vector3.ONE * 16).matrix
+                        scale = Vector3.ONE).matrix
                 )
                 ctx.resources.baseCubeTexture.bind()
                 accept(it)

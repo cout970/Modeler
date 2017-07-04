@@ -18,6 +18,7 @@ class GuiResources {
     lateinit var baseCubeMesh: IMesh
     lateinit var lightMesh: IMesh
     lateinit var translationArrow: IMesh
+
     lateinit var baseCubeTexture: Texture
     lateinit var cursorTexture: Texture
     lateinit var deleteIcon: Image

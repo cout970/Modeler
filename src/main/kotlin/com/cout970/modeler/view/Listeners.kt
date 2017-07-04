@@ -1,12 +1,14 @@
 package com.cout970.modeler.view
 
 import com.cout970.glutilities.event.*
+import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.util.ITickeable
 import com.cout970.modeler.util.absolutePosition
 import com.cout970.modeler.util.isInside
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.view.event.EventController
+import com.cout970.modeler.view.gui.comp.canvas.Canvas
 import com.cout970.modeler.view.render.tool.camera.CameraUpdater
 
 /**
@@ -27,6 +29,11 @@ class Listeners : ITickeable {
         eventController.addListener(EventMouseClick::class.java, this::onMouseClick)
         cameraUpdater = CameraUpdater(gui.canvasContainer, eventController, gui.timer)
         gui.guiUpdater.updateSizes(gui.windowHandler.window.size)
+        gui.projectController.listeners += this::onModelChange
+    }
+
+    fun onModelChange(old: IModel, new: IModel) {
+        gui.guiUpdater.updateObjectList()
     }
 
     fun onMouseScroll(e: EventMouseScroll): Boolean {
@@ -54,7 +61,9 @@ class Listeners : ITickeable {
             if (ret) {
                 true
             } else {
-                if (gui.guiUpdater.leguiContext.focusedGui == null) {
+                if (gui.guiUpdater.leguiContext.focusedGui == null ||
+                    gui.guiUpdater.leguiContext.focusedGui is Canvas) {
+
                     hotKeyHandler.onPress(e)
                 } else {
                     false

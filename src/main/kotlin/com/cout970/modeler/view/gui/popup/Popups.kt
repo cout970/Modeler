@@ -31,10 +31,11 @@ val popupImage = BufferedImage(16, 16, BufferedImage.TYPE_INT_RGB).apply {
     }
 }
 
-internal val importFileExtensions: PointerBuffer = MemoryUtil.memAllocPointer(3).apply {
+internal val importFileExtensions: PointerBuffer = MemoryUtil.memAllocPointer(4).apply {
     put(MemoryUtil.memUTF8("*.obj"))
     put(MemoryUtil.memUTF8("*.tcn"))
     put(MemoryUtil.memUTF8("*.json"))
+    put(MemoryUtil.memUTF8("*.tbl"))
     flip()
 }
 internal val textureExtensions: PointerBuffer = MemoryUtil.memAllocPointer(1).apply {
