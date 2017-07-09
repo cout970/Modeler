@@ -1,21 +1,23 @@
 package com.cout970.modeler.view.gui.popup
 
-import com.cout970.modeler.controller.ModelTransformer
-import com.cout970.modeler.controller.ProjectController
+import com.cout970.modeler.controller.ActionExecutor
 import com.cout970.modeler.core.export.ExportFormat
 import com.cout970.modeler.core.export.ExportManager
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
-import com.cout970.modeler.core.project.Author
+import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.project.Project
+import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.record.HistoricalRecord
+import com.cout970.modeler.core.resource.toResourcePath
 import org.lwjgl.PointerBuffer
 import org.lwjgl.system.MemoryUtil
 import org.lwjgl.util.tinyfd.TinyFileDialogs
 import java.awt.Point
 import java.awt.Toolkit
 import java.awt.image.BufferedImage
+import java.io.File
 import javax.swing.JDialog
 import javax.swing.JOptionPane
 
@@ -59,7 +61,7 @@ private val saveFileExtension: PointerBuffer = MemoryUtil.memAllocPointer(1).app
 
 private var lastSaveFile: String? = null
 
-fun saveProject(projectManager: ProjectController, exportManager: ExportManager) {
+fun saveProject(projectManager: ProjectManager, exportManager: ExportManager) {
     if (lastSaveFile == null) {
         saveProjectAs(projectManager, exportManager)
     } else {
@@ -67,7 +69,7 @@ fun saveProject(projectManager: ProjectController, exportManager: ExportManager)
     }
 }
 
-fun saveProjectAs(projectManager: ProjectController, exportManager: ExportManager) {
+fun saveProjectAs(projectManager: ProjectManager, exportManager: ExportManager) {
     val file = TinyFileDialogs.tinyfd_saveFileDialog("Save As", "", saveFileExtension, "Project File Format (*.pff)")
     if (file != null) {
         lastSaveFile = if (file.endsWith(".pff")) file else file + ".pff"
@@ -75,19 +77,19 @@ fun saveProjectAs(projectManager: ProjectController, exportManager: ExportManage
     }
 }
 
-fun newProject(projectManager: ProjectController, name: String): Boolean {
-    if (name.isBlank()) return false
-    if (projectManager.project.model.objects.isNotEmpty()) {
+fun newProject(projectManager: ProjectManager): Boolean {
+    if (projectManager.model.objects.isNotEmpty()) {
         val res = JOptionPane.showConfirmDialog(null,
                 "Do you want to create a new project? \nAll unsaved changes will be lost!")
         if (res != JOptionPane.OK_OPTION) return false
     }
-    projectManager.newProject(name, Author())
+    val author = projectManager.project.owner
+    projectManager.loadProject(Project(author, "unnamed"))
     return true
 }
 
-fun loadProject(projectManager: ProjectController, exportManager: ExportManager) {
-    if (projectManager.project.model.objects.isNotEmpty()) {
+fun loadProject(projectManager: ProjectManager, exportManager: ExportManager) {
+    if (projectManager.model.objects.isNotEmpty()) {
         val res = JOptionPane.showConfirmDialog(null,
                 "Do you want to load a new project? \nAll unsaved changes will be lost!")
         if (res != JOptionPane.OK_OPTION) return
@@ -98,7 +100,8 @@ fun loadProject(projectManager: ProjectController, exportManager: ExportManager)
     if (file != null) {
         lastSaveFile = file
         try {
-            projectManager.loadProject(exportManager, file)
+            val project = exportManager.loadProject(file)
+            projectManager.loadProject(project)
         } catch (e: Exception) {
             e.print()
         }
@@ -117,30 +120,30 @@ fun saveProjectDirect(exportManager: ExportManager, project: Project, path: Stri
 }
 
 fun showImportModelPopup(exportManager: ExportManager, historyRecord: HistoricalRecord,
-                         projectController: ProjectController) {
+                         projectManager: ProjectManager) {
 
     ImportDialog.show { prop ->
         if (prop != null) {
-            exportManager.importModel(prop, historyRecord, projectController)
+            exportManager.importModel(prop, historyRecord, projectManager)
         }
     }
 }
 
-fun showExportModelPopup(exportManager: ExportManager, modelTransformer: ModelTransformer,
-                         projectController: ProjectController) {
+fun showExportModelPopup(exportManager: ExportManager, actionExecutor: ActionExecutor,
+                         projectManager: ProjectManager) {
     ExportDialog.show { prop ->
         if (prop != null) {
-            exportManager.exportModel(prop, modelTransformer, projectController.project.model)
+            exportManager.exportModel(prop, actionExecutor, projectManager.model)
         }
     }
 }
 
-fun importTexture(projectManager: ProjectController) {
+fun importTexture(projectManager: ProjectManager) {
     val file = TinyFileDialogs.tinyfd_openFileDialog("Import Texture", "",
             textureExtensions, "PNG texture (*.png)", false)
     if (file != null) {
-//        val sel = projectManager.modelEditor.model.selectAllLeafs()
-//        projectManager.exportManager.importTexture(file, sel)
+        val archive = File(file)
+        projectManager.loadMaterial(TexturedMaterial(archive.nameWithoutExtension, archive.toResourcePath()))
     }
 }
 //

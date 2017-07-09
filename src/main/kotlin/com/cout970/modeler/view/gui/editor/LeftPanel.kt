@@ -1,45 +1,24 @@
 package com.cout970.modeler.view.gui.editor
 
-import com.cout970.modeler.controller.ProjectController
-import com.cout970.modeler.util.disable
 import com.cout970.modeler.util.hide
-import com.cout970.modeler.util.show
 import com.cout970.modeler.view.gui.comp.CButton
 import com.cout970.modeler.view.gui.comp.CLabel
 import com.cout970.modeler.view.gui.comp.CPanel
 import com.cout970.modeler.view.gui.comp.CTextInput
-import org.liquidengine.legui.component.TextInput
 
 /**
  * Created by cout970 on 2017/06/09.
  */
 class LeftPanel : CPanel() {
 
-    val newProjectPanel = NewProjectPanel()
     val createObjectPanel = CreateObjectPanel()
     val editCubePanel = EditTemplateCubePanel()
 
     init {
-        addComponent(newProjectPanel)
         addComponent(createObjectPanel)
         addComponent(editCubePanel)
         editCubePanel.position.y = 100f
-        editCubePanel.disable()
-    }
-
-    class NewProjectPanel : CPanel(width = 190f, height = 125f) {
-
-        val projectNameLabel = CLabel("Project Name", 5f, 5f, 180f, 24f)
-        val projectNameInput = TextInput("", 5f, 35f, 180f, 24f)
-        val projectCreateButton = CButton("Create", 5f, 65f, 180f, 24f, "project.new")
-        val projectLoadButton = CButton("Load Project", 5f, 95f, 180f, 24f, "project.load")
-
-        init {
-            addComponent(projectNameLabel)
-            addComponent(projectNameInput)
-            addComponent(projectCreateButton)
-            addComponent(projectLoadButton)
-        }
+        editCubePanel.hide()
     }
 
     class CreateObjectPanel : CPanel(width = 190f, height = 100f) {
@@ -127,18 +106,6 @@ class LeftPanel : CPanel() {
                 addComponent(rotZInput)
                 setBorderless()
             }
-        }
-    }
-
-    fun refresh(projectController: ProjectController) {
-        if (projectController.project.creationTime == -1L) {
-            newProjectPanel.show()
-            createObjectPanel.hide()
-            editCubePanel.hide()
-        } else {
-            newProjectPanel.hide()
-            createObjectPanel.show()
-            editCubePanel.show()
         }
     }
 }

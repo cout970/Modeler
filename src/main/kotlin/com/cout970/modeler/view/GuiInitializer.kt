@@ -1,13 +1,13 @@
 package com.cout970.modeler.view
 
 import com.cout970.glutilities.structure.Timer
+import com.cout970.modeler.controller.ActionExecutor
 import com.cout970.modeler.controller.CommandExecutor
 import com.cout970.modeler.controller.GuiState
-import com.cout970.modeler.controller.ModelTransformer
-import com.cout970.modeler.controller.ProjectController
 import com.cout970.modeler.controller.selector.Selector
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
+import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.view.event.EventController
 import com.cout970.modeler.view.gui.GuiUpdater
@@ -26,8 +26,8 @@ class GuiInitializer(
         val renderManager: RenderManager,
         val resourceLoader: ResourceLoader,
         val timer: Timer,
-        val projectController: ProjectController,
-        val modelTransformer: ModelTransformer
+        val projectManager: ProjectManager,
+        val actionExecutor: ActionExecutor
 ) {
 
     fun init(): Gui {
@@ -62,14 +62,22 @@ class GuiInitializer(
         log(Level.FINE) { "[GuiInitializer] GUI Initialization done" }
 
         return Gui(
-                root, guiUpdater, canvasContainer,
-                commandExecutor, listeners, windowHandler, timer, eventController,
-                editorPanel, projectController, selector, modelTransformer,
-                guiResources, guiState
+                root = root,
+                guiUpdater = guiUpdater,
+                canvasContainer = canvasContainer,
+                commandExecutor = commandExecutor,
+                listeners = listeners,
+                windowHandler = windowHandler,
+                timer = timer,
+                input = eventController,
+                editorPanel = editorPanel,
+                projectManager = projectManager,
+                selector = selector,
+                actionExecutor = actionExecutor,
+                resources = guiResources,
+                state = guiState
         ).also {
             renderManager.gui = it
-            guiUpdater.gui = it
-            selector.gui = it
         }
     }
 }

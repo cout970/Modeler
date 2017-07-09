@@ -5,7 +5,6 @@ import com.cout970.modeler.api.model.IObject
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
-import com.cout970.modeler.controller.ProjectController
 import com.cout970.modeler.core.export.ModelImporters.jsonImporter
 import com.cout970.modeler.core.export.ModelImporters.mcxExporter
 import com.cout970.modeler.core.export.ModelImporters.objExporter
@@ -17,6 +16,7 @@ import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.material.IMaterial
 import com.cout970.modeler.core.project.Project
+import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.record.HistoricalRecord
 import com.cout970.modeler.core.record.action.ActionImportModel
 import com.cout970.modeler.core.resource.ResourceLoader
@@ -72,26 +72,26 @@ class ExportManager(val resourceLoader: ResourceLoader) {
         zip.close()
     }
 
-    fun importModel(prop: ImportProperties, historyRecord: HistoricalRecord, projectController: ProjectController) {
+    fun importModel(prop: ImportProperties, historyRecord: HistoricalRecord, projectManager: ProjectManager) {
         val file = File(prop.path)
         when (prop.format) {
             ImportFormat.OBJ -> {
-                historyRecord.doAction(ActionImportModel(projectController, resourceLoader, prop.path) {
+                historyRecord.doAction(ActionImportModel(projectManager, resourceLoader, prop.path) {
                     objImporter.import(file.toResourcePath(), prop.flipUV)
                 })
             }
             ImportFormat.TCN -> {
-                historyRecord.doAction(ActionImportModel(projectController, resourceLoader, prop.path) {
+                historyRecord.doAction(ActionImportModel(projectManager, resourceLoader, prop.path) {
                     tcnImporter.import(file.toResourcePath())
                 })
             }
             ImportFormat.JSON -> {
-                historyRecord.doAction(ActionImportModel(projectController, resourceLoader, prop.path) {
+                historyRecord.doAction(ActionImportModel(projectManager, resourceLoader, prop.path) {
                     jsonImporter.import(file.toResourcePath())
                 })
             }
             ImportFormat.TBL -> {
-                historyRecord.doAction(ActionImportModel(projectController, resourceLoader, prop.path) {
+                historyRecord.doAction(ActionImportModel(projectManager, resourceLoader, prop.path) {
                     tblImporter.import(file.toResourcePath())
                 })
             }
@@ -186,12 +186,13 @@ class ExportManager(val resourceLoader: ResourceLoader) {
         return Color.getHSBColor(rand.toFloat(), 0.5f, 1.0f)
     }
 
-    fun loadLastProjectIfExists(projectController: ProjectController) {
+    fun loadLastProjectIfExists(projectManager: ProjectManager) {
         val path = File("./saves/last.pff")
         if (path.exists()) {
             try {
                 log(Level.FINE) { "Found last project, loading..." }
-                projectController.loadProject(this, path.path)
+                val project = loadProject(path.path)
+                projectManager.loadProject(project)
                 log(Level.FINE) { "Last project loaded" }
             } catch (e: Exception) {
                 log(Level.ERROR) { "Unable to load last project" }

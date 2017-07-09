@@ -9,7 +9,6 @@ import com.cout970.modeler.controller.selector.TransformationMode
  */
 class GuiState {
 
-    val selectionHandler = SelectionHandler()
     var transformationMode = TransformationMode.TRANSLATION
 
     var useTexture = false

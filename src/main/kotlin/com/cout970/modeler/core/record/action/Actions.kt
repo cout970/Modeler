@@ -2,19 +2,19 @@ package com.cout970.modeler.core.record.action
 
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.IObject
-import com.cout970.modeler.controller.ModelTransformer
+import com.cout970.modeler.controller.IModelSetter
 
 /**
  * Created by cout970 on 2017/06/21.
  */
-class ActionDelete(transformer: ModelTransformer, newModel: IModel) : ActionUpdateModel(transformer, newModel)
+class ActionDelete(transformer: IModelSetter, newModel: IModel) : ActionUpdateModel(transformer, newModel)
 
-class ActionAddObject(transformer: ModelTransformer, model: IModel, obj: IObject)
+class ActionAddObject(transformer: IModelSetter, model: IModel, obj: IObject)
     : ActionUpdateModel(transformer, model.withObject(model.objects + obj))
 
-class ActionChangeObject(transformer: ModelTransformer, newModel: IModel) : ActionUpdateModel(transformer, newModel)
+class ActionChangeObject(transformer: IModelSetter, newModel: IModel) : ActionUpdateModel(transformer, newModel)
 
-open class ActionUpdateModel(val transformer: ModelTransformer, val newModel: IModel) : IAction {
+open class ActionUpdateModel(val transformer: IModelSetter, val newModel: IModel) : IAction {
 
     val oldModel = transformer.model
 

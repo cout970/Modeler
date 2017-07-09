@@ -4,7 +4,8 @@ import com.cout970.glutilities.device.Mouse
 import com.cout970.glutilities.event.EnumKeyState
 import com.cout970.glutilities.event.EventMouseClick
 import com.cout970.modeler.api.model.selection.ISelection
-import com.cout970.modeler.controller.ProjectController
+import com.cout970.modeler.controller.ActionTrigger
+import com.cout970.modeler.controller.RayTracer
 import com.cout970.modeler.controller.selector.helpers.CanvasHelper
 import com.cout970.modeler.controller.selector.helpers.CanvasHelper.getMouseSpaceContext
 import com.cout970.modeler.controller.selector.helpers.RotationHelper
@@ -12,13 +13,13 @@ import com.cout970.modeler.controller.selector.helpers.ScaleHelper
 import com.cout970.modeler.controller.selector.helpers.TranslationHelper
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.getSelectedObjects
-import com.cout970.modeler.core.record.HistoricalRecord
-import com.cout970.modeler.core.record.action.ActionModifyModelShape
+import com.cout970.modeler.core.model.selection.ObjectRef
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.Gui
 import com.cout970.modeler.view.event.IInput
 import com.cout970.modeler.view.gui.comp.canvas.Canvas
 import com.cout970.modeler.view.gui.comp.canvas.CanvasContainer
+import com.cout970.raytrace.IRayObstacle
 import com.cout970.raytrace.RayTraceResult
 import com.cout970.vector.api.IVector2
 
@@ -28,7 +29,8 @@ import com.cout970.vector.api.IVector2
 class Selector {
 
     lateinit var gui: Gui
-    val projectController: ProjectController get() = gui.projectController
+    //    val projectController: ProjectController get() = gui.projectController
+    val cursor = Cursor()
     val input: IInput get() = gui.input
 
     private var activeCanvas: Canvas? = null
@@ -39,7 +41,7 @@ class Selector {
     private var rotationLastOffset = 0f
     private var scaleLastOffset = 0f
 
-    fun update(canvasContainer: CanvasContainer, historyRecord: HistoricalRecord) {
+    fun update(canvasContainer: CanvasContainer, trigger: ActionTrigger) {
         activeCanvas = canvasContainer.selectedCanvas
 
         activeCanvas?.let { activeScene ->
@@ -50,10 +52,9 @@ class Selector {
             if (state.holdingSelection == null) { // no selection
 
                 // update hoverObject
-                val cursor = projectController.world.cursor
                 val camera = activeScene.cameraHandler.camera
                 val viewport = activeScene.size.toIVector()
-                val objects = cursor.getSelectableParts(state, camera, viewport)
+                val objects = cursor.getSelectableParts(gui, camera, viewport)
                 state.hoveredObject = getHoveredObject(context, objects)
 
                 // if clicked add object to selection
@@ -65,7 +66,7 @@ class Selector {
                 if (!click) { // end selection
                     // apply changes
                     state.tmpModel?.let { model ->
-                        historyRecord.doAction(ActionModifyModelShape(projectController, model))
+                        trigger.loadTmpModel(model)
                     }
                     // reset selection
                     state.tmpModel = null
@@ -100,34 +101,41 @@ class Selector {
         if (click && e.keyState == EnumKeyState.PRESS) {
             val pos = input.mouse.getMousePos()
             val context = CanvasHelper.getMouseSpaceContext(canvas, pos)
-            val obj = projectController.world.getModelParts()
+            val obj = getModelParts()
                     .mapNotNull { pair ->
                         val res = pair.first.rayTrace(context.mouseRay)
-                        res?.let { res -> res to pair.second }
+                        res?.let { first -> first to pair.second }
                     }
                     .getClosest(context.mouseRay)
 
-            state.selectionHandler.onSelect(obj?.second, gui)
-            updateCursorCenter(state.selectionHandler.getSelection())
+            gui.selectionHandler.onSelect(obj?.second, gui)
+            updateCursorCenter(gui.selectionHandler.getSelection())
+        }
+    }
+
+    fun getModelParts(): List<Pair<IRayObstacle, ObjectRef>> {
+        val model = gui.projectManager.model
+        return model.objects.mapIndexed { index, obj ->
+            RayTracer.toRayObstacle(obj) to ObjectRef(index)
         }
     }
 
     fun updateCursorCenter(selection: ISelection?) {
         if (selection == null) return
-        val model = gui.state.tmpModel ?: projectController.world.models.firstOrNull() ?: return
+        val model = gui.state.tmpModel ?: gui.projectManager.model
 
         val newCenter = model.getSelectedObjects(selection)
                 .map { it.getCenter() }
                 .middle()
 
-        projectController.world.cursor.center = newCenter
+        cursor.center = newCenter
     }
 
     fun onDrag(event: EventMouseDrag) {
 
         activeCanvas?.let { activeScene ->
             val state = gui.state
-            val sel = state.selectionHandler
+            val sel = gui.selectionHandler
 
             state.holdingSelection?.let { selectedObject ->
 
@@ -144,8 +152,8 @@ class Selector {
 
                     if (translationLastOffset != offset) {
                         translationLastOffset = offset
-                        state.tmpModel = selectedObject.applyTranslation(offset, sel, projectController.project.model)
-                        updateCursorCenter(state.selectionHandler.getSelection())
+                        state.tmpModel = selectedObject.applyTranslation(offset, sel, gui.projectManager.model)
+                        updateCursorCenter(gui.selectionHandler.getSelection())
                     }
                 } else {
                     translationLastOffset = 0f
@@ -162,7 +170,7 @@ class Selector {
 
                     if (rotationLastOffset != offset) {
                         rotationLastOffset = offset
-                        state.tmpModel = selectedObject.applyRotation(offset, sel, projectController.project.model)
+                        state.tmpModel = selectedObject.applyRotation(offset, sel, gui.projectManager.model)
                     }
                 } else {
                     rotationLastOffset = 0f
@@ -180,7 +188,7 @@ class Selector {
 
                     if (scaleLastOffset != offset) {
                         scaleLastOffset = offset
-                        state.tmpModel = selectedObject.applyScale(offset, sel, projectController.project.model)
+                        state.tmpModel = selectedObject.applyScale(offset, sel, gui.projectManager.model)
                     }
                 } else {
                     scaleLastOffset = 0f

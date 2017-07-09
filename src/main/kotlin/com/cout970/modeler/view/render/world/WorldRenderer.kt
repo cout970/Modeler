@@ -28,7 +28,7 @@ class WorldRenderer {
     fun renderWorld(ctx: RenderContext, world: World) {
         renderBaseBlock(ctx)
         renderGridLines(ctx)
-        if (ctx.guiState.renderLights) {
+        if (ctx.gui.state.renderLights) {
             renderLights(ctx)
         }
         modelRenderer.renderModels(ctx, world)

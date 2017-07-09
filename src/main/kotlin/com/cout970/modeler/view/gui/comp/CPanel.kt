@@ -2,6 +2,7 @@ package com.cout970.modeler.view.gui.comp
 
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.util.toColor
+import com.cout970.modeler.view.GuiResources
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Panel
 
@@ -20,6 +21,11 @@ open class CPanel(
 
     companion object {
         private var lastID = 0
+    }
+
+    open fun loadResources(resources: GuiResources) {
+        components.filterIsInstance<CPanel>()
+                .forEach { it.loadResources(resources) }
     }
 
     fun setBorderless() {

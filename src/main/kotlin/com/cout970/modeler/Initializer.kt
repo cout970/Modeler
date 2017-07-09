@@ -2,13 +2,13 @@ package com.cout970.modeler
 
 import com.cout970.glutilities.structure.Timer
 import com.cout970.glutilities.window.GLFWLoader
-import com.cout970.modeler.controller.ModelTransformer
-import com.cout970.modeler.controller.ProjectController
+import com.cout970.modeler.controller.ActionExecutor
 import com.cout970.modeler.core.config.ConfigManager
 import com.cout970.modeler.core.export.ExportManager
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
+import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.view.GuiInitializer
 import com.cout970.modeler.view.event.EventController
@@ -39,9 +39,9 @@ class Initializer {
         log(Level.FINE) { "Creating EventController" }
         val eventController = EventController()
         log(Level.FINE) { "Creating ProjectController" }
-        val projectController = ProjectController()
+        val projectManager = ProjectManager()
         log(Level.FINE) { "Creating ModelTransformer" }
-        val modelTransformer = ModelTransformer(projectController)
+        val modelTransformer = ActionExecutor(projectManager)
         log(Level.FINE) { "Creating ExportManager" }
         val exportManager = ExportManager(resourceLoader)
 
@@ -55,7 +55,7 @@ class Initializer {
                 renderManager,
                 resourceLoader,
                 timer,
-                projectController,
+                projectManager,
                 modelTransformer
         ).init()
 
@@ -63,21 +63,21 @@ class Initializer {
         val mainLoop = Loop(listOf(renderManager, gui.listeners, eventController, windowHandler, modelTransformer),
                 timer, windowHandler::shouldClose)
 
-        parseArgs(programArguments, exportManager, projectController)
+        parseArgs(programArguments, exportManager, projectManager)
 
         val state = ProgramSate(
-                resourceLoader,
-                windowHandler,
-                eventController,
-                renderManager,
-                mainLoop,
-                exportManager,
-                gui,
-                projectController,
-                modelTransformer
+                resourceLoader = resourceLoader,
+                windowHandler = windowHandler,
+                eventController = eventController,
+                renderManager = renderManager,
+                mainLoop = mainLoop,
+                exportManager = exportManager,
+                gui = gui,
+                projectManager = projectManager,
+                actionExecutor = modelTransformer
         )
 
-        gui.state.selectionHandler.listeners.add(gui.guiUpdater::onSelectionChange)
+        gui.selectionHandler.listeners.add(gui.guiUpdater::onSelectionUpdate)
 
         log(Level.FINE) { "Starting GLFW" }
         GLFWLoader.init()
@@ -87,7 +87,7 @@ class Initializer {
         eventController.bindWindow(windowHandler.window)
 
         log(Level.FINE) { "Initializing renderers" }
-        renderManager.initOpenGl(resourceLoader, windowHandler, eventController, projectController)
+        renderManager.initOpenGl(resourceLoader, windowHandler, eventController)
         log(Level.FINE) { "Registering Input event listeners" }
         gui.listeners.initListeners(eventController, gui)
         gui.commandExecutor.programState = state
@@ -95,20 +95,21 @@ class Initializer {
         gui.resources.reload(resourceLoader)
 
         log(Level.FINE) { "Searching for last project" }
-        exportManager.loadLastProjectIfExists(projectController)
+        exportManager.loadLastProjectIfExists(projectManager)
         gui.commandExecutor.execute("gui.left.refresh")
         log(Level.FINE) { "Initialization done" }
         return state
     }
 
     private fun parseArgs(programArguments: List<String>, exportManager: ExportManager,
-                          projectController: ProjectController) {
+                          projectManager: ProjectManager) {
         if (programArguments.isNotEmpty()) {
             log(Level.FINE) { "Parsing arguments..." }
             if (File(programArguments[0]).exists()) {
                 try {
                     log(Level.NORMAL) { "Loading Project at '${programArguments[0]}'" }
-                    projectController.loadProject(exportManager, programArguments[0])
+                    val project = exportManager.loadProject(programArguments[0])
+                    projectManager.loadProject(project)
                     log(Level.NORMAL) { "Project loaded" }
                 } catch (e: Exception) {
                     log(Level.ERROR) { "Unable to load project file at '${programArguments[0]}'" }

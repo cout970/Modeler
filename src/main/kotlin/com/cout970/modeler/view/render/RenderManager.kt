@@ -1,7 +1,6 @@
 package com.cout970.modeler.view.render
 
 import com.cout970.glutilities.structure.GLStateMachine
-import com.cout970.modeler.controller.ProjectController
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
@@ -27,12 +26,9 @@ class RenderManager : ITickeable {
     lateinit var guiRenderer: GuiRenderer
     lateinit var shader: UniversalShader
     lateinit var canvasRenderer: CanvasRenderer
-    lateinit var projectController: ProjectController
 
-    fun initOpenGl(resourceLoader: ResourceLoader, windowHandler: WindowHandler, input: IInput,
-                   projectController: ProjectController) {
+    fun initOpenGl(resourceLoader: ResourceLoader, windowHandler: WindowHandler, input: IInput) {
 
-        this.projectController = projectController
         log(Level.FINE) { "[RenderManager] Creating GuiRenderer" }
         guiRenderer = GuiRenderer(gui.root, windowHandler.window.id)
         gui.guiUpdater.leguiContext = guiRenderer.context

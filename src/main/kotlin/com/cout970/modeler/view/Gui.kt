@@ -1,11 +1,12 @@
 package com.cout970.modeler.view
 
 import com.cout970.glutilities.structure.Timer
+import com.cout970.modeler.controller.ActionExecutor
 import com.cout970.modeler.controller.CommandExecutor
 import com.cout970.modeler.controller.GuiState
-import com.cout970.modeler.controller.ModelTransformer
-import com.cout970.modeler.controller.ProjectController
+import com.cout970.modeler.controller.SelectionHandler
 import com.cout970.modeler.controller.selector.Selector
+import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.view.event.IInput
 import com.cout970.modeler.view.gui.GuiUpdater
 import com.cout970.modeler.view.gui.Root
@@ -27,9 +28,16 @@ data class Gui(
         val timer: Timer,
         val input: IInput,
         val editorPanel: EditorPanel,
-        val projectController: ProjectController,
+        val projectManager: ProjectManager,
         val selector: Selector,
-        val modelTransformer: ModelTransformer,
+        val actionExecutor: ActionExecutor,
         val resources: GuiResources,
-        val state: GuiState
-)
+        val state: GuiState,
+        val selectionHandler: SelectionHandler = SelectionHandler()
+) {
+
+    init {
+        guiUpdater.initGui(this)
+        selector.gui = this
+    }
+}

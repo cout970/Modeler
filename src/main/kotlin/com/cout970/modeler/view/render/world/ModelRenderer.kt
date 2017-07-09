@@ -39,24 +39,24 @@ class ModelRenderer {
         }
 
         world.models.forEachIndexed { modelIndex, model ->
-            if (modelIndex == 0 && ctx.guiState.tmpModel != null) {
+            if (modelIndex == 0 && ctx.gui.state.tmpModel != null) {
                 if (modelIndex in modelCache.indices) {
                     modelCache[modelIndex] = emptyList()
                 }
-                renderModel(ctx, ctx.guiState.tmpModel!!, modelIndex)
+                renderModel(ctx, ctx.gui.state.tmpModel!!, modelIndex)
             } else {
                 renderModel(ctx, model, modelIndex)
             }
         }
 
-        if (ctx.guiState.selectionHandler.lastModified != lastModifiedSelection || ctx.guiState.tmpModel != null) {
+        if (ctx.gui.selectionHandler.lastModified != lastModifiedSelection || ctx.gui.state.tmpModel != null) {
             selectionVao?.close()
             selectionVao = null
         }
         if (selectionVao == null) {
             selectionVao = ctx.buffer.build(GL11.GL_QUADS) {
-                val model = ctx.guiState.tmpModel ?: world.models.first()
-                val selection = ctx.guiState.selectionHandler.ref
+                val model = ctx.gui.state.tmpModel ?: world.models.first()
+                val selection = ctx.gui.selectionHandler.ref
 
                 val objSel = model.objects.filterIndexed { index, _ -> selection.any { it.objectIndex == index } }
                 objSel.forEach {

@@ -3,7 +3,7 @@ package com.cout970.modeler.core.export
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.ObjectCube
 import com.cout970.modeler.core.model.material.IMaterial
-import com.cout970.modeler.core.model.material.MaterialNone
+import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.resource.ResourcePath
 import com.cout970.modeler.util.quatOfAngles
 import com.cout970.vector.api.IVector2
@@ -25,7 +25,7 @@ class TblImporter {
     fun import(path: ResourcePath): Model {
 
         val model = parse(path)
-        val material = MaterialNone
+        val material = TexturedMaterial("texture", path.enterZip("texture.png"))
         val texSize = vec2Of(model.textureWidth, model.textureHeight)
 
         val objects = mapCubes(model.cubes, material, texSize) + mapGroups(model.cubeGroups, material, texSize)

@@ -1,5 +1,6 @@
 package com.cout970.modeler.view.render
 
+import com.cout970.modeler.controller.World
 import com.cout970.modeler.util.absolutePosition
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.view.Gui
@@ -29,7 +30,7 @@ class CanvasRenderer(val renderManager: RenderManager, val input: IInput) {
                     windowHandler = gui.windowHandler,
                     timer = gui.timer,
                     shader = renderManager.shader,
-                    guiState = gui.state,
+                    gui = gui,
                     buffer = buffer,
                     resources = gui.resources
             )
@@ -39,7 +40,7 @@ class CanvasRenderer(val renderManager: RenderManager, val input: IInput) {
             )
             gui.windowHandler.saveViewport(viewportPos, canvas.size.toIVector()) {
                 renderManager.shader.useShader(ctx) {
-                    worldRenderer.renderWorld(ctx, gui.projectController.world)
+                    worldRenderer.renderWorld(ctx, World(listOf(gui.projectManager.model), gui.selector.cursor))
                 }
             }
         }

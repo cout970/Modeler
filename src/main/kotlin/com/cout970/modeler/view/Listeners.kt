@@ -29,11 +29,11 @@ class Listeners : ITickeable {
         eventController.addListener(EventMouseClick::class.java, this::onMouseClick)
         cameraUpdater = CameraUpdater(gui.canvasContainer, eventController, gui.timer)
         gui.guiUpdater.updateSizes(gui.windowHandler.window.size)
-        gui.projectController.listeners += this::onModelChange
+        gui.projectManager.modelChangeListeners += this::onModelChange
     }
 
     fun onModelChange(old: IModel, new: IModel) {
-        gui.guiUpdater.updateObjectList()
+        gui.guiUpdater.onModelUpdate(old, new)
     }
 
     fun onMouseScroll(e: EventMouseScroll): Boolean {
@@ -85,6 +85,6 @@ class Listeners : ITickeable {
 
     override fun tick() {
         cameraUpdater.updateCameras()
-        gui.selector.update(gui.canvasContainer, gui.modelTransformer.historicalRecord)
+        gui.selector.update(gui.canvasContainer, gui.actionExecutor.actionTrigger)
     }
 }

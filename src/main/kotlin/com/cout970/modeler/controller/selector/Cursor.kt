@@ -2,11 +2,10 @@ package com.cout970.modeler.controller.selector
 
 
 import com.cout970.modeler.api.model.IModel
-import com.cout970.modeler.controller.GuiState
-import com.cout970.modeler.controller.ProjectController
 import com.cout970.modeler.controller.SelectionHandler
 import com.cout970.modeler.core.tool.EditTool
 import com.cout970.modeler.util.FakeRayObstacle
+import com.cout970.modeler.view.Gui
 import com.cout970.modeler.view.render.tool.camera.Camera
 import com.cout970.raytrace.IRayObstacle
 import com.cout970.raytrace.Ray
@@ -22,7 +21,7 @@ import com.cout970.vector.extensions.times
 /**
  * Created by cout970 on 2017/04/09.
  */
-class Cursor(val projectController: ProjectController) {
+class Cursor {
 
     var center: IVector3 = Vector3.ORIGIN
 
@@ -30,12 +29,12 @@ class Cursor(val projectController: ProjectController) {
         return CursorParameters.create(camera.zoom, viewport)
     }
 
-    fun getSelectableParts(state: GuiState, camera: Camera, viewport: IVector2): List<ISelectable> {
-        if (state.selectionHandler.ref.isEmpty()) {
+    fun getSelectableParts(gui: Gui, camera: Camera, viewport: IVector2): List<ISelectable> {
+        if (gui.selectionHandler.ref.isEmpty()) {
             return emptyList()
         }
         val parameters = CursorParameters.create(camera.zoom, viewport)
-        return when (state.transformationMode) {
+        return when (gui.state.transformationMode) {
             TransformationMode.TRANSLATION -> listOf(
                     CursorPartTranslate(this, parameters, Vector3.X_AXIS),
                     CursorPartTranslate(this, parameters, Vector3.Y_AXIS),
