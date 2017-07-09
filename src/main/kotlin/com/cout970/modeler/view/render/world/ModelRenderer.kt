@@ -111,6 +111,7 @@ class ModelRenderer {
         }
         val map = model.objects
                 .mapIndexed { index, iObject -> index to iObject }
+                .filter { (first) -> model.visibilities[first] }
                 .groupBy { it.second.material }
 
         map.forEach { material, list ->

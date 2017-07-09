@@ -83,7 +83,7 @@ class JsonImporter {
             }
         }
 
-        return Model(obj)
+        return Model.of(obj, materialList)
     }
 
     private fun getSide(element: Element, side: Side, face: Face): IMesh {

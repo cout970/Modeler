@@ -1,5 +1,6 @@
 package com.cout970.modeler.core.export
 
+import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.ObjectCube
@@ -23,7 +24,7 @@ class TblImporter {
             .registerTypeAdapter(IVector2::class.java, Vector2Serializer())
             .create()!!
 
-    fun import(path: ResourcePath): Model {
+    fun import(path: ResourcePath): IModel {
 
         val model = parse(path)
         val material = TexturedMaterial("texture", path.enterZip("texture.png"))
@@ -31,7 +32,7 @@ class TblImporter {
         val texSize = vec2Of(model.textureWidth, model.textureHeight)
 
         val objects = mapCubes(model.cubes, materialRef, texSize) + mapGroups(model.cubeGroups, materialRef, texSize)
-        return Model(objects, listOf(material))
+        return Model.of(objects, listOf(material))
     }
 
     fun mapGroups(list: List<CubeGroup>, material: IMaterialRef, texSize: IVector2): List<ObjectCube> {

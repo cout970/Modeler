@@ -10,9 +10,13 @@ import com.cout970.modeler.controller.IModelSetter
 class ActionDelete(transformer: IModelSetter, newModel: IModel) : ActionUpdateModel(transformer, newModel)
 
 class ActionAddObject(transformer: IModelSetter, model: IModel, obj: IObject)
-    : ActionUpdateModel(transformer, model.withObject(model.objects + obj))
+    : ActionUpdateModel(transformer, model.addObjects(listOf(obj)))
 
 class ActionChangeObject(transformer: IModelSetter, newModel: IModel) : ActionUpdateModel(transformer, newModel)
+
+class ActionPaste(transformer: IModelSetter, newModel: IModel) : ActionUpdateModel(transformer, newModel)
+
+class ActionUpdateVisibility(transformer: IModelSetter, newModel: IModel) : ActionUpdateModel(transformer, newModel)
 
 open class ActionUpdateModel(val transformer: IModelSetter, val newModel: IModel) : IAction {
 

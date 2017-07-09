@@ -10,15 +10,6 @@ import com.cout970.modeler.core.model.selection.ObjectRef
  * Created by cout970 on 2017/06/09.
  */
 
-
-fun IModel.transformObjects(sel: List<IObjectRef> = this.objects.mapIndexed { i, _ -> ObjectRef(i) },
-                            func: (IObject) -> IObject): IModel {
-    val indexSet = sel.map { it.objectIndex }
-    return withObject(objects.mapIndexed { index, obj ->
-        if (index in indexSet) func(obj) else obj
-    })
-}
-
 fun IModel.getSelectedObjects(sel: ISelection): List<IObject> {
     return objects.mapIndexedNotNull { index, iObject ->
         if (sel.isSelected(ObjectRef(index))) iObject else null
@@ -26,7 +17,7 @@ fun IModel.getSelectedObjects(sel: ISelection): List<IObject> {
 }
 
 fun IModel.getSelectedObjectRefs(sel: ISelection): List<IObjectRef> {
-    return objects.mapIndexedNotNull { index, iObject ->
+    return objects.mapIndexedNotNull { index, _ ->
         val ref = ObjectRef(index)
         if (sel.isSelected(ref)) ref else null
     }

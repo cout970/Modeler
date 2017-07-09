@@ -8,7 +8,6 @@ import com.cout970.modeler.view.GuiResources
 import com.cout970.modeler.view.gui.comp.CButton
 import com.cout970.modeler.view.gui.comp.CLabel
 import com.cout970.modeler.view.gui.comp.CPanel
-import com.cout970.modeler.view.gui.comp.CToggleButton
 import org.joml.Vector2f
 import org.liquidengine.legui.component.ImageView
 import org.liquidengine.legui.util.ColorConstants
@@ -52,17 +51,22 @@ class RightPanel : CPanel() {
     class ListItem(val ref: IObjectRef, name: String) : CPanel(width = 180f, height = 24f) {
 
         val label = CLabel(name, 0f, 0f, 120f, 24f)
-        val showButton = CToggleButton(120f, 0f, 24f, 24f)
+        val showButton = CButton("", 120f, 0f, 24f, 24f, "tree.view.show.item")
+        val hideButton = CButton("", 120f, 0f, 24f, 24f, "tree.view.hide.item")
         val delButton = CButton("", 150f, 0f, 24f, 24f, "tree.view.delete.item")
 
         init {
             backgroundColor = Config.colorPalette.primaryColor.toColor()
             addComponent(label)
+            addComponent(hideButton)
             addComponent(showButton)
             addComponent(delButton)
 
             showButton.backgroundColor = ColorConstants.transparent()
             showButton.border.isEnabled = false
+
+            hideButton.backgroundColor = ColorConstants.transparent()
+            hideButton.border.isEnabled = false
 
             delButton.backgroundColor = ColorConstants.transparent()
             delButton.border.isEnabled = false
@@ -70,6 +74,7 @@ class RightPanel : CPanel() {
 
         override fun loadResources(resources: GuiResources) {
             showButton.setImage(ImageView(resources.showIcon).apply { size = Vector2f(24f) })
+            hideButton.setImage(ImageView(resources.hideIcon).apply { size = Vector2f(24f) })
             delButton.setImage(ImageView(resources.deleteIcon).apply { size = Vector2f(18f); position = Vector2f(3f) })
             super.loadResources(resources)
         }

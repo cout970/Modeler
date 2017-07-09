@@ -1,5 +1,6 @@
 package com.cout970.modeler.core.export
 
+import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.`object`.IObjectCube
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
@@ -28,7 +29,7 @@ class TcnImporter {
     val cubeTypes = listOf("d9e621f7-957f-4b77-b1ae-20dcd0da7751", "de81aa14-bd60-4228-8d8d-5238bcd3caaa")
     val COMMA = ",".toRegex()
 
-    fun import(path: ResourcePath): Model {
+    fun import(path: ResourcePath): IModel {
         val model = path.enterZip("model.xml")
         val stream = model.inputStream()
         val documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder()
@@ -86,7 +87,7 @@ class TcnImporter {
                 e.print()
             }
         }
-        return Model(meshes, listOf(texture))
+        return Model.of(meshes, listOf(texture))
     }
 
     @Throws(NumberFormatException::class)

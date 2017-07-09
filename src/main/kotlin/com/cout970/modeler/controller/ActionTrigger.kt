@@ -8,14 +8,11 @@ import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.core.model.Object
 import com.cout970.modeler.core.model.ObjectCube
+import com.cout970.modeler.core.model.getSelectedObjects
 import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.mesh.MeshFactory
 import com.cout970.modeler.core.model.selection.Selection
-import com.cout970.modeler.core.model.transformObjects
-import com.cout970.modeler.core.record.action.ActionAddObject
-import com.cout970.modeler.core.record.action.ActionChangeObject
-import com.cout970.modeler.core.record.action.ActionDelete
-import com.cout970.modeler.core.record.action.ActionModifyModelShape
+import com.cout970.modeler.core.record.action.*
 import com.cout970.modeler.core.tool.EditTool
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.Quaternion
@@ -63,7 +60,7 @@ class ActionTrigger(val exec: ActionExecutor, val setter: IModelSetter) {
     }
 
     fun changeObject(ref: IObjectRef, obj: IObject) {
-        val newModel = model.transformObjects(listOf(ref)) { obj }
+        val newModel = model.modifyObjects(listOf(ref)) { _, _ -> obj }
         exec.enqueueAction(ActionChangeObject(setter, newModel))
     }
 
@@ -72,14 +69,29 @@ class ActionTrigger(val exec: ActionExecutor, val setter: IModelSetter) {
     }
 
     fun copy(selection: ISelection?) {
-        //TODO
+        if (selection != null) {
+            exec.projectManager.clipboard = model to selection
+        }
     }
 
     fun cut(selection: ISelection?) {
-        //TODO
+        copy(selection)
+        delete(selection)
     }
 
-    fun paste(selection: ISelection?) {
-        //TODO
+    fun paste() {
+        val clipboard = exec.projectManager.clipboard ?: return
+        val (oldModel, selection) = clipboard
+
+        if (selection.selectionTarget == SelectionTarget.MODEL && selection.selectionType == SelectionType.OBJECT) {
+            val selectedObjects = oldModel.getSelectedObjects(selection)
+            val newModel = model.addObjects(selectedObjects)
+            exec.enqueueAction(ActionPaste(setter, newModel))
+        }
+    }
+
+    fun modifyVisibility(ref: IObjectRef, value: Boolean) {
+        val newModel = model.setVisible(ref, value)
+        exec.enqueueAction(ActionUpdateVisibility(setter, newModel))
     }
 }

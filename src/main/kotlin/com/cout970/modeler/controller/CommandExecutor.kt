@@ -39,7 +39,13 @@ class CommandExecutor {
             "model.redo" -> actionExecutor.historicalRecord.redo()
             "model.selection.copy" -> actionExecutor.actionTrigger.copy(gui.selectionHandler.getSelection())
             "model.selection.cut" -> actionExecutor.actionTrigger.cut(gui.selectionHandler.getSelection())
-            "model.selection.paste" -> actionExecutor.actionTrigger.paste(gui.selectionHandler.getSelection())
+            "model.selection.paste" -> actionExecutor.actionTrigger.paste()
+            "tree.view.hide.item" -> {
+                actionExecutor.actionTrigger.modifyVisibility((comp?.parent as RightPanel.ListItem).ref, false)
+            }
+            "tree.view.show.item" -> {
+                actionExecutor.actionTrigger.modifyVisibility((comp?.parent as RightPanel.ListItem).ref, true)
+            }
         }
     }
 

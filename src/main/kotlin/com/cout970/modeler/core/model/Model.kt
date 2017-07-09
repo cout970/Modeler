@@ -6,17 +6,44 @@ import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.model.material.MaterialNone
+import com.cout970.modeler.core.model.selection.ObjectRef
 
 /**
  * Created by cout970 on 2017/05/07.
  */
 
 data class Model(
-        override val objects: List<IObject> = emptyList(),
-        override val materials: List<IMaterial> = emptyList()
+        override val objects: List<IObject>,
+        override val materials: List<IMaterial>,
+        override val visibilities: List<Boolean>
 ) : IModel {
 
     val id: Int = lastId++
+
+    companion object {
+        private var lastId = 0
+
+        fun of(objects: List<IObject>, materials: List<IMaterial>): IModel {
+            return Model(objects, materials, objects.map { true })
+        }
+
+        fun empty() = Model(emptyList(), emptyList(), emptyList())
+    }
+
+    override fun isVisible(ref: IObjectRef): Boolean {
+        if (ref.objectIndex in objects.indices) {
+            return visibilities[ref.objectIndex]
+        }
+        return false
+    }
+
+    override fun setVisible(ref: IObjectRef, visible: Boolean): IModel {
+        return copy(
+                visibilities = visibilities.mapIndexed { index, value ->
+                    if (index == ref.objectIndex) visible else value
+                }
+        )
+    }
 
     override fun getObject(ref: IObjectRef): IObject {
         if (ref.objectIndex in objects.indices) {
@@ -32,12 +59,34 @@ data class Model(
         return MaterialNone
     }
 
-    override fun withObject(obj: List<IObject>): IModel {
-        return copy(objects = obj)
+    override fun addObjects(objs: List<IObject>): IModel {
+        return copy(
+                objects = objects + objs,
+                materials = materials,
+                visibilities = visibilities + objs.map { true }
+        )
     }
 
-    companion object {
-        private var lastId = 0
+    override fun removeObjects(objs: List<IObjectRef>): IModel {
+        val toRemove = objs.map { it.objectIndex }
+        return copy(
+                objects = objects.filterIndexed { index, _ -> index in toRemove },
+                materials = materials,
+                visibilities = visibilities.filterIndexed { index, _ -> index in toRemove }
+        )
+    }
+
+    override fun modifyObjects(predicate: (IObjectRef) -> Boolean, func: (IObjectRef, IObject) -> IObject): IModel {
+        return copy(
+                objects = objects.mapIndexed { index, iObject ->
+                    val ref = ObjectRef(index)
+                    if (predicate(ref))
+                        func(ref, iObject)
+                    else iObject
+                },
+                materials = materials,
+                visibilities = visibilities
+        )
     }
 
     override fun equals(other: Any?): Boolean {

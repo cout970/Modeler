@@ -1,16 +1,17 @@
 package com.cout970.modeler.core.tool
 
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.core.model.Object
 import com.cout970.modeler.core.model.ObjectCube
+import com.cout970.modeler.core.model.getSelectedObjectRefs
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.selection.FaceRef
 import com.cout970.modeler.core.model.selection.ObjectRef
-import com.cout970.modeler.core.model.transformObjects
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
 
@@ -23,15 +24,15 @@ object EditTool {
     // TRANSFORM
     //
     fun translate(source: IModel, ref: List<IObjectRef>, translation: IVector3): IModel {
-        return source.transformObjects(ref) { it.transformer.translate(it, translation) }
+        return source.modifyObjects(ref) { _, it -> it.transformer.translate(it, translation) }
     }
 
     fun rotate(source: IModel, ref: List<IObjectRef>, pivot: IVector3, rotation: IQuaternion): IModel {
-        return source.transformObjects(ref) { it.transformer.rotate(it, pivot, rotation) }
+        return source.modifyObjects(ref) { _, it -> it.transformer.rotate(it, pivot, rotation) }
     }
 
     fun scale(source: IModel, ref: List<IObjectRef>, center: IVector3, axis: IVector3, offset: Float): IModel {
-        return source.transformObjects(ref) { it.transformer.scale(it, center, axis, offset) }
+        return source.modifyObjects(ref) { _, it -> it.transformer.scale(it, center, axis, offset) }
     }
 
     //
@@ -41,12 +42,15 @@ object EditTool {
         if (selection.selectionTarget != SelectionTarget.MODEL) return source
         return when (selection.selectionType) {
             SelectionType.OBJECT -> {
-                source.withObject(source.objects.filterIndexed { index, _ -> !selection.isSelected(ObjectRef(index)) })
+                source.removeObjects(source.getSelectedObjectRefs(selection))
             }
             SelectionType.FACE -> {
-                source.withObject(source.objects.mapIndexedNotNull { objIndex, iObject ->
-                    if (iObject is Object) {
-                        val modifyMesh = iObject.mesh.let {
+                val toRemove = mutableListOf<IObjectRef>()
+                val edited = mutableMapOf<IObjectRef, IObject>()
+
+                source.objects.forEachIndexed { objIndex, obj ->
+                    if (obj is Object) {
+                        val modifyMesh = obj.mesh.let {
                             val newFaces = it.faces.mapIndexedNotNull { index, iFaceIndex ->
                                 val ref = FaceRef(objIndex, index)
                                 if (selection.isSelected(ref)) null else iFaceIndex
@@ -54,11 +58,14 @@ object EditTool {
                             if (newFaces == it.faces) it else Mesh(it.pos, it.tex, newFaces)
                         }
 
-                        if (modifyMesh.faces.isEmpty()) null
-                        else iObject.copy(mesh = modifyMesh)
+                        if (modifyMesh.faces.isNotEmpty()) {
+                            edited += ObjectRef(objIndex) to obj.copy(mesh = modifyMesh)
+                        } else {
+                            toRemove += ObjectRef(objIndex)
+                        }
 
-                    } else if (iObject is ObjectCube) {
-                        val modifyMesh = iObject.mesh.let {
+                    } else if (obj is ObjectCube) {
+                        val modifyMesh = obj.mesh.let {
                             val newFaces = it.faces.mapIndexedNotNull { index, iFaceIndex ->
                                 val ref = FaceRef(objIndex, index)
                                 if (selection.isSelected(ref)) null else iFaceIndex
@@ -66,12 +73,14 @@ object EditTool {
                             if (newFaces == it.faces) it else Mesh(it.pos, it.tex, newFaces)
                         }
 
-                        if (modifyMesh.faces.isEmpty()) null
-                        else iObject.transformer.withMesh(iObject, modifyMesh)
-                    } else {
-                        iObject
+                        if (modifyMesh.faces.isNotEmpty()) {
+                            edited += ObjectRef(objIndex) to obj.transformer.withMesh(obj, modifyMesh)
+                        } else {
+                            toRemove += ObjectRef(objIndex)
+                        }
                     }
-                })
+                }
+                source.modifyObjects(edited.keys.toList()) { ref, _ -> edited[ref]!! }
             }
             SelectionType.EDGE, SelectionType.VERTEX -> source
         }

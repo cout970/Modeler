@@ -9,6 +9,7 @@ import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.Object
 import com.cout970.modeler.core.model.TRSTransformation
+import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
@@ -129,17 +130,22 @@ class ObjImporter {
     internal val sComment = "#"
     internal val startIndex = 1 //index after label
 
-    fun import(path: ResourcePath, flipUvs: Boolean): Model {
+    fun import(path: ResourcePath, flipUvs: Boolean): IModel {
 
-        val (data, groups) = parseFile(path, flipUvs)
+        val (data, groups, objMaterials) = parseFile(path, flipUvs)
+
+        val materials = objMaterials.distinct().map { it.toMaterial() }
+        val materialMap = materials.associate { mat -> mat.name to MaterialRef(materials.indexOf(mat)) }
 
         val objs = groups.map { group ->
             Object(name = group.name,
                     mesh = group.toMesh(data).optimize(),
-                    transformation = TRSTransformation.IDENTITY)
+                    transformation = TRSTransformation.IDENTITY,
+                    material = materialMap[group.material] ?: MaterialRef(-1)
+            )
         }
 
-        return Model(objs)
+        return Model.of(objs, materials)
     }
 
     fun importAsMesh(path: ResourcePath, flipUvs: Boolean): IMesh {
@@ -167,7 +173,7 @@ class ObjImporter {
     }
 
 
-    private fun parseFile(path: ResourcePath, flipUvs: Boolean): Pair<MeshData, List<ObjGroup>> {
+    private fun parseFile(path: ResourcePath, flipUvs: Boolean): Triple<MeshData, List<ObjGroup>, List<ObjMaterial>> {
         require(path.isValid()) { "Invalid path: $path" }
 
         val input = path.inputStream()
@@ -255,7 +261,7 @@ class ObjImporter {
         if (noGroup.quads.isNotEmpty()) {
             groups.add(noGroup)
         }
-        return MeshData(vertices, texCoords, normals) to groups
+        return Triple(MeshData(vertices, texCoords, normals), groups, materials)
     }
 
     private fun parseMaterialLib(resource: ResourcePath, name: String): List<ObjMaterial> {
@@ -293,7 +299,7 @@ class ObjImporter {
     }
 }
 
-private class ObjMaterial(val name: String) {
+private data class ObjMaterial(val name: String) {
     var map_Ka: String = ""
 
     fun toMaterial(): IMaterial = TexturedMaterial(name, File(map_Ka).toResourcePath())

@@ -23,6 +23,7 @@ class GuiResources {
     lateinit var cursorTexture: Texture
     lateinit var deleteIcon: Image
     lateinit var showIcon: Image
+    lateinit var hideIcon: Image
 
     fun reload(loader: ResourceLoader) {
         log(Level.FINE) { "[GuiResources] Loading gui resources" }
@@ -35,9 +36,9 @@ class GuiResources {
         cursorTexture = loader.getTexture("assets/textures/cursor.png")
         deleteIcon = Image("assets/textures/delete.png")
         showIcon = Image("assets/textures/show.png")
+        hideIcon = Image("assets/textures/hide.png")
 
         MaterialNone.loadTexture(loader)
         log(Level.FINE) { "[GuiResources] Gui resources loaded" }
     }
-
 }

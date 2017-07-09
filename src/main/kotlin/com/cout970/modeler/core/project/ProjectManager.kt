@@ -2,6 +2,7 @@ package com.cout970.modeler.core.project
 
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterial
+import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.core.model.Model
 
 /**
@@ -12,11 +13,13 @@ class ProjectManager {
 
     var project: Project = Project(Author("anonymous"), "unnamed")
 
-    var model: IModel = Model()
+    var model: IModel = Model.empty()
         private set
 
     private val materialList = mutableListOf<IMaterial>()
     val loadedMaterials: List<IMaterial> = materialList
+
+    var clipboard: Pair<IModel, ISelection>? = null
 
     val modelChangeListeners: MutableList<(old: IModel, new: IModel) -> Unit> = mutableListOf()
     val materialChangeListeners: MutableList<(old: IMaterial?, new: IMaterial?) -> Unit> = mutableListOf()
