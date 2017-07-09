@@ -2,6 +2,7 @@ package com.cout970.modeler.controller
 
 import com.cout970.modeler.ProgramSate
 import com.cout970.modeler.view.gui.comp.CButton
+import com.cout970.modeler.view.gui.editor.RightPanel
 import com.cout970.modeler.view.gui.popup.*
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Panel
@@ -31,6 +32,14 @@ class CommandExecutor {
             "project.export" -> showExportModelPopup(exportManager, actionExecutor, projectManager)
             "project.import" -> showImportModelPopup(exportManager, actionExecutor.historicalRecord, projectManager)
             "model.selection.delete" -> actionExecutor.actionTrigger.delete(gui.selectionHandler.getSelection())
+            "tree.view.delete.item" -> (comp?.parent as? RightPanel.ListItem)?.let {
+                actionExecutor.actionTrigger.delete(it.ref)
+            }
+            "model.undo" -> actionExecutor.historicalRecord.undo()
+            "model.redo" -> actionExecutor.historicalRecord.redo()
+            "model.selection.copy" -> actionExecutor.actionTrigger.copy(gui.selectionHandler.getSelection())
+            "model.selection.cut" -> actionExecutor.actionTrigger.cut(gui.selectionHandler.getSelection())
+            "model.selection.paste" -> actionExecutor.actionTrigger.paste(gui.selectionHandler.getSelection())
         }
     }
 

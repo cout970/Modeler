@@ -1,14 +1,16 @@
 package com.cout970.modeler.core.export
 
-import com.cout970.modeler.api.model.IObjectCube
+import com.cout970.modeler.api.model.`object`.IObjectCube
+import com.cout970.modeler.api.model.material.IMaterial
+import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.ObjectCube
 import com.cout970.modeler.core.model.TRSTransformation
-import com.cout970.modeler.core.model.material.IMaterial
 import com.cout970.modeler.core.model.material.MaterialNone
+import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.resource.ResourcePath
 import com.cout970.modeler.util.quatOfAngles
@@ -78,17 +80,17 @@ class TcnImporter {
             }
 
             try {
-                meshes += getMesh(shape, textureSize, texture)
+                meshes += getMesh(shape, textureSize, MaterialRef(0))
             } catch (e: NumberFormatException) {
                 log(Level.ERROR) { "Tcn file contains malformed integers within its data, ignoring" }
                 e.print()
             }
         }
-        return Model(meshes)
+        return Model(meshes, listOf(texture))
     }
 
     @Throws(NumberFormatException::class)
-    private fun getMesh(shape: Node, textureSize: IVector2, texture: IMaterial): IObjectCube {
+    private fun getMesh(shape: Node, textureSize: IVector2, texture: IMaterialRef): IObjectCube {
         var mirrored = false
         var offset: List<String> = listOf()
         var position: List<String> = listOf()

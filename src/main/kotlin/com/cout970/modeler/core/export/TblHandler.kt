@@ -1,8 +1,9 @@
 package com.cout970.modeler.core.export
 
+import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.ObjectCube
-import com.cout970.modeler.core.model.material.IMaterial
+import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.resource.ResourcePath
 import com.cout970.modeler.util.quatOfAngles
@@ -26,19 +27,20 @@ class TblImporter {
 
         val model = parse(path)
         val material = TexturedMaterial("texture", path.enterZip("texture.png"))
+        val materialRef = MaterialRef(0)
         val texSize = vec2Of(model.textureWidth, model.textureHeight)
 
-        val objects = mapCubes(model.cubes, material, texSize) + mapGroups(model.cubeGroups, material, texSize)
-        return Model(objects)
+        val objects = mapCubes(model.cubes, materialRef, texSize) + mapGroups(model.cubeGroups, materialRef, texSize)
+        return Model(objects, listOf(material))
     }
 
-    fun mapGroups(list: List<CubeGroup>, material: IMaterial, texSize: IVector2): List<ObjectCube> {
+    fun mapGroups(list: List<CubeGroup>, material: IMaterialRef, texSize: IVector2): List<ObjectCube> {
         return list.flatMap {
             mapCubes(it.cubes, material, texSize) + mapGroups(it.cubeGroups, material, texSize)
         }
     }
 
-    fun mapCubes(list: List<Cube>, material: IMaterial, texSize: IVector2): List<ObjectCube> {
+    fun mapCubes(list: List<Cube>, material: IMaterialRef, texSize: IVector2): List<ObjectCube> {
         val offset = vec3Of(8, 16 + 8, 8)
         return list.map { cube ->
             val pos = offset - (cube.position + cube.offset + cube.dimensions)

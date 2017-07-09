@@ -1,8 +1,9 @@
 package com.cout970.modeler.core.export
 
 import com.cout970.modeler.api.model.IModel
-import com.cout970.modeler.api.model.IObject
 import com.cout970.modeler.api.model.ITransformation
+import com.cout970.modeler.api.model.`object`.IObject
+import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.core.export.ModelImporters.jsonImporter
@@ -14,7 +15,6 @@ import com.cout970.modeler.core.export.ModelImporters.tcnImporter
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
-import com.cout970.modeler.core.model.material.IMaterial
 import com.cout970.modeler.core.project.Project
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.record.HistoricalRecord

@@ -1,7 +1,7 @@
 package com.cout970.modeler.controller
 
 import com.cout970.modeler.api.model.IModel
-import com.cout970.modeler.api.model.IObject
+import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.controller.selector.Cursor
 import com.cout970.modeler.controller.selector.ISelectable
 import com.cout970.modeler.core.model.selection.ObjectRef

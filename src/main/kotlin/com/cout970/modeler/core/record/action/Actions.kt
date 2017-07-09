@@ -1,7 +1,7 @@
 package com.cout970.modeler.core.record.action
 
 import com.cout970.modeler.api.model.IModel
-import com.cout970.modeler.api.model.IObject
+import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.controller.IModelSetter
 
 /**

@@ -19,22 +19,19 @@ import com.cout970.vector.api.IVector3
  */
 object EditTool {
 
-//    var insertPath: IntArray = intArrayOf()
-//    var insertPosition = vec3Of(0, 0, 0)
-
     //
     // TRANSFORM
     //
     fun translate(source: IModel, ref: List<IObjectRef>, translation: IVector3): IModel {
-        return source.transformObjects(ref) { it.translate(translation) }
+        return source.transformObjects(ref) { it.transformer.translate(it, translation) }
     }
 
     fun rotate(source: IModel, ref: List<IObjectRef>, pivot: IVector3, rotation: IQuaternion): IModel {
-        return source.transformObjects(ref) { it.rotate(pivot, rotation) }
+        return source.transformObjects(ref) { it.transformer.rotate(it, pivot, rotation) }
     }
 
     fun scale(source: IModel, ref: List<IObjectRef>, center: IVector3, axis: IVector3, offset: Float): IModel {
-        return source.transformObjects(ref) { it.scale(center, axis, offset) }
+        return source.transformObjects(ref) { it.transformer.scale(it, center, axis, offset) }
     }
 
     //
@@ -70,7 +67,7 @@ object EditTool {
                         }
 
                         if (modifyMesh.faces.isEmpty()) null
-                        else iObject.withMesh(modifyMesh)
+                        else iObject.transformer.withMesh(iObject, modifyMesh)
                     } else {
                         iObject
                     }

@@ -1,5 +1,6 @@
 package com.cout970.modeler.util
 
+import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
 import com.cout970.vector.api.IVector3
@@ -79,6 +80,8 @@ infix fun IntArray.join(other: IntArray): List<Pair<Int, Int>> {
         element to other[index]
     }
 }
+
+fun IMesh.middle(): IVector3 = pos.middle()
 
 fun List<IVector3>.middle(): IVector3 {
     var acum = Vector3.ORIGIN

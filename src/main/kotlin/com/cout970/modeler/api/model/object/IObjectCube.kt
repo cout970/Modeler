@@ -1,4 +1,4 @@
-package com.cout970.modeler.api.model
+package com.cout970.modeler.api.model.`object`
 
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3

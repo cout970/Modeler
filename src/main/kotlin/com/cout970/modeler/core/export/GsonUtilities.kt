@@ -1,15 +1,15 @@
 package com.cout970.modeler.core.export
 
 import com.cout970.modeler.api.model.IModel
-import com.cout970.modeler.api.model.IObject
 import com.cout970.modeler.api.model.ITransformation
+import com.cout970.modeler.api.model.`object`.IObject
+import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.Object
 import com.cout970.modeler.core.model.ObjectCube
 import com.cout970.modeler.core.model.TRSTransformation
-import com.cout970.modeler.core.model.material.IMaterial
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.FaceIndex

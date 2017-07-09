@@ -1,13 +1,16 @@
 package com.cout970.modeler.controller
 
 import com.cout970.modeler.api.model.IModel
-import com.cout970.modeler.api.model.IObject
+import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.api.model.selection.ISelection
+import com.cout970.modeler.api.model.selection.SelectionTarget
+import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.core.model.Object
 import com.cout970.modeler.core.model.ObjectCube
-import com.cout970.modeler.core.model.material.MaterialNone
+import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.mesh.MeshFactory
+import com.cout970.modeler.core.model.selection.Selection
 import com.cout970.modeler.core.model.transformObjects
 import com.cout970.modeler.core.record.action.ActionAddObject
 import com.cout970.modeler.core.record.action.ActionChangeObject
@@ -32,7 +35,7 @@ class ActionTrigger(val exec: ActionExecutor, val setter: IModelSetter) {
                 pos = Vector3.ORIGIN,
                 rotation = Quaternion.IDENTITY,
                 size = size,
-                material = MaterialNone
+                material = MaterialRef(-1)
         )
         exec.enqueueAction(ActionAddObject(setter, model, obj))
     }
@@ -42,6 +45,14 @@ class ActionTrigger(val exec: ActionExecutor, val setter: IModelSetter) {
         val obj = Object("Shape${model.objects.size}", mesh)
 
         exec.enqueueAction(ActionAddObject(setter, model, obj))
+    }
+
+    fun delete(ref: IObjectRef) {
+        delete(Selection(
+                SelectionTarget.MODEL,
+                SelectionType.OBJECT,
+                listOf(ref)
+        ))
     }
 
     fun delete(selection: ISelection?) {
@@ -58,5 +69,17 @@ class ActionTrigger(val exec: ActionExecutor, val setter: IModelSetter) {
 
     fun loadTmpModel(model: IModel) {
         exec.enqueueAction(ActionModifyModelShape(setter, model))
+    }
+
+    fun copy(selection: ISelection?) {
+        //TODO
+    }
+
+    fun cut(selection: ISelection?) {
+        //TODO
+    }
+
+    fun paste(selection: ISelection?) {
+        //TODO
     }
 }

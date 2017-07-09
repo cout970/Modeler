@@ -1,6 +1,7 @@
 package com.cout970.modeler.core.export
 
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
@@ -8,7 +9,6 @@ import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.Object
 import com.cout970.modeler.core.model.TRSTransformation
-import com.cout970.modeler.core.model.material.IMaterial
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
@@ -70,7 +70,7 @@ class ObjExporter {
                 }
                 quads += objQuad
             }
-            groups.add(ObjGroup(obj.name, obj.material.name, quads))
+            groups.add(ObjGroup(obj.name, model.getMaterial(obj.material).name, quads))
         }
 
         val sym = DecimalFormatSymbols().apply { decimalSeparator = '.' }

@@ -33,17 +33,16 @@ class RightPanelUpdater : ComponentUpdater() {
 
                     item.position.y = tree.listPanel.components.size * item.size.y
                     tree.listPanel.addComponent(item)
+                    item.loadResources(gui.resources)
                 }
 
         materials.listPanel.clearComponents()
-        model.objects
-                .map { it.material }
-                .distinct()
-                .forEach {
-                    val item = RightPanel.MaterialListItem(it)
-                    item.position.y = materials.listPanel.components.size * item.size.y
-                    materials.listPanel.addComponent(item)
-                }
+        model.materials.forEach {
+            val item = RightPanel.MaterialListItem(it)
+            item.position.y = materials.listPanel.components.size * item.size.y
+            materials.listPanel.addComponent(item)
+            item.loadResources(gui.resources)
+        }
 
         gui.commandExecutor.bindButtons(tree.listPanel)
         gui.commandExecutor.bindButtons(materials.listPanel)

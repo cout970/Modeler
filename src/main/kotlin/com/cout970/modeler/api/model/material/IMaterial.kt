@@ -1,4 +1,4 @@
-package com.cout970.modeler.core.model.material
+package com.cout970.modeler.api.model.material
 
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.vector.api.IVector2

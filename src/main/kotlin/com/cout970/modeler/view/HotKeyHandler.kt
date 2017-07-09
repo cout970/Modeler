@@ -17,6 +17,11 @@ class HotKeyHandler(val exec: CommandExecutor) {
                 exportModel.check(e) -> exec.execute("project.export")
                 importModel.check(e) -> exec.execute("project.import")
                 delete.check(e) -> exec.execute("model.selection.delete")
+                copy.check(e) -> exec.execute("model.selection.copy")
+                cut.check(e) -> exec.execute("model.selection.cut")
+                paste.check(e) -> exec.execute("model.selection.paste")
+                undo.check(e) -> exec.execute("model.undo")
+                redo.check(e) -> exec.execute("model.redo")
                 else -> return false
             }
             return true

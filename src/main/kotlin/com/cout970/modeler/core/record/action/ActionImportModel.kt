@@ -19,10 +19,7 @@ class ActionImportModel(
     override fun run() {
         try {
             val newModel = function()
-            newModel.objects
-                    .map { it.material }
-                    .distinct()
-                    .forEach { it.loadTexture(resourceLoader) }
+            newModel.materials.forEach { it.loadTexture(resourceLoader) }
             projectManager.updateModel(newModel)
         } catch(e: Exception) {
             e.print()

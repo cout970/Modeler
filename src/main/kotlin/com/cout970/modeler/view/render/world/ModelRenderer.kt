@@ -114,7 +114,7 @@ class ModelRenderer {
                 .groupBy { it.second.material }
 
         map.forEach { material, list ->
-            material.bind()
+            model.getMaterial(material).bind()
             list.forEach { (objIndex, obj) ->
                 ctx.shader.apply {
                     useTexture.setInt(1)
@@ -129,7 +129,7 @@ class ModelRenderer {
 
     private fun buildCache(list: List<VAO>, buffer: UniversalShader.Buffer, model: IModel): List<VAO> {
         list.forEach { it.close() }
-        model.objects.forEach { it.material.loadTexture(ResourceLoader()) }
+        model.materials.forEach { it.loadTexture(ResourceLoader()) }
         return updateCache(buffer, model)
     }
 

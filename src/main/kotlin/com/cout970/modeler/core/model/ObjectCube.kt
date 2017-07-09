@@ -1,11 +1,12 @@
 package com.cout970.modeler.core.model
 
-import com.cout970.modeler.api.model.IObject
-import com.cout970.modeler.api.model.IObjectCube
 import com.cout970.modeler.api.model.ITransformation
+import com.cout970.modeler.api.model.`object`.IObject
+import com.cout970.modeler.api.model.`object`.IObjectCube
+import com.cout970.modeler.api.model.`object`.IObjectTransformer
+import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IMesh
-import com.cout970.modeler.core.model.material.IMaterial
-import com.cout970.modeler.core.model.material.MaterialNone
+import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.mesh.MeshFactory
@@ -26,7 +27,7 @@ data class ObjectCube(
         override val size: IVector3,
 
         override val transformation: ITransformation = TRSTransformation.IDENTITY,
-        override val material: IMaterial = MaterialNone,
+        override val material: IMaterialRef = MaterialRef(-1),
 
         val rotationPivot: IVector3 = Vector3.ORIGIN,
         val textureOffset: IVector2 = Vector2.ORIGIN,
@@ -37,17 +38,13 @@ data class ObjectCube(
     override val mesh: IMesh by lazy { generateMesh() }
     override val transformedMesh: IMesh by lazy { mesh.transform(transformation) }
 
+    override fun getCenter(): IVector3 = pos + size * 0.5
+
     fun generateMesh(): IMesh {
         val cube = MeshFactory.createCube(size, pos)
         val pos = cube.pos.map { it.rotateAround(rotationPivot, rotation) }
         return updateTextures(Mesh(pos, cube.tex, cube.faces), size, textureOffset, textureSize)
     }
-
-    override fun withMesh(newMesh: IMesh): IObject {
-        return Object(name, newMesh, transformation, material)
-    }
-
-    override fun getCenter(): IVector3 = pos + size * 0.5
 
     fun updateTextures(mesh: IMesh, size: IVector3, offset: IVector2, textureSize: IVector2): IMesh {
         val uvs = generateUVs(size, offset, textureSize)
@@ -104,11 +101,21 @@ data class ObjectCube(
         )
     }
 
-    //TODO
-    override fun translate(translation: IVector3): IObject = copy(pos = pos + translation,
-            rotationPivot = rotationPivot + translation)
+    override val transformer: IObjectTransformer = object : IObjectTransformer {
+        override fun withMesh(obj: IObject, newMesh: IMesh): IObject {
+            return Object(name, newMesh, transformation, material)
+        }
 
-    override fun rotate(pivot: IVector3, rot: IQuaternion): IObject = this
+        override fun translate(obj: IObject, translation: IVector3): IObject {
+            return copy(pos = pos + translation, rotationPivot = rotationPivot + translation)
+        }
 
-    override fun scale(center: IVector3, axis: IVector3, offset: Float): IObject = this
+        override fun rotate(obj: IObject, pivot: IVector3, rot: IQuaternion): IObject {
+            return this@ObjectCube
+        }
+
+        override fun scale(obj: IObject, center: IVector3, axis: IVector3, offset: Float): IObject {
+            return this@ObjectCube
+        }
+    }
 }

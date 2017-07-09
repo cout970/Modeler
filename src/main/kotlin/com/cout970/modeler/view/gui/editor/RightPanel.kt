@@ -1,8 +1,8 @@
 package com.cout970.modeler.view.gui.editor
 
+import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.core.model.material.IMaterial
 import com.cout970.modeler.util.toColor
 import com.cout970.modeler.view.GuiResources
 import com.cout970.modeler.view.gui.comp.CButton

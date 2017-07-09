@@ -1,8 +1,8 @@
 package com.cout970.modeler.core.project
 
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.core.model.Model
-import com.cout970.modeler.core.model.material.IMaterial
 
 /**
  * Created by cout970 on 2017/07/08.
@@ -43,8 +43,9 @@ class ProjectManager {
     }
 
     fun updateModel(model: IModel) {
-        modelChangeListeners.forEach { it.invoke(this.model, model) }
+        val old = this.model
         this.model = model
+        modelChangeListeners.forEach { it.invoke(old, model) }
     }
 
     fun loadProject(new: Project) {

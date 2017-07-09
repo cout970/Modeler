@@ -1,13 +1,15 @@
 package com.cout970.modeler.core.export
 
 import com.cout970.modeler.api.model.IModel
-import com.cout970.modeler.api.model.IObject
+import com.cout970.modeler.api.model.`object`.IObject
+import com.cout970.modeler.api.model.material.IMaterial
+import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.Object
 import com.cout970.modeler.core.model.ObjectCube
 import com.cout970.modeler.core.model.TRSTransformation
-import com.cout970.modeler.core.model.material.IMaterial
+import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
@@ -31,10 +33,12 @@ class JsonImporter {
     fun import(path: ResourcePath): IModel {
         val model = parse(path)
 
-        val materials = mutableMapOf<String, IMaterial>()
+        val materialList = mutableListOf<IMaterial>()
+        val materials = mutableMapOf<String, IMaterialRef>()
         for ((name, subPath) in model.textures) {
-            materials += name to TexturedMaterial(name, path.resolve(subPath + ".png"))
-//            materials += name to MaterialNone
+            val index = materialList.size
+            materialList += TexturedMaterial(name, path.resolve(subPath + ".png"))
+            materials += name to MaterialRef(index)
         }
 
         val obj = mutableListOf<IObject>()

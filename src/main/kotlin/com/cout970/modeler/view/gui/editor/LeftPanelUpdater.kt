@@ -25,6 +25,8 @@ import org.liquidengine.legui.event.component.KeyboardKeyEvent
 import org.liquidengine.legui.listener.LeguiEventListenerMap
 import org.lwjgl.glfw.GLFW
 import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.*
 
 /**
  * Created by cout970 on 2017/07/08.
@@ -32,7 +34,7 @@ import java.text.DecimalFormat
 
 class LeftPanelUpdater : ComponentUpdater() {
 
-    val formatter = DecimalFormat("#.###")
+    val formatter = DecimalFormat("#.###", DecimalFormatSymbols.getInstance(Locale.ENGLISH))
     val model get() = gui.actionExecutor.model
     val leguiContext: LeguiContext get() = gui.guiUpdater.leguiContext
     val scriptEngine get() = gui.guiUpdater.scriptEngine
@@ -78,9 +80,11 @@ class LeftPanelUpdater : ComponentUpdater() {
             "cube.size.x" -> setSize(x = getValue(input, getSize().xf) + offset)
             "cube.size.y" -> setSize(y = getValue(input, getSize().yf) + offset)
             "cube.size.z" -> setSize(z = getValue(input, getSize().zf) + offset)
+
             "cube.pos.x" -> setPos(x = getValue(input, getPos().xf) + offset)
             "cube.pos.y" -> setPos(y = getValue(input, getPos().yf) + offset)
             "cube.pos.z" -> setPos(z = getValue(input, getPos().zf) + offset)
+
             "cube.rot.x" -> setRotation(x = getValue(input, getRotation().xf) + offset)
             "cube.rot.y" -> setRotation(y = getValue(input, getRotation().yf) + offset)
             "cube.rot.z" -> setRotation(z = getValue(input, getRotation().zf) + offset)
@@ -94,7 +98,6 @@ class LeftPanelUpdater : ComponentUpdater() {
             return default
         }
     }
-
 
     fun setSize(x: Float = getSize().xf, y: Float = getSize().yf, z: Float = getSize().zf) {
 
@@ -131,6 +134,8 @@ class LeftPanelUpdater : ComponentUpdater() {
         if (newPos != oldObj.pos) {
             val newObj = oldObj.copy(pos = newPos)
             pos = newPos
+            println("old: ${oldObj}")
+            println("new: ${newObj}")
             gui.actionExecutor.actionTrigger.changeObject(ref, newObj)
         } else {
             pos = getPos()

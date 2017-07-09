@@ -7,6 +7,4 @@ interface IClipboard {
     fun copy()
     fun cut()
     fun paste()
-    fun delete()
-    fun clean()
 }

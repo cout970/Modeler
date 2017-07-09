@@ -38,7 +38,7 @@ class McxExporter {
         var particleTexture: String? = null
 
         model.objects.forEach { obj ->
-            val texture = "$domain:${obj.material.name}"
+            val texture = "$domain:${model.getMaterial(obj.material).name}"
             val mesh = obj.mesh
             val localIndices = mesh.faces.map { face ->
                 val (ap, bp, cp, dp) = face.pos
