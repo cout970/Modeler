@@ -58,7 +58,7 @@ class RightPanelUpdater : ComponentUpdater() {
 
         materials.listPanel.clearComponents()
         model.materials.forEachIndexed { index, it ->
-            val item = RightPanel.MaterialListItem(it)
+            val item = RightPanel.MaterialListItem(MaterialRef(index), it.name)
             item.position.y = materials.listPanel.components.size * item.size.y
             materials.listPanel.addComponent(item)
             if (MaterialRef(index) in materialOfSelectedObjects) {

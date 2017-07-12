@@ -18,6 +18,8 @@ class ActionPaste(transformer: IModelSetter, newModel: IModel) : ActionUpdateMod
 
 class ActionUpdateVisibility(transformer: IModelSetter, newModel: IModel) : ActionUpdateModel(transformer, newModel)
 
+class ActionUpdateMaterial(transformer: IModelSetter, newModel: IModel) : ActionUpdateModel(transformer, newModel)
+
 open class ActionUpdateModel(val transformer: IModelSetter, val newModel: IModel) : IAction {
 
     val oldModel = transformer.model

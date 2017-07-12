@@ -26,6 +26,7 @@ object ObjectNone : IObject {
         override fun translate(obj: IObject, translation: IVector3): IObject = this@ObjectNone
         override fun rotate(obj: IObject, pivot: IVector3, rot: IQuaternion): IObject = this@ObjectNone
         override fun scale(obj: IObject, center: IVector3, axis: IVector3, offset: Float): IObject = this@ObjectNone
+        override fun withMaterial(obj: IObject, materialRef: IMaterialRef): IObject = obj
     }
 
     override fun getCenter(): IVector3 = Vector3.ORIGIN

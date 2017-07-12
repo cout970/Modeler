@@ -2,12 +2,14 @@ package com.cout970.modeler.controller
 
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.`object`.IObject
+import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.core.model.Object
 import com.cout970.modeler.core.model.ObjectCube
+import com.cout970.modeler.core.model.getSelectedObjectRefs
 import com.cout970.modeler.core.model.getSelectedObjects
 import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.mesh.MeshFactory
@@ -93,5 +95,13 @@ class ActionTrigger(val exec: ActionExecutor, val setter: IModelSetter) {
     fun modifyVisibility(ref: IObjectRef, value: Boolean) {
         val newModel = model.setVisible(ref, value)
         exec.enqueueAction(ActionUpdateVisibility(setter, newModel))
+    }
+
+    fun applyMaterial(selection: ISelection?, materialRef: IMaterialRef) {
+        if (selection == null) return
+        val newModel = model.modifyObjects(model.getSelectedObjectRefs(selection)) { _, obj ->
+            obj.transformer.withMaterial(obj, materialRef)
+        }
+        exec.enqueueAction(ActionUpdateMaterial(setter, newModel))
     }
 }

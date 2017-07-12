@@ -117,5 +117,9 @@ data class ObjectCube(
         override fun scale(obj: IObject, center: IVector3, axis: IVector3, offset: Float): IObject {
             return this@ObjectCube
         }
+
+        override fun withMaterial(obj: IObject, materialRef: IMaterialRef): IObject {
+            return copy(material = materialRef)
+        }
     }
 }

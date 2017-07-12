@@ -5,4 +5,8 @@ package com.cout970.modeler.api.model.material
  */
 interface IMaterialRef {
     val materialIndex: Int
+
+    operator fun compareTo(materialRef: IMaterialRef): Int {
+        return materialIndex.compareTo(materialRef.materialIndex)
+    }
 }

@@ -1,5 +1,6 @@
 package com.cout970.modeler.view.gui.popup
 
+import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.controller.ActionExecutor
 import com.cout970.modeler.core.export.ExportFormat
 import com.cout970.modeler.core.export.ExportManager
@@ -138,12 +139,18 @@ fun showExportModelPopup(exportManager: ExportManager, actionExecutor: ActionExe
     }
 }
 
-fun importTexture(projectManager: ProjectManager) {
+fun importTexture(projectManager: ProjectManager, materialRef: IMaterialRef? = null) {
     val file = TinyFileDialogs.tinyfd_openFileDialog("Import Texture", "",
             textureExtensions, "PNG texture (*.png)", false)
     if (file != null) {
         val archive = File(file)
-        projectManager.loadMaterial(TexturedMaterial(archive.nameWithoutExtension, archive.toResourcePath()))
+        val mat = TexturedMaterial(archive.nameWithoutExtension, archive.toResourcePath())
+        if (materialRef != null) {
+            projectManager.model.materials
+            projectManager.updateMaterial(materialRef, mat)
+        } else {
+            projectManager.loadMaterial(mat)
+        }
     }
 }
 //

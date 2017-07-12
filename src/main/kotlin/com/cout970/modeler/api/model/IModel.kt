@@ -33,4 +33,8 @@ interface IModel {
     fun modifyObjects(objs: List<IObjectRef>, func: (IObjectRef, IObject) -> IObject): IModel {
         return modifyObjects({ it in objs }, func)
     }
+
+    fun addMaterial(material: IMaterial): IModel
+    fun modifyMaterial(ref: IMaterialRef, new: IMaterial): IModel
+    fun removeMaterial(materialRef: IMaterialRef): IModel
 }

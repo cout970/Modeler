@@ -1,8 +1,9 @@
 package com.cout970.modeler.view.gui.editor
 
-import com.cout970.modeler.api.model.material.IMaterial
+import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.toColor
 import com.cout970.modeler.view.GuiResources
 import com.cout970.modeler.view.gui.comp.CButton
@@ -80,13 +81,33 @@ class RightPanel : CPanel() {
         }
     }
 
-    class MaterialListItem(val material: IMaterial) : CPanel(width = 180f, height = 24f) {
+    class MaterialListItem(val ref: IMaterialRef, name: String) : CPanel(width = 180f, height = 24f) {
 
-        val label = CLabel(material.name, 0f, 0f, 120f, 24f)
+        val label = CLabel(name, 0f, 0f, 120f, 24f)
+        val applyButton = CButton("", 120f, 0f, 24f, 24f, "material.view.apply")
+        val loadButton = CButton("", 150f, 0f, 24f, 24f, "material.view.load")
 
         init {
             backgroundColor = Config.colorPalette.primaryColor.toColor()
             addComponent(label)
+            addComponent(applyButton)
+            addComponent(loadButton)
+
+            applyButton.backgroundColor = ColorConstants.transparent()
+            applyButton.border.isEnabled = false
+
+            loadButton.backgroundColor = ColorConstants.transparent()
+            loadButton.border.isEnabled = false
+
+            if (ref.materialIndex < 0) {
+                loadButton.hide()
+            }
+        }
+
+        override fun loadResources(resources: GuiResources) {
+            applyButton.setImage(ImageView(resources.applyMaterial).apply { size = Vector2f(24f) })
+            loadButton.setImage(ImageView(resources.loadMaterial).apply { size = Vector2f(20f) })
+            super.loadResources(resources)
         }
     }
 }
