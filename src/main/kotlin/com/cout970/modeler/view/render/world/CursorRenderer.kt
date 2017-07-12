@@ -24,7 +24,7 @@ class CursorRenderer {
     fun renderCursor(ctx: RenderContext, world: World) {
 
         if (translationArrowVao == null) {
-            translationArrowVao = ctx.resources.translationArrow.createVao(ctx.buffer, vec3Of(1, 1, 1))
+            translationArrowVao = ctx.gui.resources.translationArrow.createVao(ctx.buffer, vec3Of(1, 1, 1))
         }
 
         if (ctx.gui.selectionHandler.getSelection() == null) {

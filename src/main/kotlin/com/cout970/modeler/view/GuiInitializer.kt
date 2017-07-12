@@ -54,7 +54,7 @@ class GuiInitializer(
         commandExecutor.bindButtons(editorPanel)
         log(Level.FINE) { "[GuiInitializer] Binding text inputs" }
         guiUpdater.bindTextInputs(editorPanel)
-        log(Level.FINE) { "[GuiInitializer] Vreating GuiState" }
+        log(Level.FINE) { "[GuiInitializer] Creating GuiState" }
         val guiState = GuiState()
 
         log(Level.FINE) { "[GuiInitializer] Creating initial canvas" }
@@ -76,8 +76,6 @@ class GuiInitializer(
                 actionExecutor = actionExecutor,
                 resources = guiResources,
                 state = guiState
-        ).also {
-            renderManager.gui = it
-        }
+        )
     }
 }

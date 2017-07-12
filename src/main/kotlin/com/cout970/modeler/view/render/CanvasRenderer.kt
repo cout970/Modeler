@@ -1,38 +1,44 @@
 package com.cout970.modeler.view.render
 
+import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.controller.World
+import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.util.absolutePosition
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.view.Gui
-import com.cout970.modeler.view.event.IInput
+import com.cout970.modeler.view.render.texture.MaterialRenderer
+import com.cout970.modeler.view.render.tool.Light
 import com.cout970.modeler.view.render.tool.RenderContext
 import com.cout970.modeler.view.render.tool.shader.UniversalShader
 import com.cout970.modeler.view.render.world.WorldRenderer
+import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.vec2Of
+import com.cout970.vector.extensions.vec3Of
 import com.cout970.vector.extensions.yf
 
 /**
  * Created by cout970 on 2017/05/16.
  */
-class CanvasRenderer(val renderManager: RenderManager, val input: IInput) {
+class CanvasRenderer(val renderManager: RenderManager) {
 
     val worldRenderer = WorldRenderer()
+    val materialRenderer = MaterialRenderer()
     val buffer = UniversalShader.Buffer()
+    val lights: List<Light> = listOf(
+            Light(vec3Of(250, 500, 400), Vector3.ONE),
+            Light(vec3Of(-250, -500, -400), Vector3.ONE)
+    )
 
     fun render(gui: Gui) {
 
         gui.canvasContainer.canvas.forEach { canvas ->
             val ctx = RenderContext(
                     camera = canvas.cameraHandler.camera,
-                    input = input,
-                    lights = canvas.lights,
+                    lights = lights,
                     viewport = canvas.size.toIVector(),
-                    windowHandler = gui.windowHandler,
-                    timer = gui.timer,
                     shader = renderManager.shader,
                     gui = gui,
-                    buffer = buffer,
-                    resources = gui.resources
+                    buffer = buffer
             )
             val viewportPos = vec2Of(
                     canvas.absolutePosition.x,
@@ -40,7 +46,11 @@ class CanvasRenderer(val renderManager: RenderManager, val input: IInput) {
             )
             gui.windowHandler.saveViewport(viewportPos, canvas.size.toIVector()) {
                 renderManager.shader.useShader(ctx) {
-                    worldRenderer.renderWorld(ctx, World(listOf(gui.projectManager.model), gui.selector.cursor))
+                    if (canvas.viewMode == SelectionTarget.MODEL) {
+                        worldRenderer.renderWorld(ctx, World(listOf(gui.projectManager.model), gui.selector.cursor))
+                    } else {
+                        materialRenderer.renderWorld(ctx, gui.projectManager.model.getMaterial(MaterialRef(0)))
+                    }
                 }
             }
         }

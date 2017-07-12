@@ -1,25 +1,30 @@
 package com.cout970.modeler.core.export
 
+import com.cout970.matrix.api.IMatrix4
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.Object
-import com.cout970.modeler.core.model.ObjectCube
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.resource.ResourcePath
+import com.cout970.modeler.util.toIMatrix
+import com.cout970.modeler.util.toJoml3d
+import com.cout970.modeler.util.toRads
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.api.IVector4
 import com.cout970.vector.extensions.*
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import org.joml.Matrix4d
 
 /**
  * Created by cout970 on 2017/01/24.
@@ -43,43 +48,25 @@ class JsonImporter {
 
         val obj = mutableListOf<IObject>()
         for (element in model.elements) {
-            var isCube = false
-            if (element.sides.size == 6) {
-                val texture = element.sides[Side.NORTH]?.texture
-                if (element.sides.all { it.value.texture == texture }) {
-                    val cube = ObjectCube(
-                            name = "Shape_${obj.size}",
-                            pos = element.from,
-                            size = element.to - element.from,
-                            rotation = Quaternion.IDENTITY,
-                            material = materials[texture]!!,
-                            rotationPivot = Vector3.ORIGIN,
-                            textureSize = vec2Of(16),
-                            textureOffset = vec2Of(0),
-                            mirrored = false,
-                            transformation = TRSTransformation.IDENTITY
-                    )
-                    obj += cube
-                    isCube = true
-                }
-            }
-            if (!isCube) {
-                //TODO fixme
-                val groups = element.sides.entries.groupBy { it.value.texture }
+            val groups = element.sides.entries.groupBy { it.value.texture }
 
-                groups.forEach { texture, sides ->
-                    val mesh = sides
-                            .map { getSide(element, it.key, it.value) }
-                            .reduce { acum, mesh -> acum.merge(mesh) }
+            groups.forEach { texture, sides ->
+                val mesh = sides
+                        .map { getSide(element, it.key, it.value) }
+                        .reduce { acum, mesh -> acum.merge(mesh) }
 
-                    val shape = Object(
-                            name = "Shape_${obj.size}",
-                            mesh = mesh,
-                            transformation = TRSTransformation.IDENTITY,
-                            material = materials[texture]!!
-                    )
-                    obj += shape
-                }
+                val rot = element.rotation
+                val finalMesh = if (rot != null) {
+                    mesh.transform(BlockRotation(rot))
+                } else mesh
+
+                val shape = Object(
+                        name = "Shape_${obj.size}",
+                        mesh = finalMesh,
+                        transformation = TRSTransformation.IDENTITY,
+                        material = materials[texture] ?: MaterialRef(-1)
+                )
+                obj += shape
             }
         }
 
@@ -287,6 +274,14 @@ class JsonImporter {
             throw IllegalStateException("Empty model file (no parent or elements) at $path")
         }
         return model
+    }
+
+    class BlockRotation(val rot: ElementRotation) : ITransformation {
+        override val matrix: IMatrix4 = Matrix4d().apply {
+            translate(rot.origin.toJoml3d())
+            rotate(rot.angle.toRads(), rot.axis.toJoml3d())
+            translate((-rot.origin).toJoml3d())
+        }.toIMatrix()
     }
 
     class JsonModel(

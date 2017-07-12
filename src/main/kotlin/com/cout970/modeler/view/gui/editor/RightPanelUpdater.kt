@@ -1,8 +1,10 @@
 package com.cout970.modeler.view.gui.editor
 
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.selection.ObjectRef
 import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.show
@@ -29,6 +31,8 @@ class RightPanelUpdater : ComponentUpdater() {
         val model = gui.actionExecutor.model
         val selection = gui.selectionHandler.getSelection()
 
+        val materialOfSelectedObjects = mutableListOf<IMaterialRef>()
+
         tree.listPanel.clearComponents()
         model.objects
                 .mapIndexed { index, _ -> ObjectRef(index) }
@@ -47,15 +51,19 @@ class RightPanelUpdater : ComponentUpdater() {
                     tree.listPanel.addComponent(item)
                     if (selection?.isSelected(it) ?: false) {
                         item.backgroundColor = Config.colorPalette.selectedButton.toColor()
+                        materialOfSelectedObjects += model.getObject(it).material
                     }
                     item.loadResources(gui.resources)
                 }
 
         materials.listPanel.clearComponents()
-        model.materials.forEach {
+        model.materials.forEachIndexed { index, it ->
             val item = RightPanel.MaterialListItem(it)
             item.position.y = materials.listPanel.components.size * item.size.y
             materials.listPanel.addComponent(item)
+            if (MaterialRef(index) in materialOfSelectedObjects) {
+                item.backgroundColor = Config.colorPalette.selectedButton.toColor()
+            }
             item.loadResources(gui.resources)
         }
 

@@ -39,6 +39,9 @@ uniform float reflectivity = 0f;
 // Ambient light
 uniform float ambient = 0.1;
 
+// if hiden faces should be rendered as red
+uniform bool showHidenFaces = true;
+
 uniform vec3 globalColor = vec3(1.0, 1.0, 1.0);
 
 vec3 getLight(vec3 color, vec3 lcolor, vec3 toLight, vec3 normal, vec3 toCamera);
@@ -70,8 +73,10 @@ void main(void){
     }
 
     // if the face is not visible then paint it red
-    if(!gl_FrontFacing){
-        out_color = vec4(1.0, 0.5, 0.5, 1.0);
+    if(showHidenFaces){
+        if(!gl_FrontFacing){
+            out_color = vec4(1.0, 0.5, 0.5, 1.0);
+        }
     }
 
     // pixels with less than 0.01 alpha are not rendered

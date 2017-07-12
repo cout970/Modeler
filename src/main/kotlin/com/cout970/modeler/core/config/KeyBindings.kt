@@ -43,6 +43,8 @@ class KeyBindings {
     var setScaleCursorMode = KeyBind(Keyboard.KEY_S)
     var importTexture = KeyBind(Keyboard.KEY_T, CTRL, ALT)
     var exportTexture = KeyBind(Keyboard.KEY_T, CTRL, ALT, SHIFT)
+    var setTextureMode = KeyBind(Keyboard.KEY_T, CTRL)
+    var setModelMode = KeyBind(Keyboard.KEY_M, CTRL)
 
     var newProject = KeyBind(Keyboard.KEY_N, CTRL, ALT, SHIFT)
     var openProject = KeyBind(Keyboard.KEY_O, CTRL, ALT, SHIFT)

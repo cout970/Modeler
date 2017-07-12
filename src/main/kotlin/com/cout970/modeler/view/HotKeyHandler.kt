@@ -22,6 +22,9 @@ class HotKeyHandler(val exec: CommandExecutor) {
                 paste.check(e) -> exec.execute("model.selection.paste")
                 undo.check(e) -> exec.execute("model.undo")
                 redo.check(e) -> exec.execute("model.redo")
+                switchOrthoProjection.check(e) -> exec.execute("view.switch.ortho")
+                setTextureMode.check(e) -> exec.execute("view.set.texture.mode")
+                setModelMode.check(e) -> exec.execute("view.set.model.mode")
                 else -> return false
             }
             return true

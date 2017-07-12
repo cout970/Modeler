@@ -1,6 +1,7 @@
 package com.cout970.modeler.controller
 
 import com.cout970.modeler.ProgramSate
+import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.view.gui.comp.CButton
 import com.cout970.modeler.view.gui.editor.RightPanel
 import com.cout970.modeler.view.gui.popup.*
@@ -46,6 +47,11 @@ class CommandExecutor {
             "tree.view.show.item" -> {
                 actionExecutor.actionTrigger.modifyVisibility((comp?.parent as RightPanel.ListItem).ref, true)
             }
+            "view.switch.ortho" -> gui.canvasContainer.selectedCanvas?.let {
+                it.cameraHandler.setOrtho(it.cameraHandler.camera.perspective)
+            }
+            "view.set.texture.mode" -> gui.canvasContainer.selectedCanvas?.let { it.viewMode = SelectionTarget.TEXTURE }
+            "view.set.model.mode" -> gui.canvasContainer.selectedCanvas?.let { it.viewMode = SelectionTarget.MODEL }
         }
     }
 

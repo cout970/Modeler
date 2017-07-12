@@ -2,6 +2,8 @@ package com.cout970.modeler.core.model.material
 
 import com.cout970.glutilities.texture.Texture
 import com.cout970.modeler.api.model.material.IMaterial
+import com.cout970.modeler.core.log.Level
+import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.core.resource.ResourcePath
@@ -22,6 +24,7 @@ class TexturedMaterial(override val name: String, val path: ResourcePath) : IMat
             }
             lastModified = path.lastModifiedTime()
         } catch (e: Exception) {
+            log(Level.ERROR) { "Error loading material, name: $name, path: $path" }
             e.print()
             texture = null
         }

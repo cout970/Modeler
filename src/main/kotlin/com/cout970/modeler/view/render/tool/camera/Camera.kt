@@ -68,7 +68,7 @@ data class Camera(
 
     val matrixForUV by lazy {
         Matrix4d().apply {
-            translate(0.0, 0.0, -64.0)
+            translate(0.0, 0.0, -1.0)
             scale(1 / zoom)
             translate(position.xd, position.yd, 0.0)
         }.toIMatrix()

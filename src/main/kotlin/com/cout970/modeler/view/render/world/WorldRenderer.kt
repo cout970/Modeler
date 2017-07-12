@@ -27,7 +27,9 @@ class WorldRenderer {
 
     fun renderWorld(ctx: RenderContext, world: World) {
         renderBaseBlock(ctx)
-        renderGridLines(ctx)
+        if (ctx.gui.state.drawModelGridLines) {
+            renderGridLines(ctx)
+        }
         if (ctx.gui.state.renderLights) {
             renderLights(ctx)
         }
@@ -39,7 +41,7 @@ class WorldRenderer {
 
     fun renderLights(ctx: RenderContext) {
         if (lights == null) {
-            lights = ctx.resources.lightMesh.createVao(ctx.buffer, vec3Of(1, 1, 0))
+            lights = ctx.gui.resources.lightMesh.createVao(ctx.buffer, vec3Of(1, 1, 0))
         }
         lights?.let {
             ctx.shader.apply {
@@ -59,7 +61,7 @@ class WorldRenderer {
 
     fun renderBaseBlock(ctx: RenderContext) {
         if (baseCubeVao == null) {
-            baseCubeVao = ctx.resources.baseCubeMesh.createVao(ctx.buffer)
+            baseCubeVao = ctx.gui.resources.baseCubeMesh.createVao(ctx.buffer)
         }
         baseCubeVao?.let {
             ctx.shader.apply {
@@ -70,7 +72,7 @@ class WorldRenderer {
                         translation = vec3Of(8, -8, 8),
                         scale = Vector3.ONE).matrix
                 )
-                ctx.resources.baseCubeTexture.bind()
+                ctx.gui.resources.baseCubeTexture.bind()
                 accept(it)
             }
         }

@@ -7,9 +7,7 @@ import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.util.ITickeable
 import com.cout970.modeler.view.Gui
-import com.cout970.modeler.view.event.IInput
 import com.cout970.modeler.view.render.tool.shader.UniversalShader
-import com.cout970.modeler.view.window.WindowHandler
 import com.cout970.vector.extensions.xf
 import com.cout970.vector.extensions.yf
 import com.cout970.vector.extensions.zf
@@ -27,15 +25,16 @@ class RenderManager : ITickeable {
     lateinit var shader: UniversalShader
     lateinit var canvasRenderer: CanvasRenderer
 
-    fun initOpenGl(resourceLoader: ResourceLoader, windowHandler: WindowHandler, input: IInput) {
+    fun initOpenGl(resourceLoader: ResourceLoader, gui: Gui) {
 
+        this.gui = gui
         log(Level.FINE) { "[RenderManager] Creating GuiRenderer" }
-        guiRenderer = GuiRenderer(gui.root, windowHandler.window.id)
+        guiRenderer = GuiRenderer(gui.root, gui.windowHandler.window.id)
         gui.guiUpdater.leguiContext = guiRenderer.context
         log(Level.FINE) { "[RenderManager] Creating Universal Shader" }
         shader = UniversalShader(resourceLoader)
         log(Level.FINE) { "[RenderManager] Creating CanvasRenderer" }
-        canvasRenderer = CanvasRenderer(this, input)
+        canvasRenderer = CanvasRenderer(this)
         val c = Config.colorPalette.modelBackgroundColor
         GLStateMachine.clearColor = Color(c.xf, c.yf, c.zf)
     }

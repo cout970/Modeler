@@ -87,7 +87,7 @@ class Initializer {
         eventController.bindWindow(windowHandler.window)
 
         log(Level.FINE) { "Initializing renderers" }
-        renderManager.initOpenGl(resourceLoader, windowHandler, eventController)
+        renderManager.initOpenGl(resourceLoader, gui)
         log(Level.FINE) { "Registering Input event listeners" }
         gui.listeners.initListeners(eventController, gui)
         gui.commandExecutor.programState = state

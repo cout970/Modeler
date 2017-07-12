@@ -43,4 +43,8 @@ class CameraHandler {
     fun setZoom(zoom: Double) {
         desiredZoom = zoom
     }
+
+    fun setOrtho(option: Boolean) {
+        camera = camera.copy(perspective = !option)
+    }
 }

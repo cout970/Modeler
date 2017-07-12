@@ -1,11 +1,9 @@
 package com.cout970.modeler.view.gui.comp.canvas
 
+import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.view.gui.comp.CBorderRenderer
 import com.cout970.modeler.view.gui.comp.CPanel
-import com.cout970.modeler.view.render.tool.Light
 import com.cout970.modeler.view.render.tool.camera.CameraHandler
-import com.cout970.vector.extensions.Vector3
-import com.cout970.vector.extensions.vec3Of
 import org.liquidengine.legui.util.ColorConstants
 
 /**
@@ -15,11 +13,7 @@ import org.liquidengine.legui.util.ColorConstants
 class Canvas : CPanel() {
 
     val cameraHandler = CameraHandler()
-
-    val lights: List<Light> = listOf(
-            Light(vec3Of(250, 500, 400), Vector3.ONE),
-            Light(vec3Of(-250, -500, -400), Vector3.ONE)
-    )
+    var viewMode: SelectionTarget = SelectionTarget.MODEL
 
     init {
         backgroundColor = ColorConstants.transparent()

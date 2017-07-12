@@ -15,6 +15,9 @@ class GuiState {
     var useColor = false
     var useLight = true
 
+    var drawTextureGridLines: Boolean = true
+    var drawModelGridLines: Boolean = true
+
     var renderLights: Boolean = false
 
     var holdingSelection: ISelectable? = null
