@@ -50,4 +50,15 @@ class SelectionHandler {
         if (ref.isEmpty()) return null
         return Selection(SelectionTarget.MODEL, SelectionType.OBJECT, ref)
     }
+
+
+    fun clearSelection() {
+        ref = emptyList()
+    }
+
+    fun setSelection(selection: ISelection?) {
+        (selection as? Selection)?.let {
+            ref = it.list as List<IObjectRef>
+        }
+    }
 }

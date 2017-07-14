@@ -5,11 +5,11 @@ import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.plus
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Component
+import org.liquidengine.legui.component.Container
 import org.liquidengine.legui.component.Frame
-import org.liquidengine.legui.component.Panel
 import org.liquidengine.legui.component.TextInput
-import org.liquidengine.legui.context.LeguiContext
-import org.liquidengine.legui.event.component.MouseClickEvent
+import org.liquidengine.legui.event.MouseClickEvent
+import org.liquidengine.legui.system.context.Context
 
 val Component.absolutePosition: IVector2 get() {
     var sum = this.position.toIVector()
@@ -22,7 +22,7 @@ val Component.absolutePosition: IVector2 get() {
 }
 
 fun <T : Component> T.onClick(id: String, commandExecutor: CommandExecutor): T {
-    leguiEventListeners.addListener(MouseClickEvent::class.java, {
+    listenerMap.addListener(MouseClickEvent::class.java, {
         if (it.action == MouseClickEvent.MouseClickAction.PRESS) {
             commandExecutor.execute(id)
         }
@@ -31,7 +31,7 @@ fun <T : Component> T.onClick(id: String, commandExecutor: CommandExecutor): T {
 }
 
 inline fun <T : Component> T.onClick(id: Int, crossinline func: (Int) -> Unit): T {
-    leguiEventListeners.addListener(MouseClickEvent::class.java, {
+    listenerMap.addListener(MouseClickEvent::class.java, {
         if (it.action == MouseClickEvent.MouseClickAction.PRESS) {
             func(id)
         }
@@ -60,15 +60,15 @@ fun Component.show() {
 
 fun Component.disable() {
     isEnabled = false
-    if (this is Panel) {
-        components.forEach(Component::disable)
+    if (this is Container<*>) {
+        this.childs.forEach(Component::disable)
     }
 }
 
 fun Component.enable() {
     isEnabled = true
-    if (this is Panel) {
-        components.forEach(Component::enable)
+    if (this is Container<*>) {
+        this.childs.forEach(Component::enable)
     }
 }
 
@@ -78,16 +78,16 @@ var TextInput.text: String
         textState.text = value
     }
 
-fun LeguiContext.focus(component: Component) {
+fun Context.focus(component: Component) {
     val focusedGui = focusedGui
-    if (component != focusedGui) component.state.isFocused = false
+    if (component != focusedGui) component.isFocused = false
 
     this.focusedGui = component
-    component.state.isFocused = true
-    component.state.isPressed = true
+    component.isFocused = true
+    component.isPressed = true
 }
 
-fun LeguiContext.unfocus() {
-    focusedGui.state.isFocused = false
+fun Context.unfocus() {
+    focusedGui.isFocused = false
     this.focusedGui = null
 }

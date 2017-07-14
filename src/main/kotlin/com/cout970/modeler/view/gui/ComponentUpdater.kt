@@ -4,7 +4,7 @@ import com.cout970.glutilities.event.EventMouseScroll
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.view.Gui
-import org.liquidengine.legui.component.Panel
+import org.liquidengine.legui.component.Container
 
 /**
  * Created by cout970 on 2017/07/08.
@@ -21,7 +21,7 @@ abstract class ComponentUpdater {
 
     }
 
-    open fun bindTextInputs(panel: Panel) {
+    open fun bindTextInputs(panel: Container<*>) {
 
     }
 

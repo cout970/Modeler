@@ -6,11 +6,11 @@ import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.show
 import com.cout970.modeler.util.toColor
 import com.cout970.modeler.view.gui.comp.CPanel
-import org.liquidengine.legui.component.ComponentState
 import org.liquidengine.legui.component.Label
 import org.liquidengine.legui.component.TextInput
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
-import org.liquidengine.legui.event.component.KeyboardKeyEvent
+import org.liquidengine.legui.event.FocusEvent
+import org.liquidengine.legui.event.KeyEvent
 import org.lwjgl.glfw.GLFW
 
 /**
@@ -28,21 +28,18 @@ class SearchPanel(val modelview: SearchFacade) : CPanel(width = 400f, height = 6
         searchBar.textState.fontSize = 20f
         searchBar.textState.textColor = Config.colorPalette.textColor.toColor()
         label.textState.textColor = Config.colorPalette.textColor.toColor()
-        addComponent(label)
-        addComponent(searchBar)
+        add(label)
+        add(searchBar)
         backgroundColor = Config.colorPalette.darkColor.toColor()
         searchBar.backgroundColor = Config.colorPalette.lightColor.toColor()
 
-        searchBar.leguiEventListeners.addListener(KeyboardKeyEvent::class.java, this::onUpdate)
+        searchBar.listenerMap.addListener(KeyEvent::class.java, this::onUpdate)
 
-        searchBar.state = object : ComponentState() {
-            override fun setFocused(focused: Boolean) {
-                super.setFocused(focused)
-                if (!focused) {
-                    searchResults.hide()
-                    searchBar.textState.text = ""
-                    hide()
-                }
+        searchBar.listenerMap.addListener(FocusEvent::class.java) {
+            if (!it.isFocused) {
+                searchResults.hide()
+                searchBar.textState.text = ""
+                hide()
             }
         }
 
@@ -50,7 +47,7 @@ class SearchPanel(val modelview: SearchFacade) : CPanel(width = 400f, height = 6
         hide()
     }
 
-    private fun onUpdate(e: KeyboardKeyEvent) {
+    private fun onUpdate(e: KeyEvent<*>) {
         if (e.action != GLFW.GLFW_PRESS) return
 
         if (e.key == Keyboard.KEY_UP && selectedOption > 0) {
@@ -81,7 +78,7 @@ class SearchPanel(val modelview: SearchFacade) : CPanel(width = 400f, height = 6
 
     private fun renderResults(modelview: SearchFacade) {
 
-        searchResults.clearComponents()
+        searchResults.clearChilds()
         searchResults.show()
 
         val displayedResults = modelview.searchResults.take(maxSearchResults)
@@ -94,15 +91,15 @@ class SearchPanel(val modelview: SearchFacade) : CPanel(width = 400f, height = 6
                 }
             }
 
-            panel.addComponent(Label(text, 5f, 0f, 200f, 24f).also {
+            panel.add(Label(text, 5f, 0f, 200f, 24f).also {
                 it.textState.textColor = Config.colorPalette.textColor.toColor()
             })
-            panel.addComponent(Label(keyBind, 195f, 0f, 200f, 24f).also {
+            panel.add(Label(keyBind, 195f, 0f, 200f, 24f).also {
                 it.textState.horizontalAlign = HorizontalAlign.RIGHT
                 it.textState.textColor = Config.colorPalette.textColor.toColor()
             })
 
-            searchResults.addComponent(panel)
+            searchResults.add(panel)
         }
         searchResults.size.y = displayedResults.size * 20f + 2f
     }

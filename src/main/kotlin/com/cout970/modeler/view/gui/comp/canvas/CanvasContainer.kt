@@ -1,12 +1,12 @@
 package com.cout970.modeler.view.gui.comp.canvas
 
+import com.cout970.modeler.view.gui.comp.CPanel
 import com.cout970.modeler.view.gui.comp.canvas.layout.*
-import org.liquidengine.legui.component.Panel
 
 /**
  * Created by cout970 on 2017/05/03.
  */
-class CanvasContainer(val panel: Panel) {
+class CanvasContainer(val panel: CPanel) {
 
     val layoutOne = LayoutOne(this)
     val layoutTwo = LayoutTwo(this)
@@ -46,10 +46,10 @@ class CanvasContainer(val panel: Panel) {
     }
 
     fun refreshCanvas() {
-        val nonCanvas = panel.components.filter { it !is Canvas }
-        panel.clearComponents()
-        nonCanvas.forEach { panel.addComponent(it) }
-        canvas.forEach { panel.addComponent(it) }
+        val nonCanvas = panel.childs.filter { it !is Canvas }
+        panel.clearChilds()
+        nonCanvas.forEach { panel.add(it) }
+        canvas.forEach { panel.add(it) }
         selectedCanvas = canvas.firstOrNull()
     }
 }

@@ -11,7 +11,7 @@ class Root : Frame(1f, 1f) {
     var mainPanel: MutablePanel? = null
         set(value) {
             field = value
-            clearComponents()
-            addComponent(value)
+            container.clearChilds()
+            container.add(value)
         }
 }

@@ -6,9 +6,9 @@ import com.cout970.modeler.view.gui.comp.CButton
 import com.cout970.modeler.view.gui.editor.RightPanel
 import com.cout970.modeler.view.gui.popup.*
 import org.liquidengine.legui.component.Component
-import org.liquidengine.legui.component.Panel
-import org.liquidengine.legui.event.component.MouseClickEvent
-import org.liquidengine.legui.listener.LeguiEventListenerMap
+import org.liquidengine.legui.component.Container
+import org.liquidengine.legui.event.MouseClickEvent
+import org.liquidengine.legui.listener.ListenerMap
 
 /**
  * Created by cout970 on 2017/05/14.
@@ -37,14 +37,14 @@ class CommandExecutor {
             "project.save.as" -> saveProjectAs(projectManager, exportManager)
             "project.export" -> showExportModelPopup(exportManager, actionExecutor, projectManager)
             "project.import" -> showImportModelPopup(exportManager, actionExecutor.historicalRecord, projectManager)
-            "model.selection.delete" -> actionTrigger.delete(selection)
+            "model.selection.delete" -> actionTrigger.delete(selection, gui.selectionHandler)
             "tree.view.delete.item" -> (comp?.parent as? RightPanel.ListItem)?.let {
-                actionTrigger.delete(it.ref)
+                actionTrigger.delete(it.ref, gui.selectionHandler)
             }
             "model.undo" -> actionExecutor.historicalRecord.undo()
             "model.redo" -> actionExecutor.historicalRecord.redo()
             "model.selection.copy" -> actionTrigger.copy(selection)
-            "model.selection.cut" -> actionTrigger.cut(selection)
+            "model.selection.cut" -> actionTrigger.cut(selection, gui.selectionHandler)
             "model.selection.paste" -> actionTrigger.paste()
             "tree.view.hide.item" -> {
                 actionTrigger.modifyVisibility(comp.parent<RightPanel.ListItem>()!!.ref, false)
@@ -67,17 +67,17 @@ class CommandExecutor {
         }
     }
 
-    fun bindButtons(panel: Panel) {
-        panel.components.forEach {
+    fun bindButtons(panel: Container<*>) {
+        panel.childs.forEach {
             if (it is CButton) {
-                it.leguiEventListeners.setButtonListener { execute(it.command, it) }
-            } else if (it is Panel) {
+                it.listenerMap.setButtonListener { execute(it.command, it) }
+            } else if (it is Container<*>) {
                 bindButtons(it)
             }
         }
     }
 
-    fun LeguiEventListenerMap.setButtonListener(function: () -> Unit) {
+    fun ListenerMap.setButtonListener(function: () -> Unit) {
         getListeners(MouseClickEvent::class.java).toList().forEach {
             removeListener(MouseClickEvent::class.java, it)
         }

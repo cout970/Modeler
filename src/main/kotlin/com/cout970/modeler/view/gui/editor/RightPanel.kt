@@ -9,9 +9,10 @@ import com.cout970.modeler.view.GuiResources
 import com.cout970.modeler.view.gui.comp.CButton
 import com.cout970.modeler.view.gui.comp.CLabel
 import com.cout970.modeler.view.gui.comp.CPanel
+import com.cout970.modeler.view.gui.comp.CVerticalPanel
 import org.joml.Vector2f
-import org.liquidengine.legui.component.ImageView
-import org.liquidengine.legui.util.ColorConstants
+import org.liquidengine.legui.color.ColorConstants
+import org.liquidengine.legui.icon.ImageIcon
 
 /**
  * Created by cout970 on 2017/06/25.
@@ -22,34 +23,34 @@ class RightPanel : CPanel() {
     val treeViewPanel = TreeViewPanel()
 
     init {
-        addComponent(materialListPanel)
-        addComponent(treeViewPanel)
-        treeViewPanel.position.y = 200f
+        add(materialListPanel)
+        add(treeViewPanel)
+        materialListPanel.position.y = 400f
     }
 
-    class TreeViewPanel : CPanel(width = 180f, height = 700f) {
+    class TreeViewPanel : CPanel(width = 190f, height = 400f) {
 
         val titleLabel = CLabel("Model parts", 5f, 5f, 180f, 24f)
-        val listPanel = CPanel(0f, 35f, 180f, 700f)
+        val listPanel = CVerticalPanel(0f, 35f, 190f, 24f)
 
         init {
-            addComponent(titleLabel)
-            addComponent(listPanel)
+            add(titleLabel)
+            add(listPanel)
         }
     }
 
-    class MaterialListPanel : CPanel(width = 180f, height = 200f) {
+    class MaterialListPanel : CPanel(width = 190f, height = 300f) {
 
         val titleLabel = CLabel("Materials", 5f, 5f, 180f, 24f)
-        val listPanel = CPanel(0f, 35f, 180f, 700f)
+        val listPanel = CVerticalPanel(0f, 35f, 190f, 24f)
 
         init {
-            addComponent(titleLabel)
-            addComponent(listPanel)
+            add(titleLabel)
+            add(listPanel)
         }
     }
 
-    class ListItem(val ref: IObjectRef, name: String) : CPanel(width = 180f, height = 24f) {
+    class ListItem(val ref: IObjectRef, name: String) : CPanel(width = 176f, height = 24f) {
 
         val label = CLabel(name, 0f, 0f, 120f, 24f)
         val showButton = CButton("", 120f, 0f, 24f, 24f, "tree.view.show.item")
@@ -57,11 +58,12 @@ class RightPanel : CPanel() {
         val delButton = CButton("", 150f, 0f, 24f, 24f, "tree.view.delete.item")
 
         init {
+            position.x = 1f
             backgroundColor = Config.colorPalette.primaryColor.toColor()
-            addComponent(label)
-            addComponent(hideButton)
-            addComponent(showButton)
-            addComponent(delButton)
+            add(label)
+            add(hideButton)
+            add(showButton)
+            add(delButton)
 
             showButton.backgroundColor = ColorConstants.transparent()
             showButton.border.isEnabled = false
@@ -74,9 +76,9 @@ class RightPanel : CPanel() {
         }
 
         override fun loadResources(resources: GuiResources) {
-            showButton.setImage(ImageView(resources.showIcon).apply { size = Vector2f(24f) })
-            hideButton.setImage(ImageView(resources.hideIcon).apply { size = Vector2f(24f) })
-            delButton.setImage(ImageView(resources.deleteIcon).apply { size = Vector2f(18f); position = Vector2f(3f) })
+            showButton.setImage(ImageIcon(resources.showIcon).apply { size = Vector2f(24f) })
+            hideButton.setImage(ImageIcon(resources.hideIcon).apply { size = Vector2f(24f) })
+            delButton.setImage(ImageIcon(resources.deleteIcon).apply { size = Vector2f(18f); position = Vector2f(3f) })
             super.loadResources(resources)
         }
     }
@@ -89,9 +91,9 @@ class RightPanel : CPanel() {
 
         init {
             backgroundColor = Config.colorPalette.primaryColor.toColor()
-            addComponent(label)
-            addComponent(applyButton)
-            addComponent(loadButton)
+            add(label)
+            add(applyButton)
+            add(loadButton)
 
             applyButton.backgroundColor = ColorConstants.transparent()
             applyButton.border.isEnabled = false
@@ -105,8 +107,8 @@ class RightPanel : CPanel() {
         }
 
         override fun loadResources(resources: GuiResources) {
-            applyButton.setImage(ImageView(resources.applyMaterial).apply { size = Vector2f(24f) })
-            loadButton.setImage(ImageView(resources.loadMaterial).apply { size = Vector2f(20f) })
+            applyButton.setImage(ImageIcon(resources.applyMaterial).apply { size = Vector2f(24f) })
+            loadButton.setImage(ImageIcon(resources.loadMaterial).apply { size = Vector2f(20f) })
             super.loadResources(resources)
         }
     }

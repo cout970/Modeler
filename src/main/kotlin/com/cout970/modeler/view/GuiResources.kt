@@ -8,7 +8,7 @@ import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.core.resource.fromClasspath
-import org.liquidengine.legui.image.Image
+import org.liquidengine.legui.image.BufferedImage
 
 /**
  * Created by cout970 on 2017/06/14.
@@ -21,11 +21,11 @@ class GuiResources {
 
     lateinit var baseCubeTexture: Texture
     lateinit var cursorTexture: Texture
-    lateinit var deleteIcon: Image
-    lateinit var showIcon: Image
-    lateinit var hideIcon: Image
-    lateinit var applyMaterial: Image
-    lateinit var loadMaterial: Image
+    lateinit var deleteIcon: BufferedImage
+    lateinit var showIcon: BufferedImage
+    lateinit var hideIcon: BufferedImage
+    lateinit var applyMaterial: BufferedImage
+    lateinit var loadMaterial: BufferedImage
 
     fun reload(loader: ResourceLoader) {
         log(Level.FINE) { "[GuiResources] Loading gui resources" }
@@ -36,11 +36,11 @@ class GuiResources {
 
         baseCubeTexture = loader.getTexture("assets/textures/models/cube.png").apply { magFilter = Texture.PIXELATED }
         cursorTexture = loader.getTexture("assets/textures/cursor.png")
-        deleteIcon = Image("assets/textures/delete.png")
-        showIcon = Image("assets/textures/show.png")
-        hideIcon = Image("assets/textures/hide.png")
-        applyMaterial = Image("assets/textures/applyMaterial.png")
-        loadMaterial = Image("assets/textures/loadMaterial.png")
+        deleteIcon = BufferedImage("assets/textures/delete.png")
+        showIcon = BufferedImage("assets/textures/show.png")
+        hideIcon = BufferedImage("assets/textures/hide.png")
+        applyMaterial = BufferedImage("assets/textures/applyMaterial.png")
+        loadMaterial = BufferedImage("assets/textures/loadMaterial.png")
 
         MaterialNone.loadTexture(loader)
         log(Level.FINE) { "[GuiResources] Gui resources loaded" }

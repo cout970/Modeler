@@ -46,19 +46,19 @@ class ActionTrigger(val exec: ActionExecutor, val setter: IModelSetter) {
         exec.enqueueAction(ActionAddObject(setter, model, obj))
     }
 
-    fun delete(ref: IObjectRef) {
+    fun delete(ref: IObjectRef, handler: SelectionHandler) {
         delete(Selection(
                 SelectionTarget.MODEL,
                 SelectionType.OBJECT,
                 listOf(ref)
-        ))
+        ), handler)
     }
 
-    fun delete(selection: ISelection?) {
+    fun delete(selection: ISelection?, handler: SelectionHandler) {
         if (selection == null) return
         val newModel = EditTool.delete(model, selection)
 
-        exec.enqueueAction(ActionDelete(setter, newModel))
+        exec.enqueueAction(ActionDelete(setter, newModel, handler))
     }
 
     fun changeObject(ref: IObjectRef, obj: IObject) {
@@ -76,9 +76,9 @@ class ActionTrigger(val exec: ActionExecutor, val setter: IModelSetter) {
         }
     }
 
-    fun cut(selection: ISelection?) {
+    fun cut(selection: ISelection?, handler: SelectionHandler) {
         copy(selection)
-        delete(selection)
+        delete(selection, handler)
     }
 
     fun paste() {

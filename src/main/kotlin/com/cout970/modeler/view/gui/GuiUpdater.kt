@@ -11,8 +11,8 @@ import com.cout970.modeler.view.gui.editor.LeftPanelUpdater
 import com.cout970.modeler.view.gui.editor.RightPanelUpdater
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.vec2Of
-import org.liquidengine.legui.component.Panel
-import org.liquidengine.legui.context.LeguiContext
+import org.liquidengine.legui.component.Container
+import org.liquidengine.legui.system.context.Context
 import javax.script.ScriptEngineManager
 
 
@@ -23,7 +23,7 @@ import javax.script.ScriptEngineManager
 class GuiUpdater {
 
     val updaters = listOf(RightPanelUpdater(), LeftPanelUpdater())
-    lateinit var leguiContext: LeguiContext
+    lateinit var leguiContext: Context
     lateinit var gui: Gui
     val scriptEngine = ScriptEngineManager().getEngineByName("JavaScript")!!
 
@@ -55,7 +55,7 @@ class GuiUpdater {
         gui.canvasContainer.layout.updateCanvas()
     }
 
-    fun bindTextInputs(editorPanel: Panel) {
+    fun bindTextInputs(editorPanel: Container<*>) {
         updaters.forEach { it.bindTextInputs(editorPanel) }
     }
 

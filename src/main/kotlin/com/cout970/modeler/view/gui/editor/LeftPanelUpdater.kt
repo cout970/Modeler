@@ -17,12 +17,12 @@ import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
 import org.joml.Quaterniond
 import org.joml.Vector3d
-import org.liquidengine.legui.component.Panel
+import org.liquidengine.legui.component.Container
 import org.liquidengine.legui.component.TextInput
-import org.liquidengine.legui.context.LeguiContext
-import org.liquidengine.legui.event.component.FocusEvent
-import org.liquidengine.legui.event.component.KeyboardKeyEvent
-import org.liquidengine.legui.listener.LeguiEventListenerMap
+import org.liquidengine.legui.event.FocusEvent
+import org.liquidengine.legui.event.KeyEvent
+import org.liquidengine.legui.listener.ListenerMap
+import org.liquidengine.legui.system.context.Context
 import org.lwjgl.glfw.GLFW
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -36,7 +36,7 @@ class LeftPanelUpdater : ComponentUpdater() {
 
     val formatter = DecimalFormat("#.###", DecimalFormatSymbols.getInstance(Locale.ENGLISH))
     val model get() = gui.actionExecutor.model
-    val leguiContext: LeguiContext get() = gui.guiUpdater.leguiContext
+    val leguiContext: Context get() = gui.guiUpdater.leguiContext
     val scriptEngine get() = gui.guiUpdater.scriptEngine
     var monitoredCube: IObjectRef? = null
 
@@ -134,8 +134,6 @@ class LeftPanelUpdater : ComponentUpdater() {
         if (newPos != oldObj.pos) {
             val newObj = oldObj.copy(pos = newPos)
             pos = newPos
-            println("old: ${oldObj}")
-            println("new: ${newObj}")
             gui.actionExecutor.actionTrigger.changeObject(ref, newObj)
         } else {
             pos = getPos()
@@ -183,14 +181,14 @@ class LeftPanelUpdater : ComponentUpdater() {
         return angles.toIVector().toDegrees()
     }
 
-    fun handleKeyPress(input: CTextInput, event: KeyboardKeyEvent) {
+    fun handleKeyPress(input: CTextInput, event: KeyEvent<*>) {
         if (event.key == Keyboard.KEY_ENTER) {
             updateTextInput(input)
         }
     }
 
-    fun handleFocusChange(input: CTextInput, event: FocusEvent) {
-        if (event.focusGained) {
+    fun handleFocusChange(input: CTextInput, event: FocusEvent<*>) {
+        if (event.isFocused) {
             if (input.text.isNotEmpty()) {
                 input.startSelectionIndex = 0
                 input.endSelectionIndex = input.text.length
@@ -208,25 +206,25 @@ class LeftPanelUpdater : ComponentUpdater() {
         return false
     }
 
-    override fun bindTextInputs(panel: Panel) {
-        panel.components.forEach {
+    override fun bindTextInputs(panel: Container<*>) {
+        panel.childs.forEach {
             if (it is CTextInput) {
-                it.leguiEventListeners.setKeyboardListener { e -> handleKeyPress(it, e) }
-                it.leguiEventListeners.setFocusListener { e -> handleFocusChange(it, e) }
-            } else if (it is Panel) {
+                it.listenerMap.setKeyboardListener { e -> handleKeyPress(it, e) }
+                it.listenerMap.setFocusListener { e -> handleFocusChange(it, e) }
+            } else if (it is Container<*>) {
                 bindTextInputs(it)
             }
         }
     }
 
-    fun LeguiEventListenerMap.setKeyboardListener(function: (KeyboardKeyEvent) -> Unit) {
-        getListeners(KeyboardKeyEvent::class.java).toList().forEach {
-            removeListener(KeyboardKeyEvent::class.java, it)
+    fun ListenerMap.setKeyboardListener(function: (KeyEvent<*>) -> Unit) {
+        getListeners(KeyEvent::class.java).toList().forEach {
+            removeListener(KeyEvent::class.java, it)
         }
-        addListener(KeyboardKeyEvent::class.java, { if (it.action == GLFW.GLFW_PRESS) function(it) })
+        addListener(KeyEvent::class.java, { if (it.action == GLFW.GLFW_PRESS) function(it) })
     }
 
-    fun LeguiEventListenerMap.setFocusListener(function: (FocusEvent) -> Unit) {
+    fun ListenerMap.setFocusListener(function: (FocusEvent<*>) -> Unit) {
         getListeners(FocusEvent::class.java).toList().forEach {
             removeListener(FocusEvent::class.java, it)
         }

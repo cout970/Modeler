@@ -10,8 +10,8 @@ import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.xf
 import com.cout970.vector.extensions.yf
 import org.joml.Vector2f
+import org.liquidengine.legui.color.ColorConstants
 import org.liquidengine.legui.component.Label
-import org.liquidengine.legui.util.ColorConstants
 
 /**
  * Created by cout970 on 2017/06/09.
@@ -29,8 +29,8 @@ class EditorPanel : MutablePanel() {
 
         init {
             backgroundColor = ColorConstants.transparent()
-            addComponent(topMenu)
-            addComponent(canvasPanel)
+            add(topMenu)
+            add(canvasPanel)
         }
     }
 
@@ -44,7 +44,7 @@ class EditorPanel : MutablePanel() {
         init {
             backgroundColor = ColorConstants.transparent()
             backgroundLabels.forEach {
-                addComponent(it)
+                add(it)
                 it.textState.apply {
                     textColor = ColorConstants.white()
                     fontSize = 20f
@@ -55,9 +55,9 @@ class EditorPanel : MutablePanel() {
 
     init {
         backgroundColor = ColorConstants.transparent()
-        addComponent(leftPanel)
-        addComponent(rightPanel)
-        addComponent(centerPanel)
+        add(leftPanel)
+        add(rightPanel)
+        add(centerPanel)
     }
 
     override fun updateSizes(newSize: IVector2) {
@@ -69,6 +69,23 @@ class EditorPanel : MutablePanel() {
         rightPanel.let {
             it.size = Vector2f(190f, newSize.yf)
             it.position = Vector2f(newSize.xf - 190f, 0f)
+            it.treeViewPanel.let { panel ->
+                panel.size.y = it.size.y / 2
+                panel.listPanel.apply {
+                    size.y = panel.size.y - position.y
+                    container.childs.map { it.position.y + it.size.y }.max()?.let { size -> container.size.y = size }
+                    resize()
+                }
+            }
+            it.materialListPanel.let { panel ->
+                panel.position.y = it.size.y / 2
+                panel.size.y = it.size.y / 2
+                panel.listPanel.apply {
+                    size.y = panel.size.y - position.y
+                    container.childs.map { it.position.y + it.size.y }.max()?.let { size -> container.size.y = size }
+                    resize()
+                }
+            }
         }
         centerPanel.let {
             it.size = Vector2f(newSize.xf - (leftPanel.size.x + rightPanel.size.x), newSize.yf)

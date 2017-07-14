@@ -3,8 +3,8 @@ package com.cout970.modeler.view.gui.comp
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.util.toColor
 import org.liquidengine.legui.component.Button
-import org.liquidengine.legui.component.ImageView
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
+import org.liquidengine.legui.icon.ImageIcon
 
 /**
  * Created by cout970 on 2017/01/24.
@@ -23,11 +23,11 @@ class CButton(
         backgroundColor = Config.colorPalette.buttonColor.toColor()
     }
 
-    fun setImage(img: ImageView) {
-        backgroundImage = img
-        focusedBbackgroundImage = img
-        hoveredBackgroundImage = img
-        pressedBackgroundImage = img
+    fun setImage(img: ImageIcon) {
+        backgroundIcon = img
+        focusedBackgroundIcon = img
+        hoveredBackgroundIcon = img
+        pressedBackgroundIcon = img
     }
 
     fun setTextLeft() = this.apply {

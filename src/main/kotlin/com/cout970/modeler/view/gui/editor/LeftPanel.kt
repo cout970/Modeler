@@ -15,8 +15,8 @@ class LeftPanel : CPanel() {
     val editCubePanel = EditTemplateCubePanel()
 
     init {
-        addComponent(createObjectPanel)
-        addComponent(editCubePanel)
+        add(createObjectPanel)
+        add(editCubePanel)
         editCubePanel.position.y = 100f
         editCubePanel.hide()
     }
@@ -28,9 +28,9 @@ class LeftPanel : CPanel() {
         val createMeshCube = CButton("Create mesh cube", 5f, 65f, 180f, 24f, "cube.mesh.new")
 
         init {
-            addComponent(createObjectLabel)
-            addComponent(createTemplateCube)
-            addComponent(createMeshCube)
+            add(createObjectLabel)
+            add(createTemplateCube)
+            add(createMeshCube)
         }
     }
 
@@ -42,10 +42,10 @@ class LeftPanel : CPanel() {
         val rotationPanel = CubeRotationPanel()
 
         init {
-            addComponent(editCubeLabel)
-            addComponent(sizePanel)
-            addComponent(posPanel)
-            addComponent(rotationPanel)
+            add(editCubeLabel)
+            add(sizePanel)
+            add(posPanel)
+            add(rotationPanel)
             sizePanel.position.y = 30f
             posPanel.position.y = 105f
             rotationPanel.position.y = 180f
@@ -60,12 +60,12 @@ class LeftPanel : CPanel() {
             val sizeZInput = CTextInput("cube.size.z", "0.0", 65f, 51f, 110f, 18f)
 
             init {
-                addComponent(sizeXLabel)
-                addComponent(sizeXInput)
-                addComponent(sizeYLabel)
-                addComponent(sizeYInput)
-                addComponent(sizeZLabel)
-                addComponent(sizeZInput)
+                add(sizeXLabel)
+                add(sizeXInput)
+                add(sizeYLabel)
+                add(sizeYInput)
+                add(sizeZLabel)
+                add(sizeZInput)
                 setBorderless()
             }
         }
@@ -79,12 +79,12 @@ class LeftPanel : CPanel() {
             val posZInput = CTextInput("cube.pos.z", "8", 65f, 51f, 110f, 18f)
 
             init {
-                addComponent(posXLabel)
-                addComponent(posXInput)
-                addComponent(posYLabel)
-                addComponent(posYInput)
-                addComponent(posZLabel)
-                addComponent(posZInput)
+                add(posXLabel)
+                add(posXInput)
+                add(posYLabel)
+                add(posYInput)
+                add(posZLabel)
+                add(posZInput)
                 setBorderless()
             }
         }
@@ -98,12 +98,12 @@ class LeftPanel : CPanel() {
             val rotZInput = CTextInput("cube.rot.z", "0", 65f, 51f, 110f, 18f)
 
             init {
-                addComponent(rotXLabel)
-                addComponent(rotXInput)
-                addComponent(rotYLabel)
-                addComponent(rotYInput)
-                addComponent(rotZLabel)
-                addComponent(rotZInput)
+                add(rotXLabel)
+                add(rotXInput)
+                add(rotYLabel)
+                add(rotYInput)
+                add(rotZLabel)
+                add(rotZInput)
                 setBorderless()
             }
         }

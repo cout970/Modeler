@@ -9,6 +9,7 @@ import com.cout970.modeler.core.model.selection.ObjectRef
 import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.show
 import com.cout970.modeler.util.toColor
+import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.view.gui.ComponentUpdater
 
 /**
@@ -33,7 +34,7 @@ class RightPanelUpdater : ComponentUpdater() {
 
         val materialOfSelectedObjects = mutableListOf<IMaterialRef>()
 
-        tree.listPanel.clearComponents()
+        tree.listPanel.container.clearChilds()
         model.objects
                 .mapIndexed { index, _ -> ObjectRef(index) }
                 .forEach {
@@ -47,8 +48,9 @@ class RightPanelUpdater : ComponentUpdater() {
                         item.hideButton.hide()
                     }
 
-                    item.position.y = tree.listPanel.components.size * item.size.y
-                    tree.listPanel.addComponent(item)
+                    item.position.y = tree.listPanel.container.childs.size * item.size.y
+                    tree.listPanel.container.add(item)
+
                     if (selection?.isSelected(it) ?: false) {
                         item.backgroundColor = Config.colorPalette.selectedButton.toColor()
                         materialOfSelectedObjects += model.getObject(it).material
@@ -56,11 +58,14 @@ class RightPanelUpdater : ComponentUpdater() {
                     item.loadResources(gui.resources)
                 }
 
-        materials.listPanel.clearComponents()
+        materials.listPanel.container.clearChilds()
         model.materials.forEachIndexed { index, it ->
+
             val item = RightPanel.MaterialListItem(MaterialRef(index), it.name)
-            item.position.y = materials.listPanel.components.size * item.size.y
-            materials.listPanel.addComponent(item)
+
+            item.position.y = materials.listPanel.container.childs.size * item.size.y
+            materials.listPanel.container.add(item)
+
             if (MaterialRef(index) in materialOfSelectedObjects) {
                 item.backgroundColor = Config.colorPalette.selectedButton.toColor()
             }
@@ -69,5 +74,7 @@ class RightPanelUpdater : ComponentUpdater() {
 
         gui.commandExecutor.bindButtons(tree.listPanel)
         gui.commandExecutor.bindButtons(materials.listPanel)
+        //Update scroll size
+        gui.editorPanel.updateSizes(gui.editorPanel.size.toIVector())
     }
 }

@@ -4,6 +4,8 @@ import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.util.toColor
 import com.cout970.modeler.view.GuiResources
 import org.joml.Vector2f
+import org.liquidengine.legui.border.SimpleLineBorder
+import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Panel
 
 /**
@@ -11,11 +13,15 @@ import org.liquidengine.legui.component.Panel
  */
 open class CPanel(
         x: Float = 0f, y: Float = 0f, width: Float = 10f, height: Float = 10f
-) : Panel(Vector2f(x, y), Vector2f(width, height)) {
+) : Panel<Component>(Vector2f(x, y), Vector2f(width, height)) {
 
     val id = lastID++
 
     init {
+        border = SimpleLineBorder().apply {
+            thickness = 0.5f
+            color = Config.colorPalette.borderColor.toColor()
+        }
         backgroundColor = Config.colorPalette.lightColor.toColor()
     }
 
@@ -24,12 +30,12 @@ open class CPanel(
     }
 
     open fun loadResources(resources: GuiResources) {
-        components.filterIsInstance<CPanel>()
+        childs.filterIsInstance<CPanel>()
                 .forEach { it.loadResources(resources) }
     }
 
     fun setBorderless() {
-        getBorder().isEnabled = false
+        border.isEnabled = false
     }
 
     override fun equals(other: Any?): Boolean {

@@ -4,6 +4,7 @@ import com.cout970.glutilities.texture.Texture
 import com.cout970.glutilities.texture.TextureLoader
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
+import org.liquidengine.legui.image.BufferedImage
 import org.liquidengine.legui.image.Image
 import java.io.FileNotFoundException
 import java.io.InputStream
@@ -29,6 +30,6 @@ class ResourceLoader {
     }
 
     fun getImage(path: String): Image {
-        return Image(path)
+        return BufferedImage(path)
     }
 }

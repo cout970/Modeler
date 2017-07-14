@@ -1,12 +1,12 @@
 package com.cout970.modeler.view.event
 
 import org.liquidengine.cbchain.*
-import org.liquidengine.legui.context.ILeguiCallbackKeeper
+import org.liquidengine.legui.system.context.CallbackKeeper
 
 /**
  * Created by cout970 on 2016/12/02.
  */
-class CustomCallbackKeeper : ILeguiCallbackKeeper {
+class CustomCallbackKeeper : CallbackKeeper {
 
     override fun getChainCharModsCallback(): IChainCharModsCallback = CharModsCallback
 

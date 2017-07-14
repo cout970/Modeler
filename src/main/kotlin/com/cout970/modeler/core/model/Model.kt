@@ -71,9 +71,9 @@ data class Model(
     override fun removeObjects(objs: List<IObjectRef>): IModel {
         val toRemove = objs.map { it.objectIndex }
         return copy(
-                objects = objects.filterIndexed { index, _ -> index in toRemove },
+                objects = objects.filterIndexed { index, _ -> index !in toRemove },
                 materials = materials,
-                visibilities = visibilities.filterIndexed { index, _ -> index in toRemove }
+                visibilities = visibilities.filterIndexed { index, _ -> index !in toRemove }
         )
     }
 
