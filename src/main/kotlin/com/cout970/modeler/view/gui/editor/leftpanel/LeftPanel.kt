@@ -1,4 +1,4 @@
-package com.cout970.modeler.view.gui.editor
+package com.cout970.modeler.view.gui.editor.leftpanel
 
 import com.cout970.modeler.util.hide
 import com.cout970.modeler.view.gui.comp.CButton

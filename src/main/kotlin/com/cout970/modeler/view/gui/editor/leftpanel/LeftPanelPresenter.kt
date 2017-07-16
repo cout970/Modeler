@@ -1,4 +1,4 @@
-package com.cout970.modeler.view.gui.editor
+package com.cout970.modeler.view.gui.editor.leftpanel
 
 import com.cout970.glutilities.device.Keyboard
 import com.cout970.glutilities.event.EventMouseScroll
@@ -11,7 +11,7 @@ import com.cout970.modeler.core.model.ObjectCube
 import com.cout970.modeler.core.model.getSelectedObjectRefs
 import com.cout970.modeler.core.model.getSelectedObjects
 import com.cout970.modeler.util.*
-import com.cout970.modeler.view.gui.ComponentUpdater
+import com.cout970.modeler.view.gui.ComponentPresenter
 import com.cout970.modeler.view.gui.comp.CTextInput
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
@@ -32,7 +32,10 @@ import java.util.*
  * Created by cout970 on 2017/07/08.
  */
 
-class LeftPanelUpdater : ComponentUpdater() {
+class LeftPanelPresenter(
+        val panel: LeftPanel,
+        val module: ModuleLeftPanel
+) : ComponentPresenter() {
 
     val formatter = DecimalFormat("#.###", DecimalFormatSymbols.getInstance(Locale.ENGLISH))
     val model get() = gui.actionExecutor.model
@@ -45,7 +48,7 @@ class LeftPanelUpdater : ComponentUpdater() {
     }
 
     override fun onSelectionUpdate(old: ISelection?, new: ISelection?) {
-        val panel = gui.editorPanel.leftPanel.editCubePanel
+        val editCube = panel.editCubePanel
         val model = gui.actionExecutor.model
 
         if (new != null && isSelectingOneCube(new)) {
@@ -55,7 +58,7 @@ class LeftPanelUpdater : ComponentUpdater() {
                 updateTextInput(leguiContext.focusedGui as CTextInput)
             }
             monitoredCube = null
-            panel.hide()
+            editCube.hide()
         }
     }
 
@@ -72,7 +75,7 @@ class LeftPanelUpdater : ComponentUpdater() {
         setSize()
         setPos()
         setRotation()
-        gui.editorPanel.leftPanel.editCubePanel.show()
+        this.panel.editCubePanel.show()
     }
 
     fun updateTextInput(input: CTextInput, offset: Float = 0f) {
@@ -113,7 +116,7 @@ class LeftPanelUpdater : ComponentUpdater() {
         } else {
             size = getSize()
         }
-        val panel = gui.editorPanel.leftPanel.editCubePanel.sizePanel
+        val panel = this.panel.editCubePanel.sizePanel
         panel.sizeXInput.text = formatter.format(size.xf)
         panel.sizeYInput.text = formatter.format(size.yf)
         panel.sizeZInput.text = formatter.format(size.zf)
@@ -138,7 +141,7 @@ class LeftPanelUpdater : ComponentUpdater() {
         } else {
             pos = getPos()
         }
-        val panel = gui.editorPanel.leftPanel.editCubePanel.posPanel
+        val panel = this.panel.editCubePanel.posPanel
         panel.posXInput.text = formatter.format(pos.xf)
         panel.posYInput.text = formatter.format(pos.yf)
         panel.posZInput.text = formatter.format(pos.zf)
@@ -168,7 +171,7 @@ class LeftPanelUpdater : ComponentUpdater() {
         } else {
             rot = getRotation()
         }
-        val panel = gui.editorPanel.leftPanel.editCubePanel.rotationPanel
+        val panel = this.panel.editCubePanel.rotationPanel
         panel.rotXInput.text = formatter.format(rot.xf)
         panel.rotYInput.text = formatter.format(rot.yf)
         panel.rotZInput.text = formatter.format(rot.zf)

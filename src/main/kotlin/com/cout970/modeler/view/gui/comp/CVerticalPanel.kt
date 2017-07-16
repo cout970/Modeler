@@ -37,10 +37,10 @@ open class CVerticalPanel(
 
     override fun resize() {
         super.resize()
-        val containerSize = Vector2f(container.size)
-        val viewportSize = Vector2f(size)
-        val verticalRange = verticalScrollBar.maxValue - verticalScrollBar.minValue
-        verticalScrollBar.visibleAmount = if (containerSize.y >= viewportSize.y) verticalRange * viewportSize.y / containerSize.y else verticalRange
+//        val containerSize = Vector2f(container.size)
+//        val viewportSize = Vector2f(size)
+//        val verticalRange = verticalScrollBar.maxValue - verticalScrollBar.minValue
+//        verticalScrollBar.visibleAmount = if (containerSize.y >= viewportSize.y) verticalRange * viewportSize.y / containerSize.y else verticalRange
     }
 
     open fun loadResources(resources: GuiResources) {

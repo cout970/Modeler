@@ -9,9 +9,10 @@ import org.liquidengine.legui.component.Container
 /**
  * Created by cout970 on 2017/07/08.
  */
-abstract class ComponentUpdater {
+abstract class ComponentPresenter {
 
     lateinit var gui: Gui
+
 
     open fun onModelUpdate(old: IModel, new: IModel) {
 

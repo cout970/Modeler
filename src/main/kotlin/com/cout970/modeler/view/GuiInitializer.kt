@@ -44,8 +44,7 @@ class GuiInitializer(
         val editorPanel = EditorPanel()
         root.mainPanel = editorPanel
         log(Level.FINE) { "[GuiInitializer] Creating CanvasContainer" }
-        val canvasContainer = CanvasContainer(editorPanel.centerPanel.canvasPanel)
-        editorPanel.centerPanel.canvasContainer = canvasContainer
+        val canvasContainer = CanvasContainer(editorPanel.centerPanelModule.panel.canvasPanel)
         log(Level.FINE) { "[GuiInitializer] Creating Selector" }
         val selector = Selector()
         log(Level.FINE) { "[GuiInitializer] Creating Listeners" }
@@ -53,10 +52,9 @@ class GuiInitializer(
         log(Level.FINE) { "[GuiInitializer] Binding buttons" }
         commandExecutor.bindButtons(editorPanel)
         log(Level.FINE) { "[GuiInitializer] Binding text inputs" }
-        guiUpdater.bindTextInputs(editorPanel)
+//        guiUpdater.bindTextInputs(editorPanel)
         log(Level.FINE) { "[GuiInitializer] Creating GuiState" }
         val guiState = GuiState()
-
         log(Level.FINE) { "[GuiInitializer] Creating initial canvas" }
         canvasContainer.newCanvas()
         log(Level.FINE) { "[GuiInitializer] GUI Initialization done" }

@@ -1,0 +1,45 @@
+package com.cout970.modeler.view.gui.editor.centerpanel
+
+import com.cout970.modeler.util.hide
+import com.cout970.modeler.util.show
+import com.cout970.modeler.view.gui.comp.module.ILayout
+import org.joml.Vector2f
+
+/**
+ * Created by cout970 on 2017/07/16.
+ */
+class CenterPanelLayout(val panel: CenterPanel) : ILayout {
+
+    override fun rescale() {
+        panel.topMenu.let { menu ->
+            menu.size = Vector2f(panel.size.x, 24f)
+            menu.position = Vector2f()
+        }
+        panel.canvasPanel.let { canvasPanel ->
+            canvasPanel.size = Vector2f(panel.size.x, panel.size.y - 24f)
+            canvasPanel.position = Vector2f(0f, 24f)
+        }
+        panel.backgroundPanel.let { canvasPanel ->
+            canvasPanel.size = Vector2f(panel.size.x, panel.size.y - 24f)
+            canvasPanel.position = Vector2f(0f, 24f)
+        }
+
+        if (panel.canvasPanel.isEnabled) {
+            panel.canvasPanel.show()
+            panel.backgroundPanel.hide()
+        } else {
+            panel.canvasPanel.hide()
+            panel.backgroundPanel.apply {
+                show()
+                backgroundLabelsKey.forEachIndexed { index, label ->
+                    label.setPosition(panel.size.x / 3f, (index - backgroundLabelsKey.size / 2) * 45f)
+                    label.setSize(panel.size.x - label.position.x, panel.size.y - label.position.y)
+                }
+                backgroundLabelsValue.forEachIndexed { index, label ->
+                    label.setPosition(panel.size.x / 3f + 150f, (index - backgroundLabelsValue.size / 2) * 45f)
+                    label.setSize(panel.size.x - label.position.x, panel.size.y - label.position.y)
+                }
+            }
+        }
+    }
+}

@@ -28,7 +28,7 @@ class Listeners : ITickeable {
         eventController.addListener(EventMouseScroll::class.java, this::onMouseScroll)
         eventController.addListener(EventMouseClick::class.java, this::onMouseClick)
         cameraUpdater = CameraUpdater(gui.canvasContainer, eventController, gui.timer)
-        gui.guiUpdater.updateSizes(gui.windowHandler.window.size)
+        gui.root.updateSizes(gui.windowHandler.window.size)
         gui.projectManager.modelChangeListeners += this::onModelChange
     }
 

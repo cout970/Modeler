@@ -1,4 +1,4 @@
-package com.cout970.modeler.view.gui.editor
+package com.cout970.modeler.view.gui.editor.rightpanel
 
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.IObjectRef
@@ -14,9 +14,6 @@ import org.joml.Vector2f
 import org.liquidengine.legui.color.ColorConstants
 import org.liquidengine.legui.icon.ImageIcon
 
-/**
- * Created by cout970 on 2017/06/25.
- */
 class RightPanel : CPanel() {
 
     val materialListPanel = MaterialListPanel()
@@ -58,6 +55,7 @@ class RightPanel : CPanel() {
         val delButton = CButton("", 150f, 0f, 24f, 24f, "tree.view.delete.item")
 
         init {
+            cornerRadius = 0f
             position.x = 1f
             backgroundColor = Config.colorPalette.primaryColor.toColor()
             add(label)
@@ -76,9 +74,9 @@ class RightPanel : CPanel() {
         }
 
         override fun loadResources(resources: GuiResources) {
-            showButton.setImage(ImageIcon(resources.showIcon).apply { size = Vector2f(24f) })
-            hideButton.setImage(ImageIcon(resources.hideIcon).apply { size = Vector2f(24f) })
-            delButton.setImage(ImageIcon(resources.deleteIcon).apply { size = Vector2f(18f); position = Vector2f(3f) })
+            showButton.setImage(ImageIcon(resources.showIcon).also { it.size = Vector2f(24f) })
+            hideButton.setImage(ImageIcon(resources.hideIcon).also { it.size = Vector2f(24f) })
+            delButton.setImage(ImageIcon(resources.deleteIcon).also { it.size = Vector2f(18f) })
             super.loadResources(resources)
         }
     }

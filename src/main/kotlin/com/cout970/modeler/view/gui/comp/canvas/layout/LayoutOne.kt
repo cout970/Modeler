@@ -34,7 +34,7 @@ class LayoutOne(override val container: CanvasContainer) : ICanvasLayout {
                 }
                 else -> return false
             }
-            gui.guiUpdater.updateSizes(gui.windowHandler.window.size)
+            gui.root.updateSizes(gui.windowHandler.window.size)
             return true
         }
         return false

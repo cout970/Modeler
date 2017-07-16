@@ -3,7 +3,7 @@ package com.cout970.modeler.controller
 import com.cout970.modeler.ProgramSate
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.view.gui.comp.CButton
-import com.cout970.modeler.view.gui.editor.RightPanel
+import com.cout970.modeler.view.gui.editor.rightpanel.RightPanel
 import com.cout970.modeler.view.gui.popup.*
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Container
