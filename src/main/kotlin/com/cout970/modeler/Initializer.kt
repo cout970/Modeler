@@ -10,6 +10,8 @@ import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.resource.ResourceLoader
+import com.cout970.modeler.functional.FutureExecutor
+import com.cout970.modeler.functional.TaskHistory
 import com.cout970.modeler.view.GuiInitializer
 import com.cout970.modeler.view.event.EventController
 import com.cout970.modeler.view.render.RenderManager
@@ -22,7 +24,7 @@ import java.io.File
  */
 class Initializer {
 
-    fun init(programArguments: List<String>): ProgramSate {
+    fun init(programArguments: List<String>): ProgramState {
 
         Debugger.setInit(this)
 
@@ -40,8 +42,14 @@ class Initializer {
         val eventController = EventController()
         log(Level.FINE) { "Creating ProjectController" }
         val projectManager = ProjectManager()
-        log(Level.FINE) { "Creating ModelTransformer" }
+
+        log(Level.FINE) { "Creating ActionExecutor" }
         val modelTransformer = ActionExecutor(projectManager)
+        log(Level.FINE) { "Creating FutureExecutor" }
+        val futureExecutor = FutureExecutor()
+        log(Level.FINE) { "Creating TaskHistory" }
+        val taskHistory = TaskHistory(futureExecutor)
+
         log(Level.FINE) { "Creating ExportManager" }
         val exportManager = ExportManager(resourceLoader)
 
@@ -60,12 +68,13 @@ class Initializer {
         ).init()
 
         log(Level.FINE) { "Creating Loop" }
-        val mainLoop = Loop(listOf(renderManager, gui.listeners, eventController, windowHandler, modelTransformer),
+        val mainLoop = Loop(
+                listOf(renderManager, gui.listeners, eventController, windowHandler, modelTransformer, futureExecutor),
                 timer, windowHandler::shouldClose)
 
         parseArgs(programArguments, exportManager, projectManager)
 
-        val state = ProgramSate(
+        val state = ProgramState(
                 resourceLoader = resourceLoader,
                 windowHandler = windowHandler,
                 eventController = eventController,
@@ -74,7 +83,9 @@ class Initializer {
                 exportManager = exportManager,
                 gui = gui,
                 projectManager = projectManager,
-                actionExecutor = modelTransformer
+                actionExecutor = modelTransformer,
+                futureExecutor = futureExecutor,
+                taskHistory = taskHistory
         )
 
         gui.selectionHandler.listeners.add(gui.guiUpdater::onSelectionUpdate)
@@ -92,6 +103,11 @@ class Initializer {
         gui.listeners.initListeners(eventController, gui)
         gui.commandExecutor.programState = state
 
+        gui.dispatcher.state = state
+        futureExecutor.programState = state
+        gui.buttonBinder.bindButtons(gui.root.mainPanel!!)
+
+        log(Level.FINE) { "Reloading gui resources" }
         gui.resources.reload(resourceLoader)
 
         log(Level.FINE) { "Searching for last project" }
@@ -124,7 +140,7 @@ class Initializer {
         }
     }
 
-    fun start(program: ProgramSate) {
+    fun start(program: ProgramState) {
         log(Level.FINE) { "Starting loop" }
         program.mainLoop.run()
         log(Level.FINE) { "Ending loop" }

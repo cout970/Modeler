@@ -8,6 +8,7 @@ import com.cout970.modeler.core.log.log as logger
 /**
  * Created by cout970 on 2016/12/08.
  */
+@Deprecated("to be deleted")
 class HistoryLog {
 
     private val log = LinkedList<Pair<Type, Any>>()

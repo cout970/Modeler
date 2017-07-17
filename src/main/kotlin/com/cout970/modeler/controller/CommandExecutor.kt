@@ -1,6 +1,6 @@
 package com.cout970.modeler.controller
 
-import com.cout970.modeler.ProgramSate
+import com.cout970.modeler.ProgramState
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.view.gui.comp.CButton
 import com.cout970.modeler.view.gui.editor.rightpanel.RightPanel
@@ -16,20 +16,17 @@ import org.liquidengine.legui.listener.ListenerMap
 
 class CommandExecutor {
 
-    lateinit var programState: ProgramSate
+    lateinit var programState: ProgramState
+
+    val ProgramState.actionTrigger get() = actionExecutor.actionTrigger
+    val ProgramState.selection get() = gui.selectionHandler.getSelection()
 
     fun execute(command: String, comp: Component? = null) {
         programState.execute(command, comp)
     }
 
-    val ProgramSate.actionTrigger get() = actionExecutor.actionTrigger
-    val ProgramSate.selection get() = gui.selectionHandler.getSelection()
-
-    inline fun <reified T> Component?.parent(): T? = this?.parent as? T
-
-    fun ProgramSate.execute(command: String, comp: Component?) {
+    fun ProgramState.execute(command: String, comp: Component?) {
         when (command) {
-            "project.new" -> newProject(projectManager)
             "cube.template.new" -> actionTrigger.addCubeTemplate()
             "cube.mesh.new" -> actionTrigger.addCubeMesh()
             "project.load" -> loadProject(projectManager, exportManager)
@@ -38,7 +35,7 @@ class CommandExecutor {
             "project.export" -> showExportModelPopup(exportManager, actionExecutor, projectManager)
             "project.import" -> showImportModelPopup(exportManager, actionExecutor.historicalRecord, projectManager)
             "model.selection.delete" -> actionTrigger.delete(selection, gui.selectionHandler)
-            "tree.view.delete.item" -> (comp?.parent as? RightPanel.ListItem)?.let {
+            "tree.view.delete.item" -> comp.parent<RightPanel.ListItem>()?.let {
                 actionTrigger.delete(it.ref, gui.selectionHandler)
             }
             "model.undo" -> actionExecutor.historicalRecord.undo()
@@ -66,6 +63,8 @@ class CommandExecutor {
             }
         }
     }
+
+    inline fun <reified T> Component?.parent(): T? = this?.parent as? T
 
     fun bindButtons(panel: Container<*>) {
         panel.childs.forEach {

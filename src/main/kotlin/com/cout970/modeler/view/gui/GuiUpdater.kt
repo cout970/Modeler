@@ -8,7 +8,6 @@ import com.cout970.modeler.view.Gui
 import com.cout970.vector.extensions.vec2Of
 import org.liquidengine.legui.component.Container
 import org.liquidengine.legui.system.context.Context
-import javax.script.ScriptEngineManager
 
 
 /**
@@ -19,11 +18,12 @@ class GuiUpdater {
 
     lateinit var leguiContext: Context
     lateinit var gui: Gui
-    val scriptEngine = ScriptEngineManager().getEngineByName("JavaScript")!!
+
     val presenters get() = listOf(
             gui.editorPanel.leftPanelModule.presenter,
             gui.editorPanel.centerPanelModule.presenter,
-            gui.editorPanel.rightPanelModule.presenter
+            gui.editorPanel.rightPanelModule.presenter,
+            gui.editorPanel.leftPanelModule.presenter.editCubePresenter
     )
 
     fun initGui(gui: Gui) {

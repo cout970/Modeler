@@ -9,6 +9,8 @@ import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.resource.ResourceLoader
+import com.cout970.modeler.functional.Dispatcher
+import com.cout970.modeler.functional.binders.ButtonBinder
 import com.cout970.modeler.view.event.EventController
 import com.cout970.modeler.view.gui.GuiUpdater
 import com.cout970.modeler.view.gui.Root
@@ -55,6 +57,10 @@ class GuiInitializer(
 //        guiUpdater.bindTextInputs(editorPanel)
         log(Level.FINE) { "[GuiInitializer] Creating GuiState" }
         val guiState = GuiState()
+        log(Level.FINE) { "[GuiInitializer] Creating Dispatcher" }
+        val dispatcher = Dispatcher()
+        log(Level.FINE) { "[GuiInitializer] Creating ButtonBinder" }
+        val buttonBinder = ButtonBinder(dispatcher)
         log(Level.FINE) { "[GuiInitializer] Creating initial canvas" }
         canvasContainer.newCanvas()
         log(Level.FINE) { "[GuiInitializer] GUI Initialization done" }
@@ -73,7 +79,9 @@ class GuiInitializer(
                 selector = selector,
                 actionExecutor = actionExecutor,
                 resources = guiResources,
-                state = guiState
+                state = guiState,
+                dispatcher = dispatcher,
+                buttonBinder = buttonBinder
         )
     }
 }

@@ -78,17 +78,6 @@ fun saveProjectAs(projectManager: ProjectManager, exportManager: ExportManager) 
     }
 }
 
-fun newProject(projectManager: ProjectManager): Boolean {
-    if (projectManager.model.objects.isNotEmpty()) {
-        val res = JOptionPane.showConfirmDialog(null,
-                "Do you want to create a new project? \nAll unsaved changes will be lost!")
-        if (res != JOptionPane.OK_OPTION) return false
-    }
-    val author = projectManager.project.owner
-    projectManager.loadProject(Project(author, "unnamed"))
-    return true
-}
-
 fun loadProject(projectManager: ProjectManager, exportManager: ExportManager) {
     if (projectManager.model.objects.isNotEmpty()) {
         val res = JOptionPane.showConfirmDialog(null,

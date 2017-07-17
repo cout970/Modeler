@@ -12,6 +12,7 @@ import java.util.*
 /**
  * Created by cout970 on 2017/06/09.
  */
+@Deprecated("Use TaskHistory instead")
 class ActionExecutor(val projectManager: ProjectManager) : ITickeable, IFutureExecutor, IModelSetter {
 
     val actionTrigger = ActionTrigger(this, this)

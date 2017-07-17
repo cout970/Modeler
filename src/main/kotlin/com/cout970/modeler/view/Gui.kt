@@ -7,6 +7,8 @@ import com.cout970.modeler.controller.GuiState
 import com.cout970.modeler.controller.SelectionHandler
 import com.cout970.modeler.controller.selector.Selector
 import com.cout970.modeler.core.project.ProjectManager
+import com.cout970.modeler.functional.Dispatcher
+import com.cout970.modeler.functional.binders.ButtonBinder
 import com.cout970.modeler.view.event.IInput
 import com.cout970.modeler.view.gui.GuiUpdater
 import com.cout970.modeler.view.gui.Root
@@ -33,7 +35,9 @@ data class Gui(
         val actionExecutor: ActionExecutor,
         val resources: GuiResources,
         val state: GuiState,
-        val selectionHandler: SelectionHandler = SelectionHandler()
+        val selectionHandler: SelectionHandler = SelectionHandler(),
+        val dispatcher: Dispatcher,
+        val buttonBinder: ButtonBinder
 ) {
 
     init {
