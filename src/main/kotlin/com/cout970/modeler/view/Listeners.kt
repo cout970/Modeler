@@ -8,8 +8,8 @@ import com.cout970.modeler.util.absolutePosition
 import com.cout970.modeler.util.isInside
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.view.event.EventController
-import com.cout970.modeler.view.gui.comp.canvas.Canvas
 import com.cout970.modeler.view.render.tool.camera.CameraUpdater
+import org.liquidengine.legui.component.TextInput
 
 /**
  * Created by cout970 on 2017/05/16.
@@ -62,9 +62,9 @@ class Listeners : ITickeable {
                 true
             } else {
                 if (gui.guiUpdater.leguiContext.focusedGui == null ||
-                    gui.guiUpdater.leguiContext.focusedGui is Canvas) {
+                    gui.guiUpdater.leguiContext.focusedGui !is TextInput) {
 
-                    hotKeyHandler.onPress(e)
+                    hotKeyHandler.onPress(e) || gui.keyboardBinder.onEvent(e)
                 } else {
                     false
                 }

@@ -21,7 +21,7 @@ class Dispatcher {
 
     private val useCasesMap = useCases.associate { it.key to it }
 
-    fun onEvent(key: String, caller: Component?) {
+    fun onEvent(key: String, caller: Component? = null) {
         val useCase = useCasesMap[key] ?: return
         run(useCase, caller)
     }

@@ -26,6 +26,15 @@ class GuiResources {
     lateinit var hideIcon: BufferedImage
     lateinit var applyMaterial: BufferedImage
     lateinit var loadMaterial: BufferedImage
+    lateinit var addTemplateCubeIcon: BufferedImage
+    lateinit var addMeshCubeIcon: BufferedImage
+
+    lateinit var newProjectIcon: BufferedImage
+    lateinit var loadProjectCubeIcon: BufferedImage
+    lateinit var saveProjectIcon: BufferedImage
+    lateinit var saveAsProjectIcon: BufferedImage
+    lateinit var editProjectIcon: BufferedImage
+
 
     fun reload(loader: ResourceLoader) {
         log(Level.FINE) { "[GuiResources] Loading gui resources" }
@@ -41,6 +50,13 @@ class GuiResources {
         hideIcon = BufferedImage("assets/textures/hide.png")
         applyMaterial = BufferedImage("assets/textures/applyMaterial.png")
         loadMaterial = BufferedImage("assets/textures/loadMaterial.png")
+        addTemplateCubeIcon = BufferedImage("assets/textures/add_template_cube.png")
+        addMeshCubeIcon = BufferedImage("assets/textures/add_mesh_cube.png")
+        newProjectIcon = BufferedImage("assets/textures/new_project.png")
+        loadProjectCubeIcon = BufferedImage("assets/textures/load_project.png")
+        saveProjectIcon = BufferedImage("assets/textures/save_project.png")
+        saveAsProjectIcon = BufferedImage("assets/textures/save_as_project.png")
+        editProjectIcon = BufferedImage("assets/textures/edit_project.png")
 
         MaterialNone.loadTexture(loader)
         log(Level.FINE) { "[GuiResources] Gui resources loaded" }

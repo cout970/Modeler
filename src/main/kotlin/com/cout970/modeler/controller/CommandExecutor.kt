@@ -2,7 +2,10 @@ package com.cout970.modeler.controller
 
 import com.cout970.modeler.ProgramState
 import com.cout970.modeler.api.model.selection.SelectionTarget
+import com.cout970.modeler.util.size
+import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.view.gui.comp.CButton
+import com.cout970.modeler.view.gui.editor.EditorPanel
 import com.cout970.modeler.view.gui.editor.rightpanel.RightPanel
 import com.cout970.modeler.view.gui.popup.*
 import org.liquidengine.legui.component.Component
@@ -60,6 +63,12 @@ class CommandExecutor {
             "material.view.load" -> comp.parent<RightPanel.MaterialListItem>()?.let {
                 importTexture(projectManager, it.ref)
                 projectManager.loadedMaterials.forEach { it.loadTexture(resourceLoader) }
+            }
+            "debug.reset.gui" -> {
+                gui.editorPanel = EditorPanel()
+                gui.root.mainPanel = gui.editorPanel
+                gui.guiUpdater.initGui(gui)
+                gui.root.updateSizes(gui.root.size.toIVector())
             }
         }
     }

@@ -29,7 +29,7 @@ class AddCubeUseCase : IUseCase<AddCubeEvent> {
 
 data class AddCubeEvent(
         val model: IModel,
-        val name: String = "Shape",
+        val name: String = "Shape${model.objects.size}",
         val pos: IVector3 = Vector3.ORIGIN,
         val size: IVector3 = vec3Of(8),
         val material: IMaterialRef = MaterialRef(-1)

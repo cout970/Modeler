@@ -23,6 +23,10 @@ class CButton(
         backgroundColor = Config.colorPalette.buttonColor.toColor()
     }
 
+    override fun setTooltip(tooltip: String) {
+        this.setTooltipComponent(CTooltip(tooltip))
+    }
+
     fun setImage(img: ImageIcon) {
         backgroundIcon = img
         focusedBackgroundIcon = img
