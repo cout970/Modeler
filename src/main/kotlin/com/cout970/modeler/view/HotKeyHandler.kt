@@ -1,6 +1,5 @@
 package com.cout970.modeler.view
 
-import com.cout970.glutilities.device.Keyboard
 import com.cout970.glutilities.event.EventKeyUpdate
 import com.cout970.modeler.controller.CommandExecutor
 import com.cout970.modeler.core.config.Config
@@ -14,7 +13,6 @@ class HotKeyHandler(val exec: CommandExecutor) {
     fun onPress(e: EventKeyUpdate): Boolean {
         Config.keyBindings.apply {
             when {
-                e.keycode == Keyboard.KEY_P -> exec.execute("debug.reset.gui")
                 saveProject.check(e) -> exec.execute("project.save")
                 saveProjectAs.check(e) -> exec.execute("project.save.as")
                 exportModel.check(e) -> exec.execute("project.export")

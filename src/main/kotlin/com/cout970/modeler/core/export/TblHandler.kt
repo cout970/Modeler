@@ -19,10 +19,16 @@ import com.google.gson.GsonBuilder
 
 class TblImporter {
 
-    val gson = GsonBuilder()
-            .registerTypeAdapter(IVector3::class.java, Vector3Serializer())
-            .registerTypeAdapter(IVector2::class.java, Vector2Serializer())
-            .create()!!
+    companion object {
+        @JvmStatic
+        val GSON = GsonBuilder()
+                .registerTypeAdapter(IVector3::class.java, Vector3Serializer())
+                .registerTypeAdapter(IVector2::class.java, Vector2Serializer())
+                .create()!!
+        @JvmStatic
+        val CENTER_OFFSET = vec3Of(8, 24, 8)
+    }
+
 
     fun import(path: ResourcePath): IModel {
 
@@ -42,14 +48,12 @@ class TblImporter {
     }
 
     fun mapCubes(list: List<Cube>, material: IMaterialRef, texSize: IVector2): List<ObjectCube> {
-        val offset = vec3Of(8, 16 + 8, 8)
         return list.map { cube ->
-            val pos = offset - (cube.position + cube.offset + cube.dimensions)
             ObjectCube(
                     name = cube.name,
-                    pos = pos,
+                    pos = transformPos(cube),
                     rotation = quatOfAngles(cube.rotation.toRadians()),
-                    rotationPivot = offset - cube.position,
+                    rotationPivot = cube.position * vec3Of(1, -1, -1) + CENTER_OFFSET,
                     size = cube.dimensions,
                     material = material,
                     textureOffset = cube.txOffset,
@@ -59,10 +63,15 @@ class TblImporter {
         }
     }
 
+    private fun transformPos(cube: Cube): IVector3 {
+        val absPos = (cube.position + cube.offset) * vec3Of(1, -1, -1)
+        return absPos - cube.dimensions * vec3Of(0, 1, 1) + CENTER_OFFSET
+    }
+
     fun parse(path: ResourcePath): TblModel {
         val modelPath = path.enterZip("model.json")
         val stream = modelPath.inputStream()
-        return gson.fromJson(stream.reader(), TblModel::class.java)
+        return GSON.fromJson(stream.reader(), TblModel::class.java)
     }
 
     data class TblModel(

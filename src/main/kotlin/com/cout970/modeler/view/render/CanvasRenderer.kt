@@ -47,7 +47,8 @@ class CanvasRenderer(val renderManager: RenderManager) {
             gui.windowHandler.saveViewport(viewportPos, canvas.size.toIVector()) {
                 renderManager.shader.useShader(ctx) {
                     if (canvas.viewMode == SelectionTarget.MODEL) {
-                        worldRenderer.renderWorld(ctx, World(listOf(gui.projectManager.model), gui.selector.cursor))
+                        worldRenderer.renderWorld(ctx, World(listOf(gui.projectManager.model),
+                                gui.selector.cursor).apply { lastModified = models[0].hashCode().toLong() })
                     } else {
                         materialRenderer.renderWorld(ctx, gui.projectManager.model.getMaterial(MaterialRef(0)))
                     }

@@ -2,6 +2,8 @@ package com.cout970.modeler.controller
 
 import com.cout970.modeler.ProgramState
 import com.cout970.modeler.api.model.selection.SelectionTarget
+import com.cout970.modeler.core.export.ImportFormat
+import com.cout970.modeler.core.export.ImportProperties
 import com.cout970.modeler.util.size
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.view.gui.comp.CButton
@@ -69,6 +71,14 @@ class CommandExecutor {
                 gui.root.mainPanel = gui.editorPanel
                 gui.guiUpdater.initGui(gui)
                 gui.root.updateSizes(gui.root.size.toIVector())
+            }
+            "debug.import.model" -> {
+                val prop = ImportProperties(
+                        "./model.tbl",
+                        ImportFormat.TBL,
+                        false
+                )
+                exportManager.importModel(prop, actionExecutor.historicalRecord, projectManager)
             }
         }
     }

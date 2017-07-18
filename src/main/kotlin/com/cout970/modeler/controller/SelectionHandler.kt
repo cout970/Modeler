@@ -33,7 +33,6 @@ class SelectionHandler {
             }
         } else {
             if (first != null) {
-                println(gui.projectManager.model.getObject(first))
                 if (Config.keyBindings.multipleSelection.check(gui.input)) {
                     ref += listOf(first)
                 } else {
