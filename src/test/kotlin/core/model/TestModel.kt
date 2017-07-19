@@ -11,7 +11,7 @@ class TestModel {
 
     @Test
     fun `Check that copy method doesn't change the auto-generated id`() {
-        val a = Model()
+        val a = Model.empty()
         val b = a.copy()
 
         assertNotEquals(a.id, b.id)
