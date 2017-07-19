@@ -33,13 +33,9 @@ class CommandExecutor {
 
     fun ProgramState.execute(command: String, comp: Component?) {
         when (command) {
-            "model.selection.delete" -> actionTrigger.delete(selection, gui.selectionHandler)
             "tree.view.delete.item" -> comp.parent<RightPanel.ListItem>()?.let {
                 actionTrigger.delete(it.ref, gui.selectionHandler)
             }
-            "model.selection.copy" -> actionTrigger.copy(selection)
-            "model.selection.cut" -> actionTrigger.cut(selection, gui.selectionHandler)
-            "model.selection.paste" -> actionTrigger.paste()
             "tree.view.hide.item" -> {
                 actionTrigger.modifyVisibility(comp.parent<RightPanel.ListItem>()!!.ref, false)
             }

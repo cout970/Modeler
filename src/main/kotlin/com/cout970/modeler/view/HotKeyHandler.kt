@@ -13,10 +13,6 @@ class HotKeyHandler(val exec: CommandExecutor) {
     fun onPress(e: EventKeyUpdate): Boolean {
         Config.keyBindings.apply {
             when {
-                delete.check(e) -> exec.execute("model.selection.delete")
-                copy.check(e) -> exec.execute("model.selection.copy")
-                cut.check(e) -> exec.execute("model.selection.cut")
-                paste.check(e) -> exec.execute("model.selection.paste")
                 switchOrthoProjection.check(e) -> exec.execute("view.switch.ortho")
                 setTextureMode.check(e) -> exec.execute("view.set.texture.mode")
                 setModelMode.check(e) -> exec.execute("view.set.model.mode")

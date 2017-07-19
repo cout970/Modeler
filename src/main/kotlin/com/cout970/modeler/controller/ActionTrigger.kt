@@ -8,7 +8,6 @@ import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.core.model.getSelectedObjectRefs
-import com.cout970.modeler.core.model.getSelectedObjects
 import com.cout970.modeler.core.model.selection.Selection
 import com.cout970.modeler.core.record.action.*
 import com.cout970.modeler.core.tool.EditTool
@@ -45,27 +44,6 @@ class ActionTrigger(val exec: ActionExecutor, val setter: IModelSetter) {
         exec.enqueueAction(ActionModifyModelShape(setter, model))
     }
 
-    fun copy(selection: ISelection?) {
-        if (selection != null) {
-            exec.projectManager.clipboard = model to selection
-        }
-    }
-
-    fun cut(selection: ISelection?, handler: SelectionHandler) {
-        copy(selection)
-        delete(selection, handler)
-    }
-
-    fun paste() {
-        val clipboard = exec.projectManager.clipboard ?: return
-        val (oldModel, selection) = clipboard
-
-        if (selection.selectionTarget == SelectionTarget.MODEL && selection.selectionType == SelectionType.OBJECT) {
-            val selectedObjects = oldModel.getSelectedObjects(selection)
-            val newModel = model.addObjects(selectedObjects)
-            exec.enqueueAction(ActionPaste(setter, newModel))
-        }
-    }
 
     fun modifyVisibility(ref: IObjectRef, value: Boolean) {
         val newModel = model.setVisible(ref, value)

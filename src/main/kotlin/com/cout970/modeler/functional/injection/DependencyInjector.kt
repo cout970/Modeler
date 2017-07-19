@@ -7,6 +7,7 @@ import com.cout970.modeler.controller.ActionExecutor
 import com.cout970.modeler.core.export.ExportManager
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
+import com.cout970.modeler.core.model.selection.IClipboard
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.project.ProjectProperties
 import com.cout970.modeler.core.resource.ResourceLoader
@@ -37,6 +38,7 @@ class DependencyInjector {
                     ISelection::class.java -> gui.selectionHandler.getSelection()
                     IModel::class.java -> projectManager.model
                     ProjectProperties::class.java -> projectManager.projectProperties
+                    IClipboard::class.java -> projectManager.clipboard
 
                     ResourceLoader::class.java -> resourceLoader
                     EventController::class.java -> eventController

@@ -57,10 +57,13 @@ class SelectionHandler {
     }
 
     fun setSelection(selection: ISelection?) {
-        if (selection == null) return
-        if (selection.selectionTarget == SelectionTarget.MODEL && selection.selectionType == SelectionType.OBJECT) {
-            (selection as? Selection)?.let {
-                ref = it.list as List<IObjectRef>
+        if (selection == null) {
+            ref = emptyList()
+        } else {
+            if (selection.selectionTarget == SelectionTarget.MODEL && selection.selectionType == SelectionType.OBJECT) {
+                (selection as? Selection)?.let {
+                    ref = it.list as List<IObjectRef>
+                }
             }
         }
     }
