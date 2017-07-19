@@ -5,7 +5,7 @@ import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.functional.injection.DependencyInjector
-import com.cout970.modeler.functional.usecases.*
+import com.cout970.modeler.functional.usecases.IUseCase
 import org.liquidengine.legui.component.Component
 
 /**
@@ -16,17 +16,18 @@ class Dispatcher {
     lateinit var state: ProgramState
 
     val dependencyInjector = DependencyInjector()
-    val useCases = listOf(
-            NewProject(),
-            LoadProject(),
-            SaveProject(),
-            SaveProjectAs(),
-            ImportModel(),
-            ExportModel(),
-            AddTemplateCube(),
-            AddMeshCube()
-    )
-    val useCasesMap = useCases.associate { it.key to it }
+    val useCasesMap = findUseCases().associate { it.key to it }
+
+    private fun findUseCases(): List<IUseCase> {
+        log(Level.FINE) { "[Dispatcher] Searching IUseCases with reflection..." }
+        val list = StackOverflowSnipets.getClasses("com.cout970.modeler.functional.usecases")
+        val instances = list
+                .filter { !it.isInterface && IUseCase::class.java.isAssignableFrom(it) }
+                .map { it.constructors.first().newInstance() as IUseCase }
+                .toList()
+        log(Level.FINE) { "[Dispatcher] Search done, found ${instances.size} classes" }
+        return instances
+    }
 
     fun onEvent(key: String, comp: Component?) {
         val useCase = useCasesMap[key] ?: return

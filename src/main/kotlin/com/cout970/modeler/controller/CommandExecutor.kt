@@ -37,8 +37,6 @@ class CommandExecutor {
             "tree.view.delete.item" -> comp.parent<RightPanel.ListItem>()?.let {
                 actionTrigger.delete(it.ref, gui.selectionHandler)
             }
-            "model.undo" -> actionExecutor.historicalRecord.undo()
-            "model.redo" -> actionExecutor.historicalRecord.redo()
             "model.selection.copy" -> actionTrigger.copy(selection)
             "model.selection.cut" -> actionTrigger.cut(selection, gui.selectionHandler)
             "model.selection.paste" -> actionTrigger.paste()
