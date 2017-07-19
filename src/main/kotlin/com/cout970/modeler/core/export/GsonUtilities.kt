@@ -4,6 +4,7 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.material.IMaterial
+import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.core.model.Model
@@ -11,6 +12,7 @@ import com.cout970.modeler.core.model.Object
 import com.cout970.modeler.core.model.ObjectCube
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.material.MaterialNone
+import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
@@ -109,13 +111,6 @@ class ModelSerializer : JsonSerializer<IModel>, JsonDeserializer<IModel> {
 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IModel {
         return context.deserialize(json, Model::class.java)
-//        val objs = json.asJsonObject["objects"].asJsonArray
-//        val tree = json.asJsonObject["hierarchy"]
-//
-//        return Model(
-//                objects = objs.map { val i: IObject = context.deserialize(it, IObject::class.java); i },
-//                hierarchy = context.deserialize(tree, TreeNode::class.java)
-//        )
     }
 }
 
@@ -168,7 +163,7 @@ class ObjectSerializer : JsonSerializer<IObject>, JsonDeserializer<IObject> {
                     rotation = context.deserialize(obj["rotation"], IQuaternion::class.java),
                     size = context.deserialize(obj["size"], IVector3::class.java),
                     transformation = context.deserialize(obj["transformation"], TRSTransformation::class.java),
-                    material = context.deserialize(obj["material"], IMaterial::class.java),
+                    material = context.deserialize(obj["material"], IMaterialRef::class.java),
                     rotationPivot = context.deserialize(obj["rotationPivot"], IVector3::class.java),
                     textureOffset = context.deserialize(obj["textureOffset"], IVector2::class.java),
                     textureSize = context.deserialize(obj["textureSize"], IVector2::class.java),
@@ -195,6 +190,17 @@ class MaterialSerializer : JsonSerializer<IMaterial>, JsonDeserializer<IMaterial
         val obj = json.asJsonObject
         return if (obj["name"].asString == "noTexture") MaterialNone
         else TexturedMaterial(obj["name"].asString, ResourcePath(URI(obj["path"].asString)))
+    }
+}
+
+class MaterialRefSerializer : JsonSerializer<IMaterialRef>, JsonDeserializer<IMaterialRef> {
+
+    override fun serialize(src: IMaterialRef, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+        return context.serialize(src)
+    }
+
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IMaterialRef {
+        return context.deserialize(json, MaterialRef::class.java)
     }
 }
 

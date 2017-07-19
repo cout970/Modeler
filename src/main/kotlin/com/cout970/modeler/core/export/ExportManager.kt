@@ -4,27 +4,19 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.material.IMaterial
+import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
-import com.cout970.modeler.core.export.ModelImporters.jsonImporter
-import com.cout970.modeler.core.export.ModelImporters.mcxExporter
-import com.cout970.modeler.core.export.ModelImporters.objExporter
-import com.cout970.modeler.core.export.ModelImporters.objImporter
-import com.cout970.modeler.core.export.ModelImporters.tblImporter
-import com.cout970.modeler.core.export.ModelImporters.tcnImporter
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
-import com.cout970.modeler.core.project.Project
 import com.cout970.modeler.core.project.ProjectManager
-import com.cout970.modeler.core.record.HistoricalRecord
-import com.cout970.modeler.core.record.action.ActionImportModel
+import com.cout970.modeler.core.project.ProjectProperties
 import com.cout970.modeler.core.resource.ResourceLoader
-import com.cout970.modeler.core.resource.toResourcePath
-import com.cout970.modeler.util.IFutureExecutor
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.stream.JsonReader
 import java.awt.Color
@@ -50,69 +42,40 @@ class ExportManager(val resourceLoader: ResourceLoader) {
             .registerTypeAdapter(IMesh::class.java, MeshSerializer())
             .registerTypeAdapter(IFaceIndex::class.java, FaceSerializer())
             .registerTypeAdapter(ITransformation::class.java, TransformationSerializer())
+            .registerTypeAdapter(IMaterialRef::class.java, MaterialRefSerializer())
             .create()!!
 
-    fun loadProject(path: String): Project {
+    fun loadProject(path: String): Pair<IModel, ProjectProperties> {
         val zip = ZipFile(path)
-        val entry = zip.getEntry("project.json") ?: throw java.lang.IllegalStateException(
-                "Missing file 'project.json' inside '$path'")
 
-        val reader = zip.getInputStream(entry).reader()
-        return gson.fromJson(JsonReader(reader), Project::class.java)
+        val properties = zip.load<ProjectProperties>("project.json", gson) ?:
+                         throw IllegalStateException("Missing file 'project.json' inside '$path'")
+
+        val model = zip.load<IModel>("model.json", gson) ?:
+                    throw IllegalStateException("Missing file 'model.json' inside '$path'")
+
+        return model to properties
     }
 
-    fun saveProject(path: String, project: Project) {
+    inline fun <reified T> ZipFile.load(entryName: String, gson: Gson): T? {
+        val entry = getEntry(entryName) ?: return null
+        val reader = getInputStream(entry).reader()
+        return gson.fromJson(JsonReader(reader), T::class.java)
+    }
+
+    fun saveProject(path: String, model: IModel, properties: ProjectProperties) {
         val zip = ZipOutputStream(File(path).outputStream())
-        val json = gson.toJson(project)
         zip.let {
             it.putNextEntry(ZipEntry("project.json"))
-            it.write(json.toByteArray())
+            it.write(gson.toJson(properties).toByteArray())
+            it.closeEntry()
+            it.putNextEntry(ZipEntry("model.json"))
+            it.write(gson.toJson(model).toByteArray())
             it.closeEntry()
         }
         zip.close()
     }
 
-    fun importModel(prop: ImportProperties, historyRecord: HistoricalRecord, projectManager: ProjectManager) {
-        val file = File(prop.path)
-        when (prop.format) {
-            ImportFormat.OBJ -> {
-                historyRecord.doAction(ActionImportModel(projectManager, resourceLoader, prop.path) {
-                    objImporter.import(file.toResourcePath(), prop.flipUV)
-                })
-            }
-            ImportFormat.TCN -> {
-                historyRecord.doAction(ActionImportModel(projectManager, resourceLoader, prop.path) {
-                    tcnImporter.import(file.toResourcePath())
-                })
-            }
-            ImportFormat.JSON -> {
-                historyRecord.doAction(ActionImportModel(projectManager, resourceLoader, prop.path) {
-                    jsonImporter.import(file.toResourcePath())
-                })
-            }
-            ImportFormat.TBL -> {
-                historyRecord.doAction(ActionImportModel(projectManager, resourceLoader, prop.path) {
-                    tblImporter.import(file.toResourcePath())
-                })
-            }
-        }
-    }
-
-    fun exportModel(prop: ExportProperties, exec: IFutureExecutor, model: IModel) {
-        val file = File(prop.path)
-        when (prop.format) {
-            ExportFormat.OBJ -> {
-                exec.addToQueue {
-                    objExporter.export(file.outputStream(), model, prop.materialLib)
-                }
-            }
-            ExportFormat.MCX -> {
-                exec.addToQueue {
-                    mcxExporter.export(file.outputStream(), model, prop.domain)
-                }
-            }
-        }
-    }
 //
 //
 //    fun importTexture(path: String, selection: ElementSelection) {
@@ -191,8 +154,9 @@ class ExportManager(val resourceLoader: ResourceLoader) {
         if (path.exists()) {
             try {
                 log(Level.FINE) { "Found last project, loading..." }
-                val project = loadProject(path.path)
-                projectManager.loadProject(project)
+                val (model, properties) = loadProject(path.path)
+                projectManager.loadProjectProperties(properties)
+                projectManager.updateModel(model)
                 log(Level.FINE) { "Last project loaded" }
             } catch (e: Exception) {
                 log(Level.ERROR) { "Unable to load last project" }

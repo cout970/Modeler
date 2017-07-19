@@ -8,6 +8,8 @@ import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.distance
 import com.cout970.vector.extensions.div
 import com.cout970.vector.extensions.plus
+import org.lwjgl.PointerBuffer
+import org.lwjgl.system.MemoryUtil
 
 /**
  * Created by cout970 on 2016/12/09.
@@ -89,4 +91,11 @@ fun List<IVector3>.middle(): IVector3 {
         acum += it
     }
     return acum / size
+}
+
+fun List<String>.toPointerBuffer(): PointerBuffer {
+    val pointer = MemoryUtil.memAllocPointer(size)
+    forEach { pointer.put(MemoryUtil.memUTF8(it)) }
+    pointer.flip()
+    return pointer
 }

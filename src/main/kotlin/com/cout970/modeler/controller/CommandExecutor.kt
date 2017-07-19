@@ -4,12 +4,13 @@ import com.cout970.modeler.ProgramState
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.core.export.ImportFormat
 import com.cout970.modeler.core.export.ImportProperties
+import com.cout970.modeler.functional.tasks.TaskImportModel
 import com.cout970.modeler.util.size
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.view.gui.comp.CButton
 import com.cout970.modeler.view.gui.editor.EditorPanel
 import com.cout970.modeler.view.gui.editor.rightpanel.RightPanel
-import com.cout970.modeler.view.gui.popup.*
+import com.cout970.modeler.view.gui.popup.importTexture
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Container
 import org.liquidengine.legui.event.MouseClickEvent
@@ -32,13 +33,6 @@ class CommandExecutor {
 
     fun ProgramState.execute(command: String, comp: Component?) {
         when (command) {
-            "cube.template.new" -> actionTrigger.addCubeTemplate()
-            "cube.mesh.new" -> actionTrigger.addCubeMesh()
-            "project.load" -> loadProject(projectManager, exportManager)
-            "project.save" -> saveProject(projectManager, exportManager)
-            "project.save.as" -> saveProjectAs(projectManager, exportManager)
-            "project.export" -> showExportModelPopup(exportManager, actionExecutor, projectManager)
-            "project.import" -> showImportModelPopup(exportManager, actionExecutor.historicalRecord, projectManager)
             "model.selection.delete" -> actionTrigger.delete(selection, gui.selectionHandler)
             "tree.view.delete.item" -> comp.parent<RightPanel.ListItem>()?.let {
                 actionTrigger.delete(it.ref, gui.selectionHandler)
@@ -78,7 +72,7 @@ class CommandExecutor {
                         ImportFormat.TBL,
                         false
                 )
-                exportManager.importModel(prop, actionExecutor.historicalRecord, projectManager)
+                taskHistory.processTask(TaskImportModel(projectManager.model, prop))
             }
         }
     }

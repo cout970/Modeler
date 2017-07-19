@@ -12,7 +12,7 @@ import com.cout970.modeler.core.model.Model
 
 class ProjectManager {
 
-    var project: Project = Project(Author("anonymous"), "unnamed")
+    var projectProperties: ProjectProperties = ProjectProperties(Author("anonymous"), "unnamed")
 
     var model: IModel = Model.empty()
         private set
@@ -52,7 +52,7 @@ class ProjectManager {
         modelChangeListeners.forEach { it.invoke(old, model) }
     }
 
-    fun loadProject(new: Project) {
-        project = new
+    fun loadProjectProperties(aNew: ProjectProperties) {
+        projectProperties = aNew
     }
 }

@@ -26,6 +26,9 @@ fun main(args: Array<String>) {
         val init = Initializer()
         val state = init.init(args.toList())
         init.start(state)
+        state.apply {
+            exportManager.saveProject("./saves/last.pff", projectManager.model, projectManager.projectProperties)
+        }
     } catch (e: kotlin.Throwable) {
         e.print()
     } finally {

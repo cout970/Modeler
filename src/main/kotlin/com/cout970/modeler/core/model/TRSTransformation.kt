@@ -22,6 +22,9 @@ data class TRSTransformation(
         val IDENTITY = TRSTransformation(Vector3.ORIGIN, Quaternion.IDENTITY, Vector3.ONE)
     }
 
+    // Gson pls
+    private constructor() : this(Vector3.ORIGIN, Quaternion.IDENTITY, Vector3.ONE)
+
     override val matrix: IMatrix4 by lazy {
         Matrix4d().apply {
             translate(translation.xd, translation.yd, translation.zd)

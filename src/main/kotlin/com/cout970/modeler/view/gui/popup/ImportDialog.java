@@ -2,11 +2,14 @@ package com.cout970.modeler.view.gui.popup;
 
 import com.cout970.modeler.core.export.ImportFormat;
 import com.cout970.modeler.core.export.ImportProperties;
+import com.cout970.modeler.util.CollectionsKt;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
+import org.lwjgl.PointerBuffer;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 import javax.swing.*;
+import java.util.Arrays;
 
 /**
  * Created by cout970 on 2017/01/02.
@@ -20,6 +23,7 @@ public class ImportDialog {
     private JPanel root;
     private JCheckBox flipUVCheckBox;
 
+    private static final PointerBuffer extensions = CollectionsKt.toPointerBuffer(Arrays.asList("*.obj", "*.tcn", "*.json", "*.tbl"));
 
     @SuppressWarnings("unchecked")
     public static void show(Function1<ImportProperties, Unit> returnFun) {
@@ -44,7 +48,7 @@ public class ImportDialog {
         dialog.selectButton.addActionListener(e -> {
             frame.toBack();
             String file = TinyFileDialogs.tinyfd_openFileDialog("Import", "",
-                    PopupsKt.getImportFileExtensions(), "Model Files (*.tcn, *.obj, *.json, *.tbl)",
+                    extensions, "Model Files (*.tcn, *.obj, *.json, *.tbl)",
                     false);
             if (file != null) {
                 if (file.endsWith(".obj")) {

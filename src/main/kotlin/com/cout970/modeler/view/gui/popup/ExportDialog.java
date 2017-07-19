@@ -2,11 +2,14 @@ package com.cout970.modeler.view.gui.popup;
 
 import com.cout970.modeler.core.export.ExportFormat;
 import com.cout970.modeler.core.export.ExportProperties;
+import com.cout970.modeler.util.CollectionsKt;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
+import org.lwjgl.PointerBuffer;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 import javax.swing.*;
+import java.util.Collections;
 
 /**
  * Created by cout970 on 2017/01/02.
@@ -22,6 +25,18 @@ public class ExportDialog {
     private JTextField materialsTextField;
 
     private String defaultFileName = "model.obj";
+    private static final PointerBuffer exportExtensionsObj = CollectionsKt.toPointerBuffer(Collections.singletonList("*.obj"));
+    private static final PointerBuffer exportExtensionsMcx = CollectionsKt.toPointerBuffer(Collections.singletonList("*.mcx"));
+
+    private static PointerBuffer getExportFileExtensions(ExportFormat format) {
+        switch (format) {
+            case OBJ:
+                return exportExtensionsObj;
+            case MCX:
+                return exportExtensionsMcx;
+        }
+        throw new IllegalStateException("Unknown format: " + format);
+    }
 
     @SuppressWarnings("unchecked")
     public static void show(Function1<ExportProperties, Unit> returnFun) {
@@ -47,7 +62,7 @@ public class ExportDialog {
         dialog.selectButton.addActionListener(e -> {
             frame.toBack();
             String file = TinyFileDialogs.tinyfd_saveFileDialog("Export", dialog.defaultFileName,
-                    PopupsKt.getExportFileExtensions(ExportFormat.values()[dialog.comboBox1.getSelectedIndex()]),
+                    getExportFileExtensions(ExportFormat.values()[dialog.comboBox1.getSelectedIndex()]),
                     (String) dialog.comboBox1.getSelectedItem());
             dialog.textField1.setText(file);
             frame.toFront();

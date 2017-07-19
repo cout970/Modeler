@@ -7,7 +7,7 @@ import com.cout970.modeler.core.export.ModelImporters.tcnImporter
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.Object
 import com.cout970.modeler.core.project.Author
-import com.cout970.modeler.core.project.Project
+import com.cout970.modeler.core.project.ProjectProperties
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.core.resource.toResourcePath
 import org.junit.Assert
@@ -25,9 +25,9 @@ class ExportManagerTest {
     @Test
     fun `Try save and load a project`() {
         val path = "./run/test_load_save.pff"
-        val project = Project(Author("Me", "Me@Me.Me"), "Unnamed")
+        val project = ProjectProperties(Author("Me", "Me@Me.Me"), "Unnamed")
 
-        exportManager.saveProject(path, project)
+        exportManager.saveProject(path, Model.empty(), project)
 
         val loadedProject = exportManager.loadProject(path)
 
@@ -41,10 +41,10 @@ class ExportManagerTest {
         val savePath = "./run/test_obj_to_pff.pff"
 
         val mesh = objImporter.importAsMesh(path, true)
-        val project = Project(Author(), "")
-        project.model = Model(listOf(Object("Shape 1", mesh)))
+        val project = ProjectProperties(Author(), "")
+        val model = Model.of(listOf(Object("Shape 1", mesh)), emptyList())
 
-        exportManager.saveProject(savePath, project)
+        exportManager.saveProject(savePath, model, project)
     }
 
     @Test

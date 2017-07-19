@@ -14,12 +14,15 @@ import org.liquidengine.legui.icon.ImageIcon
 class LeftPanel : CPanel() {
 
     val projectControlPanel = ProjectControlPanel()
+    val exportPanel = ExportPanel()
     val editCubePanel = EditCubePanel()
 
     init {
         add(projectControlPanel)
+        add(exportPanel)
         add(editCubePanel)
-        editCubePanel.position.y = 36f
+        exportPanel.position.y = 45f
+        editCubePanel.position.y = 90f
         editCubePanel.hide()
     }
 
@@ -50,6 +53,36 @@ class LeftPanel : CPanel() {
             saveProjectButton.setImage(ImageIcon(resources.saveProjectIcon).also { it.size = Vector2f(32f) })
             saveAsProjectButton.setImage(ImageIcon(resources.saveAsProjectIcon).also { it.size = Vector2f(32f) })
             editProjectButton.setImage(ImageIcon(resources.editProjectIcon).also { it.size = Vector2f(32f) })
+        }
+    }
+
+    class ExportPanel : CPanel(width = 190f, height = 44f) {
+        val importModelButton = CButton("", 7f, 6f, 32f, 32f, "model.import")
+        val exportModelButton = CButton("", 43f, 6f, 32f, 32f, "model.export")
+        val exportTextureButton = CButton("", 79f, 6f, 32f, 32f, "texture.export")
+        val hitboxMapButton = CButton("", 115f, 6f, 32f, 32f, "hitbox.export")
+        val someButton = CButton("", 151f, 6f, 32f, 32f, "unassigned")
+
+        init {
+            add(importModelButton)
+            add(exportModelButton)
+            add(exportTextureButton)
+            add(hitboxMapButton)
+            add(someButton)
+
+            importModelButton.setTooltip("Import Model")
+            exportModelButton.setTooltip("Export Model")
+            exportTextureButton.setTooltip("Export Texture Template")
+            hitboxMapButton.setTooltip("Export Hitbox Map")
+            someButton.setTooltip("Unassigned")
+        }
+
+        override fun loadResources(resources: GuiResources) {
+            importModelButton.setImage(ImageIcon(resources.importModelIcon).also { it.size = Vector2f(32f) })
+            exportModelButton.setImage(ImageIcon(resources.exportModelIcon).also { it.size = Vector2f(32f) })
+            exportTextureButton.setImage(ImageIcon(resources.exportTextureIcon).also { it.size = Vector2f(32f) })
+            hitboxMapButton.setImage(ImageIcon(resources.exportHitboxIcon).also { it.size = Vector2f(32f) })
+//            someButton.setImage(ImageIcon(resources.editProjectIcon).also { it.size = Vector2f(32f) })
         }
     }
 }

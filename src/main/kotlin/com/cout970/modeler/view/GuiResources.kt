@@ -35,6 +35,11 @@ class GuiResources {
     lateinit var saveAsProjectIcon: BufferedImage
     lateinit var editProjectIcon: BufferedImage
 
+    lateinit var importModelIcon: BufferedImage
+    lateinit var exportModelIcon: BufferedImage
+    lateinit var exportTextureIcon: BufferedImage
+    lateinit var exportHitboxIcon: BufferedImage
+
 
     fun reload(loader: ResourceLoader) {
         log(Level.FINE) { "[GuiResources] Loading gui resources" }
@@ -48,8 +53,8 @@ class GuiResources {
         deleteIcon = BufferedImage("assets/textures/delete.png")
         showIcon = BufferedImage("assets/textures/show.png")
         hideIcon = BufferedImage("assets/textures/hide.png")
-        applyMaterial = BufferedImage("assets/textures/applyMaterial.png")
-        loadMaterial = BufferedImage("assets/textures/loadMaterial.png")
+        applyMaterial = BufferedImage("assets/textures/apply_material.png")
+        loadMaterial = BufferedImage("assets/textures/load_material.png")
         addTemplateCubeIcon = BufferedImage("assets/textures/add_template_cube.png")
         addMeshCubeIcon = BufferedImage("assets/textures/add_mesh_cube.png")
         newProjectIcon = BufferedImage("assets/textures/new_project.png")
@@ -57,6 +62,11 @@ class GuiResources {
         saveProjectIcon = BufferedImage("assets/textures/save_project.png")
         saveAsProjectIcon = BufferedImage("assets/textures/save_as_project.png")
         editProjectIcon = BufferedImage("assets/textures/edit_project.png")
+
+        importModelIcon = BufferedImage("assets/textures/import_model.png")
+        exportModelIcon = BufferedImage("assets/textures/export_model.png")
+        exportTextureIcon = BufferedImage("assets/textures/export_texture.png")
+        exportHitboxIcon = BufferedImage("assets/textures/export_hitbox.png")
 
         MaterialNone.loadTexture(loader)
         log(Level.FINE) { "[GuiResources] Gui resources loaded" }

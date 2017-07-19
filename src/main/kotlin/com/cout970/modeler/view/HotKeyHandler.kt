@@ -15,8 +15,8 @@ class HotKeyHandler(val exec: CommandExecutor) {
             when {
                 saveProject.check(e) -> exec.execute("project.save")
                 saveProjectAs.check(e) -> exec.execute("project.save.as")
-                exportModel.check(e) -> exec.execute("project.export")
-                importModel.check(e) -> exec.execute("project.import")
+                exportModel.check(e) -> exec.execute("model.export")
+                importModel.check(e) -> exec.execute("model.import")
                 delete.check(e) -> exec.execute("model.selection.delete")
                 copy.check(e) -> exec.execute("model.selection.copy")
                 cut.check(e) -> exec.execute("model.selection.cut")

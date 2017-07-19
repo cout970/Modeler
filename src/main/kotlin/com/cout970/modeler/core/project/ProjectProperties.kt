@@ -6,7 +6,7 @@ import java.util.*
 /**
  * Created by cout970 on 2017/01/04.
  */
-data class Project(
+data class ProjectProperties(
         val owner: Author,
         val name: String,
         val description: String = "",

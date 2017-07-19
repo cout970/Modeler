@@ -125,8 +125,9 @@ class Initializer {
             if (File(programArguments[0]).exists()) {
                 try {
                     log(Level.NORMAL) { "Loading Project at '${programArguments[0]}'" }
-                    val project = exportManager.loadProject(programArguments[0])
-                    projectManager.loadProject(project)
+                    val (model, properties) = exportManager.loadProject(programArguments[0])
+                    projectManager.loadProjectProperties(properties)
+                    projectManager.updateModel(model)
                     log(Level.NORMAL) { "Project loaded" }
                 } catch (e: Exception) {
                     log(Level.ERROR) { "Unable to load project file at '${programArguments[0]}'" }

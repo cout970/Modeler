@@ -9,10 +9,12 @@ import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.core.resource.ResourcePath
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.vec2Of
+import java.io.FileNotFoundException
 
 class TexturedMaterial(override val name: String, val path: ResourcePath) : IMaterial {
 
     var texture: Texture? = null
+    var loadingError = false
     private var lastModified = -1L
     override val size: IVector2 get() = texture?.size ?: vec2Of(1)
 
@@ -23,15 +25,21 @@ class TexturedMaterial(override val name: String, val path: ResourcePath) : IMat
                 minFilter = Texture.PIXELATED
             }
             lastModified = path.lastModifiedTime()
+            loadingError = false
+        } catch (e: FileNotFoundException) {
+            log(Level.ERROR) { "Unable to find material, name: $name, path: $path" }
+            texture = null
+            loadingError = true
         } catch (e: Exception) {
             log(Level.ERROR) { "Error loading material, name: $name, path: $path" }
             e.print()
             texture = null
+            loadingError = true
         }
     }
 
     override fun hasChanged(): Boolean {
-        return lastModified != path.lastModifiedTime()
+        return !loadingError && lastModified != path.lastModifiedTime()
     }
 
     override fun bind() {

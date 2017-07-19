@@ -1,10 +1,11 @@
 package com.cout970.modeler.functional
 
 import com.cout970.modeler.ProgramState
-import com.cout970.modeler.functional.usecases.AddCubeUseCase
-import com.cout970.modeler.functional.usecases.IUseCase
-import com.cout970.modeler.functional.usecases.IUserEvent
-import com.cout970.modeler.functional.usecases.NewProjectUseCase
+import com.cout970.modeler.core.log.Level
+import com.cout970.modeler.core.log.log
+import com.cout970.modeler.core.log.print
+import com.cout970.modeler.functional.injection.DependencyInjector
+import com.cout970.modeler.functional.usecases.*
 import org.liquidengine.legui.component.Component
 
 /**
@@ -14,22 +15,29 @@ class Dispatcher {
 
     lateinit var state: ProgramState
 
+    val dependencyInjector = DependencyInjector()
     val useCases = listOf(
-            AddCubeUseCase(),
-            NewProjectUseCase()
+            NewProject(),
+            LoadProject(),
+            SaveProject(),
+            SaveProjectAs(),
+            ImportModel(),
+            ExportModel(),
+            AddTemplateCube(),
+            AddMeshCube()
     )
+    val useCasesMap = useCases.associate { it.key to it }
 
-    private val useCasesMap = useCases.associate { it.key to it }
-
-    fun onEvent(key: String, caller: Component? = null) {
+    fun onEvent(key: String, comp: Component?) {
         val useCase = useCasesMap[key] ?: return
-        run(useCase, caller)
-    }
 
-    private fun <T : IUserEvent> run(useCase: IUseCase<T>, caller: Component?) {
-        val event = useCase.buildEvent(state, caller)
-        val task = useCase.processor.processEvent(event)
-
-        state.taskHistory.processTask(task)
+        try {
+            dependencyInjector.injectDependencies(state, comp, useCase)
+            val task = useCase.createTask()
+            state.taskHistory.processTask(task)
+        } catch (e: Exception) {
+            log(Level.ERROR) { "Usable to run usecase: ${useCase::class}" }
+            e.print()
+        }
     }
 }

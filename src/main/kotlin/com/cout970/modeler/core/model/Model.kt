@@ -31,6 +31,8 @@ data class Model(
         fun empty() = Model(emptyList(), emptyList(), emptyList())
     }
 
+    private constructor() : this(emptyList(), emptyList(), emptyList())
+
     override fun isVisible(ref: IObjectRef): Boolean {
         if (ref.objectIndex in objects.indices) {
             return visibilities[ref.objectIndex]

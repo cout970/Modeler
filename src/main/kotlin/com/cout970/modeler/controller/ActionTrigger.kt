@@ -7,19 +7,11 @@ import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
-import com.cout970.modeler.core.model.Object
-import com.cout970.modeler.core.model.ObjectCube
 import com.cout970.modeler.core.model.getSelectedObjectRefs
 import com.cout970.modeler.core.model.getSelectedObjects
-import com.cout970.modeler.core.model.material.MaterialRef
-import com.cout970.modeler.core.model.mesh.MeshFactory
 import com.cout970.modeler.core.model.selection.Selection
 import com.cout970.modeler.core.record.action.*
 import com.cout970.modeler.core.tool.EditTool
-import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.Quaternion
-import com.cout970.vector.extensions.Vector3
-import com.cout970.vector.extensions.vec3Of
 
 /**
  * Created by cout970 on 2017/07/09.
@@ -28,23 +20,6 @@ class ActionTrigger(val exec: ActionExecutor, val setter: IModelSetter) {
 
     val model get() = setter.model
 
-    fun addCubeTemplate(size: IVector3 = vec3Of(8, 8, 8)) {
-        val obj = ObjectCube(
-                name = "Shape${model.objects.size}",
-                pos = Vector3.ORIGIN,
-                rotation = Quaternion.IDENTITY,
-                size = size,
-                material = MaterialRef(-1)
-        )
-        exec.enqueueAction(ActionAddObject(setter, model, obj))
-    }
-
-    fun addCubeMesh(size: IVector3 = vec3Of(8, 8, 8)) {
-        val mesh = MeshFactory.createCube(size, Vector3.ORIGIN)
-        val obj = Object("Shape${model.objects.size}", mesh)
-
-        exec.enqueueAction(ActionAddObject(setter, model, obj))
-    }
 
     fun delete(ref: IObjectRef, handler: SelectionHandler) {
         delete(Selection(
