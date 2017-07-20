@@ -108,7 +108,8 @@ data class Model(
                     when {
                         it.material == materialRef -> it.transformer.withMaterial(it, MaterialRef(-1))
                         it.material > materialRef -> it.transformer.withMaterial(it,
-                                MaterialRef(it.material.materialIndex - 1))
+                                MaterialRef(it.material.materialIndex - 1)
+                        )
                         else -> it
                     }
                 }

@@ -20,6 +20,7 @@ class TexturedMaterial(override val name: String, val path: ResourcePath) : IMat
 
     override fun loadTexture(resourceLoader: ResourceLoader) {
         try {
+            texture?.close()
             texture = resourceLoader.getTexture(path.inputStream()).apply {
                 magFilter = Texture.PIXELATED
                 minFilter = Texture.PIXELATED

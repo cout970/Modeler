@@ -8,15 +8,15 @@ import com.cout970.modeler.core.log.log
  */
 object Debugger {
 
-    private lateinit var initializer: Initializer
+    private lateinit var state: ProgramState
 
-    fun setInit(initializer: Initializer) {
-        this.initializer = initializer
+    fun setInit(state: ProgramState) {
+        this.state = state
     }
 
-    fun debug(code: Initializer.() -> Unit) {
+    fun debug(code: ProgramState.() -> Unit) {
         log(Level.DEBUG) { "Debug Start" }
-        initializer.code()
+        state.code()
         log(Level.DEBUG) { "Debug End" }
     }
 }

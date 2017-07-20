@@ -3,6 +3,8 @@ package com.cout970.modeler.view.gui.editor.leftpanel
 import com.cout970.glutilities.device.Keyboard
 import com.cout970.glutilities.event.EventMouseScroll
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.`object`.IObjectCube
+import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
@@ -13,6 +15,7 @@ import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.text
 import com.cout970.modeler.view.gui.ComponentPresenter
 import com.cout970.modeler.view.gui.comp.CTextInput
+import com.cout970.modeler.view.gui.comp.Cache
 import com.cout970.modeler.view.gui.editor.leftpanel.editcubepanel.EditCubePanelPresenter
 import org.liquidengine.legui.component.Container
 import org.liquidengine.legui.event.FocusEvent
@@ -30,30 +33,39 @@ class LeftPanelPresenter(
         val module: ModuleLeftPanel
 ) : ComponentPresenter() {
 
-    val model get() = gui.actionExecutor.model
+    val model get() = gui.projectManager.model
     val leguiContext: Context get() = gui.guiUpdater.leguiContext
     val editCubePresenter = EditCubePanelPresenter(panel.editCubePanel)
 
     override fun onModelUpdate(old: IModel, new: IModel) {
-        onSelectionUpdate(null, gui.selectionHandler.getSelection())
+        onSelectionUpdate(gui.selectionHandler.getSelection(), gui.selectionHandler.getSelection())
     }
 
     override fun onSelectionUpdate(old: ISelection?, new: ISelection?) {
         val editCube = panel.editCubePanel
-        val model = gui.actionExecutor.model
+        val model = gui.projectManager.model
 
-        if (new != null && isSelectingOneCube(new)) {
-            editCubePresenter.showCube(model.getSelectedObjectRefs(new).first())
+        if (new != null && isSelectingOneCube(model, new)) {
+            editCubePresenter.showCube(getSelectedCube(model, new)!!)
         } else {
-            if (editCubePresenter.monitoredCube != null && leguiContext.focusedGui is CTextInput) {
-                editCubePresenter.onTextInput(leguiContext.focusedGui as CTextInput)
+            if (old != null && getSelectedCube(model, old) != null && leguiContext.focusedGui is CTextInput) {
+                gui.dispatcher.onEvent("update.template.cube", leguiContext.focusedGui as CTextInput)
             }
-            editCubePresenter.monitoredCube = null
             editCube.hide()
         }
     }
 
-    fun isSelectingOneCube(new: ISelection): Boolean {
+    fun getSelectedCube(model: IModel, sel: ISelection): IObjectCube? {
+        if (!isSelectingOneCube(model, sel)) return null
+        return model.getSelectedObjects(sel).firstOrNull() as? IObjectCube
+    }
+
+    fun getSelectedCubeRef(model: IModel, sel: ISelection): IObjectRef? {
+        if (!isSelectingOneCube(model, sel)) return null
+        return model.getSelectedObjectRefs(sel).firstOrNull()
+    }
+
+    fun isSelectingOneCube(model: IModel, new: ISelection): Boolean {
         if (new.selectionType != SelectionType.OBJECT) return false
         if (new.selectionTarget != SelectionTarget.MODEL) return false
         if (new.size != 1) return false
@@ -63,7 +75,7 @@ class LeftPanelPresenter(
 
     fun handleKeyPress(input: CTextInput, event: KeyEvent<*>) {
         if (event.key == Keyboard.KEY_ENTER) {
-            editCubePresenter.onTextInput(input)
+            gui.dispatcher.onEvent("update.template.cube", input)
         }
     }
 
@@ -74,14 +86,18 @@ class LeftPanelPresenter(
                 input.endSelectionIndex = input.text.length
             }
         } else {
-            editCubePresenter.onTextInput(input)
+            gui.dispatcher.onEvent("update.template.cube", input)
         }
     }
 
     override fun handleScroll(e: EventMouseScroll): Boolean {
         val target = leguiContext.mouseTargetGui
         if (target is CTextInput) {
-            editCubePresenter.onTextInput(target, e.offsetY.toFloat())
+            val cache = Cache().apply {
+                subComponents += target
+                cache.put("offset", e.offsetY.toFloat())
+            }
+            gui.dispatcher.onEvent("update.template.cube", cache)
         }
         return false
     }

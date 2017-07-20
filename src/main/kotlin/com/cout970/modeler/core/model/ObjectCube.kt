@@ -101,6 +101,12 @@ data class ObjectCube(
         )
     }
 
+    override fun withSize(size: IVector3): IObjectCube = copy(size = size)
+
+    override fun withPos(pos: IVector3): IObjectCube = copy(pos = pos)
+
+    override fun withRotation(rot: IQuaternion): IObjectCube = copy(rotation = rot)
+
     override val transformer: IObjectTransformer = object : IObjectTransformer {
         override fun withMesh(obj: IObject, newMesh: IMesh): IObject {
             return Object(name, newMesh, transformation, material)

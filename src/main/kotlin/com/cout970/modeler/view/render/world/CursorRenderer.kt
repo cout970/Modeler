@@ -2,11 +2,13 @@ package com.cout970.modeler.view.render.world
 
 import com.cout970.glutilities.tessellator.VAO
 import com.cout970.matrix.extensions.Matrix4
+import com.cout970.modeler.api.model.`object`.IObjectCube
 import com.cout970.modeler.controller.World
 import com.cout970.modeler.controller.selector.Cursor
 import com.cout970.modeler.controller.selector.ITranslatable
 import com.cout970.modeler.core.model.AABB
 import com.cout970.modeler.core.model.TRSTransformation
+import com.cout970.modeler.core.model.getSelectedObjects
 import com.cout970.modeler.util.RenderUtil
 import com.cout970.modeler.util.rotationTo
 import com.cout970.modeler.view.render.tool.RenderContext
@@ -57,6 +59,19 @@ class CursorRenderer {
                         globalColor.setVector3(part.translationAxis)
                         accept(it)
                         globalColor.setVector3(Vector3.ONE)
+                    }
+                }
+                val selection = ctx.gui.selectionHandler.getSelection()
+                if (selection != null && selection.size == 1) {
+                    val model = ctx.gui.projectManager.model
+                    val cube = model.getSelectedObjects(selection).first()
+                    if (cube is IObjectCube) {
+                        matrixM.setMatrix4(TRSTransformation(
+                                translation = vec3Of(0),
+                                rotation = cube.rotation,
+                                scale = vec3Of(1.0f)
+                        ).matrix)
+                        accept(it)
                     }
                 }
             }

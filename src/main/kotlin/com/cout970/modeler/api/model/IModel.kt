@@ -27,7 +27,6 @@ interface IModel {
 
     fun addObjects(objs: List<IObject>): IModel
     fun removeObjects(objs: List<IObjectRef>): IModel
-
     fun modifyObjects(predicate: (IObjectRef) -> Boolean, func: (IObjectRef, IObject) -> IObject): IModel
 
     fun modifyObjects(objs: List<IObjectRef>, func: (IObjectRef, IObject) -> IObject): IModel {

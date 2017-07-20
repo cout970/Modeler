@@ -18,6 +18,7 @@ import com.cout970.modeler.functional.tasks.*
  */
 
 class Copy : IUseCase {
+
     override val key: String = "model.selection.copy"
 
     @Inject lateinit var model: IModel
@@ -33,6 +34,7 @@ class Copy : IUseCase {
 }
 
 class Paste : IUseCase {
+
     override val key: String = "model.selection.paste"
 
     @Inject lateinit var model: IModel
@@ -59,6 +61,7 @@ class Paste : IUseCase {
 }
 
 class Cut : IUseCase {
+
     override val key: String = "model.selection.cut"
 
     @Inject lateinit var model: IModel

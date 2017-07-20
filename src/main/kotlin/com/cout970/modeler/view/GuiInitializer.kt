@@ -1,8 +1,6 @@
 package com.cout970.modeler.view
 
 import com.cout970.glutilities.structure.Timer
-import com.cout970.modeler.controller.ActionExecutor
-import com.cout970.modeler.controller.CommandExecutor
 import com.cout970.modeler.controller.GuiState
 import com.cout970.modeler.controller.selector.Selector
 import com.cout970.modeler.core.log.Level
@@ -29,16 +27,13 @@ class GuiInitializer(
         val renderManager: RenderManager,
         val resourceLoader: ResourceLoader,
         val timer: Timer,
-        val projectManager: ProjectManager,
-        val actionExecutor: ActionExecutor
+        val projectManager: ProjectManager
 ) {
 
     fun init(): Gui {
         log(Level.FINE) { "[GuiInitializer] Initializing GUI" }
         log(Level.FINE) { "[GuiInitializer] Creating gui resources" }
         val guiResources = GuiResources()
-        log(Level.FINE) { "[GuiInitializer] Creating CommandExecutor" }
-        val commandExecutor = CommandExecutor()
         log(Level.FINE) { "[GuiInitializer] Creating GuiUpdater" }
         val guiUpdater = GuiUpdater()
         log(Level.FINE) { "[GuiInitializer] Creating Root Frame" }
@@ -52,10 +47,6 @@ class GuiInitializer(
         val selector = Selector()
         log(Level.FINE) { "[GuiInitializer] Creating Listeners" }
         val listeners = Listeners()
-        log(Level.FINE) { "[GuiInitializer] Binding buttons" }
-        commandExecutor.bindButtons(editorPanel)
-        log(Level.FINE) { "[GuiInitializer] Binding text inputs" }
-//        guiUpdater.bindTextInputs(editorPanel)
         log(Level.FINE) { "[GuiInitializer] Creating GuiState" }
         val guiState = GuiState()
         log(Level.FINE) { "[GuiInitializer] Creating Dispatcher" }
@@ -72,7 +63,6 @@ class GuiInitializer(
                 root = root,
                 guiUpdater = guiUpdater,
                 canvasContainer = canvasContainer,
-                commandExecutor = commandExecutor,
                 listeners = listeners,
                 windowHandler = windowHandler,
                 timer = timer,
@@ -80,7 +70,6 @@ class GuiInitializer(
                 editorPanel = editorPanel,
                 projectManager = projectManager,
                 selector = selector,
-                actionExecutor = actionExecutor,
                 resources = guiResources,
                 state = guiState,
                 dispatcher = dispatcher,

@@ -6,6 +6,7 @@ import java.util.*
 /**
  * Created by cout970 on 2016/12/08.
  */
+@Deprecated("Use TaskHistory instead")
 class HistoricalRecord(val historyLog: HistoryLog, val enqueue: (() -> Unit) -> Unit) {
 
     private val actionStack = Stack<IAction>()

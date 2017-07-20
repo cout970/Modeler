@@ -185,3 +185,15 @@ infix fun IVector3.rotationTo(other: IVector3): IQuaternion {
     val q = Quaterniond().rotationTo(this.toJoml3d(), other.toJoml3d())
     return q.toIQuaternion()
 }
+
+fun IQuaternion.toAxisRotations(): IVector3 {
+    return toJOML().getEulerAnglesXYZ(Vector3d()).toIVector().toDegrees()
+}
+
+fun IVector3.fromAxisRotations(): IQuaternion {
+    return Quaterniond().rotateYXZ(xd.toRads(), yd.toRads(), zd.toRads()).toIQuaternion()
+}
+
+fun IQuaternion.normalize(): IQuaternion {
+    return toJOML().normalize().toIQuaternion()
+}

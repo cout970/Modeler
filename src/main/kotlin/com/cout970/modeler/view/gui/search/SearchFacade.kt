@@ -1,12 +1,10 @@
 package com.cout970.modeler.view.gui.search
 
-import com.cout970.modeler.controller.CommandExecutor
-
 /**
  * Created by cout970 on 2017/04/12.
  */
 
-class SearchFacade(val commandExecutor: CommandExecutor) {
+class SearchFacade() {
 
     val searchEngine: ISearchEngine = SearchDatabase
     val searchResults = mutableListOf<SearchResult>()
@@ -17,6 +15,6 @@ class SearchFacade(val commandExecutor: CommandExecutor) {
     }
 
     fun execute(selectedOption: Int) {
-        commandExecutor.execute(searchResults[selectedOption].cmd)
+//        commandExecutor.execute(searchResults[selectedOption].cmd)
     }
 }

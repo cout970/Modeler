@@ -63,13 +63,15 @@ class EditCubePanel : CPanel(width = 190f, height = 400f) {
         }
     }
 
-    class CubeRotationPanel : CPanel(width = 190f, height = 75f) {
+    class CubeRotationPanel : CPanel(width = 190f, height = 175f) {
         val rotXLabel = CLabel("Rot. x", 5f, 5f, 60f, 18f)
         val rotXInput = CTextInput("cube.rot.x", "0", 65f, 5f, 110f, 18f)
         val rotYLabel = CLabel("Rot. y", 5f, 28f, 60f, 18f)
         val rotYInput = CTextInput("cube.rot.y", "0", 65f, 28f, 110f, 18f)
         val rotZLabel = CLabel("Rot. z", 5f, 51f, 60f, 18f)
         val rotZInput = CTextInput("cube.rot.z", "0", 65f, 51f, 110f, 18f)
+        val rotWLabel = CLabel("Rot. w", 5f, 74f, 60f, 18f)
+        val rotWInput = CTextInput("cube.rot.w", "0", 65f, 74f, 110f, 18f)
 
         init {
             add(rotXLabel)
@@ -78,6 +80,8 @@ class EditCubePanel : CPanel(width = 190f, height = 400f) {
             add(rotYInput)
             add(rotZLabel)
             add(rotZInput)
+            add(rotWLabel)
+            add(rotWInput)
             setBorderless()
         }
     }

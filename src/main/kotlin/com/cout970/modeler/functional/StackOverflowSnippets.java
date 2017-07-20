@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by cout970 on 2017/07/19.
  */
-public class StackOverflowSnipets {
+public class StackOverflowSnippets {
 
     /**
      * https://stackoverflow.com/a/520344

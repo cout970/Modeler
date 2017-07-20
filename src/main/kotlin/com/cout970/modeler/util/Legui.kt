@@ -1,6 +1,5 @@
 package com.cout970.modeler.util
 
-import com.cout970.modeler.controller.CommandExecutor
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.plus
 import org.joml.Vector2f
@@ -19,15 +18,6 @@ val Component.absolutePosition: IVector2 get() {
         parent = parent.parent
     }
     return sum
-}
-
-fun <T : Component> T.onClick(id: String, commandExecutor: CommandExecutor): T {
-    listenerMap.addListener(MouseClickEvent::class.java, {
-        if (it.action == MouseClickEvent.MouseClickAction.PRESS) {
-            commandExecutor.execute(id)
-        }
-    })
-    return this
 }
 
 inline fun <T : Component> T.onClick(id: Int, crossinline func: (Int) -> Unit): T {
@@ -91,3 +81,5 @@ fun Context.unfocus() {
     focusedGui.isFocused = false
     this.focusedGui = null
 }
+
+inline fun <reified T> Component?.parent(): T? = this?.parent as? T

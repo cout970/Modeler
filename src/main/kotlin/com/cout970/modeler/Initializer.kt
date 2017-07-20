@@ -2,7 +2,6 @@ package com.cout970.modeler
 
 import com.cout970.glutilities.structure.Timer
 import com.cout970.glutilities.window.GLFWLoader
-import com.cout970.modeler.controller.ActionExecutor
 import com.cout970.modeler.core.config.ConfigManager
 import com.cout970.modeler.core.export.ExportManager
 import com.cout970.modeler.core.log.Level
@@ -26,8 +25,6 @@ class Initializer {
 
     fun init(programArguments: List<String>): ProgramState {
 
-        Debugger.setInit(this)
-
         log(Level.FINE) { "Loading config" }
         ConfigManager.loadConfig()
         log(Level.FINE) { "Config loaded" }
@@ -43,8 +40,6 @@ class Initializer {
         log(Level.FINE) { "Creating ProjectController" }
         val projectManager = ProjectManager()
 
-        log(Level.FINE) { "Creating ActionExecutor" }
-        val modelTransformer = ActionExecutor(projectManager)
         log(Level.FINE) { "Creating FutureExecutor" }
         val futureExecutor = FutureExecutor()
         log(Level.FINE) { "Creating TaskHistory" }
@@ -63,13 +58,12 @@ class Initializer {
                 renderManager,
                 resourceLoader,
                 timer,
-                projectManager,
-                modelTransformer
+                projectManager
         ).init()
 
         log(Level.FINE) { "Creating Loop" }
         val mainLoop = Loop(
-                listOf(renderManager, gui.listeners, eventController, windowHandler, modelTransformer, futureExecutor),
+                listOf(renderManager, gui.listeners, eventController, windowHandler, futureExecutor),
                 timer, windowHandler::shouldClose)
 
         parseArgs(programArguments, exportManager, projectManager)
@@ -83,12 +77,15 @@ class Initializer {
                 exportManager = exportManager,
                 gui = gui,
                 projectManager = projectManager,
-                actionExecutor = modelTransformer,
                 futureExecutor = futureExecutor,
                 taskHistory = taskHistory
         )
 
+        Debugger.setInit(state)
         gui.selectionHandler.listeners.add(gui.guiUpdater::onSelectionUpdate)
+
+        log(Level.FINE) { "[GuiInitializer] Binding text inputs" }
+        gui.guiUpdater.bindTextInputs(gui.editorPanel)
 
         log(Level.FINE) { "Starting GLFW" }
         GLFWLoader.init()
@@ -101,7 +98,6 @@ class Initializer {
         renderManager.initOpenGl(resourceLoader, gui)
         log(Level.FINE) { "Registering Input event listeners" }
         gui.listeners.initListeners(eventController, gui)
-        gui.commandExecutor.programState = state
 
         gui.dispatcher.state = state
         futureExecutor.programState = state
@@ -113,7 +109,6 @@ class Initializer {
 
         log(Level.FINE) { "Searching for last project" }
         exportManager.loadLastProjectIfExists(projectManager)
-        gui.commandExecutor.execute("gui.left.refresh")
         log(Level.FINE) { "Initialization done" }
         return state
     }

@@ -1,9 +1,12 @@
 package com.cout970.modeler.functional.injection
 
+import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.ProgramState
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.selection.ISelection
-import com.cout970.modeler.controller.ActionExecutor
+import com.cout970.modeler.controller.GuiState
+import com.cout970.modeler.controller.SelectionHandler
+import com.cout970.modeler.controller.selector.Selector
 import com.cout970.modeler.core.export.ExportManager
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
@@ -11,10 +14,21 @@ import com.cout970.modeler.core.model.selection.IClipboard
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.project.ProjectProperties
 import com.cout970.modeler.core.resource.ResourceLoader
+import com.cout970.modeler.functional.Dispatcher
 import com.cout970.modeler.functional.FutureExecutor
 import com.cout970.modeler.functional.TaskHistory
+import com.cout970.modeler.functional.binders.ButtonBinder
+import com.cout970.modeler.functional.binders.KeyboardBinder
+import com.cout970.modeler.functional.usecases.Debug
 import com.cout970.modeler.view.Gui
+import com.cout970.modeler.view.GuiResources
+import com.cout970.modeler.view.Listeners
 import com.cout970.modeler.view.event.EventController
+import com.cout970.modeler.view.event.IInput
+import com.cout970.modeler.view.gui.GuiUpdater
+import com.cout970.modeler.view.gui.Root
+import com.cout970.modeler.view.gui.comp.canvas.CanvasContainer
+import com.cout970.modeler.view.gui.editor.EditorPanel
 import com.cout970.modeler.view.render.RenderManager
 import com.cout970.modeler.view.window.Loop
 import com.cout970.modeler.view.window.WindowHandler
@@ -35,10 +49,13 @@ class DependencyInjector {
         val valueAndProperty = properties.map { (type, property) ->
             val value: Any? = state.run {
                 when (type) {
+                    ProgramState::class.java -> if (obj is Debug) state else null
+
                     ISelection::class.java -> gui.selectionHandler.getSelection()
                     IModel::class.java -> projectManager.model
                     ProjectProperties::class.java -> projectManager.projectProperties
                     IClipboard::class.java -> projectManager.clipboard
+                    Component::class.java -> comp
 
                     ResourceLoader::class.java -> resourceLoader
                     EventController::class.java -> eventController
@@ -46,11 +63,28 @@ class DependencyInjector {
                     RenderManager::class.java -> renderManager
                     Gui::class.java -> gui
                     ProjectManager::class.java -> projectManager
-                    ActionExecutor::class.java -> actionExecutor
                     Loop::class.java -> mainLoop
                     ExportManager::class.java -> exportManager
                     FutureExecutor::class.java -> futureExecutor
                     TaskHistory::class.java -> taskHistory
+                //gui
+                    Root::class.java -> gui.root
+                    GuiUpdater::class.java -> gui.guiUpdater
+                    CanvasContainer::class.java -> gui.canvasContainer
+                    Listeners::class.java -> gui.listeners
+                    WindowHandler::class.java -> gui.windowHandler
+                    Timer::class.java -> gui.timer
+                    IInput::class.java -> gui.input
+                    EditorPanel::class.java -> gui.editorPanel
+                    ProjectManager::class.java -> gui.projectManager
+                    Selector::class.java -> gui.selector
+                    GuiResources::class.java -> gui.resources
+                    GuiState::class.java -> gui.state
+                    SelectionHandler::class.java -> gui.selectionHandler
+                    Dispatcher::class.java -> gui.dispatcher
+                    ButtonBinder::class.java -> gui.buttonBinder
+                    KeyboardBinder::class.java -> gui.keyboardBinder
+                    
                     else -> null
                 }
             }

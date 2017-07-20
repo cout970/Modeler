@@ -29,7 +29,7 @@ class RightPanelPresenter(
     fun updateObjectList() {
         val tree = panel.treeViewPanel
         val materials = panel.materialListPanel
-        val model = gui.actionExecutor.model
+        val model = gui.projectManager.model
         val selection = gui.selectionHandler.getSelection()
 
         val materialOfSelectedObjects = mutableListOf<IMaterialRef>()
@@ -75,8 +75,8 @@ class RightPanelPresenter(
             item.loadResources(gui.resources)
         }
 
-        gui.commandExecutor.bindButtons(tree.listPanel)
-        gui.commandExecutor.bindButtons(materials.listPanel)
+        gui.buttonBinder.bindButtons(tree.listPanel)
+        gui.buttonBinder.bindButtons(materials.listPanel)
         //Update scroll size
         moduleRightPanel.layout.rescale()
     }

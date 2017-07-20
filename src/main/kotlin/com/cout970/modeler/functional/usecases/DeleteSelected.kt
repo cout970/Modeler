@@ -12,7 +12,7 @@ import com.cout970.modeler.functional.tasks.*
 /**
  * Created by cout970 on 2017/07/19.
  */
-class Delete : IUseCase {
+class DeleteSelected : IUseCase {
 
     override val key: String = "model.selection.delete"
 

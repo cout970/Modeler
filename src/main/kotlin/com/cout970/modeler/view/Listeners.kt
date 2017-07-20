@@ -18,11 +18,9 @@ class Listeners : ITickeable {
 
     private lateinit var gui: Gui
     lateinit var cameraUpdater: CameraUpdater
-    lateinit var hotKeyHandler: HotKeyHandler
 
     fun initListeners(eventController: EventController, gui: Gui) {
         this.gui = gui
-        this.hotKeyHandler = HotKeyHandler(gui.commandExecutor)
         eventController.addListener(EventKeyUpdate::class.java, this::onKeyPress)
         eventController.addListener(EventFrameBufferSize::class.java, gui.guiUpdater::onFramebufferSizeUpdated)
         eventController.addListener(EventMouseScroll::class.java, this::onMouseScroll)
@@ -64,7 +62,7 @@ class Listeners : ITickeable {
                 if (gui.guiUpdater.leguiContext.focusedGui == null ||
                     gui.guiUpdater.leguiContext.focusedGui !is TextInput) {
 
-                    hotKeyHandler.onPress(e) || gui.keyboardBinder.onEvent(e)
+                    gui.keyboardBinder.onEvent(e)
                 } else {
                     false
                 }
@@ -85,6 +83,9 @@ class Listeners : ITickeable {
 
     override fun tick() {
         cameraUpdater.updateCameras()
-        gui.selector.update(gui.canvasContainer, gui.actionExecutor.actionTrigger)
+        //TODO
+//        Debugger.debug {
+//            gui.selector.update(gui.canvasContainer, taskHistory)
+//        }
     }
 }

@@ -36,7 +36,6 @@ fun importTexture(projectManager: ProjectManager, materialRef: IMaterialRef? = n
         val archive = File(file)
         val mat = TexturedMaterial(archive.nameWithoutExtension, archive.toResourcePath())
         if (materialRef != null) {
-            projectManager.model.materials
             projectManager.updateMaterial(materialRef, mat)
         } else {
             projectManager.loadMaterial(mat)

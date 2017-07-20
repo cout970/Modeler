@@ -4,7 +4,6 @@ import com.cout970.glutilities.device.Mouse
 import com.cout970.glutilities.event.EnumKeyState
 import com.cout970.glutilities.event.EventMouseClick
 import com.cout970.modeler.api.model.selection.ISelection
-import com.cout970.modeler.controller.ActionTrigger
 import com.cout970.modeler.controller.RayTracer
 import com.cout970.modeler.controller.selector.helpers.CanvasHelper
 import com.cout970.modeler.controller.selector.helpers.CanvasHelper.getMouseSpaceContext
@@ -14,6 +13,8 @@ import com.cout970.modeler.controller.selector.helpers.TranslationHelper
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.getSelectedObjects
 import com.cout970.modeler.core.model.selection.ObjectRef
+import com.cout970.modeler.functional.ITaskProcessor
+import com.cout970.modeler.functional.tasks.TaskUpdateModel
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.Gui
 import com.cout970.modeler.view.event.IInput
@@ -41,7 +42,7 @@ class Selector {
     private var rotationLastOffset = 0f
     private var scaleLastOffset = 0f
 
-    fun update(canvasContainer: CanvasContainer, trigger: ActionTrigger) {
+    fun update(canvasContainer: CanvasContainer, trigger: ITaskProcessor) {
         activeCanvas = canvasContainer.selectedCanvas
 
         activeCanvas?.let { activeScene ->
@@ -65,8 +66,8 @@ class Selector {
             } else { // has selection
                 if (!click) { // end selection
                     // apply changes
-                    state.tmpModel?.let { model ->
-                        trigger.loadTmpModel(model)
+                    state.tmpModel?.let { newModel ->
+                        trigger.processTask(TaskUpdateModel(gui.projectManager.model, newModel))
                     }
                     // reset selection
                     state.tmpModel = null

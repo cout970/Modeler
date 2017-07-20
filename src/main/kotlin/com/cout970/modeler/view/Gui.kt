@@ -1,8 +1,6 @@
 package com.cout970.modeler.view
 
 import com.cout970.glutilities.structure.Timer
-import com.cout970.modeler.controller.ActionExecutor
-import com.cout970.modeler.controller.CommandExecutor
 import com.cout970.modeler.controller.GuiState
 import com.cout970.modeler.controller.SelectionHandler
 import com.cout970.modeler.controller.selector.Selector
@@ -25,7 +23,6 @@ data class Gui(
         val root: Root,
         val guiUpdater: GuiUpdater,
         val canvasContainer: CanvasContainer,
-        val commandExecutor: CommandExecutor,
         val listeners: Listeners,
         val windowHandler: WindowHandler,
         val timer: Timer,
@@ -33,7 +30,6 @@ data class Gui(
         var editorPanel: EditorPanel,
         val projectManager: ProjectManager,
         val selector: Selector,
-        val actionExecutor: ActionExecutor,
         val resources: GuiResources,
         val state: GuiState,
         val selectionHandler: SelectionHandler = SelectionHandler(),

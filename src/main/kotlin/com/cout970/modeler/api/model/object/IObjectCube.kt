@@ -10,4 +10,8 @@ interface IObjectCube : IObject {
     val size: IVector3
     val pos: IVector3
     val rotation: IQuaternion
+
+    fun withSize(size: IVector3): IObjectCube
+    fun withPos(pos: IVector3): IObjectCube
+    fun withRotation(rot: IQuaternion): IObjectCube
 }
