@@ -8,6 +8,8 @@ import com.cout970.modeler.core.model.selection.Selection
 import com.cout970.modeler.core.tool.EditTool
 import com.cout970.modeler.functional.injection.Inject
 import com.cout970.modeler.functional.tasks.*
+import org.funktionale.option.Option
+import org.funktionale.option.getOrElse
 
 /**
  * Created by cout970 on 2017/07/19.
@@ -17,16 +19,15 @@ class DeleteSelected : IUseCase {
     override val key: String = "model.selection.delete"
 
     @Inject lateinit var model: IModel
-    @Inject var selection: ISelection? = null
+    @Inject lateinit var selection: Option<ISelection>
 
     override fun createTask(): ITask {
-        selection?.let { sel ->
+        return selection.map { sel ->
             val newModel = EditTool.delete(model, sel)
-            return TaskChain(listOf(
+            TaskChain(listOf(
                     TaskUpdateModel(oldModel = model, newModel = newModel),
-                    TaskUpdateSelection(selection, Selection(SelectionTarget.MODEL, SelectionType.OBJECT, emptyList()))
+                    TaskUpdateSelection(sel, Selection(SelectionTarget.MODEL, SelectionType.OBJECT, emptyList()))
             ))
-        }
-        return TaskNone
+        }.getOrElse { TaskNone }
     }
 }

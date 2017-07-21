@@ -10,6 +10,11 @@ object Debugger {
 
     private lateinit var state: ProgramState
 
+    var drawVboCount = 0
+    var drawRegionsCount = 0
+    var drawVaoCount = 0
+    var buildVaoCount = 0
+
     fun setInit(state: ProgramState) {
         this.state = state
     }
@@ -18,5 +23,18 @@ object Debugger {
         log(Level.DEBUG) { "Debug Start" }
         state.code()
         log(Level.DEBUG) { "Debug End" }
+    }
+
+    fun postTick() {
+//        println("drawVboCount: $drawVboCount")
+//        println("drawRegionsCount: $drawRegionsCount")
+//        println("drawVaoCount: $drawVaoCount")
+//        println("buildVaoCount: $buildVaoCount")
+//        println("++++++++++++++++++++++++++++++")
+
+        drawVboCount = 0
+        drawRegionsCount = 0
+        drawVaoCount = 0
+        buildVaoCount = 0
     }
 }

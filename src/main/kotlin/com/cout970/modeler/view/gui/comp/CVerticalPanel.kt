@@ -9,6 +9,7 @@ import org.liquidengine.legui.border.SimpleLineBorder
 import org.liquidengine.legui.color.ColorConstants
 import org.liquidengine.legui.component.Panel
 import org.liquidengine.legui.component.ScrollablePanel
+import org.liquidengine.legui.event.ScrollEvent
 
 /**
  * Created by cout970 on 2017/07/13.
@@ -18,7 +19,6 @@ open class CVerticalPanel(
 ) : ScrollablePanel<Panel<*>>(Vector2f(x, y), Vector2f(width, height)) {
 
     val id = lastID++
-
 
     init {
         border = SimpleLineBorder(Config.colorPalette.borderColor.toColor(), 0.5f)
@@ -31,16 +31,15 @@ open class CVerticalPanel(
         verticalScrollBar.isArrowsEnabled = false
     }
 
-    companion object {
-        private var lastID = 0
+    fun propagateScroll(e: ScrollEvent<*>) {
+        val newEvent = ScrollEvent(verticalScrollBar, e.context, e.xoffset, e.yoffset)
+        verticalScrollBar.listenerMap.getListeners(ScrollEvent::class.java)?.forEach {
+            it.process(newEvent)
+        }
     }
 
-    override fun resize() {
-        super.resize()
-//        val containerSize = Vector2f(container.size)
-//        val viewportSize = Vector2f(size)
-//        val verticalRange = verticalScrollBar.maxValue - verticalScrollBar.minValue
-//        verticalScrollBar.visibleAmount = if (containerSize.y >= viewportSize.y) verticalRange * viewportSize.y / containerSize.y else verticalRange
+    companion object {
+        private var lastID = 0
     }
 
     open fun loadResources(resources: GuiResources) {
@@ -65,5 +64,9 @@ open class CVerticalPanel(
         var result = super.hashCode()
         result = 31 * result + id
         return result
+    }
+
+    override fun toString(): String {
+        return "CVerticalPanel(id=$id)"
     }
 }

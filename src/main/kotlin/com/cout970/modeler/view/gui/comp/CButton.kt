@@ -4,6 +4,7 @@ import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.util.toColor
 import org.liquidengine.legui.component.Button
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
+import org.liquidengine.legui.event.ScrollEvent
 import org.liquidengine.legui.icon.ImageIcon
 
 /**
@@ -21,6 +22,17 @@ class CButton(
     init {
         textState.textColor = Config.colorPalette.textColor.toColor()
         backgroundColor = Config.colorPalette.buttonColor.toColor()
+        listenerMap.addListener(ScrollEvent::class.java) {
+            propagateScroll(it)
+        }
+    }
+
+    fun propagateScroll(e: ScrollEvent<*>) {
+        if (parent is CPanel) {
+            parent.listenerMap.getListeners(ScrollEvent::class.java)?.forEach {
+                it.process(e)
+            }
+        }
     }
 
     override fun setTooltip(tooltip: String) {
@@ -45,5 +57,9 @@ class CButton(
 
     override fun hashCode(): Int {
         return System.identityHashCode(this)
+    }
+
+    override fun toString(): String {
+        return "CButton(command='$command')"
     }
 }

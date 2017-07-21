@@ -62,7 +62,7 @@ class RightPanel : CPanel() {
 
     class ListItem(val ref: IObjectRef, name: String) : CPanel(width = 176f, height = 24f) {
 
-        val label = CLabel(name, 0f, 0f, 120f, 24f)
+        val selectButton = CButton(name, 0f, 0f, 120f, 24f, "tree.view.select")
         val showButton = CButton("", 120f, 0f, 24f, 24f, "tree.view.show.item")
         val hideButton = CButton("", 120f, 0f, 24f, 24f, "tree.view.hide.item")
         val delButton = CButton("", 150f, 0f, 24f, 24f, "tree.view.delete.item")
@@ -71,10 +71,13 @@ class RightPanel : CPanel() {
             cornerRadius = 0f
             position.x = 1f
             backgroundColor = Config.colorPalette.primaryColor.toColor()
-            add(label)
+            add(selectButton)
             add(hideButton)
             add(showButton)
             add(delButton)
+
+            selectButton.backgroundColor = ColorConstants.transparent()
+            selectButton.border.isEnabled = false
 
             showButton.backgroundColor = ColorConstants.transparent()
             showButton.border.isEnabled = false
@@ -96,15 +99,18 @@ class RightPanel : CPanel() {
 
     class MaterialListItem(val ref: IMaterialRef, name: String) : CPanel(width = 180f, height = 24f) {
 
-        val label = CLabel(name, 0f, 0f, 120f, 24f)
+        val selectButton = CButton(name, 0f, 0f, 120f, 24f, "material.view.select")
         val applyButton = CButton("", 120f, 0f, 24f, 24f, "material.view.apply")
         val loadButton = CButton("", 150f, 0f, 24f, 24f, "material.view.load")
 
         init {
             backgroundColor = Config.colorPalette.primaryColor.toColor()
-            add(label)
+            add(selectButton)
             add(applyButton)
             add(loadButton)
+
+            selectButton.backgroundColor = ColorConstants.transparent()
+            selectButton.border.isEnabled = false
 
             applyButton.backgroundColor = ColorConstants.transparent()
             applyButton.border.isEnabled = false

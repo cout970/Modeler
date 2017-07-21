@@ -8,8 +8,6 @@ import com.cout970.modeler.controller.GuiState
 import com.cout970.modeler.controller.SelectionHandler
 import com.cout970.modeler.controller.selector.Selector
 import com.cout970.modeler.core.export.ExportManager
-import com.cout970.modeler.core.log.Level
-import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.model.selection.IClipboard
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.project.ProjectProperties
@@ -32,6 +30,8 @@ import com.cout970.modeler.view.render.RenderManager
 import com.cout970.modeler.view.window.Loop
 import com.cout970.modeler.view.window.WindowHandler
 import org.liquidengine.legui.component.Component
+import sun.reflect.generics.reflectiveObjects.WildcardTypeImpl
+import java.lang.reflect.ParameterizedType
 
 /**
  * Created by cout970 on 2017/07/19.
@@ -47,8 +47,19 @@ class DependencyInjector {
 
         val valueAndProperty = properties.map { (type, property) ->
             val value: Any? = state.run {
-                when (type) {
-                    ISelection::class.java -> gui.selectionHandler.getSelection()
+
+                if (type is ParameterizedType) {
+                    val genericType = (type.actualTypeArguments[0] as WildcardTypeImpl).upperBounds[0]
+                    when (genericType) {
+                        ISelection::class.java -> gui.selectionHandler.getModelSelection()
+                        else -> {
+                            println(genericType)
+                            println(genericType.javaClass)
+                            null
+                        }
+
+                    }
+                } else when (type) {
                     IModel::class.java -> projectManager.model
                     ProjectProperties::class.java -> projectManager.projectProperties
                     IClipboard::class.java -> projectManager.clipboard
@@ -81,7 +92,7 @@ class DependencyInjector {
                     Dispatcher::class.java -> gui.dispatcher
                     ButtonBinder::class.java -> gui.buttonBinder
                     KeyboardBinder::class.java -> gui.keyboardBinder
-                    
+
                     else -> null
                 }
             }
@@ -90,7 +101,8 @@ class DependencyInjector {
 
         valueAndProperty.forEach { (value, property) ->
             if (value == null) {
-                log(Level.ERROR) { "Error finding a value for property: $property in $clazz" }
+                throw IllegalStateException(
+                        "Error finding a value for property: ${property.name}: ${property.type.simpleName} in ${clazz.simpleName}")
             } else {
                 property.isAccessible = true
                 property.set(obj, value)

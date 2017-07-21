@@ -14,6 +14,8 @@ import com.cout970.modeler.functional.tasks.TaskUpdateModel
 import com.cout970.modeler.util.parent
 import com.cout970.modeler.view.gui.editor.rightpanel.RightPanel
 import com.cout970.modeler.view.gui.popup.textureExtensions
+import org.funktionale.option.Option
+import org.funktionale.option.getOrElse
 import org.liquidengine.legui.component.Component
 import org.lwjgl.util.tinyfd.TinyFileDialogs
 import java.io.File
@@ -28,21 +30,19 @@ class ApplyMaterial : IUseCase {
 
     @Inject lateinit var component: Component
     @Inject lateinit var model: IModel
-    @Inject var selection: ISelection? = null
+    @Inject lateinit var selection: Option<ISelection>
 
     override fun createTask(): ITask {
-        selection?.let { selection ->
+        return selection.map { selection ->
             component.parent<RightPanel.MaterialListItem>()?.let { item ->
                 val newModel = model.modifyObjects(model.getSelectedObjectRefs(selection)) { _, obj ->
                     obj.transformer.withMaterial(obj, item.ref)
                 }
-                return TaskUpdateModel(oldModel = model, newModel = newModel)
-            }
-        }
-        return TaskNone
+                TaskUpdateModel(oldModel = model, newModel = newModel)
+            } ?: TaskNone
+        }.getOrElse { TaskNone }
     }
 }
-
 
 class LoadMaterial : IUseCase {
     override val key: String = "material.view.load"

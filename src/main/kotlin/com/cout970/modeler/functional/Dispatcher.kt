@@ -37,7 +37,7 @@ class Dispatcher {
             val task = useCase.createTask()
             state.taskHistory.processTask(task)
         } catch (e: Exception) {
-            log(Level.ERROR) { "Usable to run usecase: ${useCase::class}" }
+            log(Level.ERROR) { "Usable to run usecase: ${useCase::class.simpleName}" }
             e.print()
         }
     }

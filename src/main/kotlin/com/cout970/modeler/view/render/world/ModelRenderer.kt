@@ -36,6 +36,7 @@ class ModelRenderer {
         renderModel(ctx, modelToRender)
 
         if (ctx.gui.selectionHandler.lastModified != lastModifiedSelection || ctx.gui.state.tmpModel != null) {
+            lastModifiedSelection = ctx.gui.selectionHandler.lastModified
             selectionVao?.close()
             selectionVao = null
         }

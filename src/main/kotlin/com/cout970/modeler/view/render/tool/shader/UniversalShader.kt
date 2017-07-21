@@ -6,6 +6,7 @@ import com.cout970.glutilities.shader.UniformVariable
 import com.cout970.glutilities.tessellator.VAO
 import com.cout970.glutilities.tessellator.VaoBuilder
 import com.cout970.matrix.extensions.Matrix4
+import com.cout970.modeler.Debugger
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.util.FloatArrayList
 import com.cout970.modeler.view.render.tool.RenderContext
@@ -90,6 +91,9 @@ class UniversalShader(resourceLoader: ResourceLoader) : Consumer<VAO> {
     override fun accept(it: VAO) {
         it.bind()
         it.bindAttrib()
+        Debugger.drawVboCount += it.vboCount
+        Debugger.drawRegionsCount += it.regions.size
+        Debugger.drawVaoCount += 1
         it.draw()
         it.unbindAttrib()
         VAO.unbind()
@@ -199,6 +203,7 @@ class UniversalShader(resourceLoader: ResourceLoader) : Consumer<VAO> {
                 regions.clear()
                 vao = builder.build()
             }
+            Debugger.buildVaoCount++
             return vao!!
         }
     }

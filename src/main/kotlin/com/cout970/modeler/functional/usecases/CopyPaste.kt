@@ -12,6 +12,8 @@ import com.cout970.modeler.core.model.selection.Selection
 import com.cout970.modeler.core.tool.EditTool
 import com.cout970.modeler.functional.injection.Inject
 import com.cout970.modeler.functional.tasks.*
+import org.funktionale.option.Option
+import org.funktionale.option.getOrElse
 
 /**
  * Created by cout970 on 2017/07/19.
@@ -22,14 +24,11 @@ class Copy : IUseCase {
     override val key: String = "model.selection.copy"
 
     @Inject lateinit var model: IModel
-    @Inject var selection: ISelection? = null
+    @Inject lateinit var selection: Option<ISelection>
     @Inject lateinit var clipboard: IClipboard
 
     override fun createTask(): ITask {
-        selection?.let { sel ->
-            return TaskUpdateClipboard(clipboard, Clipboard(model, sel))
-        }
-        return TaskNone
+        return selection.map { TaskUpdateClipboard(clipboard, Clipboard(model, it)) }.getOrElse { TaskNone }
     }
 }
 
@@ -65,18 +64,17 @@ class Cut : IUseCase {
     override val key: String = "model.selection.cut"
 
     @Inject lateinit var model: IModel
-    @Inject var selection: ISelection? = null
+    @Inject lateinit var selection: Option<ISelection>
     @Inject lateinit var clipboard: IClipboard
 
     override fun createTask(): ITask {
-        selection?.let { sel ->
+        return selection.map { sel ->
             val newModel = EditTool.delete(model, sel)
-            return TaskChain(listOf(
+            TaskChain(listOf(
                     TaskUpdateClipboard(oldClipboard = clipboard, newClipboard = Clipboard(model, sel)),
                     TaskUpdateModel(oldModel = model, newModel = newModel),
-                    TaskUpdateSelection(selection, Selection(SelectionTarget.MODEL, SelectionType.OBJECT, emptyList()))
+                    TaskUpdateSelection(sel, Selection(SelectionTarget.MODEL, SelectionType.OBJECT, emptyList()))
             ))
-        }
-        return TaskNone
+        }.getOrElse { TaskNone }
     }
 }

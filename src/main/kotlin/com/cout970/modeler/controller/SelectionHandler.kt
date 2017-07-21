@@ -7,6 +7,8 @@ import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.selection.Selection
 import com.cout970.modeler.view.Gui
+import org.funktionale.option.Option
+import org.funktionale.option.toOption
 
 /**
  * Created by cout970 on 2017/06/15.
@@ -23,6 +25,7 @@ class SelectionHandler {
             val new = getSelection()
             listeners.forEach { it.invoke(old, new) }
         }
+
     var lastModified = 0L
         private set
 
@@ -51,6 +54,10 @@ class SelectionHandler {
         return Selection(SelectionTarget.MODEL, SelectionType.OBJECT, ref)
     }
 
+    fun getModelSelection(): Option<ISelection> {
+        if (ref.isEmpty()) return Option.None
+        return Selection(SelectionTarget.MODEL, SelectionType.OBJECT, ref).toOption()
+    }
 
     fun clearSelection() {
         ref = emptyList()

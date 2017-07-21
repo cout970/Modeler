@@ -8,6 +8,7 @@ import org.joml.Vector2f
 import org.liquidengine.legui.border.SimpleLineBorder
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Panel
+import org.liquidengine.legui.event.ScrollEvent
 
 /**
  * Created by cout970 on 2017/03/12.
@@ -24,6 +25,16 @@ open class CPanel(
             color = Config.colorPalette.borderColor.toColor()
         }
         backgroundColor = Config.colorPalette.lightColor.toColor()
+        listenerMap.addListener(ScrollEvent::class.java) {
+            propagateScroll(it)
+        }
+    }
+
+    fun propagateScroll(e: ScrollEvent<*>) {
+        val parent = parent?.parent?.parent
+        if (parent is CVerticalPanel) {
+            parent.propagateScroll(e)
+        }
     }
 
     companion object {
@@ -62,5 +73,9 @@ open class CPanel(
         var result = super.hashCode()
         result = 31 * result + id
         return result
+    }
+
+    override fun toString(): String {
+        return "CPanel(id=$id)"
     }
 }

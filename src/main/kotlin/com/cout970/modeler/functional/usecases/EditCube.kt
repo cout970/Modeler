@@ -13,6 +13,8 @@ import com.cout970.modeler.view.gui.comp.CTextInput
 import com.cout970.modeler.view.gui.comp.Cache
 import com.cout970.modeler.view.gui.editor.EditorPanel
 import com.cout970.vector.extensions.*
+import org.funktionale.option.Option
+import org.funktionale.option.getOrElse
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.TextInput
 
@@ -28,12 +30,12 @@ class UpdateTemplateCube : IUseCase {
 
     @Inject lateinit var component: Component
     @Inject lateinit var model: IModel
-    @Inject var selection: ISelection? = null
+    @Inject lateinit var selection: Option<ISelection>
     @Inject lateinit var editorPanel: EditorPanel
 
     override fun createTask(): ITask {
 
-        selection?.let { selection ->
+        return selection.map { selection ->
             val presenter = editorPanel.leftPanelModule.presenter
             val element = presenter.getSelectedCube(model, selection)
             val ref = presenter.getSelectedCubeRef(model, selection)
@@ -44,16 +46,16 @@ class UpdateTemplateCube : IUseCase {
                 val (offset: Float, input: CTextInput) = when (comp) {
                     is Cache -> comp.cache["offset"] as Float to comp.subComponents.first() as CTextInput
                     is CTextInput -> 0f to comp
-                    else -> return TaskNone
+                    else -> return@map TaskNone
                 }
                 val newObject = updateCube(cube, input, offset)
                 newObject?.let {
                     val newModel = model.modifyObjects(listOf(ref)) { _, _ -> newObject }
-                    return TaskUpdateModel(model, newModel)
+                    return@map TaskUpdateModel(model, newModel)
                 }
             }
-        }
-        return TaskNone
+            return@map TaskNone
+        }.getOrElse { TaskNone }
     }
 
     fun updateCube(cube: IObjectCube, input: CTextInput, offset: Float): IObjectCube? {

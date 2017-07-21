@@ -1,6 +1,7 @@
 package com.cout970.modeler.view.render
 
 import com.cout970.glutilities.structure.GLStateMachine
+import com.cout970.modeler.Debugger
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
@@ -48,5 +49,9 @@ class RenderManager : ITickeable {
         canvasRenderer.render(gui)
         guiRenderer.render(gui.root)
         gui.windowHandler.resetViewport()
+    }
+
+    override fun postTick() {
+        Debugger.postTick()
     }
 }
