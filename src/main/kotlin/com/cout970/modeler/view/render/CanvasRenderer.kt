@@ -10,6 +10,7 @@ import com.cout970.modeler.view.render.texture.MaterialRenderer
 import com.cout970.modeler.view.render.tool.Light
 import com.cout970.modeler.view.render.tool.RenderContext
 import com.cout970.modeler.view.render.tool.shader.UniversalShader
+import com.cout970.modeler.view.render.world.CenterMarkRenderer
 import com.cout970.modeler.view.render.world.WorldRenderer
 import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.vec2Of
@@ -23,6 +24,8 @@ class CanvasRenderer(val renderManager: RenderManager) {
 
     val worldRenderer = WorldRenderer()
     val materialRenderer = MaterialRenderer()
+    val centerMarkRenderer = CenterMarkRenderer()
+
     val buffer = UniversalShader.Buffer()
     val lights: List<Light> = listOf(
             Light(vec3Of(250, 500, 400), Vector3.ONE),
@@ -49,6 +52,7 @@ class CanvasRenderer(val renderManager: RenderManager) {
                     if (canvas.viewMode == SelectionTarget.MODEL) {
                         worldRenderer.renderWorld(ctx, World(listOf(gui.projectManager.model),
                                 gui.selector.cursor).apply { lastModified = models[0].hashCode().toLong() })
+                        centerMarkRenderer.renderCursor(ctx)
                     } else {
                         materialRenderer.renderWorld(ctx, gui.projectManager.model.getMaterial(MaterialRef(0)))
                     }

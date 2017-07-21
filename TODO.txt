@@ -1,3 +1,2 @@
-Render center cursor
 Disable grid lines button
 Double click to jump

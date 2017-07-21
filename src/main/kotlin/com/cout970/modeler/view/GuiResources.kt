@@ -20,7 +20,8 @@ class GuiResources {
     lateinit var translationArrow: IMesh
 
     lateinit var baseCubeTexture: Texture
-    lateinit var cursorTexture: Texture
+    lateinit var centerMarkTexture: Texture
+
     lateinit var deleteIcon: BufferedImage
     lateinit var showIcon: BufferedImage
     lateinit var hideIcon: BufferedImage
@@ -49,7 +50,8 @@ class GuiResources {
                 true)
 
         baseCubeTexture = loader.getTexture("assets/textures/models/cube.png").apply { magFilter = Texture.PIXELATED }
-        cursorTexture = loader.getTexture("assets/textures/cursor.png")
+        centerMarkTexture = loader.getTexture("assets/textures/models/center_mark.png")
+
         deleteIcon = BufferedImage("assets/textures/delete.png")
         showIcon = BufferedImage("assets/textures/show.png")
         hideIcon = BufferedImage("assets/textures/hide.png")

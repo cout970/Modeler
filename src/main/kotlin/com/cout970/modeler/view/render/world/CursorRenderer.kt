@@ -61,6 +61,8 @@ class CursorRenderer {
                 }
             }
         }
+
+        renderDebugHitbox(ctx, world)
     }
 
     fun renderDebugHitbox(ctx: RenderContext, world: World) {
