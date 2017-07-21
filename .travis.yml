@@ -8,4 +8,4 @@ cache:
 jdk:
   - oraclejdk8
 install:
-  - ./gradlew build
+  - chmod +x gradlew && ./gradlew build
