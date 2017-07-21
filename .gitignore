@@ -1,7 +1,6 @@
 
 # default forge gitignore
 eclipse
-bin*
 .launch
 .settings
 .metadata
@@ -53,12 +52,5 @@ minetweaker.log
 logs/**
 saves/**
 
-/server.properties
 *.psd
 classes
-extras/**
-OldCode
-OldCode/**
-OldCode/*
-OldCode
-oldcode
