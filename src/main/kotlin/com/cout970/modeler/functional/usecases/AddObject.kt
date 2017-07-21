@@ -5,13 +5,13 @@ import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.model.Object
 import com.cout970.modeler.core.model.ObjectCube
+import com.cout970.modeler.core.model.TRTSTransformation
 import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.mesh.MeshFactory
 import com.cout970.modeler.functional.injection.Inject
 import com.cout970.modeler.functional.tasks.ITask
 import com.cout970.modeler.functional.tasks.TaskUpdateModel
 import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.Quaternion
 import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.vec3Of
 
@@ -51,7 +51,7 @@ class AddTemplateCube : IUseCase {
         val obj = ObjectCube(
                 name,
                 pos,
-                Quaternion.IDENTITY,
+                TRTSTransformation.IDENTITY,
                 size,
                 material = material
         )

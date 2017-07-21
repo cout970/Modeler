@@ -1,5 +1,6 @@
 package com.cout970.modeler.core.model
 
+import com.cout970.matrix.extensions.times
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.`object`.IObjectCube
@@ -10,7 +11,6 @@ import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.mesh.MeshFactory
-import com.cout970.modeler.util.rotateAround
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -23,13 +23,12 @@ data class ObjectCube(
         override val name: String,
 
         override val pos: IVector3,
-        override val rotation: IQuaternion,
+        override val subTransformation: TRTSTransformation,
         override val size: IVector3,
 
         override val transformation: ITransformation = TRSTransformation.IDENTITY,
         override val material: IMaterialRef = MaterialRef(-1),
 
-        val rotationPivot: IVector3 = Vector3.ORIGIN,
         val textureOffset: IVector2 = Vector2.ORIGIN,
         val textureSize: IVector2 = vec2Of(64),
         val mirrored: Boolean = false
@@ -38,11 +37,11 @@ data class ObjectCube(
     override val mesh: IMesh by lazy { generateMesh() }
     override val transformedMesh: IMesh by lazy { mesh.transform(transformation) }
 
-    override fun getCenter(): IVector3 = pos + size * 0.5
+    override fun getCenter(): IVector3 = subTransformation.matrix * (pos + size * 0.5).toVector4(1.0)
 
     fun generateMesh(): IMesh {
         val cube = MeshFactory.createCube(size, pos)
-        val pos = cube.pos.map { it.rotateAround(rotationPivot, rotation) }
+        val pos = cube.pos.map { subTransformation.matrix * it.toVector4(1.0) }
         return updateTextures(Mesh(pos, cube.tex, cube.faces), size, textureOffset, textureSize)
     }
 
@@ -105,7 +104,7 @@ data class ObjectCube(
 
     override fun withPos(pos: IVector3): IObjectCube = copy(pos = pos)
 
-    override fun withRotation(rot: IQuaternion): IObjectCube = copy(rotation = rot)
+    override fun withSubTransformation(transform: TRTSTransformation): IObjectCube = copy(subTransformation = transform)
 
     override val transformer: IObjectTransformer = object : IObjectTransformer {
         override fun withMesh(obj: IObject, newMesh: IMesh): IObject {
@@ -113,7 +112,7 @@ data class ObjectCube(
         }
 
         override fun translate(obj: IObject, translation: IVector3): IObject {
-            return copy(pos = pos + translation, rotationPivot = rotationPivot + translation)
+            return copy(pos = pos + translation, subTransformation = subTransformation.translate(translation))
         }
 
         override fun rotate(obj: IObject, pivot: IVector3, rot: IQuaternion): IObject {

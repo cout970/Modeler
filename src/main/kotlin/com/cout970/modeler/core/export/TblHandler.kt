@@ -4,10 +4,10 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.ObjectCube
+import com.cout970.modeler.core.model.TRTSTransformation
 import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.resource.ResourcePath
-import com.cout970.modeler.util.quatOfAngles
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
@@ -52,8 +52,10 @@ class TblImporter {
             ObjectCube(
                     name = cube.name,
                     pos = transformPos(cube),
-                    rotation = quatOfAngles(cube.rotation.toRadians()),
-                    rotationPivot = cube.position * vec3Of(1, -1, -1) + CENTER_OFFSET,
+                    subTransformation = TRTSTransformation.fromRotationPivot(
+                            cube.position * vec3Of(1, -1, -1) + CENTER_OFFSET,
+                            cube.rotation.toRadians()
+                    ),
                     size = cube.dimensions,
                     material = material,
                     textureOffset = cube.txOffset,

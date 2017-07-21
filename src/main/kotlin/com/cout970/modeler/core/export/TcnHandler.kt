@@ -10,11 +10,11 @@ import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.ObjectCube
 import com.cout970.modeler.core.model.TRSTransformation
+import com.cout970.modeler.core.model.TRTSTransformation
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.resource.ResourcePath
-import com.cout970.modeler.util.quatOfAngles
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.*
 import org.w3c.dom.Node
@@ -141,8 +141,7 @@ class TcnImporter {
                 name = shapeName,
                 size = rSize,
                 pos = fOffset,
-                rotation = quatOfAngles(rRotation),
-                rotationPivot = rRotPoint,
+                subTransformation = TRTSTransformation.fromRotationPivot(rRotPoint, rRotation),
                 transformation = TRSTransformation.IDENTITY,
                 textureOffset = rTexture,
                 textureSize = textureSize,

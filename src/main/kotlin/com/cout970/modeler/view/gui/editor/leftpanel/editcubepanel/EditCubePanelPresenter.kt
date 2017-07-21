@@ -4,9 +4,8 @@ import com.cout970.modeler.api.model.`object`.IObjectCube
 import com.cout970.modeler.util.show
 import com.cout970.modeler.util.text
 import com.cout970.modeler.view.gui.ComponentPresenter
-import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.wf
+import com.cout970.vector.extensions.toDegrees
 import com.cout970.vector.extensions.xf
 import com.cout970.vector.extensions.yf
 import com.cout970.vector.extensions.zf
@@ -25,7 +24,7 @@ class EditCubePanelPresenter(val editCubePanel: EditCubePanel) : ComponentPresen
     fun showCube(cube: IObjectCube) {
         setSize(cube.size)
         setPos(cube.pos)
-        setRotation(cube.rotation)
+        setRotation(cube.subTransformation.rotation.toDegrees())
         editCubePanel.show()
     }
 
@@ -43,11 +42,10 @@ class EditCubePanelPresenter(val editCubePanel: EditCubePanel) : ComponentPresen
         panel.posZInput.text = formatter.format(pos.zf)
     }
 
-    fun setRotation(rot: IQuaternion) {
+    fun setRotation(rot: IVector3) {
         val panel = editCubePanel.rotationPanel
         panel.rotXInput.text = formatter.format(rot.xf)
         panel.rotYInput.text = formatter.format(rot.yf)
         panel.rotZInput.text = formatter.format(rot.zf)
-        panel.rotWInput.text = formatter.format(rot.wf)
     }
 }

@@ -1,6 +1,6 @@
 package com.cout970.modeler.api.model.`object`
 
-import com.cout970.vector.api.IQuaternion
+import com.cout970.modeler.core.model.TRTSTransformation
 import com.cout970.vector.api.IVector3
 
 /**
@@ -9,9 +9,9 @@ import com.cout970.vector.api.IVector3
 interface IObjectCube : IObject {
     val size: IVector3
     val pos: IVector3
-    val rotation: IQuaternion
+    val subTransformation: TRTSTransformation
 
     fun withSize(size: IVector3): IObjectCube
     fun withPos(pos: IVector3): IObjectCube
-    fun withRotation(rot: IQuaternion): IObjectCube
+    fun withSubTransformation(transform: TRTSTransformation): IObjectCube
 }

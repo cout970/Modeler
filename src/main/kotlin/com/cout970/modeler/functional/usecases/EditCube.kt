@@ -7,8 +7,8 @@ import com.cout970.modeler.functional.injection.Inject
 import com.cout970.modeler.functional.tasks.ITask
 import com.cout970.modeler.functional.tasks.TaskNone
 import com.cout970.modeler.functional.tasks.TaskUpdateModel
-import com.cout970.modeler.util.normalize
 import com.cout970.modeler.util.text
+import com.cout970.modeler.util.toRads
 import com.cout970.modeler.view.gui.comp.CTextInput
 import com.cout970.modeler.view.gui.comp.Cache
 import com.cout970.modeler.view.gui.editor.EditorPanel
@@ -58,6 +58,7 @@ class UpdateTemplateCube : IUseCase {
 
     fun updateCube(cube: IObjectCube, input: CTextInput, offset: Float): IObjectCube? {
         val obj: IObjectCube? = when (input.id) {
+        //@formatter:off
             "cube.size.x" -> setSizeX(cube, x = getValue(input, cube.size.xf) + offset)
             "cube.size.y" -> setSizeY(cube, y = getValue(input, cube.size.yf) + offset)
             "cube.size.z" -> setSizeZ(cube, z = getValue(input, cube.size.zf) + offset)
@@ -66,14 +67,14 @@ class UpdateTemplateCube : IUseCase {
             "cube.pos.y" -> setPosY(cube, y = getValue(input, cube.pos.yf) + offset)
             "cube.pos.z" -> setPosZ(cube, z = getValue(input, cube.pos.zf) + offset)
 
-            "cube.rot.x" -> setRotationX(cube, x = getValue(input, cube.rotation.xf) + offset / 10)
-            "cube.rot.y" -> setRotationY(cube, y = getValue(input, cube.rotation.yf) + offset / 10)
-            "cube.rot.z" -> setRotationZ(cube, z = getValue(input, cube.rotation.zf) + offset / 10)
-            "cube.rot.w" -> setRotationW(cube, w = getValue(input, cube.rotation.wf) + offset / 10)
+            "cube.rot.x" -> setRotationX(cube, x = getValue(input, cube.subTransformation.rotation.toDegrees().xf) + offset)
+            "cube.rot.y" -> setRotationY(cube, y = getValue(input, cube.subTransformation.rotation.toDegrees().yf) + offset)
+            "cube.rot.z" -> setRotationZ(cube, z = getValue(input, cube.subTransformation.rotation.toDegrees().zf) + offset)
             else -> null
+            //@formatter:on
         }
         if (obj != null) {
-            if (cube.size == obj.size && cube.pos == obj.pos && cube.rotation == obj.rotation) {
+            if (cube.size == obj.size && cube.pos == obj.pos && cube.subTransformation == obj.subTransformation) {
                 return null
             }
         }
@@ -104,42 +105,30 @@ class UpdateTemplateCube : IUseCase {
         return cube.withPos(vec3Of(cube.pos.x, cube.pos.y, z))
     }
 
-    //    fun setRotationX(cube: IObjectCube, x: Float): IObjectCube {
-//        val angles = cube.rotation.toAxisRotations()
-//        val quat = vec3Of(x, angles.y, angles.z).fromAxisRotations()
-//        return cube.withRotation(quat)
-//    }
-//
-//    fun setRotationY(cube: IObjectCube, y: Float): IObjectCube {
-//        val angles = cube.rotation.toAxisRotations()
-//        val quat = vec3Of(angles.x, y, angles.z).fromAxisRotations()
-//        return cube.withRotation(quat)
-//    }
-//
-//    fun setRotationZ(cube: IObjectCube, z: Float): IObjectCube {
-//        val angles = cube.rotation.toAxisRotations()
-//        val quat = vec3Of(angles.x, angles.y, z).fromAxisRotations()
-//        return cube.withRotation(quat)
-//    }
-
     fun setRotationX(cube: IObjectCube, x: Float): IObjectCube {
-        val quat = cube.rotation
-        return cube.withRotation(quatOf(x, quat.y, quat.z, quat.w).normalize())
+        val oldRot = cube.subTransformation.rotation
+        val trans = cube.subTransformation.copy(rotation = vec3Of(x.clampRot(), oldRot.y, oldRot.z))
+        return cube.withSubTransformation(trans)
     }
 
     fun setRotationY(cube: IObjectCube, y: Float): IObjectCube {
-        val quat = cube.rotation
-        return cube.withRotation(quatOf(quat.x, y, quat.z, quat.w).normalize())
+        val oldRot = cube.subTransformation.rotation
+        val trans = cube.subTransformation.copy(rotation = vec3Of(oldRot.x, y.clampRot(), oldRot.z))
+        return cube.withSubTransformation(trans)
     }
 
     fun setRotationZ(cube: IObjectCube, z: Float): IObjectCube {
-        val quat = cube.rotation
-        return cube.withRotation(quatOf(quat.x, quat.y, z, quat.w).normalize())
+        val oldRot = cube.subTransformation.rotation
+        val trans = cube.subTransformation.copy(rotation = vec3Of(oldRot.x, oldRot.y, z.clampRot()))
+        return cube.withSubTransformation(trans)
     }
 
-    fun setRotationW(cube: IObjectCube, w: Float): IObjectCube {
-        val quat = cube.rotation
-        return cube.withRotation(quatOf(quat.x, quat.y, quat.z, w).normalize())
+    private fun Float.clampRot(): Double {
+        return when {
+            this > 180f -> this - 360f
+            this < -180f -> this + 360f
+            else -> this
+        }.toRads()
     }
 
     fun getValue(input: TextInput, default: Float): Float {
