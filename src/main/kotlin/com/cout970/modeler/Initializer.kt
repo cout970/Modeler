@@ -106,6 +106,7 @@ class Initializer {
         log(Level.FINE) { "Reloading gui resources" }
         gui.resources.reload(resourceLoader)
         gui.root.mainPanel!!.loadResources(gui.resources)
+        gui.root.mainPanel!!.bindProperties(gui.state)
 
         log(Level.FINE) { "Searching for last project" }
         exportManager.loadLastProjectIfExists(projectManager)

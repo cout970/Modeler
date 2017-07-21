@@ -25,9 +25,9 @@ class MaterialRenderer {
     fun renderWorld(ctx: RenderContext, material: IMaterial) {
         setCamera(ctx)
         resetIfNeeded(ctx, material)
-//        if (ctx.gui.state.drawTextureGridLines) {
-//            renderGridLines(ctx, material)
-//        }
+        if (ctx.gui.state.drawTextureGridLines) {
+            renderGridLines(ctx, material)
+        }
         renderMaterial(ctx, material)
         renderModelOutlines(ctx, material)
     }

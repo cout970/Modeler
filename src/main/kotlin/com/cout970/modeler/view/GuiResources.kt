@@ -41,6 +41,9 @@ class GuiResources {
     lateinit var exportTextureIcon: BufferedImage
     lateinit var exportHitboxIcon: BufferedImage
 
+    lateinit var showGridsIcon: BufferedImage
+    lateinit var hideGridsIcon: BufferedImage
+
 
     fun reload(loader: ResourceLoader) {
         log(Level.FINE) { "[GuiResources] Loading gui resources" }
@@ -64,11 +67,12 @@ class GuiResources {
         saveProjectIcon = BufferedImage("assets/textures/save_project.png")
         saveAsProjectIcon = BufferedImage("assets/textures/save_as_project.png")
         editProjectIcon = BufferedImage("assets/textures/edit_project.png")
-
         importModelIcon = BufferedImage("assets/textures/import_model.png")
         exportModelIcon = BufferedImage("assets/textures/export_model.png")
         exportTextureIcon = BufferedImage("assets/textures/export_texture.png")
         exportHitboxIcon = BufferedImage("assets/textures/export_hitbox.png")
+        showGridsIcon = BufferedImage("assets/textures/show_grids.png")
+        hideGridsIcon = BufferedImage("assets/textures/hide_grids.png")
 
         MaterialNone.loadTexture(loader)
         log(Level.FINE) { "[GuiResources] Gui resources loaded" }

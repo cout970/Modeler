@@ -1,5 +1,6 @@
 package com.cout970.modeler.view.gui.comp
 
+import com.cout970.modeler.controller.GuiState
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.util.toColor
 import com.cout970.modeler.view.GuiResources
@@ -32,6 +33,15 @@ open class CPanel(
     open fun loadResources(resources: GuiResources) {
         childs.filterIsInstance<CPanel>()
                 .forEach { it.loadResources(resources) }
+    }
+
+    open fun bindProperties(state: GuiState) {
+        childs.forEach {
+            when (it) {
+                is CPanel -> it.bindProperties(state)
+                is CToggleButton -> it.bindState(state)
+            }
+        }
     }
 
     fun setBorderless() {

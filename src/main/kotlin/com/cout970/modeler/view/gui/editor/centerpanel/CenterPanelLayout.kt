@@ -12,7 +12,7 @@ class CenterPanelLayout(val panel: CenterPanel) : ILayout {
 
     override fun rescale() {
         panel.topMenu.let { menu ->
-            menu.size = Vector2f(panel.size.x, 24f)
+            menu.size = Vector2f(panel.size.x, 26f)
             menu.position = Vector2f()
         }
         panel.canvasPanel.let { canvasPanel ->

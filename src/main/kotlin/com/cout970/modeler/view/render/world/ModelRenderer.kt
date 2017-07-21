@@ -11,9 +11,6 @@ import com.cout970.modeler.view.render.tool.RenderContext
 import com.cout970.modeler.view.render.tool.createVao
 import com.cout970.modeler.view.render.tool.forEachEdge
 import com.cout970.modeler.view.render.tool.shader.UniversalShader
-import com.cout970.vector.extensions.Vector2
-import com.cout970.vector.extensions.Vector3
-import com.cout970.vector.extensions.vec3Of
 import org.lwjgl.opengl.GL11
 
 /**
@@ -24,7 +21,6 @@ class ModelRenderer {
 
     val modelCache: MutableList<List<VAO>> = mutableListOf()
     var selectionVao: VAO? = null
-    var axis: VAO? = null
     var lastModifiedSelection = -1L
     var lastModifiedModel = -1L
 
@@ -78,29 +74,6 @@ class ModelRenderer {
                 accept(it)
             }
         }
-
-        if (axis == null) {
-            axis = ctx.buffer.build(GL11.GL_LINES) {
-                add(Vector3.ORIGIN, Vector2.ORIGIN, Vector3.ORIGIN, vec3Of(1, 0, 0))
-                add(vec3Of(100, 0, 0), Vector2.ORIGIN, Vector3.ORIGIN, vec3Of(1, 0, 0))
-
-                add(Vector3.ORIGIN, Vector2.ORIGIN, Vector3.ORIGIN, vec3Of(0, 1, 0))
-                add(vec3Of(0, 100, 0), Vector2.ORIGIN, Vector3.ORIGIN, vec3Of(0, 1, 0))
-
-                add(Vector3.ORIGIN, Vector2.ORIGIN, Vector3.ORIGIN, vec3Of(0, 0, 1))
-                add(vec3Of(0, 0, 100), Vector2.ORIGIN, Vector3.ORIGIN, vec3Of(0, 0, 1))
-            }
-        }
-
-        axis?.let {
-            ctx.shader.apply {
-                useTexture.setInt(0)
-                useColor.setInt(1)
-                useLight.setInt(0)
-                matrixM.setMatrix4(Matrix4.IDENTITY)
-                accept(it)
-            }
-        }
     }
 
 
@@ -110,7 +83,7 @@ class ModelRenderer {
             modelCache[index] = buildCache(modelCache[index], ctx.buffer, model)
         }
         val map = model.objects
-                .mapIndexed { index, iObject -> index to iObject }
+                .mapIndexed { ind, iObject -> ind to iObject }
                 .filter { (first) -> model.visibilities[first] }
                 .groupBy { it.second.material }
 

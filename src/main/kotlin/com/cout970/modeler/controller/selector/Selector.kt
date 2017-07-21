@@ -30,6 +30,7 @@ import com.cout970.vector.api.IVector2
 class Selector {
 
     lateinit var gui: Gui
+    lateinit var processor: ITaskProcessor
     //    val projectController: ProjectController get() = gui.projectController
     val cursor = Cursor()
     val input: IInput get() = gui.input
@@ -42,7 +43,7 @@ class Selector {
     private var rotationLastOffset = 0f
     private var scaleLastOffset = 0f
 
-    fun update(canvasContainer: CanvasContainer, trigger: ITaskProcessor) {
+    fun update(canvasContainer: CanvasContainer) {
         activeCanvas = canvasContainer.selectedCanvas
 
         activeCanvas?.let { activeScene ->
@@ -67,7 +68,7 @@ class Selector {
                 if (!click) { // end selection
                     // apply changes
                     state.tmpModel?.let { newModel ->
-                        trigger.processTask(TaskUpdateModel(gui.projectManager.model, newModel))
+                        processor.processTask(TaskUpdateModel(gui.projectManager.model, newModel))
                     }
                     // reset selection
                     state.tmpModel = null

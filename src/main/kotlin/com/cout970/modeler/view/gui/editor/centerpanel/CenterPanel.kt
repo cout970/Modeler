@@ -1,15 +1,20 @@
 package com.cout970.modeler.view.gui.editor.centerpanel
 
+import com.cout970.modeler.util.BooleanPropertyWrapper
+import com.cout970.modeler.view.GuiResources
 import com.cout970.modeler.view.gui.comp.CPanel
+import com.cout970.modeler.view.gui.comp.CToggleButton
+import org.joml.Vector2f
 import org.liquidengine.legui.color.ColorConstants
 import org.liquidengine.legui.component.Label
+import org.liquidengine.legui.icon.ImageIcon
 
 /**
  * Created by cout970 on 2017/07/16.
  */
 
 class CenterPanel : CPanel() {
-    val topMenu = CPanel()
+    val topMenu = TopMenu()
     val canvasPanel = CPanel()
     val backgroundPanel = CanvasBackgroundPanel()
 
@@ -44,6 +49,32 @@ class CenterPanel : CPanel() {
                     fontSize = 20f
                 }
             }
+        }
+    }
+
+    class TopMenu : CPanel() {
+
+        val showModelGridsButton = CToggleButton(5f, 2f, 24f, 22f, true) {
+            BooleanPropertyWrapper(it::drawModelGridLines)
+        }
+        val showTextureGridsButton = CToggleButton(34f, 2f, 24f, 22f, true) {
+            BooleanPropertyWrapper(it::drawTextureGridLines)
+        }
+
+        init {
+            add(showModelGridsButton)
+            add(showTextureGridsButton)
+        }
+
+        override fun loadResources(resources: GuiResources) {
+            showModelGridsButton.setImage(
+                    active = ImageIcon(resources.showGridsIcon).also { it.size = Vector2f(16f) },
+                    notActive = ImageIcon(resources.hideGridsIcon).also { it.size = Vector2f(16f) }
+            )
+            showTextureGridsButton.setImage(
+                    active = ImageIcon(resources.showGridsIcon).also { it.size = Vector2f(16f) },
+                    notActive = ImageIcon(resources.hideGridsIcon).also { it.size = Vector2f(16f) }
+            )
         }
     }
 }
