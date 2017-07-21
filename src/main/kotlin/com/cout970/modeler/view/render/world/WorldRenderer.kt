@@ -2,7 +2,7 @@ package com.cout970.modeler.view.render.world
 
 import com.cout970.glutilities.tessellator.VAO
 import com.cout970.matrix.extensions.Matrix4
-import com.cout970.modeler.controller.World
+import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.view.render.tool.RenderContext
@@ -25,7 +25,7 @@ class WorldRenderer {
     var gridLines: VAO? = null
     var lights: VAO? = null
 
-    fun renderWorld(ctx: RenderContext, world: World) {
+    fun renderWorld(ctx: RenderContext, model: IModel) {
         renderBaseBlock(ctx)
         if (ctx.gui.state.drawModelGridLines) {
             renderGridLines(ctx)
@@ -33,10 +33,10 @@ class WorldRenderer {
         if (ctx.gui.state.renderLights) {
             renderLights(ctx)
         }
-        modelRenderer.renderModels(ctx, world)
+        modelRenderer.renderModels(ctx, model)
 
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
-        cursorRenderer.renderCursor(ctx, world)
+        cursorRenderer.renderCursor(ctx)
     }
 
     fun renderLights(ctx: RenderContext) {

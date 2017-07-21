@@ -1,6 +1,5 @@
 package com.cout970.modeler.core.model
 
-import com.cout970.matrix.extensions.times
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.`object`.IObjectCube
@@ -11,10 +10,13 @@ import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.mesh.MeshFactory
+import com.cout970.modeler.util.toIVector
+import com.cout970.modeler.util.toJOML
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
+import org.joml.Vector4d
 
 /**
  * Created by cout970 on 2017/05/14.
@@ -37,11 +39,13 @@ data class ObjectCube(
     override val mesh: IMesh by lazy { generateMesh() }
     override val transformedMesh: IMesh by lazy { mesh.transform(transformation) }
 
-    override fun getCenter(): IVector3 = subTransformation.matrix * (pos + size * 0.5).toVector4(1.0)
+    override fun getCenter(): IVector3 = subTransformation.preRotation //subTransformation.matrix * (pos + size * 0.5).toVector4(1.0)
 
     fun generateMesh(): IMesh {
         val cube = MeshFactory.createCube(size, pos)
-        val pos = cube.pos.map { subTransformation.matrix * it.toVector4(1.0) }
+        val pos = cube.pos.map { Vector4d(it.xd, it.yd, it.zd, 1.0) }
+                .map(subTransformation.matrix.toJOML()::transform)
+                .map { it.toIVector() }
         return updateTextures(Mesh(pos, cube.tex, cube.faces), size, textureOffset, textureSize)
     }
 

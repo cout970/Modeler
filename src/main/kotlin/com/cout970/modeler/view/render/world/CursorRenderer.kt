@@ -2,7 +2,6 @@ package com.cout970.modeler.view.render.world
 
 import com.cout970.glutilities.tessellator.VAO
 import com.cout970.matrix.extensions.Matrix4
-import com.cout970.modeler.controller.World
 import com.cout970.modeler.controller.selector.Cursor
 import com.cout970.modeler.controller.selector.ITranslatable
 import com.cout970.modeler.core.model.AABB
@@ -21,7 +20,7 @@ class CursorRenderer {
 
     var translationArrowVao: VAO? = null
 
-    fun renderCursor(ctx: RenderContext, world: World) {
+    fun renderCursor(ctx: RenderContext) {
 
         if (translationArrowVao == null) {
             translationArrowVao = ctx.gui.resources.translationArrow.createVao(ctx.buffer, vec3Of(1, 1, 1))
@@ -30,7 +29,7 @@ class CursorRenderer {
         if (ctx.gui.selectionHandler.getSelection() == null) {
             return
         }
-        val cursor = world.cursor
+        val cursor = ctx.gui.selector.cursor
         val parameters = cursor.getCursorParameters(ctx.camera, ctx.viewport)
 
         translationArrowVao?.let {
@@ -62,11 +61,11 @@ class CursorRenderer {
             }
         }
 
-        renderDebugHitbox(ctx, world)
+        renderDebugHitbox(ctx)
     }
 
-    fun renderDebugHitbox(ctx: RenderContext, world: World) {
-        val cursor = world.cursor
+    fun renderDebugHitbox(ctx: RenderContext) {
+        val cursor = ctx.gui.selector.cursor
 
         val vao = ctx.buffer.build(GL11.GL_LINES, false) {
             cursor.getSelectableParts(ctx.gui, ctx.camera, ctx.viewport).forEach { part ->

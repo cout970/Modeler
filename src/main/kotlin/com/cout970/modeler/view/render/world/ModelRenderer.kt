@@ -3,7 +3,6 @@ package com.cout970.modeler.view.render.world
 import com.cout970.glutilities.tessellator.VAO
 import com.cout970.matrix.extensions.Matrix4
 import com.cout970.modeler.api.model.IModel
-import com.cout970.modeler.controller.World
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.util.RenderUtil
@@ -19,31 +18,22 @@ import org.lwjgl.opengl.GL11
 
 class ModelRenderer {
 
-    val modelCache: MutableList<List<VAO>> = mutableListOf()
+    var modelCache: List<VAO> = mutableListOf()
     var selectionVao: VAO? = null
     var lastModifiedSelection = -1L
-    var lastModifiedModel = -1L
+    var modelHash = -1
 
-    fun renderModels(ctx: RenderContext, world: World) {
+    fun renderModels(ctx: RenderContext, model: IModel) {
 
-        if (world.models.isEmpty()) return
+        val modelToRender = ctx.gui.state.tmpModel ?: model
 
-        if (modelCache.size != world.models.size || world.lastModified != lastModifiedModel) {
-            lastModifiedModel = world.lastModified
-            modelCache.clear()
-            world.models.forEach { modelCache.add(listOf()) }
+        if (modelCache.isEmpty() || modelToRender.hashCode() != modelHash) {
+            modelHash = modelToRender.hashCode()
+            modelCache.forEach { it.close() }
+            modelCache = mutableListOf()
         }
 
-        world.models.forEachIndexed { modelIndex, model ->
-            if (modelIndex == 0 && ctx.gui.state.tmpModel != null) {
-                if (modelIndex in modelCache.indices) {
-                    modelCache[modelIndex] = emptyList()
-                }
-                renderModel(ctx, ctx.gui.state.tmpModel!!, modelIndex)
-            } else {
-                renderModel(ctx, model, modelIndex)
-            }
-        }
+        renderModel(ctx, modelToRender)
 
         if (ctx.gui.selectionHandler.lastModified != lastModifiedSelection || ctx.gui.state.tmpModel != null) {
             selectionVao?.close()
@@ -51,10 +41,9 @@ class ModelRenderer {
         }
         if (selectionVao == null) {
             selectionVao = ctx.buffer.build(GL11.GL_QUADS) {
-                val model = ctx.gui.state.tmpModel ?: world.models.first()
                 val selection = ctx.gui.selectionHandler.ref
 
-                val objSel = model.objects.filterIndexed { index, _ -> selection.any { it.objectIndex == index } }
+                val objSel = modelToRender.objects.filterIndexed { index, _ -> selection.any { it.objectIndex == index } }
                 objSel.forEach {
                     it.mesh.forEachEdge { (a, b) ->
                         RenderUtil.appendBar(this, a.pos, b.pos,
@@ -77,10 +66,10 @@ class ModelRenderer {
     }
 
 
-    fun renderModel(ctx: RenderContext, model: IModel, index: Int) {
+    fun renderModel(ctx: RenderContext, model: IModel) {
 
-        if (modelCache[index].size != model.objects.size) {
-            modelCache[index] = buildCache(modelCache[index], ctx.buffer, model)
+        if (modelCache.size != model.objects.size) {
+            modelCache = buildCache(modelCache, ctx.buffer, model)
         }
         val map = model.objects
                 .mapIndexed { ind, iObject -> ind to iObject }
@@ -95,7 +84,7 @@ class ModelRenderer {
                     useColor.setInt(0)
                     useLight.setInt(1)
                     matrixM.setMatrix4(obj.transformation.matrix)
-                    accept(modelCache[index][objIndex])
+                    accept(modelCache[objIndex])
                 }
             }
         }

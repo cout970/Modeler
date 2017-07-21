@@ -1,7 +1,11 @@
 package com.cout970.modeler.functional.usecases
 
+import com.cout970.modeler.Debugger
 import com.cout970.modeler.ProgramState
+import com.cout970.modeler.core.export.ImportFormat
+import com.cout970.modeler.core.export.ImportProperties
 import com.cout970.modeler.functional.tasks.ITask
+import com.cout970.modeler.functional.tasks.TaskImportModel
 import com.cout970.modeler.functional.tasks.TaskNone
 
 /**
@@ -14,7 +18,7 @@ class Debug : IUseCase {
     lateinit var state: ProgramState
 
     override fun createTask(): ITask {
-        state.apply {
+        Debugger.debug {
 
             //            //reload gui
 //            gui.editorPanel = EditorPanel()
@@ -22,13 +26,13 @@ class Debug : IUseCase {
 //            gui.guiUpdater.initGui(gui)
 //            gui.root.updateSizes(gui.root.size.toIVector())
 //
-//            //Test import
-//            val prop = ImportProperties(
-//                    "./model.tbl",
-//                    ImportFormat.TBL,
-//                    false
-//            )
-//            taskHistory.processTask(TaskImportModel(projectManager.model, prop))
+            //Test import
+            val prop = ImportProperties(
+                    "./electric_sieve.tcn",
+                    ImportFormat.TCN,
+                    false
+            )
+            taskHistory.processTask(TaskImportModel(projectManager.model, prop))
         }
         return TaskNone
     }

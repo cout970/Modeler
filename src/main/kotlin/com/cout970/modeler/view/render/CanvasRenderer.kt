@@ -1,7 +1,6 @@
 package com.cout970.modeler.view.render
 
 import com.cout970.modeler.api.model.selection.SelectionTarget
-import com.cout970.modeler.controller.World
 import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.util.absolutePosition
 import com.cout970.modeler.util.toIVector
@@ -50,8 +49,7 @@ class CanvasRenderer(val renderManager: RenderManager) {
             gui.windowHandler.saveViewport(viewportPos, canvas.size.toIVector()) {
                 renderManager.shader.useShader(ctx) {
                     if (canvas.viewMode == SelectionTarget.MODEL) {
-                        worldRenderer.renderWorld(ctx, World(listOf(gui.projectManager.model),
-                                gui.selector.cursor).apply { lastModified = models[0].hashCode().toLong() })
+                        worldRenderer.renderWorld(ctx, gui.projectManager.model)
                         centerMarkRenderer.renderCursor(ctx)
                     } else {
                         materialRenderer.renderWorld(ctx, gui.projectManager.model.getMaterial(MaterialRef(0)))

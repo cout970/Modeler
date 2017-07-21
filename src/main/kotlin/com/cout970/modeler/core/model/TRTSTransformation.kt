@@ -23,7 +23,7 @@ data class TRTSTransformation(
         val IDENTITY = TRTSTransformation(Vector3.ORIGIN, Quaternion.IDENTITY, Vector3.ORIGIN, Vector3.ONE)
 
         fun fromRotationPivot(pivot: IVector3, rotation: IVector3): TRTSTransformation {
-            return TRTSTransformation(-pivot, rotation, pivot, Vector3.ONE)
+            return TRTSTransformation(pivot, rotation, -pivot, Vector3.ONE)
         }
     }
 

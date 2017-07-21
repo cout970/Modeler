@@ -19,7 +19,6 @@ import com.cout970.modeler.functional.FutureExecutor
 import com.cout970.modeler.functional.TaskHistory
 import com.cout970.modeler.functional.binders.ButtonBinder
 import com.cout970.modeler.functional.binders.KeyboardBinder
-import com.cout970.modeler.functional.usecases.Debug
 import com.cout970.modeler.view.Gui
 import com.cout970.modeler.view.GuiResources
 import com.cout970.modeler.view.Listeners
@@ -49,8 +48,6 @@ class DependencyInjector {
         val valueAndProperty = properties.map { (type, property) ->
             val value: Any? = state.run {
                 when (type) {
-                    ProgramState::class.java -> if (obj is Debug) state else null
-
                     ISelection::class.java -> gui.selectionHandler.getSelection()
                     IModel::class.java -> projectManager.model
                     ProjectProperties::class.java -> projectManager.projectProperties
