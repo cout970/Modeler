@@ -1,4 +1,4 @@
-package com.cout970.modeler.view.gui.comp.canvas
+package com.cout970.modeler.view.canvas
 
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.view.gui.comp.CPanel

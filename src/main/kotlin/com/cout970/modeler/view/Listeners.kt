@@ -24,10 +24,11 @@ class Listeners : ITickeable {
         eventController.addListener(EventKeyUpdate::class.java, this::onKeyPress)
         eventController.addListener(EventFrameBufferSize::class.java, gui.guiUpdater::onFramebufferSizeUpdated)
         eventController.addListener(EventMouseScroll::class.java, this::onMouseScroll)
-        eventController.addListener(EventMouseClick::class.java, this::onMouseClick)
         cameraUpdater = CameraUpdater(gui.canvasContainer, eventController, gui.timer)
         gui.root.updateSizes(gui.windowHandler.window.size)
         gui.projectManager.modelChangeListeners += this::onModelChange
+
+        eventController.addListener(EventMouseClick::class.java, gui.canvasManager::onMouseClick)
     }
 
     fun onModelChange(old: IModel, new: IModel) {
@@ -68,17 +69,6 @@ class Listeners : ITickeable {
                 }
             }
         } else false
-    }
-
-    fun onMouseClick(e: EventMouseClick): Boolean {
-        gui.canvasContainer.canvas.forEach { canvas ->
-            val pos = gui.input.mouse.getMousePos()
-            if (pos.isInside(canvas.absolutePosition, canvas.size.toIVector())) {
-                gui.selector.onClick(e, canvas)
-                return true
-            }
-        }
-        return false
     }
 
     override fun tick() {

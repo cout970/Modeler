@@ -1,4 +1,4 @@
-package com.cout970.modeler.controller.selector
+package com.cout970.modeler.view.canvas.cursor
 
 import com.cout970.modeler.core.config.Config
 import com.cout970.vector.api.IVector2
@@ -17,7 +17,7 @@ class CursorParameters(
         fun create(zoom: Double, containerSize: IVector2): CursorParameters {
             val scale = zoom / 10 * Config.cursorArrowsScale * (1000 / containerSize.yd)
             val length = Config.cursorArrowsDispersion * scale
-            val width = 0.0625 * scale
+            val width = 0.0625 * scale * 2
             return CursorParameters(length, width)
         }
     }

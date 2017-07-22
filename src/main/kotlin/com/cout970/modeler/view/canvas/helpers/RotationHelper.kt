@@ -1,7 +1,7 @@
-package com.cout970.modeler.controller.selector.helpers
+package com.cout970.modeler.view.canvas.helpers
 
-import com.cout970.modeler.controller.selector.IRotable
-import com.cout970.modeler.controller.selector.SceneSpaceContext
+import com.cout970.modeler.view.canvas.IRotable
+import com.cout970.modeler.view.canvas.SceneSpaceContext
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.util.getClosestPointOnLineSegment
 import com.cout970.modeler.view.event.IInput

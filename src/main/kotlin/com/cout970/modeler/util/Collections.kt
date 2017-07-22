@@ -99,3 +99,19 @@ fun List<String>.toPointerBuffer(): PointerBuffer {
     pointer.flip()
     return pointer
 }
+
+fun <T> List<T>.combine(multi: Boolean, element: T): List<T> {
+    if (multi) {
+        if (element in this) {
+            return this - element
+        } else {
+            return this + element
+        }
+    } else {
+        if (this.size == 1 && element in this) {
+            return emptyList()
+        } else {
+            return listOf(element)
+        }
+    }
+}

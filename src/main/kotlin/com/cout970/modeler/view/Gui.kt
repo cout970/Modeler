@@ -1,17 +1,17 @@
 package com.cout970.modeler.view
 
 import com.cout970.glutilities.structure.Timer
-import com.cout970.modeler.controller.GuiState
-import com.cout970.modeler.controller.SelectionHandler
-import com.cout970.modeler.controller.selector.Selector
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.functional.Dispatcher
+import com.cout970.modeler.functional.SelectionHandler
 import com.cout970.modeler.functional.binders.ButtonBinder
 import com.cout970.modeler.functional.binders.KeyboardBinder
+import com.cout970.modeler.view.canvas.CanvasContainer
+import com.cout970.modeler.view.canvas.CanvasManager
+import com.cout970.modeler.view.canvas.Selector
 import com.cout970.modeler.view.event.IInput
 import com.cout970.modeler.view.gui.GuiUpdater
 import com.cout970.modeler.view.gui.Root
-import com.cout970.modeler.view.gui.comp.canvas.CanvasContainer
 import com.cout970.modeler.view.gui.editor.EditorPanel
 import com.cout970.modeler.view.window.WindowHandler
 
@@ -35,11 +35,13 @@ data class Gui(
         val selectionHandler: SelectionHandler = SelectionHandler(),
         val dispatcher: Dispatcher,
         val buttonBinder: ButtonBinder,
-        val keyboardBinder: KeyboardBinder
+        val keyboardBinder: KeyboardBinder,
+        val canvasManager: CanvasManager
 ) {
 
     init {
         guiUpdater.initGui(this)
         selector.gui = this
+        canvasManager.gui = this
     }
 }

@@ -1,7 +1,7 @@
-package com.cout970.modeler.controller.selector
+package com.cout970.modeler.view.canvas
 
 import com.cout970.modeler.api.model.IModel
-import com.cout970.modeler.controller.SelectionHandler
+import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.raytrace.IRayObstacle
 import com.cout970.raytrace.Ray
 import com.cout970.vector.api.IVector2
@@ -27,7 +27,7 @@ interface ISelectable {
 interface ITranslatable : ISelectable {
     val translationAxis: IVector3
 
-    fun applyTranslation(offset: Float, selHandler: SelectionHandler, model: IModel): IModel
+    fun applyTranslation(offset: Float, selection: ISelection, model: IModel): IModel
 }
 
 interface IRotable : ISelectable {
@@ -35,12 +35,12 @@ interface IRotable : ISelectable {
     // normal vector of the plane where this obj will be rotated
     val normal: IVector3
 
-    fun applyRotation(offset: Float, selHandler: SelectionHandler, model: IModel): IModel
+    fun applyRotation(offset: Float, selection: ISelection, model: IModel): IModel
 }
 
 interface IScalable : ISelectable {
     val scaleAxis: IVector3
     val center: IVector3
 
-    fun applyScale(offset: Float, selHandler: SelectionHandler, model: IModel): IModel
+    fun applyScale(offset: Float, selection: ISelection, model: IModel): IModel
 }

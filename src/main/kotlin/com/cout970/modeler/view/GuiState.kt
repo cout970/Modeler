@@ -1,8 +1,8 @@
-package com.cout970.modeler.controller
+package com.cout970.modeler.view
 
 import com.cout970.modeler.api.model.IModel
-import com.cout970.modeler.controller.selector.ISelectable
-import com.cout970.modeler.controller.selector.TransformationMode
+import com.cout970.modeler.view.canvas.ISelectable
+import com.cout970.modeler.view.canvas.TransformationMode
 
 /**
  * Created by cout970 on 2017/06/12.

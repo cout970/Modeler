@@ -6,6 +6,7 @@ import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.selection.Selection
+import com.cout970.modeler.functional.SelectionHandler
 import com.cout970.modeler.functional.injection.Inject
 import com.cout970.modeler.functional.tasks.ITask
 import com.cout970.modeler.functional.tasks.TaskNone
@@ -15,7 +16,6 @@ import com.cout970.modeler.util.parent
 import com.cout970.modeler.view.event.IInput
 import com.cout970.modeler.view.gui.editor.rightpanel.RightPanel
 import org.funktionale.option.Option
-import org.funktionale.option.getOrElse
 import org.funktionale.option.toOption
 import org.liquidengine.legui.component.Component
 
@@ -85,48 +85,17 @@ class SelectModelPart : IUseCase {
     @Inject lateinit var component: Component
     @Inject lateinit var input: IInput
     @Inject lateinit var selection: Option<ISelection>
+    @Inject lateinit var selectionHandler: SelectionHandler
 
     override fun createTask(): ITask {
         component.parent<RightPanel.ListItem>()?.let { item ->
-            val ref = item.ref
-            val task: TaskUpdateSelection = selection.flatMap {
-                val sel = selection.get()
-                if (sel.selectionType == SelectionType.OBJECT &&
-                    sel.selectionTarget == SelectionTarget.MODEL && sel is Selection) {
-
-                    val multiSelection = Config.keyBindings.multipleSelection.check(input)
-                    TaskUpdateSelection(
-                            oldSelection = selection.orNull(),
-                            newSelection = Selection(SelectionTarget.MODEL, SelectionType.OBJECT,
-                                    sel.list.combine(multiSelection, ref))
-                    ).toOption()
-                } else {
-                    Option.None
-                }
-            }.getOrElse {
-                TaskUpdateSelection(
-                        oldSelection = selection.orNull(),
-                        newSelection = Selection(SelectionTarget.MODEL, SelectionType.OBJECT, listOf(ref))
-                )
-            }
-            return task
+            val multiSelection = Config.keyBindings.multipleSelection.check(input)
+            val sel = selectionHandler.makeSelection(selection, multiSelection, item.ref)
+            return TaskUpdateSelection(
+                    oldSelection = selection.orNull(),
+                    newSelection = sel.orNull()
+            )
         }
         return TaskNone
-    }
-
-    fun <T> List<T>.combine(multi: Boolean, element: T): List<T> {
-        if (multi) {
-            if (element in this) {
-                return this - element
-            } else {
-                return this + element
-            }
-        } else {
-            if (this.size == 1 && element in this) {
-                return emptyList()
-            } else {
-                return listOf(element)
-            }
-        }
     }
 }

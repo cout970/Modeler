@@ -1,26 +1,20 @@
-package com.cout970.modeler.controller.selector
+package com.cout970.modeler.view.canvas
 
 import com.cout970.glutilities.device.Mouse
-import com.cout970.glutilities.event.EnumKeyState
-import com.cout970.glutilities.event.EventMouseClick
 import com.cout970.modeler.api.model.selection.ISelection
-import com.cout970.modeler.controller.RayTracer
-import com.cout970.modeler.controller.selector.helpers.CanvasHelper
-import com.cout970.modeler.controller.selector.helpers.CanvasHelper.getMouseSpaceContext
-import com.cout970.modeler.controller.selector.helpers.RotationHelper
-import com.cout970.modeler.controller.selector.helpers.ScaleHelper
-import com.cout970.modeler.controller.selector.helpers.TranslationHelper
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.getSelectedObjects
-import com.cout970.modeler.core.model.selection.ObjectRef
 import com.cout970.modeler.functional.ITaskProcessor
 import com.cout970.modeler.functional.tasks.TaskUpdateModel
 import com.cout970.modeler.util.*
 import com.cout970.modeler.view.Gui
+import com.cout970.modeler.view.canvas.cursor.Cursor
+import com.cout970.modeler.view.canvas.helpers.CanvasHelper
+import com.cout970.modeler.view.canvas.helpers.CanvasHelper.getMouseSpaceContext
+import com.cout970.modeler.view.canvas.helpers.RotationHelper
+import com.cout970.modeler.view.canvas.helpers.ScaleHelper
+import com.cout970.modeler.view.canvas.helpers.TranslationHelper
 import com.cout970.modeler.view.event.IInput
-import com.cout970.modeler.view.gui.comp.canvas.Canvas
-import com.cout970.modeler.view.gui.comp.canvas.CanvasContainer
-import com.cout970.raytrace.IRayObstacle
 import com.cout970.raytrace.RayTraceResult
 import com.cout970.vector.api.IVector2
 
@@ -95,33 +89,6 @@ class Selector {
         }
     }
 
-    fun onClick(e: EventMouseClick, canvas: Canvas) {
-        val state = gui.state
-        if (state.holdingSelection != null || state.hoveredObject != null) return
-
-        val click = Config.keyBindings.selectModelControls.check(e)
-        if (click && e.keyState == EnumKeyState.PRESS) {
-            val pos = input.mouse.getMousePos()
-            val context = CanvasHelper.getMouseSpaceContext(canvas, pos)
-            val obj = getModelParts()
-                    .mapNotNull { pair ->
-                        val res = pair.first.rayTrace(context.mouseRay)
-                        res?.let { first -> first to pair.second }
-                    }
-                    .getClosest(context.mouseRay)
-
-            gui.selectionHandler.onSelect(obj?.second, gui)
-            updateCursorCenter(gui.selectionHandler.getSelection())
-        }
-    }
-
-    fun getModelParts(): List<Pair<IRayObstacle, ObjectRef>> {
-        val model = gui.projectManager.model
-        return model.objects.mapIndexed { index, obj ->
-            RayTracer.toRayObstacle(obj) to ObjectRef(index)
-        }
-    }
-
     fun updateCursorCenter(selection: ISelection?) {
         if (selection == null) return
         val model = gui.state.tmpModel ?: gui.projectManager.model
@@ -137,7 +104,8 @@ class Selector {
 
         activeCanvas?.let { activeScene ->
             val state = gui.state
-            val sel = gui.selectionHandler
+            val selection = gui.selectionHandler.getModelSelection()
+            val sel = selection.get()
 
             state.holdingSelection?.let { selectedObject ->
 

@@ -1,6 +1,6 @@
 package com.cout970.modeler.view.gui.comp
 
-import com.cout970.modeler.controller.GuiState
+import com.cout970.modeler.view.GuiState
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.util.toColor
 import com.cout970.modeler.view.GuiResources

@@ -1,8 +1,6 @@
 package com.cout970.modeler.view
 
 import com.cout970.glutilities.structure.Timer
-import com.cout970.modeler.controller.GuiState
-import com.cout970.modeler.controller.selector.Selector
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.project.ProjectManager
@@ -10,10 +8,12 @@ import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.functional.Dispatcher
 import com.cout970.modeler.functional.binders.ButtonBinder
 import com.cout970.modeler.functional.binders.KeyboardBinder
+import com.cout970.modeler.view.canvas.CanvasContainer
+import com.cout970.modeler.view.canvas.CanvasManager
+import com.cout970.modeler.view.canvas.Selector
 import com.cout970.modeler.view.event.EventController
 import com.cout970.modeler.view.gui.GuiUpdater
 import com.cout970.modeler.view.gui.Root
-import com.cout970.modeler.view.gui.comp.canvas.CanvasContainer
 import com.cout970.modeler.view.gui.editor.EditorPanel
 import com.cout970.modeler.view.render.RenderManager
 import com.cout970.modeler.view.window.WindowHandler
@@ -43,6 +43,8 @@ class GuiInitializer(
         root.mainPanel = editorPanel
         log(Level.FINE) { "[GuiInitializer] Creating CanvasContainer" }
         val canvasContainer = CanvasContainer(editorPanel.centerPanelModule.panel.canvasPanel)
+        log(Level.FINE) { "[GuiInitializer] Creating CanvasManager" }
+        val canvasManager = CanvasManager()
         log(Level.FINE) { "[GuiInitializer] Creating Selector" }
         val selector = Selector()
         log(Level.FINE) { "[GuiInitializer] Creating Listeners" }
@@ -74,7 +76,8 @@ class GuiInitializer(
                 state = guiState,
                 dispatcher = dispatcher,
                 buttonBinder = buttonBinder,
-                keyboardBinder = keyboardBinder
+                keyboardBinder = keyboardBinder,
+                canvasManager = canvasManager
         )
     }
 }

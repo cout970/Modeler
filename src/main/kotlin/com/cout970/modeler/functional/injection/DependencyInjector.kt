@@ -4,9 +4,9 @@ import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.ProgramState
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.selection.ISelection
-import com.cout970.modeler.controller.GuiState
-import com.cout970.modeler.controller.SelectionHandler
-import com.cout970.modeler.controller.selector.Selector
+import com.cout970.modeler.view.GuiState
+import com.cout970.modeler.functional.SelectionHandler
+import com.cout970.modeler.view.canvas.Selector
 import com.cout970.modeler.core.export.ExportManager
 import com.cout970.modeler.core.model.selection.IClipboard
 import com.cout970.modeler.core.project.ProjectManager
@@ -24,7 +24,7 @@ import com.cout970.modeler.view.event.EventController
 import com.cout970.modeler.view.event.IInput
 import com.cout970.modeler.view.gui.GuiUpdater
 import com.cout970.modeler.view.gui.Root
-import com.cout970.modeler.view.gui.comp.canvas.CanvasContainer
+import com.cout970.modeler.view.canvas.CanvasContainer
 import com.cout970.modeler.view.gui.editor.EditorPanel
 import com.cout970.modeler.view.render.RenderManager
 import com.cout970.modeler.view.window.Loop

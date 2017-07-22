@@ -1,13 +1,13 @@
-package com.cout970.modeler.controller
+package com.cout970.modeler.functional
 
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
-import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.selection.Selection
-import com.cout970.modeler.view.Gui
+import com.cout970.modeler.util.combine
 import org.funktionale.option.Option
+import org.funktionale.option.orElse
 import org.funktionale.option.toOption
 
 /**
@@ -28,26 +28,6 @@ class SelectionHandler {
 
     var lastModified = 0L
         private set
-
-    fun onSelect(first: IObjectRef?, gui: Gui) {
-        if (ref.isEmpty()) {
-            if (first != null) {
-                ref = listOf(first)
-            }
-        } else {
-            if (first != null) {
-                if (Config.keyBindings.multipleSelection.check(gui.input)) {
-                    ref += listOf(first)
-                } else {
-                    ref = listOf(first)
-                }
-            } else {
-                if (!Config.keyBindings.multipleSelection.check(gui.input)) {
-                    ref = listOf()
-                }
-            }
-        }
-    }
 
     fun getSelection(): ISelection? {
         if (ref.isEmpty()) return null
@@ -72,6 +52,27 @@ class SelectionHandler {
                     ref = it.list as List<IObjectRef>
                 }
             }
+        }
+    }
+
+    fun makeSelection(selection: Option<ISelection>, multiSelection: Boolean, ref: IObjectRef?): Option<ISelection> {
+        if (ref == null) {
+            if (multiSelection) {
+                return selection
+            } else {
+                return Option.None
+            }
+        }
+        return selection.flatMap { sel ->
+            if (sel.selectionType == SelectionType.OBJECT &&
+                sel.selectionTarget == SelectionTarget.MODEL && sel is Selection) {
+
+                Selection(SelectionTarget.MODEL, SelectionType.OBJECT, sel.list.combine(multiSelection, ref)).toOption()
+            } else {
+                Option.None
+            }
+        }.orElse {
+            Selection(SelectionTarget.MODEL, SelectionType.OBJECT, listOf(ref)).toOption()
         }
     }
 }

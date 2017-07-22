@@ -2,12 +2,12 @@ package com.cout970.modeler.view.render.world
 
 import com.cout970.glutilities.tessellator.VAO
 import com.cout970.matrix.extensions.Matrix4
-import com.cout970.modeler.controller.selector.Cursor
-import com.cout970.modeler.controller.selector.ITranslatable
 import com.cout970.modeler.core.model.AABB
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.util.RenderUtil
 import com.cout970.modeler.util.rotationTo
+import com.cout970.modeler.view.canvas.ITranslatable
+import com.cout970.modeler.view.canvas.cursor.CursorPartTranslate
 import com.cout970.modeler.view.render.tool.RenderContext
 import com.cout970.modeler.view.render.tool.createVao
 import com.cout970.vector.extensions.*
@@ -69,7 +69,7 @@ class CursorRenderer {
 
         val vao = ctx.buffer.build(GL11.GL_LINES, false) {
             cursor.getSelectableParts(ctx.gui, ctx.camera, ctx.viewport).forEach { part ->
-                if (part is Cursor.CursorPartTranslate) {
+                if (part is CursorPartTranslate) {
                     val (start, end) = part.calculateHitbox()
                     val aabb = AABB(start, end)
                     RenderUtil.appendAABB(this, aabb, part.translationAxis)

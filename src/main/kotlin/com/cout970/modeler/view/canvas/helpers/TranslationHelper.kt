@@ -1,13 +1,13 @@
-package com.cout970.modeler.controller.selector.helpers
+package com.cout970.modeler.view.canvas.helpers
 
-import com.cout970.modeler.controller.selector.ITranslatable
-import com.cout970.modeler.controller.selector.SceneSpaceContext
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.util.MatrixUtils
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.util.toJOML
+import com.cout970.modeler.view.canvas.Canvas
+import com.cout970.modeler.view.canvas.ITranslatable
+import com.cout970.modeler.view.canvas.SceneSpaceContext
 import com.cout970.modeler.view.event.IInput
-import com.cout970.modeler.view.gui.comp.canvas.Canvas
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.*
 import org.joml.Matrix4d

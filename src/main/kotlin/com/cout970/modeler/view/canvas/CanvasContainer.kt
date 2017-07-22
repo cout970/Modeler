@@ -1,7 +1,7 @@
-package com.cout970.modeler.view.gui.comp.canvas
+package com.cout970.modeler.view.canvas
 
+import com.cout970.modeler.view.canvas.layout.*
 import com.cout970.modeler.view.gui.comp.CPanel
-import com.cout970.modeler.view.gui.comp.canvas.layout.*
 
 /**
  * Created by cout970 on 2017/05/03.
