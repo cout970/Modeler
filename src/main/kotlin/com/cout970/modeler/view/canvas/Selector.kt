@@ -123,6 +123,8 @@ class Selector {
                     if (translationLastOffset != offset) {
                         translationLastOffset = offset
                         state.tmpModel = selectedObject.applyTranslation(offset, sel, gui.projectManager.model)
+                        state.modelHash = state.tmpModel!!.hashCode()
+                        state.visibilityHash = state.tmpModel!!.visibilities.hashCode()
                         updateCursorCenter(gui.selectionHandler.getSelection())
                     }
                 } else {
@@ -141,6 +143,8 @@ class Selector {
                     if (rotationLastOffset != offset) {
                         rotationLastOffset = offset
                         state.tmpModel = selectedObject.applyRotation(offset, sel, gui.projectManager.model)
+                        state.modelHash = state.tmpModel!!.hashCode()
+                        state.visibilityHash = state.tmpModel!!.visibilities.hashCode()
                     }
                 } else {
                     rotationLastOffset = 0f
@@ -159,6 +163,8 @@ class Selector {
                     if (scaleLastOffset != offset) {
                         scaleLastOffset = offset
                         state.tmpModel = selectedObject.applyScale(offset, sel, gui.projectManager.model)
+                        state.modelHash = state.tmpModel!!.hashCode()
+                        state.visibilityHash = state.tmpModel!!.visibilities.hashCode()
                     }
                 } else {
                     scaleLastOffset = 0f

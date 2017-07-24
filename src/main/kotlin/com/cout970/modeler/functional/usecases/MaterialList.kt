@@ -7,10 +7,7 @@ import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.resource.toResourcePath
 import com.cout970.modeler.functional.injection.Inject
-import com.cout970.modeler.functional.tasks.ITask
-import com.cout970.modeler.functional.tasks.TaskNone
-import com.cout970.modeler.functional.tasks.TaskUpdateMaterial
-import com.cout970.modeler.functional.tasks.TaskUpdateModel
+import com.cout970.modeler.functional.tasks.*
 import com.cout970.modeler.util.parent
 import com.cout970.modeler.view.gui.editor.rightpanel.RightPanel
 import com.cout970.modeler.view.gui.popup.textureExtensions
@@ -45,6 +42,7 @@ class ApplyMaterial : IUseCase {
 }
 
 class LoadMaterial : IUseCase {
+
     override val key: String = "material.view.load"
 
     @Inject lateinit var component: Component
@@ -60,6 +58,25 @@ class LoadMaterial : IUseCase {
                 val material = TexturedMaterial(archive.nameWithoutExtension, archive.toResourcePath())
                 return TaskUpdateMaterial(item.ref, projectManager.loadedMaterials[item.ref.materialIndex], material)
             }
+        }
+        return TaskNone
+    }
+}
+
+class ImportMaterial : IUseCase {
+
+    override val key: String = "material.view.import"
+
+    @Inject lateinit var projectManager: ProjectManager
+
+    override fun createTask(): ITask {
+        val file = TinyFileDialogs.tinyfd_openFileDialog("Import Texture", "",
+                textureExtensions, "PNG texture (*.png)", false)
+
+        if (file != null) {
+            val archive = File(file)
+            val material = TexturedMaterial(archive.nameWithoutExtension, archive.toResourcePath())
+            return TaskImportMaterial(material)
         }
         return TaskNone
     }

@@ -36,7 +36,7 @@ data class ColorPalette(
                 selectedButtonBorder = hexToColor(0x606060),
                 textColor = hexToColor(0xffffff),
                 modelBackgroundColor = hexToColor(0x252525),
-                textureSelectionColor = hexToColor(0x0000ff),
+                textureSelectionColor = hexToColor(0xffff00),
                 modelSelectionColor = hexToColor(0xffff00),
                 borderColor = hexToColor(0xbcbcbc),
                 grid1Color = hexToColor(0x6f6f6f),

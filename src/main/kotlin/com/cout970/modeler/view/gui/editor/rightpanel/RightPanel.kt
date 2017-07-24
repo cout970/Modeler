@@ -52,11 +52,20 @@ class RightPanel : CPanel() {
     class MaterialListPanel : CPanel(width = 190f, height = 300f) {
 
         val titleLabel = CLabel("Materials", 5f, 5f, 180f, 24f)
-        val listPanel = CVerticalPanel(0f, 35f, 190f, 24f)
+        val importMaterialButton = CButton("", 5f, 30f, 32f, 32f, "material.view.import")
+        val listPanel = CVerticalPanel(0f, 70f, 190f, 24f)
 
         init {
             add(titleLabel)
+            add(importMaterialButton)
             add(listPanel)
+
+            importMaterialButton.setTooltip("Import Material")
+        }
+
+        override fun loadResources(resources: GuiResources) {
+            importMaterialButton.setImage(ImageIcon(resources.addTemplateCubeIcon).also { it.size = Vector2f(32f) })
+            super.loadResources(resources)
         }
     }
 

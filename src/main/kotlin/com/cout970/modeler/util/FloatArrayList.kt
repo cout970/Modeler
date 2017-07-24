@@ -26,6 +26,7 @@ class FloatArrayList(capacity: Int = 10) : MutableList<Float>, RandomAccess {
     fun useAsBuffer(function: (FloatBuffer) -> Unit) {
         val buffer = MemoryUtil.memAlloc(size shl 2)
         val floatBuffer = buffer.asFloatBuffer()
+
         fillBuffer(floatBuffer)
         floatBuffer.flip()
         function(floatBuffer)
@@ -129,9 +130,9 @@ class FloatArrayList(capacity: Int = 10) : MutableList<Float>, RandomAccess {
     }
 
     override fun addAll(index: Int, elements: Collection<Float>): Boolean {
-        elements.forEachIndexed { index, fl ->
-            if (index in 0..size - 1) {
-                set(index, fl)
+        elements.forEachIndexed { pos, fl ->
+            if (pos + index in 0..size - 1) {
+                set(pos + index, fl)
             } else {
                 add(fl)
             }
@@ -185,8 +186,8 @@ class FloatArrayList(capacity: Int = 10) : MutableList<Float>, RandomAccess {
     }
 
     override fun subList(fromIndex: Int, toIndex: Int): MutableList<Float> {
-        require(fromIndex in 0..size - 1) { "FromIndex $fromIndex outside bounds (0, $size)" }
-        require(toIndex in 0..size - 1) { "ToIndex $toIndex outside bounds (0, $size)" }
+        require(fromIndex in 0..size - 1) { "FromIndex $fromIndex outside bounds [0, $size)" }
+        require(toIndex in 0..size - 1) { "ToIndex $toIndex outside bounds [0, $size)" }
         return array.toMutableList().subList(fromIndex, toIndex)
     }
 
@@ -254,7 +255,6 @@ class FloatArrayList(capacity: Int = 10) : MutableList<Float>, RandomAccess {
                 checkForComodification()
                 throw NoSuchElementException()
             }
-
         }
 
         override fun nextIndex(): Int {
@@ -276,7 +276,6 @@ class FloatArrayList(capacity: Int = 10) : MutableList<Float>, RandomAccess {
             } catch (ex: IndexOutOfBoundsException) {
                 throw ConcurrentModificationException()
             }
-
         }
 
         override fun add(element: Float) {
@@ -291,7 +290,6 @@ class FloatArrayList(capacity: Int = 10) : MutableList<Float>, RandomAccess {
             } catch (ex: IndexOutOfBoundsException) {
                 throw ConcurrentModificationException()
             }
-
         }
     }
 }

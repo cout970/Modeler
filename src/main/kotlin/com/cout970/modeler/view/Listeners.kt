@@ -28,6 +28,18 @@ class Listeners : ITickeable {
         gui.root.updateSizes(gui.windowHandler.window.size)
         gui.projectManager.modelChangeListeners += this::onModelChange
         eventController.addListener(EventMouseClick::class.java, gui.canvasManager::onMouseClick)
+
+        gui.projectManager.modelChangeListeners.add { _, new ->
+            gui.state.modelHash = new.hashCode()
+            gui.state.visibilityHash = new.visibilities.hashCode()
+        }
+        gui.selectionHandler.listeners.add { _, _ ->
+            gui.state.modelSelectionHash = (gui.selectionHandler.lastModified and 0xFFFFFFFF).toInt()
+            gui.state.textureSelectionHash = (gui.selectionHandler.lastModified and 0xFFFFFFFF).toInt()
+        }
+        gui.projectManager.materialChangeListeners.add { _, _ ->
+            gui.state.materialsHash = (System.currentTimeMillis() and 0xFFFFFFFF).toInt()
+        }
     }
 
     fun onModelChange(old: IModel, new: IModel) {

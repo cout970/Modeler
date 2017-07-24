@@ -4,6 +4,7 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.show
 import com.cout970.modeler.util.toColor
@@ -60,7 +61,7 @@ class RightPanelPresenter(
         }
 
         materials.listPanel.container.clearChilds()
-        model.materialRefs.forEach { ref ->
+        (model.materialRefs + listOf(MaterialRef(-1))).forEach { ref ->
 
             val name = model.getMaterial(ref).name
             val item = RightPanel.MaterialListItem(ref, name)

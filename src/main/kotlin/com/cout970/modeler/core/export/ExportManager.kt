@@ -157,6 +157,7 @@ class ExportManager(val resourceLoader: ResourceLoader) {
                 val (model, properties) = loadProject(path.path)
                 projectManager.loadProjectProperties(properties)
                 projectManager.updateModel(model)
+                model.materials.forEach { it.loadTexture(resourceLoader) }
                 log(Level.FINE) { "Last project loaded" }
             } catch (e: Exception) {
                 log(Level.ERROR) { "Unable to load last project" }

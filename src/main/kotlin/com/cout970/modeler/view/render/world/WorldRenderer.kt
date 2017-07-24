@@ -1,10 +1,10 @@
 package com.cout970.modeler.view.render.world
 
-import com.cout970.glutilities.tessellator.VAO
 import com.cout970.matrix.extensions.Matrix4
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.TRSTransformation
+import com.cout970.modeler.view.render.tool.AutoCache
 import com.cout970.modeler.view.render.tool.RenderContext
 import com.cout970.modeler.view.render.tool.createVao
 import com.cout970.vector.extensions.Vector2
@@ -21,9 +21,9 @@ class WorldRenderer {
 
     val modelRenderer = ModelRenderer()
     val cursorRenderer = CursorRenderer()
-    var baseCubeVao: VAO? = null
-    var gridLines: VAO? = null
-    var lights: VAO? = null
+    var baseCubeCache = AutoCache()
+    var gridLines = AutoCache()
+    var lights = AutoCache()
 
     fun renderWorld(ctx: RenderContext, model: IModel) {
         renderBaseBlock(ctx)
@@ -40,47 +40,43 @@ class WorldRenderer {
     }
 
     fun renderLights(ctx: RenderContext) {
-        if (lights == null) {
-            lights = ctx.gui.resources.lightMesh.createVao(ctx.buffer, vec3Of(1, 1, 0))
+        val vao = lights.getOrCreate(ctx) {
+            ctx.gui.resources.lightMesh.createVao(ctx.buffer, vec3Of(1, 1, 0))
         }
-        lights?.let {
-            ctx.shader.apply {
-                useColor.setInt(1)
-                useLight.setInt(0)
-                useTexture.setInt(0)
-                ctx.lights.forEach { light ->
-                    matrixM.setMatrix4(TRSTransformation(
-                            translation = light.pos,
-                            scale = Vector3.ONE * 8
-                    ).matrix)
-                    accept(it)
-                }
+        ctx.shader.apply {
+            useColor.setInt(1)
+            useLight.setInt(0)
+            useTexture.setInt(0)
+            ctx.lights.forEach { light ->
+                matrixM.setMatrix4(TRSTransformation(
+                        translation = light.pos,
+                        scale = Vector3.ONE * 8
+                ).matrix)
+                accept(vao)
             }
         }
     }
 
     fun renderBaseBlock(ctx: RenderContext) {
-        if (baseCubeVao == null) {
-            baseCubeVao = ctx.gui.resources.baseCubeMesh.createVao(ctx.buffer)
+        val vao = baseCubeCache.getOrCreate(ctx) {
+            ctx.gui.resources.baseCubeMesh.createVao(ctx.buffer)
         }
-        baseCubeVao?.let {
-            ctx.shader.apply {
-                useColor.setInt(0)
-                useLight.setInt(1)
-                useTexture.setInt(1)
-                matrixM.setMatrix4(TRSTransformation(
-                        translation = vec3Of(8, -8, 8),
-                        scale = Vector3.ONE).matrix
-                )
-                ctx.gui.resources.baseCubeTexture.bind()
-                accept(it)
-            }
+        ctx.shader.apply {
+            useColor.setInt(0)
+            useLight.setInt(1)
+            useTexture.setInt(1)
+            matrixM.setMatrix4(TRSTransformation(
+                    translation = vec3Of(8, -8, 8),
+                    scale = Vector3.ONE).matrix
+            )
+            ctx.gui.resources.baseCubeTexture.bind()
+            accept(vao)
         }
     }
 
     fun renderGridLines(ctx: RenderContext) {
-        if (gridLines == null) {
-            gridLines = ctx.buffer.build(GL11.GL_LINES) {
+        val vao = gridLines.getOrCreate(ctx) {
+            ctx.buffer.build(GL11.GL_LINES) {
                 val size = 16 * 4
                 val min = -size
                 val max = size + 16
@@ -97,14 +93,12 @@ class WorldRenderer {
                 }
             }
         }
-        gridLines?.let {
-            ctx.shader.apply {
-                useColor.setInt(1)
-                useLight.setInt(0)
-                useTexture.setInt(0)
-                matrixM.setMatrix4(Matrix4.IDENTITY)
-                accept(it)
-            }
+        ctx.shader.apply {
+            useColor.setInt(1)
+            useLight.setInt(0)
+            useTexture.setInt(0)
+            matrixM.setMatrix4(Matrix4.IDENTITY)
+            accept(vao)
         }
     }
 }

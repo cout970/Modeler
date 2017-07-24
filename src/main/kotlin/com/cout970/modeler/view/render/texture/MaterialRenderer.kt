@@ -1,49 +1,100 @@
 package com.cout970.modeler.view.render.texture
 
-import com.cout970.glutilities.tessellator.VAO
+import com.cout970.glutilities.structure.GLStateMachine
 import com.cout970.matrix.extensions.Matrix4
 import com.cout970.matrix.extensions.times
 import com.cout970.modeler.api.model.material.IMaterial
+import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.util.MatrixUtils
+import com.cout970.modeler.view.render.tool.AutoCache
+import com.cout970.modeler.view.render.tool.CacheFrags
 import com.cout970.modeler.view.render.tool.RenderContext
+import com.cout970.modeler.view.render.tool.useBlend
 import com.cout970.vector.extensions.*
 import org.lwjgl.opengl.GL11
+import java.awt.Color
 
 /**
  * Created by cout970 on 2017/07/11.
  */
 class MaterialRenderer {
 
-    var gridLines: VAO? = null
-    var materialVao: VAO? = null
-    var outlineVao: VAO? = null
-    var materialHash = -1
-    var modelHash = -1
-    var visibleHash = -1
+    var areasCache = AutoCache(CacheFrags.MODEL, CacheFrags.MATERIAL, CacheFrags.VISIBILITY)
+    val gridLines = AutoCache()
+    val materialCache = AutoCache(CacheFrags.MATERIAL)
+    val selectionCache = AutoCache(CacheFrags.MODEL, CacheFrags.SELECTION_TEXTURE, CacheFrags.MATERIAL)
 
     fun renderWorld(ctx: RenderContext, material: IMaterial) {
         setCamera(ctx)
-        resetIfNeeded(ctx, material)
+        GLStateMachine.depthTest.disable()
+
         if (ctx.gui.state.drawTextureGridLines) {
             renderGridLines(ctx, material)
         }
         renderMaterial(ctx, material)
-        renderModelOutlines(ctx, material)
+        GLStateMachine.useBlend(0.5f) {
+            renderMappedAreas(ctx, material)
+        }
+
+        val selection = ctx.gui.selectionHandler.getModelSelection()
+        if (selection.isDefined()) {
+            renderSelection(ctx, selection.get(), material)
+        }
+        GLStateMachine.depthTest.enable()
     }
 
-    fun renderModelOutlines(ctx: RenderContext, material: IMaterial) {
-        if (outlineVao == null) {
+    fun renderMappedAreas(ctx: RenderContext, material: IMaterial) {
+        val vao = areasCache.getOrCreate(ctx) {
             val model = ctx.gui.projectManager.model
             val objs = model.objectRefs
                     .filter { model.isVisible(it) }
                     .map { model.getObject(it) }
+
+            ctx.buffer.build(GL11.GL_QUADS) {
+                objs.forEach { obj ->
+                    val mesh = obj.transformedMesh
+                    mesh.faces.forEachIndexed { index, face ->
+                        val vec = Color.getHSBColor((index * 59 % 360) / 360f, 0.5f, 1.0f)
+                        val color = vec3Of(vec.red, vec.green, vec.blue) / 255
+
+                        val positions = face.tex
+                                .map { mesh.tex[it] }
+                                .map { vec2Of(it.xd, 1 - it.yd) }
+                                .map { it * material.size }
+                        positions.indices.forEach {
+                            val pos0 = positions[it]
+                            add(vec3Of(pos0.x, pos0.y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
+                        }
+                    }
+                }
+            }
+        }
+        GL11.glLineWidth(2f)
+        ctx.shader.apply {
+            useColor.setInt(1)
+            useLight.setInt(0)
+            useTexture.setInt(0)
+            matrixM.setMatrix4(Matrix4.IDENTITY)
+            accept(vao)
+        }
+        GL11.glLineWidth(1f)
+    }
+
+    fun renderSelection(ctx: RenderContext, selection: ISelection, material: IMaterial) {
+        val vao = selectionCache.getOrCreate(ctx) {
+            val model = ctx.gui.state.tmpModel ?: ctx.gui.projectManager.model
+            val objs = model.objectRefs
+                    .filter { selection.isSelected(it) }
+                    .map { model.getObject(it) }
+
             val color = Config.colorPalette.textureSelectionColor
 
-            outlineVao = ctx.buffer.build(GL11.GL_LINES) {
+            ctx.buffer.build(GL11.GL_LINES) {
                 objs.forEach { obj ->
                     val mesh = obj.transformedMesh
                     mesh.faces.forEach { face ->
+
                         val positions = face.tex
                                 .map { mesh.tex[it] }
                                 .map { vec2Of(it.xd, 1 - it.yd) }
@@ -59,44 +110,21 @@ class MaterialRenderer {
                 }
             }
         }
-        outlineVao?.let {
-            GL11.glLineWidth(2f)
-            ctx.shader.apply {
-                useColor.setInt(1)
-                useLight.setInt(0)
-                useTexture.setInt(0)
-                matrixM.setMatrix4(Matrix4.IDENTITY)
-                accept(it)
-            }
-            GL11.glLineWidth(1f)
-        }
-    }
 
-    fun resetIfNeeded(ctx: RenderContext, material: IMaterial) {
-        if (materialHash != material.hashCode()) {
-            materialHash = material.hashCode()
-            materialVao?.close()
-            materialVao = null
-            gridLines?.close()
-            gridLines = null
+        GL11.glLineWidth(2f)
+        ctx.shader.apply {
+            useColor.setInt(1)
+            useLight.setInt(0)
+            useTexture.setInt(0)
+            matrixM.setMatrix4(Matrix4.IDENTITY)
+            accept(vao)
         }
-
-        val model = ctx.gui.projectManager.model
-        val objs = model.objectRefs
-                .filter { model.isVisible(it) }
-                .map { model.getObject(it) }
-
-        if (modelHash != model.hashCode() || visibleHash != objs.hashCode() || ctx.gui.input.mouse.isButtonPressed(0)) {
-            modelHash = model.hashCode()
-            visibleHash = objs.hashCode()
-            outlineVao?.close()
-            outlineVao = null
-        }
+        GL11.glLineWidth(1f)
     }
 
     fun renderMaterial(ctx: RenderContext, material: IMaterial) {
-        if (materialVao == null) {
-            materialVao = ctx.buffer.build(GL11.GL_QUADS) {
+        val vao = materialCache.getOrCreate(ctx) {
+            ctx.buffer.build(GL11.GL_QUADS) {
                 val maxX = material.size.xi
                 val maxY = material.size.yi
                 add(vec3Of(0, 0, 0), vec2Of(0, 1), Vector3.ORIGIN, Vector3.ORIGIN)
@@ -105,21 +133,20 @@ class MaterialRenderer {
                 add(vec3Of(0, maxY, 0), vec2Of(0, 0), Vector3.ORIGIN, Vector3.ORIGIN)
             }
         }
-        materialVao?.let {
-            material.bind()
-            ctx.shader.apply {
-                useColor.setInt(0)
-                useLight.setInt(0)
-                useTexture.setInt(1)
-                matrixM.setMatrix4(Matrix4.IDENTITY)
-                accept(it)
-            }
+
+        material.bind()
+        ctx.shader.apply {
+            useColor.setInt(0)
+            useLight.setInt(0)
+            useTexture.setInt(1)
+            matrixM.setMatrix4(Matrix4.IDENTITY)
+            accept(vao)
         }
     }
 
     fun renderGridLines(ctx: RenderContext, material: IMaterial) {
-        if (gridLines == null) {
-            gridLines = ctx.buffer.build(GL11.GL_LINES) {
+        val vao = gridLines.getOrCreate(ctx) {
+            ctx.buffer.build(GL11.GL_LINES) {
                 val min = 0
                 val maxX = material.size.xi
                 val maxY = material.size.yi
@@ -136,14 +163,12 @@ class MaterialRenderer {
                 }
             }
         }
-        gridLines?.let {
-            ctx.shader.apply {
-                useColor.setInt(1)
-                useLight.setInt(0)
-                useTexture.setInt(0)
-                matrixM.setMatrix4(Matrix4.IDENTITY)
-                accept(it)
-            }
+        ctx.shader.apply {
+            useColor.setInt(1)
+            useLight.setInt(0)
+            useTexture.setInt(0)
+            matrixM.setMatrix4(Matrix4.IDENTITY)
+            accept(vao)
         }
     }
 

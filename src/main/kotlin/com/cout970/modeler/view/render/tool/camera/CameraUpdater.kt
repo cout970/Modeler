@@ -7,9 +7,9 @@ import com.cout970.modeler.util.absolutePosition
 import com.cout970.modeler.util.isInside
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.util.toRads
-import com.cout970.modeler.view.event.IInput
 import com.cout970.modeler.view.canvas.Canvas
 import com.cout970.modeler.view.canvas.CanvasContainer
+import com.cout970.modeler.view.event.IInput
 import com.cout970.vector.extensions.*
 
 /**
@@ -97,8 +97,8 @@ class CameraUpdater(
         val camera = selectedScene.cameraHandler.camera
         val diff = input.mouse.getMousePosDiff()
 
-        val a = (diff.xd * Config.mouseTranslateSpeedX * speed * Math.sqrt(camera.zoom))
-        val b = (-diff.yd * Config.mouseTranslateSpeedY * speed * Math.sqrt(camera.zoom))
+        val a = (diff.xd * Config.mouseTranslateSpeedX * speed * Math.sqrt(camera.zoom) * 0.25)
+        val b = (-diff.yd * Config.mouseTranslateSpeedY * speed * Math.sqrt(camera.zoom) * 0.25)
 
         selectedScene.cameraHandler.translate(vec3Of(a, b, 0))
     }

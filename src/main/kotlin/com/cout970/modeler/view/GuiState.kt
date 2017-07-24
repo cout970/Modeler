@@ -23,4 +23,10 @@ class GuiState {
     var holdingSelection: ISelectable? = null
     var hoveredObject: ISelectable? = null
     var tmpModel: IModel? = null
+
+    var modelHash: Int = -1
+    var modelSelectionHash: Int = -1
+    var textureSelectionHash: Int = -1
+    var materialsHash: Int = -1
+    var visibilityHash: Int = -1
 }
