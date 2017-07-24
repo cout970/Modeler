@@ -1,13 +1,12 @@
 package com.cout970.modeler.functional.usecases
 
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.core.model.AABB
 import com.cout970.modeler.functional.injection.Inject
-import com.cout970.modeler.functional.tasks.ITask
-import com.cout970.modeler.functional.tasks.TaskCallback
-import com.cout970.modeler.functional.tasks.TaskExportModel
-import com.cout970.modeler.functional.tasks.TaskImportModel
+import com.cout970.modeler.functional.tasks.*
 import com.cout970.modeler.view.gui.popup.ExportDialog
 import com.cout970.modeler.view.gui.popup.ImportDialog
+import java.io.File
 
 /**
  * Created by cout970 on 2017/07/19.
@@ -46,5 +45,22 @@ class ExportModel : IUseCase {
             }
         }
         return TaskCallback(callback)
+    }
+}
+
+class ExportHitboxes : IUseCase {
+
+    override val key: String = "model.export.hitboxes"
+
+    @Inject lateinit var model: IModel
+
+    override fun createTask(): ITask {
+        val aabb = model.objectRefs
+                .filter { model.isVisible(it) }
+                .map { model.getObject(it) }
+                .map { AABB.fromMesh(it.mesh) }
+
+        AABB.export(aabb, File("./saves", "aabb.txt"))
+        return TaskNone
     }
 }

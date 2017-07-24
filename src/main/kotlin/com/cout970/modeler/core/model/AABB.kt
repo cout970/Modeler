@@ -1,5 +1,6 @@
 package com.cout970.modeler.core.model
 
+import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
@@ -35,6 +36,17 @@ class AABB(a: IVector3, b: IVector3) {
     }
 
     companion object {
+
+        fun fromMesh(mesh: IMesh): AABB {
+            if (mesh.faces.isEmpty()) return AABB(Vector3.ORIGIN, Vector3.ORIGIN)
+            var min: IVector3 = mesh.pos[0]
+            var max: IVector3 = mesh.pos[0]
+            for (pos in mesh.pos) {
+                min = min.min(pos)
+                max = max.max(pos)
+            }
+            return AABB(min, max)
+        }
 
         fun export(list: List<AABB>, output: File) {
             val stream = FileOutputStream(output)

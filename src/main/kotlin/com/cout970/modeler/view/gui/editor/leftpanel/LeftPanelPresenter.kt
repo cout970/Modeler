@@ -18,9 +18,10 @@ import com.cout970.modeler.view.gui.comp.CTextInput
 import com.cout970.modeler.view.gui.comp.Cache
 import com.cout970.modeler.view.gui.editor.leftpanel.editcubepanel.EditCubePanelPresenter
 import org.liquidengine.legui.component.Container
+import org.liquidengine.legui.component.misc.listener.textinput.TextInputMouseClickEventListener
 import org.liquidengine.legui.event.FocusEvent
 import org.liquidengine.legui.event.KeyEvent
-import org.liquidengine.legui.listener.ListenerMap
+import org.liquidengine.legui.event.MouseClickEvent
 import org.liquidengine.legui.system.context.Context
 import org.lwjgl.glfw.GLFW
 
@@ -84,6 +85,10 @@ class LeftPanelPresenter(
             if (input.text.isNotEmpty()) {
                 input.startSelectionIndex = 0
                 input.endSelectionIndex = input.text.length
+                (input.listenerMap.getListeners(MouseClickEvent::class.java).firstOrNull()
+                        as? MouseClickEventListener)?.let {
+                    it.ignoreNextEvent = true
+                }
             }
         } else {
             gui.dispatcher.onEvent("update.template.cube", input)
@@ -105,25 +110,28 @@ class LeftPanelPresenter(
     override fun bindTextInputs(panel: Container<*>) {
         panel.childs.forEach {
             if (it is CTextInput) {
-                it.listenerMap.setKeyboardListener { e -> handleKeyPress(it, e) }
-                it.listenerMap.setFocusListener { e -> handleFocusChange(it, e) }
+                it.listenerMap.removeListener(MouseClickEvent::class.java,
+                        it.listenerMap.getListeners(MouseClickEvent::class.java)[0])
+                it.listenerMap.addListener(MouseClickEvent::class.java, MouseClickEventListener())
+                it.listenerMap.addListener(KeyEvent::class.java,
+                        { e -> if (e.action == GLFW.GLFW_PRESS) handleKeyPress(it, e) })
+                it.listenerMap.addListener(FocusEvent::class.java, { e -> handleFocusChange(it, e) })
             } else if (it is Container<*>) {
                 bindTextInputs(it)
             }
         }
     }
 
-    fun ListenerMap.setKeyboardListener(function: (KeyEvent<*>) -> Unit) {
-        getListeners(KeyEvent::class.java).toList().forEach {
-            removeListener(KeyEvent::class.java, it)
-        }
-        addListener(KeyEvent::class.java, { if (it.action == GLFW.GLFW_PRESS) function(it) })
-    }
+    class MouseClickEventListener : TextInputMouseClickEventListener() {
+        var ignoreNextEvent = false
 
-    fun ListenerMap.setFocusListener(function: (FocusEvent<*>) -> Unit) {
-        getListeners(FocusEvent::class.java).toList().forEach {
-            removeListener(FocusEvent::class.java, it)
+        override fun process(event: MouseClickEvent<*>) {
+            if (event.action != MouseClickEvent.MouseClickAction.PRESS) return
+            if (ignoreNextEvent) {
+                ignoreNextEvent = false
+                return
+            }
+            super.process(event)
         }
-        addListener(FocusEvent::class.java, { function(it) })
     }
 }

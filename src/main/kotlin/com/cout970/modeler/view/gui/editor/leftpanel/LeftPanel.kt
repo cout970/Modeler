@@ -60,7 +60,7 @@ class LeftPanel : CPanel() {
         val importModelButton = CButton("", 7f, 6f, 32f, 32f, "model.import")
         val exportModelButton = CButton("", 43f, 6f, 32f, 32f, "model.export")
         val exportTextureButton = CButton("", 79f, 6f, 32f, 32f, "texture.export")
-        val hitboxMapButton = CButton("", 115f, 6f, 32f, 32f, "hitbox.export")
+        val hitboxMapButton = CButton("", 115f, 6f, 32f, 32f, "model.export.hitboxes")
         val someButton = CButton("", 151f, 6f, 32f, 32f, "unassigned")
 
         init {

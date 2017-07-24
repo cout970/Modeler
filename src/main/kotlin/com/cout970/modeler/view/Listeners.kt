@@ -27,7 +27,6 @@ class Listeners : ITickeable {
         cameraUpdater = CameraUpdater(gui.canvasContainer, eventController, gui.timer)
         gui.root.updateSizes(gui.windowHandler.window.size)
         gui.projectManager.modelChangeListeners += this::onModelChange
-
         eventController.addListener(EventMouseClick::class.java, gui.canvasManager::onMouseClick)
     }
 
@@ -55,20 +54,10 @@ class Listeners : ITickeable {
     }
 
     fun onKeyPress(e: EventKeyUpdate): Boolean {
-        return if (e.keyState == EnumKeyState.PRESS) {
-            val ret = gui.canvasContainer.layout.onEvent(gui, e)
-            if (ret) {
-                true
-            } else {
-                if (gui.guiUpdater.leguiContext.focusedGui == null ||
-                    gui.guiUpdater.leguiContext.focusedGui !is TextInput) {
-
-                    gui.keyboardBinder.onEvent(e)
-                } else {
-                    false
-                }
-            }
-        } else false
+        if (e.keyState != EnumKeyState.PRESS) return false
+        if (gui.canvasContainer.layout.onEvent(gui, e)) return true
+        if (gui.guiUpdater.leguiContext.focusedGui is TextInput) return false
+        return gui.keyboardBinder.onEvent(e)
     }
 
     override fun tick() {
