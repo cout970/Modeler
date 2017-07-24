@@ -1,3 +1,2 @@
-Add new material button
 Add rotation pivot property when editing cubes
 Add arrows back

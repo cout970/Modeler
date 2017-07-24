@@ -10,7 +10,6 @@ import com.cout970.modeler.functional.injection.Inject
 import com.cout970.modeler.functional.tasks.*
 import com.cout970.modeler.util.parent
 import com.cout970.modeler.view.gui.editor.rightpanel.RightPanel
-import com.cout970.modeler.view.gui.popup.textureExtensions
 import org.funktionale.option.Option
 import org.funktionale.option.getOrElse
 import org.liquidengine.legui.component.Component

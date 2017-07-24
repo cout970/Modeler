@@ -1,6 +1,7 @@
 package com.cout970.modeler.view
 
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.view.canvas.ISelectable
 import com.cout970.modeler.view.canvas.TransformationMode
 
@@ -23,6 +24,8 @@ class GuiState {
     var holdingSelection: ISelectable? = null
     var hoveredObject: ISelectable? = null
     var tmpModel: IModel? = null
+
+    var selectedMaterial = MaterialRef(-1)
 
     var modelHash: Int = -1
     var modelSelectionHash: Int = -1

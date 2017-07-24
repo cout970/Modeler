@@ -1,7 +1,6 @@
 package com.cout970.modeler.view.render
 
 import com.cout970.modeler.api.model.selection.SelectionTarget
-import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.util.absolutePosition
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.view.Gui
@@ -52,7 +51,8 @@ class CanvasRenderer(val renderManager: RenderManager) {
                         worldRenderer.renderWorld(ctx, gui.projectManager.model)
                         centerMarkRenderer.renderCursor(ctx)
                     } else {
-                        materialRenderer.renderWorld(ctx, gui.projectManager.model.getMaterial(MaterialRef(0)))
+                        val material = gui.projectManager.model.getMaterial(gui.state.selectedMaterial)
+                        materialRenderer.renderWorld(ctx, material)
                     }
                 }
             }
