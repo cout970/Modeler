@@ -4,6 +4,7 @@ import com.cout970.glutilities.structure.GLStateMachine
 import com.cout970.matrix.extensions.Matrix4
 import com.cout970.matrix.extensions.times
 import com.cout970.modeler.api.model.material.IMaterial
+import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.util.MatrixUtils
@@ -25,7 +26,7 @@ class MaterialRenderer {
     val materialCache = AutoCache(CacheFrags.MATERIAL)
     val selectionCache = AutoCache(CacheFrags.MODEL, CacheFrags.SELECTION_TEXTURE, CacheFrags.MATERIAL)
 
-    fun renderWorld(ctx: RenderContext, material: IMaterial) {
+    fun renderWorld(ctx: RenderContext, ref: IMaterialRef, material: IMaterial) {
         setCamera(ctx)
         GLStateMachine.depthTest.disable()
 
@@ -34,7 +35,7 @@ class MaterialRenderer {
         }
         renderMaterial(ctx, material)
         GLStateMachine.useBlend(0.5f) {
-            renderMappedAreas(ctx, material)
+            renderMappedAreas(ctx, ref, material)
         }
 
         val selection = ctx.gui.selectionHandler.getModelSelection()
@@ -44,12 +45,13 @@ class MaterialRenderer {
         GLStateMachine.depthTest.enable()
     }
 
-    fun renderMappedAreas(ctx: RenderContext, material: IMaterial) {
+    fun renderMappedAreas(ctx: RenderContext, ref: IMaterialRef, material: IMaterial) {
         val vao = areasCache.getOrCreate(ctx) {
             val model = ctx.gui.projectManager.model
             val objs = model.objectRefs
                     .filter { model.isVisible(it) }
                     .map { model.getObject(it) }
+                    .filter { it.material == ref }
 
             ctx.buffer.build(GL11.GL_QUADS) {
                 objs.forEach { obj ->

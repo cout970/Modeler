@@ -51,8 +51,9 @@ class CanvasRenderer(val renderManager: RenderManager) {
                         worldRenderer.renderWorld(ctx, gui.projectManager.model)
                         centerMarkRenderer.renderCursor(ctx)
                     } else {
-                        val material = gui.projectManager.model.getMaterial(gui.state.selectedMaterial)
-                        materialRenderer.renderWorld(ctx, material)
+                        val ref = gui.state.selectedMaterial
+                        val material = gui.projectManager.model.getMaterial(ref)
+                        materialRenderer.renderWorld(ctx, ref, material)
                     }
                 }
             }

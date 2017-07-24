@@ -80,3 +80,17 @@ class ImportMaterial : IUseCase {
         return TaskNone
     }
 }
+
+class SelectMaterial : IUseCase {
+
+    override val key: String = "material.view.select"
+
+    @Inject lateinit var component: Component
+
+    override fun createTask(): ITask {
+        component.parent<RightPanel.MaterialListItem>()?.let { item ->
+            return TaskUpdateSelectedMaterial(item.ref)
+        }
+        return TaskNone
+    }
+}
