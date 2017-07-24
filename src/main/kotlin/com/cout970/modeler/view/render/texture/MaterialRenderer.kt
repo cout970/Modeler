@@ -21,8 +21,9 @@ import java.awt.Color
  */
 class MaterialRenderer {
 
-    var areasCache = AutoCache(CacheFrags.MODEL, CacheFrags.MATERIAL, CacheFrags.VISIBILITY)
-    val gridLines = AutoCache()
+    var areasCache = AutoCache(CacheFrags.MODEL, CacheFrags.MATERIAL, CacheFrags.VISIBILITY,
+            CacheFrags.SELECTION_TEXTURE)
+    val gridLines = AutoCache(CacheFrags.MATERIAL)
     val materialCache = AutoCache(CacheFrags.MATERIAL)
     val selectionCache = AutoCache(CacheFrags.MODEL, CacheFrags.SELECTION_TEXTURE, CacheFrags.MATERIAL)
 

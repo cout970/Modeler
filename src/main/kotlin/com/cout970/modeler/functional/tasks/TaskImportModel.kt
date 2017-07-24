@@ -31,11 +31,15 @@ class TaskImportModel(
                 JOptionPane.showMessageDialog(null, "Error importing model: \n$e")
             }
         }
-        modelCache?.let { state.projectManager.updateModel(it) }
+        modelCache?.let {
+            state.projectManager.updateModel(it)
+            state.gui.state.materialsHash = (System.currentTimeMillis() and 0xFFFFFFFF).toInt()
+        }
     }
 
     override fun undo(state: ProgramState) {
         state.projectManager.updateModel(oldModel)
+        state.gui.state.materialsHash = (System.currentTimeMillis() and 0xFFFFFFFF).toInt()
     }
 
     fun import(): IModel {

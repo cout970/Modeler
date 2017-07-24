@@ -2,7 +2,7 @@ package com.cout970.modeler.functional.tasks
 
 import com.cout970.modeler.ProgramState
 import com.cout970.modeler.api.model.IModel
-import com.cout970.modeler.api.model.selection.ISelection
+import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.log.print
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.*
@@ -18,7 +18,7 @@ class TaskExportTexture(
         val path: String,
         val size: IVector2,
         val model: IModel,
-        val selection: ISelection
+        val material: IMaterialRef
 ) : ITask {
 
     override fun run(state: ProgramState) {
@@ -27,8 +27,8 @@ class TaskExportTexture(
             val set = mutableSetOf<Int>()
             val mesh = model.objectRefs
                     .filter { model.isVisible(it) }
-                    .filter { selection.isSelected(it) }
                     .map { model.getObject(it) }
+                    .filter { it.material == material }
                     .map { it.transformedMesh }
 
             val image = BufferedImage(size.xi, size.yi, BufferedImage.TYPE_INT_ARGB_PRE)

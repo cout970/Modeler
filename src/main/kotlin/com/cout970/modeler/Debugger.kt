@@ -26,10 +26,15 @@ object Debugger {
     }
 
     fun postTick() {
+
+//        val count = GL30.glGenVertexArrays()
+//        GL30.glDeleteVertexArrays(count)
+//
 //        println("drawVboCount: $drawVboCount")
 //        println("drawRegionsCount: $drawRegionsCount")
 //        println("drawVaoCount: $drawVaoCount")
 //        println("buildVaoCount: $buildVaoCount")
+//        println("totalVaoCount: $count")
 //        println("++++++++++++++++++++++++++++++")
 
         drawVboCount = 0

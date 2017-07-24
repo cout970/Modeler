@@ -31,8 +31,9 @@ data class ObjectCube(
         override val transformation: ITransformation = TRSTransformation.IDENTITY,
         override val material: IMaterialRef = MaterialRef(-1),
 
-        val textureOffset: IVector2 = Vector2.ORIGIN,
-        val textureSize: IVector2 = vec2Of(64),
+        override val textureOffset: IVector2 = Vector2.ORIGIN,
+        override val textureSize: IVector2 = vec2Of(64),
+
         val mirrored: Boolean = false
 ) : IObjectCube {
 
@@ -109,6 +110,8 @@ data class ObjectCube(
     override fun withPos(pos: IVector3): IObjectCube = copy(pos = pos)
 
     override fun withSubTransformation(transform: TRTSTransformation): IObjectCube = copy(subTransformation = transform)
+
+    override fun withTextureOffset(tex: IVector2): IObjectCube = copy(textureOffset = tex)
 
     override val transformer: IObjectTransformer = object : IObjectTransformer {
         override fun withMesh(obj: IObject, newMesh: IMesh): IObject {

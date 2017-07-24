@@ -54,7 +54,7 @@ class ModelRenderer {
 
     fun renderModel(ctx: RenderContext, model: IModel) {
 
-        if (modelCache.isEmpty() || model.hashCode() != modelHash) {
+        if (modelCache.isEmpty() || modelCache.size != model.objects.size || model.hashCode() != modelHash) {
             modelHash = model.hashCode()
             modelCache.forEach { it.close() }
             modelCache = buildCache(modelCache, ctx.buffer, model)

@@ -4,6 +4,7 @@ import com.cout970.modeler.api.model.`object`.IObjectCube
 import com.cout970.modeler.util.show
 import com.cout970.modeler.util.text
 import com.cout970.modeler.view.gui.ComponentPresenter
+import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.toDegrees
 import com.cout970.vector.extensions.xf
@@ -25,6 +26,8 @@ class EditCubePanelPresenter(val editCubePanel: EditCubePanel) : ComponentPresen
         setSize(cube.size)
         setPos(cube.pos)
         setRotation(cube.subTransformation.rotation.toDegrees())
+        setRotationPos(cube.subTransformation.preRotation)
+        setTextureOffset(cube.textureOffset)
         editCubePanel.show()
     }
 
@@ -41,11 +44,23 @@ class EditCubePanelPresenter(val editCubePanel: EditCubePanel) : ComponentPresen
         panel.posYInput.text = formatter.format(pos.yf)
         panel.posZInput.text = formatter.format(pos.zf)
     }
-
     fun setRotation(rot: IVector3) {
         val panel = editCubePanel.rotationPanel
         panel.rotXInput.text = formatter.format(rot.xf)
         panel.rotYInput.text = formatter.format(rot.yf)
         panel.rotZInput.text = formatter.format(rot.zf)
+    }
+
+    fun setRotationPos(pos: IVector3) {
+        val panel = editCubePanel.rotationPosPanel
+        panel.posXInput.text = formatter.format(pos.xf)
+        panel.posYInput.text = formatter.format(pos.yf)
+        panel.posZInput.text = formatter.format(pos.zf)
+    }
+
+    fun setTextureOffset(pos: IVector2) {
+        val panel = editCubePanel.textureOffsetPanel
+        panel.posXInput.text = formatter.format(pos.xf)
+        panel.posYInput.text = formatter.format(pos.yf)
     }
 }

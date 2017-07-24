@@ -1,7 +1,6 @@
 package com.cout970.modeler.functional.usecases
 
 import com.cout970.modeler.api.model.IModel
-import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.core.model.AABB
 import com.cout970.modeler.functional.injection.Inject
 import com.cout970.modeler.functional.tasks.*
@@ -9,7 +8,6 @@ import com.cout970.modeler.util.toPointerBuffer
 import com.cout970.modeler.view.GuiState
 import com.cout970.modeler.view.gui.popup.ExportDialog
 import com.cout970.modeler.view.gui.popup.ImportDialog
-import org.funktionale.option.Option
 import org.lwjgl.PointerBuffer
 import org.lwjgl.util.tinyfd.TinyFileDialogs
 import java.io.File
@@ -78,18 +76,14 @@ class ExportTexture : IUseCase {
     override val key: String = "texture.export"
 
     @Inject lateinit var model: IModel
-    @Inject lateinit var selection: Option<ISelection>
     @Inject lateinit var guiState: GuiState
 
     override fun createTask(): ITask {
-        selection.forEach { selection ->
-            val file = TinyFileDialogs.tinyfd_saveFileDialog("Export Texture", "texture.png",
-                    textureExtensions, "PNG texture (*.png)") ?: return TaskNone
+        val file = TinyFileDialogs.tinyfd_saveFileDialog("Export Texture", "texture.png",
+                textureExtensions, "PNG texture (*.png)") ?: return TaskNone
 
-            val size = model.getMaterial(guiState.selectedMaterial).size
+        val size = model.getMaterial(guiState.selectedMaterial).size
 
-            return TaskExportTexture(file, size, model, selection)
-        }
-        return TaskNone
+        return TaskExportTexture(file, size, model, guiState.selectedMaterial)
     }
 }
