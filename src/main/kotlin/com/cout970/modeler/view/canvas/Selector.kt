@@ -105,7 +105,7 @@ class Selector {
         activeCanvas?.let { activeScene ->
             val state = gui.state
             val selection = gui.selectionHandler.getModelSelection()
-            val sel = selection.get()
+            val sel = selection.orNull() ?: return@let
 
             state.holdingSelection?.let { selectedObject ->
 

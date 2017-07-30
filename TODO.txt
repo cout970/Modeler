@@ -1,2 +1,7 @@
-Add rotation pivot property when editing cubes
 Add arrows back
+fix CTRL + t
+fix cube texture size
+add remove texture
+fix light issues
+add automatic backups
+Render rotation pivot

@@ -74,9 +74,6 @@ class Listeners : ITickeable {
 
     override fun tick() {
         cameraUpdater.updateCameras()
-        //TODO
-//        Debugger.debug {
-//            gui.selector.update(gui.canvasContainer, taskHistory)
-//        }
+        gui.selector.update(gui.canvasContainer)
     }
 }
