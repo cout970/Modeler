@@ -22,6 +22,8 @@ class CButton(
     init {
         textState.textColor = Config.colorPalette.textColor.toColor()
         backgroundColor = Config.colorPalette.buttonColor.toColor()
+        cornerRadius = 0f
+        setBorderless()
         listenerMap.addListener(ScrollEvent::class.java) {
             propagateScroll(it)
         }

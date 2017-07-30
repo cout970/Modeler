@@ -6,7 +6,6 @@ import com.cout970.modeler.util.toColor
 import com.cout970.modeler.view.GuiResources
 import org.joml.Vector2f
 import org.liquidengine.legui.border.SimpleLineBorder
-import org.liquidengine.legui.color.ColorConstants
 import org.liquidengine.legui.component.Panel
 import org.liquidengine.legui.component.ScrollablePanel
 import org.liquidengine.legui.event.ScrollEvent
@@ -22,10 +21,10 @@ open class CVerticalPanel(
 
     init {
         border = SimpleLineBorder(Config.colorPalette.borderColor.toColor(), 0.5f)
-        backgroundColor = ColorConstants.transparent()
-        container.backgroundColor = Config.colorPalette.lightColor.toColor()
+        setTransparent()
+        container.backgroundColor = Config.colorPalette.lightBrightColor.toColor()
         horizontalScrollBar.hide()
-        verticalScrollBar.backgroundColor = ColorConstants.transparent()
+        verticalScrollBar.setTransparent()
         verticalScrollBar.arrowColor = Config.colorPalette.darkColor.toColor()
         verticalScrollBar.scrollColor = Config.colorPalette.darkColor.toColor()
         verticalScrollBar.isArrowsEnabled = false

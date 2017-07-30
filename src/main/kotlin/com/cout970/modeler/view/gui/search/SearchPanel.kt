@@ -31,7 +31,7 @@ class SearchPanel(val modelview: SearchFacade) : CPanel(width = 400f, height = 6
         add(label)
         add(searchBar)
         backgroundColor = Config.colorPalette.darkColor.toColor()
-        searchBar.backgroundColor = Config.colorPalette.lightColor.toColor()
+        searchBar.backgroundColor = Config.colorPalette.lightBrightColor.toColor()
 
         searchBar.listenerMap.addListener(KeyEvent::class.java, this::onUpdate)
 
@@ -87,7 +87,7 @@ class SearchPanel(val modelview: SearchFacade) : CPanel(width = 400f, height = 6
                 if (selectedOption == index) {
                     it.backgroundColor = Config.colorPalette.selectedOption.toColor()
                 } else {
-                    it.backgroundColor = Config.colorPalette.primaryColor.toColor()
+                    it.backgroundColor = Config.colorPalette.greyColor.toColor()
                 }
             }
 

@@ -9,11 +9,18 @@ import java.awt.Color
  * Created by cout970 on 2017/01/24.
  */
 data class ColorPalette(
+        val darkestColor: IVector3,
         val darkColor: IVector3,
-        val primaryColor: IVector3,
-        val lightColor: IVector3,
+        val lightDarkColor: IVector3,
+        val greyColor: IVector3,
+        val lightBrightColor: IVector3,
+        val brightColor: IVector3,
+        val brightestColor: IVector3,
+
         val buttonColor: IVector3,
+        val topPanelColor: IVector3,
         val selectedButton: IVector3,
+
         val selectedButtonBorder: IVector3,
         val textColor: IVector3,
         val modelBackgroundColor: IVector3,
@@ -28,11 +35,18 @@ data class ColorPalette(
     companion object {
 
         val darkPalette = ColorPalette(
+                darkestColor = hexToColor(0x282828),
                 darkColor = hexToColor(0x383838),
-                primaryColor = hexToColor(0x545454),
-                lightColor = hexToColor(0x474747),
-                buttonColor = hexToColor(0x8b8b8b),
+                lightDarkColor = hexToColor(0x464646),
+                greyColor = hexToColor(0x545454),
+                lightBrightColor = hexToColor(0x626262),
+                brightColor = hexToColor(0x707070),
+                brightestColor = hexToColor(0x878787),
+
+                buttonColor = hexToColor(0x707070),
+                topPanelColor = hexToColor(0x484848),
                 selectedButton = hexToColor(0x707070),
+
                 selectedButtonBorder = hexToColor(0x606060),
                 textColor = hexToColor(0xffffff),
                 modelBackgroundColor = hexToColor(0x252525),

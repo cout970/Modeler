@@ -1,11 +1,12 @@
 package com.cout970.modeler.view.gui.comp
 
-import com.cout970.modeler.view.GuiState
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.util.toColor
 import com.cout970.modeler.view.GuiResources
+import com.cout970.modeler.view.GuiState
 import org.joml.Vector2f
 import org.liquidengine.legui.border.SimpleLineBorder
+import org.liquidengine.legui.color.ColorConstants
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Panel
 import org.liquidengine.legui.event.ScrollEvent
@@ -24,7 +25,8 @@ open class CPanel(
             thickness = 0.5f
             color = Config.colorPalette.borderColor.toColor()
         }
-        backgroundColor = Config.colorPalette.lightColor.toColor()
+        cornerRadius = 0f
+        backgroundColor = Config.colorPalette.greyColor.toColor()
         listenerMap.addListener(ScrollEvent::class.java) {
             propagateScroll(it)
         }
@@ -55,10 +57,6 @@ open class CPanel(
         }
     }
 
-    fun setBorderless() {
-        border.isEnabled = false
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is CPanel) return false
@@ -78,4 +76,12 @@ open class CPanel(
     override fun toString(): String {
         return "CPanel(id=$id)"
     }
+}
+
+fun Component.setBorderless() {
+    border.isEnabled = false
+}
+
+fun Component.setTransparent() {
+    backgroundColor = ColorConstants.transparent()
 }

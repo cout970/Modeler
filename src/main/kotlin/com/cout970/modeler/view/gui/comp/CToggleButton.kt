@@ -1,11 +1,10 @@
 package com.cout970.modeler.view.gui.comp
 
-import com.cout970.modeler.view.GuiState
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.util.IPropertyBind
 import com.cout970.modeler.util.toColor
+import com.cout970.modeler.view.GuiState
 import org.liquidengine.legui.border.SimpleLineBorder
-import org.liquidengine.legui.color.ColorConstants
 import org.liquidengine.legui.component.ToggleButton
 import org.liquidengine.legui.icon.Icon
 
@@ -19,7 +18,7 @@ class CToggleButton(posX: Number, posY: Number, sizeX: Number, sizeY: Number,
     lateinit var bind: IPropertyBind<Boolean>
 
     init {
-        backgroundColor = ColorConstants.transparent()
+        setTransparent()
         toggledBackgroundColor = Config.colorPalette.selectedButton.toColor()
         border.isEnabled = false
         border = SimpleLineBorder(Config.colorPalette.selectedButton.toColor(), 1f)

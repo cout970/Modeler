@@ -11,17 +11,13 @@ import org.joml.Vector2f
 class CenterPanelLayout(val panel: CenterPanel) : ILayout {
 
     override fun rescale() {
-        panel.topMenu.let { menu ->
-            menu.size = Vector2f(panel.size.x, 26f)
-            menu.position = Vector2f()
-        }
         panel.canvasPanel.let { canvasPanel ->
-            canvasPanel.size = Vector2f(panel.size.x, panel.size.y - 24f)
-            canvasPanel.position = Vector2f(0f, 24f)
+            canvasPanel.size = Vector2f(panel.size.x, panel.size.y)
+            canvasPanel.position = Vector2f()
         }
         panel.backgroundPanel.let { canvasPanel ->
-            canvasPanel.size = Vector2f(panel.size.x, panel.size.y - 24f)
-            canvasPanel.position = Vector2f(0f, 24f)
+            canvasPanel.size = Vector2f(panel.size.x, panel.size.y)
+            canvasPanel.position = Vector2f()
         }
 
         if (panel.canvasPanel.isEnabled) {

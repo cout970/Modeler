@@ -70,7 +70,10 @@ class RightPanelPresenter(
             materials.listPanel.container.add(item)
 
             if (ref in materialOfSelectedObjects) {
-                item.backgroundColor = Config.colorPalette.selectedButton.toColor()
+                item.backgroundColor = Config.colorPalette.greyColor.toColor()
+            }
+            if (ref == gui.state.selectedMaterial) {
+                item.backgroundColor = Config.colorPalette.brightColor.toColor()
             }
 
             item.loadResources(gui.resources)

@@ -6,12 +6,9 @@ import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.toColor
 import com.cout970.modeler.view.GuiResources
-import com.cout970.modeler.view.gui.comp.CButton
-import com.cout970.modeler.view.gui.comp.CLabel
-import com.cout970.modeler.view.gui.comp.CPanel
-import com.cout970.modeler.view.gui.comp.CVerticalPanel
+import com.cout970.modeler.view.gui.comp.*
 import org.joml.Vector2f
-import org.liquidengine.legui.color.ColorConstants
+import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.icon.ImageIcon
 
 class RightPanel : CPanel() {
@@ -23,6 +20,7 @@ class RightPanel : CPanel() {
         add(materialListPanel)
         add(treeViewPanel)
         materialListPanel.position.y = 400f
+        setBorderless()
     }
 
     class TreeViewPanel : CPanel(width = 190f, height = 400f) {
@@ -40,6 +38,12 @@ class RightPanel : CPanel() {
 
             addTemplateButton.setTooltip("Create Template Cube")
             addMeshButton.setTooltip("Create Cube Mesh")
+            setBorderless()
+            listPanel.setBorderless()
+            listPanel.container.setTransparent()
+            listPanel.backgroundColor = Config.colorPalette.darkColor.toColor()
+            listPanel.verticalScrollBar.scrollColor = Config.colorPalette.darkestColor.toColor()
+            listPanel.verticalScrollBar.cornerRadius = 0f
         }
 
         override fun loadResources(resources: GuiResources) {
@@ -61,6 +65,12 @@ class RightPanel : CPanel() {
             add(listPanel)
 
             importMaterialButton.setTooltip("Import Material")
+            setBorderless()
+            listPanel.setBorderless()
+            listPanel.container.setTransparent()
+            listPanel.backgroundColor = Config.colorPalette.darkColor.toColor()
+            listPanel.verticalScrollBar.scrollColor = Config.colorPalette.darkestColor.toColor()
+            listPanel.verticalScrollBar.cornerRadius = 0f
         }
 
         override fun loadResources(resources: GuiResources) {
@@ -69,7 +79,7 @@ class RightPanel : CPanel() {
         }
     }
 
-    class ListItem(val ref: IObjectRef, name: String) : CPanel(width = 176f, height = 24f) {
+    class ListItem(val ref: IObjectRef, name: String) : CPanel(width = 182f, height = 24f) {
 
         val selectButton = CButton(name, 0f, 0f, 120f, 24f, "tree.view.select")
         val showButton = CButton("", 120f, 0f, 24f, 24f, "tree.view.show.item")
@@ -78,24 +88,24 @@ class RightPanel : CPanel() {
 
         init {
             cornerRadius = 0f
-            position.x = 1f
-            backgroundColor = Config.colorPalette.primaryColor.toColor()
+            backgroundColor = Config.colorPalette.lightDarkColor.toColor()
             add(selectButton)
             add(hideButton)
             add(showButton)
             add(delButton)
 
-            selectButton.backgroundColor = ColorConstants.transparent()
+            selectButton.setTransparent()
             selectButton.border.isEnabled = false
-
-            showButton.backgroundColor = ColorConstants.transparent()
+            showButton.setTransparent()
             showButton.border.isEnabled = false
-
-            hideButton.backgroundColor = ColorConstants.transparent()
+            hideButton.setTransparent()
             hideButton.border.isEnabled = false
-
-            delButton.backgroundColor = ColorConstants.transparent()
+            delButton.setTransparent()
             delButton.border.isEnabled = false
+
+            selectButton.textState.horizontalAlign = HorizontalAlign.LEFT
+            selectButton.textState.padding.x = 10f
+            setBorderless()
         }
 
         override fun loadResources(resources: GuiResources) {
@@ -106,34 +116,37 @@ class RightPanel : CPanel() {
         }
     }
 
-    class MaterialListItem(val ref: IMaterialRef, name: String) : CPanel(width = 180f, height = 24f) {
+    class MaterialListItem(val ref: IMaterialRef, name: String) : CPanel(width = 182f, height = 24f) {
 
         val selectButton = CButton(name, 0f, 0f, 120f, 24f, "material.view.select")
-        val applyButton = CButton("", 120f, 0f, 24f, 24f, "material.view.apply")
-        val loadButton = CButton("", 150f, 0f, 24f, 24f, "material.view.load")
+        val applyButton = CButton("", 150f, 0f, 24f, 24f, "material.view.apply")
+        val loadButton = CButton("", 120f, 0f, 24f, 24f, "material.view.load")
 
         init {
-            backgroundColor = Config.colorPalette.primaryColor.toColor()
+            backgroundColor = Config.colorPalette.lightDarkColor.toColor()
             add(selectButton)
             add(applyButton)
             add(loadButton)
 
-            selectButton.backgroundColor = ColorConstants.transparent()
+            selectButton.setTransparent()
             selectButton.border.isEnabled = false
 
-            applyButton.backgroundColor = ColorConstants.transparent()
+            applyButton.setTransparent()
             applyButton.border.isEnabled = false
 
-            loadButton.backgroundColor = ColorConstants.transparent()
+            loadButton.setTransparent()
             loadButton.border.isEnabled = false
 
             if (ref.materialIndex < 0) {
                 loadButton.hide()
             }
+            selectButton.textState.horizontalAlign = HorizontalAlign.LEFT
+            selectButton.textState.padding.x = 10f
+            setBorderless()
         }
 
         override fun loadResources(resources: GuiResources) {
-            applyButton.setImage(ImageIcon(resources.applyMaterial).apply { size = Vector2f(24f) })
+            applyButton.setImage(ImageIcon(resources.applyMaterial).apply { size = Vector2f(22f) })
             loadButton.setImage(ImageIcon(resources.loadMaterial).apply { size = Vector2f(20f) })
             super.loadResources(resources)
         }

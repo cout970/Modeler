@@ -7,7 +7,5 @@ import com.cout970.modeler.view.gui.comp.module.ILayout
  */
 class LayoutLeftPanel(val panel: LeftPanel) : ILayout {
 
-    override fun rescale() {
-
-    }
+    override fun rescale() = Unit
 }

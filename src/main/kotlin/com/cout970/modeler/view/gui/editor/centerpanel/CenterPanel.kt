@@ -1,29 +1,27 @@
 package com.cout970.modeler.view.gui.editor.centerpanel
 
-import com.cout970.modeler.util.BooleanPropertyWrapper
-import com.cout970.modeler.view.GuiResources
 import com.cout970.modeler.view.gui.comp.CPanel
-import com.cout970.modeler.view.gui.comp.CToggleButton
-import org.joml.Vector2f
+import com.cout970.modeler.view.gui.comp.setBorderless
+import com.cout970.modeler.view.gui.comp.setTransparent
 import org.liquidengine.legui.color.ColorConstants
 import org.liquidengine.legui.component.Label
-import org.liquidengine.legui.icon.ImageIcon
 
 /**
  * Created by cout970 on 2017/07/16.
  */
 
 class CenterPanel : CPanel() {
-    val topMenu = TopMenu()
     val canvasPanel = CPanel()
     val backgroundPanel = CanvasBackgroundPanel()
 
     init {
-        backgroundColor = ColorConstants.transparent()
-        add(topMenu)
         add(canvasPanel)
         add(backgroundPanel)
-        canvasPanel.backgroundColor = ColorConstants.transparent()
+        setTransparent()
+        setBorderless()
+        backgroundPanel.setBorderless()
+        canvasPanel.setBorderless()
+        canvasPanel.setTransparent()
     }
 
     class CanvasBackgroundPanel : CPanel() {
@@ -41,7 +39,7 @@ class CenterPanel : CPanel() {
         )
 
         init {
-            backgroundColor = ColorConstants.transparent()
+            setTransparent()
             (backgroundLabelsKey + backgroundLabelsValue).forEach {
                 add(it)
                 it.textState.apply {
@@ -49,32 +47,6 @@ class CenterPanel : CPanel() {
                     fontSize = 20f
                 }
             }
-        }
-    }
-
-    class TopMenu : CPanel() {
-
-        val showModelGridsButton = CToggleButton(5f, 2f, 24f, 22f, true) {
-            BooleanPropertyWrapper(it::drawModelGridLines)
-        }
-        val showTextureGridsButton = CToggleButton(34f, 2f, 24f, 22f, true) {
-            BooleanPropertyWrapper(it::drawTextureGridLines)
-        }
-
-        init {
-            add(showModelGridsButton)
-            add(showTextureGridsButton)
-        }
-
-        override fun loadResources(resources: GuiResources) {
-            showModelGridsButton.setImage(
-                    active = ImageIcon(resources.showGridsIcon).also { it.size = Vector2f(16f) },
-                    notActive = ImageIcon(resources.hideGridsIcon).also { it.size = Vector2f(16f) }
-            )
-            showTextureGridsButton.setImage(
-                    active = ImageIcon(resources.showGridsIcon).also { it.size = Vector2f(16f) },
-                    notActive = ImageIcon(resources.hideGridsIcon).also { it.size = Vector2f(16f) }
-            )
         }
     }
 }
