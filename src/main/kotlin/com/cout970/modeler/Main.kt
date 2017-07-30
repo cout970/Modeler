@@ -1,6 +1,7 @@
 package com.cout970.modeler
 
 import com.cout970.modeler.core.log.Level
+import com.cout970.modeler.core.log.Logger
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import javax.swing.JOptionPane
@@ -12,6 +13,7 @@ import javax.swing.UIManager
 
 fun main(args: Array<String>) {
     log(Level.NORMAL) { "Start of log" }
+    log(Level.NORMAL) { "Log level: ${Logger.level}" }
     log(Level.NORMAL) { "Program arguments: '${args.joinToString()}'" }
 
     try {

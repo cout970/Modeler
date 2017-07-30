@@ -47,7 +47,7 @@ class ResourcePath(val uri: URI) {
             if (file.exists() && file.isFile) {
                 return true
             }
-        } else if (uri.scheme == "zip") {
+        } else if (uri.scheme == "zip" || uri.scheme == "jar") {
             return true
         }
         return false

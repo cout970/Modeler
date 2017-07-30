@@ -1,5 +1,7 @@
 package com.cout970.modeler.functional.binders
 
+import com.cout970.modeler.core.log.Level
+import com.cout970.modeler.core.log.log
 import com.cout970.modeler.functional.Dispatcher
 import com.cout970.modeler.view.gui.comp.CButton
 import org.liquidengine.legui.component.Component
@@ -19,6 +21,7 @@ class ButtonBinder(val dispatcher: Dispatcher) {
     fun bindButtons(panel: Container<*>) {
         panel.childs.forEach {
             if (it is CButton) {
+                log(Level.FINEST) { "Binding button: ${it.command}" }
                 it.listenerMap.setButtonListener { onButtonPress(it.command, it) }
             } else if (it is Container<*>) {
                 bindButtons(it)

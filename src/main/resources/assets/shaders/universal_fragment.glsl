@@ -33,8 +33,8 @@ uniform int lightCount = 0;
 uniform bool useLight;
 
 // Material properties
-uniform float shineDamper = 1f;
-uniform float reflectivity = 0f;
+uniform float shineDamper = 1.0;
+uniform float reflectivity = 0.0;
 
 // Ambient light
 uniform float ambient = 0.1;

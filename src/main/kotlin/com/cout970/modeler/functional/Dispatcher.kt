@@ -20,7 +20,8 @@ class Dispatcher {
 
     private fun findUseCases(): List<IUseCase> {
         log(Level.FINE) { "[Dispatcher] Searching IUseCases with reflection..." }
-        val list = StackOverflowSnippets.getClasses("com.cout970.modeler.functional.usecases")
+        val list = StackOverflowSnippets.getClassesForPackage("com.cout970.modeler.functional.usecases")
+        log(Level.FINEST) { "IUseCase classes: $list" }
         val instances = list
                 .filter { !it.isInterface && IUseCase::class.java.isAssignableFrom(it) }
                 .map { it.constructors.first().newInstance() as IUseCase }
@@ -30,6 +31,7 @@ class Dispatcher {
     }
 
     fun onEvent(key: String, comp: Component?) {
+        log(Level.FINEST) { "[Dispatcher] Executing: $key" }
         val useCase = useCasesMap[key] ?: return
 
         try {

@@ -1,14 +1,18 @@
 package com.cout970.modeler.view.window
 
 import com.cout970.glutilities.structure.Timer
+import com.cout970.glutilities.texture.TextureLoader
 import com.cout970.glutilities.window.GLFWWindow
 import com.cout970.glutilities.window.WindowBuilder
+import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.util.ITickeable
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.xi
 import com.cout970.vector.extensions.yi
+import org.lwjgl.glfw.GLFW
 import org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose
+import org.lwjgl.glfw.GLFWImage
 import org.lwjgl.opengl.GL11
 import java.util.*
 
@@ -41,6 +45,17 @@ class WindowHandler(private val timer: Timer) : ITickeable {
         window.center()
         window.show()
         resetViewport()
+    }
+
+    fun loadIcon(rl: ResourceLoader) {
+        val texture = TextureLoader.loadTexture(rl.readResource("assets/textures/icon.png"))
+        val buffer = GLFWImage.create(1)
+        val image = GLFWImage.malloc()
+        image.set(texture.size.xi, texture.size.yi, texture.bitMap)
+        buffer.put(image)
+        GLFW.glfwSetWindowIcon(window.id, buffer)
+//        image.free()
+//        buffer.free()
     }
 
     fun close() {

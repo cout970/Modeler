@@ -5,6 +5,7 @@ import com.cout970.glutilities.window.GLFWLoader
 import com.cout970.modeler.core.config.ConfigManager
 import com.cout970.modeler.core.export.ExportManager
 import com.cout970.modeler.core.log.Level
+import com.cout970.modeler.core.log.Logger
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.project.ProjectManager
@@ -29,6 +30,7 @@ class Initializer {
         log(Level.FINE) { "Loading config" }
         ConfigManager.loadConfig()
         log(Level.FINE) { "Config loaded" }
+        log(Level.NORMAL) { "Log level: ${Logger.level}" }
 
         log(Level.FINE) { "Creating ResourceLoader" }
         val resourceLoader = ResourceLoader()
@@ -90,6 +92,7 @@ class Initializer {
         GLFWLoader.init()
         log(Level.FINE) { "Starting GLFW window" }
         windowHandler.create()
+        windowHandler.loadIcon(resourceLoader)
         log(Level.FINE) { "Binding listeners and callbacks to window" }
         eventController.bindWindow(windowHandler.window)
 
