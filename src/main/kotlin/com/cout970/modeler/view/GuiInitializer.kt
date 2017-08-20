@@ -10,7 +10,6 @@ import com.cout970.modeler.functional.binders.ButtonBinder
 import com.cout970.modeler.functional.binders.KeyboardBinder
 import com.cout970.modeler.view.canvas.CanvasContainer
 import com.cout970.modeler.view.canvas.CanvasManager
-import com.cout970.modeler.view.canvas.Selector
 import com.cout970.modeler.view.event.EventController
 import com.cout970.modeler.view.gui.GuiUpdater
 import com.cout970.modeler.view.gui.Root
@@ -45,8 +44,6 @@ class GuiInitializer(
         val canvasContainer = CanvasContainer(editorPanel.centerPanelModule.panel.canvasPanel)
         log(Level.FINE) { "[GuiInitializer] Creating CanvasManager" }
         val canvasManager = CanvasManager()
-        log(Level.FINE) { "[GuiInitializer] Creating Selector" }
-        val selector = Selector()
         log(Level.FINE) { "[GuiInitializer] Creating Listeners" }
         val listeners = Listeners()
         log(Level.FINE) { "[GuiInitializer] Creating GuiState" }
@@ -71,7 +68,6 @@ class GuiInitializer(
                 input = eventController,
                 editorPanel = editorPanel,
                 projectManager = projectManager,
-                selector = selector,
                 resources = guiResources,
                 state = guiState,
                 dispatcher = dispatcher,

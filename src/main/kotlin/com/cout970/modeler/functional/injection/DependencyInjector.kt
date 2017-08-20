@@ -4,9 +4,6 @@ import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.ProgramState
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.selection.ISelection
-import com.cout970.modeler.view.GuiState
-import com.cout970.modeler.functional.SelectionHandler
-import com.cout970.modeler.view.canvas.Selector
 import com.cout970.modeler.core.export.ExportManager
 import com.cout970.modeler.core.model.selection.IClipboard
 import com.cout970.modeler.core.project.ProjectManager
@@ -14,17 +11,20 @@ import com.cout970.modeler.core.project.ProjectProperties
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.functional.Dispatcher
 import com.cout970.modeler.functional.FutureExecutor
+import com.cout970.modeler.functional.SelectionHandler
 import com.cout970.modeler.functional.TaskHistory
 import com.cout970.modeler.functional.binders.ButtonBinder
 import com.cout970.modeler.functional.binders.KeyboardBinder
 import com.cout970.modeler.view.Gui
 import com.cout970.modeler.view.GuiResources
+import com.cout970.modeler.view.GuiState
 import com.cout970.modeler.view.Listeners
+import com.cout970.modeler.view.canvas.CanvasContainer
+import com.cout970.modeler.view.canvas.CanvasManager
 import com.cout970.modeler.view.event.EventController
 import com.cout970.modeler.view.event.IInput
 import com.cout970.modeler.view.gui.GuiUpdater
 import com.cout970.modeler.view.gui.Root
-import com.cout970.modeler.view.canvas.CanvasContainer
 import com.cout970.modeler.view.gui.editor.EditorPanel
 import com.cout970.modeler.view.render.RenderManager
 import com.cout970.modeler.view.window.Loop
@@ -85,7 +85,7 @@ class DependencyInjector {
                     IInput::class.java -> gui.input
                     EditorPanel::class.java -> gui.editorPanel
                     ProjectManager::class.java -> gui.projectManager
-                    Selector::class.java -> gui.selector
+                    CanvasManager::class.java -> gui.canvasManager
                     GuiResources::class.java -> gui.resources
                     GuiState::class.java -> gui.state
                     SelectionHandler::class.java -> gui.selectionHandler

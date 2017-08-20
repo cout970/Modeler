@@ -35,23 +35,21 @@ class EditCubePanel : CPanel(width = 190f, height = 385f) {
     }
 
     class CubeSizePanel : CPanel(width = 190f, height = 75f) {
-        val sizeXLabel = CLabel("Size X", 15f, 5f, 60f, 18f)
-        val sizeXInput = CTextInput("cube.size.x", "0.0", 95f, 5f, 80f, 18f)
-        val sizeYLabel = CLabel("Size Y", 15f, 28f, 60f, 18f)
-        val sizeYInput = CTextInput("cube.size.y", "0.0", 95f, 28f, 80f, 18f)
-        val sizeZLabel = CLabel("Size Z", 15f, 51f, 60f, 18f)
-        val sizeZInput = CTextInput("cube.size.z", "0.0", 95f, 51f, 80f, 18f)
+        val label = CLabel("Size", 0f, 2f, 190f, 18f)
+        val sizeXInput = CTextInput("cube.size.x", "0.0", 10f, 20f, 50f, 20f)
+        val sizeYInput = CTextInput("cube.size.y", "0.0", 70f, 20f, 50f, 20f)
+        val sizeZInput = CTextInput("cube.size.z", "0.0", 130f, 20f, 50f, 20f)
 
         init {
-            add(sizeXLabel.apply { textState.horizontalAlign = HorizontalAlign.LEFT })
-            add(sizeXInput)
-            add(sizeYLabel.apply { textState.horizontalAlign = HorizontalAlign.LEFT })
-            add(sizeYInput)
-            add(sizeZLabel.apply { textState.horizontalAlign = HorizontalAlign.LEFT })
-            add(sizeZInput)
+            add(label)
+
+            add(sizeXInput.apply { textState.horizontalAlign = HorizontalAlign.CENTER })
+            add(sizeYInput.apply { textState.horizontalAlign = HorizontalAlign.CENTER })
+            add(sizeZInput.apply { textState.horizontalAlign = HorizontalAlign.CENTER })
             setBorderless()
             setTransparent()
         }
+
     }
 
     class CubePosPanel : CPanel(width = 190f, height = 75f) {

@@ -8,6 +8,7 @@ import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.distance
 import com.cout970.vector.extensions.div
 import com.cout970.vector.extensions.plus
+import org.funktionale.option.Option
 import org.lwjgl.PointerBuffer
 import org.lwjgl.system.MemoryUtil
 
@@ -114,4 +115,11 @@ fun <T> List<T>.combine(multi: Boolean, element: T): List<T> {
             return listOf(element)
         }
     }
+}
+
+inline fun <T, R> Option<T>.ifDefined(func: (T) -> R): Option<R> {
+    if(isDefined()){
+        return map(func)
+    }
+    return Option.None
 }

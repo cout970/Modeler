@@ -37,6 +37,9 @@ class AutoCache(vararg val flags: CacheFrags) {
         if (CacheFrags.VISIBILITY in flags) {
             hash = (hash shl 1) xor ctx.gui.state.visibilityHash
         }
+        if (CacheFrags.CURSOR in flags) {
+            hash = (hash shl 1) xor ctx.gui.canvasManager.cursor.hashCode()
+        }
         return hash
     }
 
@@ -56,5 +59,6 @@ enum class CacheFrags {
     SELECTION_MODEL,
     SELECTION_TEXTURE,
     MATERIAL,
-    VISIBILITY
+    VISIBILITY,
+    CURSOR
 }

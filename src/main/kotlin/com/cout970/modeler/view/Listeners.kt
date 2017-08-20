@@ -74,6 +74,7 @@ class Listeners : ITickeable {
 
     override fun tick() {
         cameraUpdater.updateCameras()
-        gui.selector.update(gui.canvasContainer)
+        gui.canvasManager.update()
+//        gui.selector.update(gui.canvasContainer)
     }
 }

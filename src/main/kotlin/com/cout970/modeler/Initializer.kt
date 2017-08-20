@@ -85,7 +85,8 @@ class Initializer {
 
         Debugger.setInit(state)
         gui.selectionHandler.listeners.add(gui.guiUpdater::onSelectionUpdate)
-
+        gui.selectionHandler.listeners.add(gui.canvasManager::onSelectionUpdate)
+        gui.canvasManager.processor = taskHistory
 
 
         log(Level.FINE) { "Starting GLFW" }
@@ -100,7 +101,6 @@ class Initializer {
         renderManager.initOpenGl(resourceLoader, gui)
         log(Level.FINE) { "Registering Input event listeners" }
         gui.listeners.initListeners(eventController, gui)
-        gui.selector.processor = taskHistory
 
         log(Level.FINE) { "Reloading gui resources" }
         gui.resources.reload(resourceLoader)

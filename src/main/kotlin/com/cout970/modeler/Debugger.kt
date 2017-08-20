@@ -42,4 +42,5 @@ object Debugger {
         drawVaoCount = 0
         buildVaoCount = 0
     }
+
 }

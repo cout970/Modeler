@@ -33,7 +33,7 @@ class GuiUpdater {
 
     fun onModelUpdate(old: IModel, new: IModel) {
         presenters.forEach { it.onModelUpdate(old, new) }
-        gui.selector.updateCursorCenter(gui.selectionHandler.getSelection())
+        gui.canvasManager.updateCursorCenter(gui.selectionHandler.getModelSelection())
     }
 
     fun onSelectionUpdate(old: ISelection?, new: ISelection?) {

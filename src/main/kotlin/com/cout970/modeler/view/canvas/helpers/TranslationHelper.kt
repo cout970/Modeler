@@ -35,12 +35,10 @@ object TranslationHelper {
         // Move using increments of 1, 1/4, 1/16
         val offset: Float
 
-        if (Config.keyBindings.disableGridMotion.check(input)) {
-            offset = Math.round(move * 16) / 16f
-        } else if (Config.keyBindings.disablePixelGridMotion.check(input)) {
-            offset = Math.round(move * 4) / 4f
-        } else {
-            offset = Math.round(move).toFloat()
+        offset = when {
+            Config.keyBindings.disableGridMotion.check(input) -> Math.round(move * 16) / 16f
+            Config.keyBindings.disablePixelGridMotion.check(input) -> Math.round(move * 4) / 4f
+            else -> Math.round(move).toFloat()
         }
         return offset
     }
