@@ -8,7 +8,6 @@ import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.Object
-import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.FaceIndex
@@ -140,7 +139,6 @@ class ObjImporter {
         val objs = groups.map { group ->
             Object(name = group.name,
                     mesh = group.toMesh(data).optimize(),
-                    transformation = TRSTransformation.IDENTITY,
                     material = materialMap[group.material] ?: MaterialRef(-1)
             )
         }

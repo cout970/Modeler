@@ -24,7 +24,6 @@ fun IModel.getObject(ray: Ray): Pair<RayTraceResult, IObject>? {
 
 fun IObject.getHits(ray: Ray): List<RayTraceResult> {
     val list = mutableListOf<RayTraceResult>()
-    val mesh = transformedMesh
 
     mesh.faces.forEach { face ->
         val a = mesh.pos[face.pos[0]]

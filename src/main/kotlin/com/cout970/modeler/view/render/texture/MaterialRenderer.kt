@@ -56,7 +56,8 @@ class MaterialRenderer {
 
             ctx.buffer.build(GL11.GL_QUADS) {
                 objs.forEach { obj ->
-                    val mesh = obj.transformedMesh
+                    val mesh = obj.mesh
+
                     mesh.faces.forEachIndexed { index, face ->
                         val vec = Color.getHSBColor((index * 59 % 360) / 360f, 0.5f, 1.0f)
                         val color = vec3Of(vec.red, vec.green, vec.blue) / 255
@@ -95,7 +96,8 @@ class MaterialRenderer {
 
             ctx.buffer.build(GL11.GL_LINES) {
                 objs.forEach { obj ->
-                    val mesh = obj.transformedMesh
+                    val mesh = obj.mesh
+
                     mesh.faces.forEach { face ->
 
                         val positions = face.tex

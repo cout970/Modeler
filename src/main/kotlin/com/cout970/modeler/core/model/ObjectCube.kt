@@ -1,6 +1,5 @@
 package com.cout970.modeler.core.model
 
-import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.`object`.IObjectCube
 import com.cout970.modeler.api.model.`object`.IObjectTransformer
@@ -28,7 +27,6 @@ data class ObjectCube(
         override val subTransformation: TRTSTransformation,
         override val size: IVector3,
 
-        override val transformation: ITransformation = TRSTransformation.IDENTITY,
         override val material: IMaterialRef = MaterialRef(-1),
 
         override val textureOffset: IVector2 = Vector2.ORIGIN,
@@ -38,7 +36,6 @@ data class ObjectCube(
 ) : IObjectCube {
 
     override val mesh: IMesh by lazy { generateMesh() }
-    override val transformedMesh: IMesh by lazy { mesh.transform(transformation) }
 
     override fun getCenter(): IVector3 = subTransformation.preRotation //subTransformation.matrix * (pos + size * 0.5).toVector4(1.0)
 
@@ -115,7 +112,7 @@ data class ObjectCube(
 
     override val transformer: IObjectTransformer = object : IObjectTransformer {
         override fun withMesh(obj: IObject, newMesh: IMesh): IObject {
-            return Object(name, newMesh, transformation, material)
+            return Object(name, newMesh, material)
         }
 
         override fun translate(obj: IObject, translation: IVector3): IObject {

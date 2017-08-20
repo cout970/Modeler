@@ -9,7 +9,6 @@ import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.ObjectCube
-import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.TRTSTransformation
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.MaterialRef
@@ -142,7 +141,6 @@ class TcnImporter {
                 size = rSize,
                 pos = fOffset,
                 subTransformation = TRTSTransformation.fromRotationPivot(rRotPoint, rRotation),
-                transformation = TRSTransformation.IDENTITY,
                 textureOffset = rTexture,
                 textureSize = textureSize,
                 mirrored = mirrored,

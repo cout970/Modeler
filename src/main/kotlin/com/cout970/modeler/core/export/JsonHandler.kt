@@ -9,7 +9,6 @@ import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.Object
-import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.FaceIndex
@@ -63,7 +62,6 @@ class JsonImporter {
                 val shape = Object(
                         name = "Shape_${obj.size}",
                         mesh = finalMesh,
-                        transformation = TRSTransformation.IDENTITY,
                         material = materials[texture] ?: MaterialRef(-1)
                 )
                 obj += shape

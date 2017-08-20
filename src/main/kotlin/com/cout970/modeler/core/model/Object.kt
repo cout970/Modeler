@@ -1,6 +1,5 @@
 package com.cout970.modeler.core.model
 
-import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.`object`.IObjectTransformer
 import com.cout970.modeler.api.model.material.IMaterialRef
@@ -16,12 +15,10 @@ import com.cout970.vector.api.IVector3
 data class Object(
         override val name: String,
         override val mesh: IMesh,
-        override val transformation: ITransformation = TRSTransformation.IDENTITY,
         override val material: IMaterialRef = MaterialRef(-1)
 ) : IObject {
 
-    override val transformedMesh: IMesh by lazy { mesh.transform(transformation) }
-    override fun getCenter(): IVector3 = transformedMesh.middle()
+    override fun getCenter(): IVector3 = mesh.middle()
 
     override val transformer: IObjectTransformer = object : IObjectTransformer {
         override fun withMesh(obj: IObject, newMesh: IMesh): IObject {

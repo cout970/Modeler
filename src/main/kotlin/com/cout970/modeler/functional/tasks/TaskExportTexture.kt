@@ -29,7 +29,7 @@ class TaskExportTexture(
                     .filter { model.isVisible(it) }
                     .map { model.getObject(it) }
                     .filter { it.material == material }
-                    .map { it.transformedMesh }
+                    .map { it.mesh }
 
             val image = BufferedImage(size.xi, size.yi, BufferedImage.TYPE_INT_ARGB_PRE)
             val g = image.createGraphics()

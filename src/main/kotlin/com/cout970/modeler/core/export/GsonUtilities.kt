@@ -159,7 +159,6 @@ class ObjectSerializer : JsonSerializer<IObject>, JsonDeserializer<IObject> {
                     pos = context.deserialize(obj["pos"], IVector3::class.java),
                     subTransformation = context.deserialize(obj["subTransformation"], TRTSTransformation::class.java),
                     size = context.deserialize(obj["size"], IVector3::class.java),
-                    transformation = context.deserialize(obj["transformation"], TRSTransformation::class.java),
                     material = context.deserialize(obj["material"], IMaterialRef::class.java),
                     textureOffset = context.deserialize(obj["textureOffset"], IVector2::class.java),
                     textureSize = context.deserialize(obj["textureSize"], IVector2::class.java),

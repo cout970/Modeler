@@ -1,6 +1,5 @@
 package com.cout970.modeler.core.model
 
-import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.`object`.IObjectTransformer
 import com.cout970.modeler.api.model.material.IMaterialRef
@@ -17,9 +16,7 @@ import com.cout970.vector.extensions.Vector3
 object ObjectNone : IObject {
     override val name: String = "none"
     override val mesh: IMesh = Mesh()
-    override val transformation: ITransformation = TRSTransformation()
     override val material: IMaterialRef = MaterialRef(-1)
-    override val transformedMesh: IMesh = mesh
 
     override val transformer: IObjectTransformer = object : IObjectTransformer {
         override fun withMesh(obj: IObject, newMesh: IMesh): IObject = this@ObjectNone

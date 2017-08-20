@@ -72,7 +72,7 @@ class ModelRenderer {
                     useTexture.setInt(1)
                     useColor.setInt(0)
                     useLight.setInt(1)
-                    matrixM.setMatrix4(obj.transformation.matrix)
+                    matrixM.setMatrix4(Matrix4.IDENTITY)
                     accept(modelCache[objIndex])
                 }
             }
