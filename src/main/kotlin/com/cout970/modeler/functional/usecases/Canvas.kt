@@ -37,7 +37,7 @@ class CanvasSelectPart : IUseCase {
     @Inject lateinit var gui: Gui
 
     override fun createTask(): ITask {
-        if (state.holdingSelection != null || state.hoveredObject != null) return TaskNone
+        if (state.hoveredObject != null) return TaskNone
 
         val canvas = component as Canvas
         val pos = input.mouse.getMousePos()
@@ -66,7 +66,7 @@ class CanvasJumpCamera : IUseCase {
     @Inject lateinit var model: IModel
 
     override fun createTask(): ITask {
-        if (state.holdingSelection != null || state.hoveredObject != null) return TaskNone
+        if (state.hoveredObject != null) return TaskNone
 
         val canvas = component as Canvas
         val pos = input.mouse.getMousePos()

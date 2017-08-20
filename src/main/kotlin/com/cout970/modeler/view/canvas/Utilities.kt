@@ -33,7 +33,7 @@ interface ITranslatable : ISelectable {
 interface IRotable : ISelectable {
     val center: IVector3
     // normal vector of the plane where this obj will be rotated
-    val normal: IVector3
+    val tangent: IVector3
 
     fun applyRotation(offset: Float, selection: ISelection, model: IModel): IModel
 }

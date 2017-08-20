@@ -63,8 +63,8 @@ class Mesh(
         if (pos.isEmpty()) return this
         if (tex.isEmpty()) return this
 
-        val newPos = pos.distinct()
-        val newTex = tex.distinct()
+        val newPos = pos.filterIndexed { index, _ -> faces.any { index in it.pos } }.distinct()
+        val newTex = tex.filterIndexed { index, _ -> faces.any { index in it.tex } }.distinct()
 
         val newFaces = faces.map { face ->
             val p = face.pos.map { newPos.indexOf(pos[it]) }

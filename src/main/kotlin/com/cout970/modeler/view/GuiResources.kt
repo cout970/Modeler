@@ -18,6 +18,8 @@ class GuiResources {
     lateinit var baseCubeMesh: IMesh
     lateinit var lightMesh: IMesh
     lateinit var translationArrow: IMesh
+    lateinit var rotationRing: IMesh
+    lateinit var scaleArrow: IMesh
 
     lateinit var baseCubeTexture: Texture
     lateinit var centerMarkTexture: Texture
@@ -54,6 +56,8 @@ class GuiResources {
         lightMesh = ModelImporters.objImporter.importAsMesh("assets/models/light.obj".fromClasspath(), true)
         translationArrow = ModelImporters.objImporter.importAsMesh("assets/models/translation_x.obj".fromClasspath(),
                 true)
+        rotationRing = ModelImporters.objImporter.importAsMesh("assets/models/rotation_x.obj".fromClasspath(), true)
+        scaleArrow = ModelImporters.objImporter.importAsMesh("assets/models/scale_x.obj".fromClasspath(), true)
 
         baseCubeTexture = loader.getTexture("assets/textures/models/cube.png").apply { magFilter = Texture.PIXELATED }
         centerMarkTexture = loader.getTexture("assets/textures/models/center_mark.png")

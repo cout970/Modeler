@@ -2,22 +2,21 @@ package com.cout970.modeler.view.canvas
 
 import com.cout970.glutilities.event.EnumKeyState
 import com.cout970.glutilities.event.EventMouseClick
+import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.getSelectedObjects
 import com.cout970.modeler.functional.ITaskProcessor
-import com.cout970.modeler.util.absolutePosition
-import com.cout970.modeler.util.isInside
-import com.cout970.modeler.util.middle
-import com.cout970.modeler.util.toIVector
+import com.cout970.modeler.util.*
 import com.cout970.modeler.view.Gui
 import com.cout970.modeler.view.canvas.cursor.Cursor
 import com.cout970.modeler.view.canvas.input.DragTick
 import com.cout970.modeler.view.canvas.input.nextTick
 import com.cout970.vector.api.IVector2
+import com.cout970.vector.extensions.plus
+import com.cout970.vector.extensions.times
 import org.funktionale.option.Option
 import org.funktionale.option.firstOption
-import org.funktionale.option.toOption
 
 /**
  * Created by cout970 on 2017/07/22.
@@ -43,20 +42,27 @@ class CanvasManager {
     fun update() {
         val canvas = gui.canvasContainer.selectedCanvas
         canvas?.let {
-            last = last.nextTick(gui, canvas, realCursor)
+
+            val targets = cursor.getSelectableParts(gui, canvas)
+            last = last.nextTick(gui, canvas, targets)
+
             gui.state.hoveredObject = last.hovered
+
+            (last.hovered as? ITranslatable)?.let {
+                val offset = last.step.offset
+                tmpCursor = Cursor(realCursor.center + it.translationAxis * offset)
+            }
+
             last.tmpModel.let {
                 gui.state.tmpModel = it
                 gui.state.modelHash = it?.hashCode() ?: 0
                 gui.state.visibilityHash = it?.visibilities?.hashCode() ?: 0
             }
-            last.cursor?.let {
-                println(it)
-                tmpCursor = it
-            }
+
             last.task?.let {
                 last = last.copy(task = null)
                 processor.processTask(it)
+                tmpCursor = null
             }
         }
 
@@ -65,8 +71,12 @@ class CanvasManager {
         }
     }
 
+    fun onModelUpdate(old: IModel, new: IModel) {
+        updateCursorCenter()
+    }
+
     fun onSelectionUpdate(old: ISelection?, new: ISelection?) {
-        updateCursorCenter(new.toOption())
+        updateCursorCenter()
     }
 
     fun updateSelectedCanvas() {
@@ -78,8 +88,9 @@ class CanvasManager {
         }
     }
 
-    fun updateCursorCenter(selection: Option<ISelection>) {
-        selection.forEach {
+    fun updateCursorCenter() {
+        val selection = gui.selectionHandler.getModelSelection()
+        selection.ifDefined {
             val model = gui.state.tmpModel ?: gui.projectManager.model
 
             val newCenter = model.getSelectedObjects(it)
@@ -87,6 +98,7 @@ class CanvasManager {
                     .middle()
 
             realCursor = Cursor(newCenter)
+            tmpCursor = null
         }
     }
 

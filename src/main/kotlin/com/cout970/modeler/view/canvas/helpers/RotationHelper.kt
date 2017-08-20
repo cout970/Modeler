@@ -1,9 +1,9 @@
 package com.cout970.modeler.view.canvas.helpers
 
-import com.cout970.modeler.view.canvas.IRotable
-import com.cout970.modeler.view.canvas.SceneSpaceContext
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.util.getClosestPointOnLineSegment
+import com.cout970.modeler.view.canvas.IRotable
+import com.cout970.modeler.view.canvas.SceneSpaceContext
 import com.cout970.modeler.view.event.IInput
 import com.cout970.raytrace.Ray
 import com.cout970.vector.api.IVector3
@@ -31,7 +31,7 @@ object RotationHelper {
     }
 
     fun getAngle(oldContext: SceneSpaceContext, newContext: SceneSpaceContext, obj: IRotable): Double {
-        val normal = obj.normal
+        val normal = obj.tangent
         val new = getDirectionToMouse(oldContext.mouseRay, obj)
         val old = getDirectionToMouse(newContext.mouseRay, obj)
 
@@ -52,7 +52,7 @@ object RotationHelper {
     fun projectToPlane(mouseRay: Ray, obj: IRotable): IVector3 {
         val closest = getClosestPointOnLineSegment(mouseRay.start, mouseRay.end, obj.center)
         val dir = (closest - obj.center).normalize()
-        val normal = obj.normal
+        val normal = obj.tangent
 
         return (normal cross dir).normalize()
     }

@@ -32,16 +32,24 @@ class Cursor(val center: IVector3 = Vector3.ORIGIN) {
         if (gui.selectionHandler.ref.isEmpty()) {
             return emptyList()
         }
-        val parameters = CursorParameters.create(camera.zoom,
-                viewport)
+        val parameters = CursorParameters.create(camera.zoom, viewport)
+
         return when (gui.state.transformationMode) {
             TransformationMode.TRANSLATION -> listOf(
                     CursorPartTranslate(this, parameters, Vector3.X_AXIS),
                     CursorPartTranslate(this, parameters, Vector3.Y_AXIS),
                     CursorPartTranslate(this, parameters, Vector3.Z_AXIS)
             )
-            TransformationMode.ROTATION -> listOf()
-            TransformationMode.SCALE -> listOf()
+            TransformationMode.ROTATION -> listOf(
+                    CursorPartRotate(this, parameters, Vector3.X_AXIS, Vector3.Y_AXIS),
+                    CursorPartRotate(this, parameters, Vector3.Y_AXIS, Vector3.Z_AXIS),
+                    CursorPartRotate(this, parameters, Vector3.Z_AXIS, Vector3.X_AXIS)
+            )
+            TransformationMode.SCALE -> listOf(
+                    CursorPartScale(this, parameters, Vector3.X_AXIS),
+                    CursorPartScale(this, parameters, Vector3.Y_AXIS),
+                    CursorPartScale(this, parameters, Vector3.Z_AXIS)
+            )
         }
     }
 }

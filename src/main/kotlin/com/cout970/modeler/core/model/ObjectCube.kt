@@ -9,13 +9,14 @@ import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.mesh.MeshFactory
-import com.cout970.modeler.util.toIVector
-import com.cout970.modeler.util.toJOML
+import com.cout970.modeler.util.*
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
+import org.joml.Quaterniond
 import org.joml.Vector4d
+
 
 /**
  * Created by cout970 on 2017/05/14.
@@ -37,7 +38,7 @@ data class ObjectCube(
 
     override val mesh: IMesh by lazy { generateMesh() }
 
-    override fun getCenter(): IVector3 = subTransformation.preRotation //subTransformation.matrix * (pos + size * 0.5).toVector4(1.0)
+    override fun getCenter(): IVector3 = subTransformation.preRotation //mesh.middle()
 
     fun generateMesh(): IMesh {
         val cube = MeshFactory.createCube(size, pos)
@@ -116,15 +117,27 @@ data class ObjectCube(
         }
 
         override fun translate(obj: IObject, translation: IVector3): IObject {
-            return copy(pos = pos + translation, subTransformation = subTransformation.translate(translation))
+            return copy(pos = pos + translation)
         }
 
         override fun rotate(obj: IObject, pivot: IVector3, rot: IQuaternion): IObject {
-            return this@ObjectCube
+
+            val actual = quatOfAngles(subTransformation.rotation.toRadians()).toJOML()
+            val trans = rot.toJOML()
+            val comb = actual.mul(trans, Quaterniond())
+
+            return copy(subTransformation = subTransformation.copy(
+                    rotation = comb.toIQuaternion().toAxisRotations()
+            ))
         }
 
+//        fun quaternionFromMatrix(m: Matrix4d): Quaterniond {
+//            return Quaterniond().lookAlong(m.getColumn(2, Vector4d()).xyz, m.getColumn(1, Vector4d()).xyz)
+//        }
+
         override fun scale(obj: IObject, center: IVector3, axis: IVector3, offset: Float): IObject {
-            return this@ObjectCube
+            val newSize = size + axis * offset
+            return copy(size = newSize)
         }
 
         override fun withMaterial(obj: IObject, materialRef: IMaterialRef): IObject {

@@ -6,7 +6,7 @@ import com.cout970.modeler.functional.tasks.TaskUpdateModel
 import com.cout970.modeler.view.Gui
 import com.cout970.modeler.view.canvas.Canvas
 import com.cout970.modeler.view.canvas.ISelectable
-import com.cout970.modeler.view.canvas.cursor.Cursor
+import com.cout970.modeler.view.canvas.helpers.CanvasHelper
 import com.cout970.vector.extensions.Vector2
 
 /**
@@ -23,8 +23,7 @@ data class DragTick(
         val task: ITask? = null,
         val tmpModel: IModel? = null,
         val hovered: ISelectable? = null,
-        val step: TransformationStep = TransformationStep(),
-        val cursor: Cursor? = null
+        val step: TransformationStep = TransformationStep()
 )
 
 fun Drag.nextDrag(mouse: MouseState): Drag {
@@ -35,22 +34,25 @@ fun Drag.nextDrag(mouse: MouseState): Drag {
     }
 }
 
-fun DragTick.nextTick(gui: Gui, canvas: Canvas, cursor: Cursor): DragTick {
+fun DragTick.nextTick(gui: Gui, canvas: Canvas, targets: List<ISelectable>): DragTick {
     val mouseState = MouseState.from(gui)
 
     val newDrag = drag.nextDrag(mouseState)
 
     val hovered = when (newDrag.dragStart == null) {
-                      true -> Hover.getHoveredObject(gui, canvas, cursor)
-                      else -> hovered
-                  }
+        true -> {
+            val context = CanvasHelper.getMouseSpaceContext(canvas, gui.input.mouse.getMousePos())
+            Hover.getHoveredObject(context, targets)
+        }
+        else -> hovered
+    }
 
-    val (step, newCursor) = when (newDrag.dragStart != null && hovered != null) {
+    val step = when (newDrag.dragStart != null && hovered != null) {
         true -> {
             val pos = newDrag.dragStart!!.mousePos to mouseState.mousePos
-            step.next(gui, hovered!!, pos, canvas, cursor)
+            step.next(gui, hovered!!, pos, canvas)
         }
-        else -> TransformationStep() to null
+        else -> TransformationStep()
     }
 
     val task: TaskUpdateModel?
@@ -61,6 +63,6 @@ fun DragTick.nextTick(gui: Gui, canvas: Canvas, cursor: Cursor): DragTick {
         else -> null
     }
 
-    return DragTick(newDrag, task, newModel, hovered, step, newCursor)
+    return DragTick(newDrag, task, newModel, hovered, step)
 }
 

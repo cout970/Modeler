@@ -14,7 +14,7 @@ import org.joml.Matrix4d
  */
 data class TRTSTransformation(
         val preRotation: IVector3 = Vector3.ORIGIN,
-        val rotation: IVector3 = Vector3.ORIGIN,
+        val rotation: IVector3 = Vector3.ORIGIN, //in degrees
         val postRotation: IVector3 = Vector3.ORIGIN,
         val scale: IVector3 = Vector3.ONE
 ) : ITransformation {
@@ -26,6 +26,8 @@ data class TRTSTransformation(
             return TRTSTransformation(pivot, rotation, -pivot, Vector3.ONE)
         }
     }
+
+    val position: IVector3 = preRotation + postRotation
 
     // Gson pls
     private constructor() : this(Vector3.ORIGIN, Quaternion.IDENTITY, Vector3.ORIGIN, Vector3.ONE)
@@ -47,4 +49,21 @@ data class TRTSTransformation(
                 scale = scale
         )
     }
+
+//    fun merge(other: TRTSTransformation): TRTSTransformation {
+//      TODO
+//    }
+
+    /*
+    public void RotateAround(Vector3 point, Vector3 axis, float angle)
+		{
+			Vector3 vector = this.position;
+			Quaternion rotation = Quaternion.AngleAxis(angle, axis);
+			Vector3 vector2 = vector - point;
+			vector2 = rotation * vector2;
+			vector = point + vector2;
+			this.position = vector;
+			this.RotateAroundInternal(axis, angle * 0.0174532924f);
+		}
+	*/
 }

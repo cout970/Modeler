@@ -6,6 +6,7 @@ import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.util.middle
+import com.cout970.modeler.util.toAxisRotations
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
 
@@ -30,7 +31,7 @@ data class Object(
         }
 
         override fun rotate(obj: IObject, pivot: IVector3, rot: IQuaternion): IObject {
-            return this@Object
+            return copy(mesh = mesh.transform(TRTSTransformation.fromRotationPivot(pivot, rot.toAxisRotations())))
         }
 
         override fun scale(obj: IObject, center: IVector3, axis: IVector3, offset: Float): IObject {

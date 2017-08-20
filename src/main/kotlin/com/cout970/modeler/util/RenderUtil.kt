@@ -61,21 +61,23 @@ object RenderUtil {
         return q.transform(Vector3d(1.0, 0.0, 0.0)).toIVector()
     }
 
-//    fun renderCircle(t: ITessellator, center: IVector3, axis: IVector3, radius: Double, size: Double = 0.05,
-//                     color: IVector3 = vec3Of(1, 1, 1)) {
-//        val quality = 16
-//        for (i in 0..360 / quality) {
-//            val angle0 = Math.toRadians(i.toDouble() * quality)
-//            val angle1 = Math.toRadians((i.toDouble() + 1) * quality)
-//
-//            val (axis0, axis1) = axis.getPerpendicularPlane()
-//
-//            val start = axis0 * Math.sin(angle0) + axis1 * Math.cos(angle0)
-//            val end = axis0 * Math.sin(angle1) + axis1 * Math.cos(angle1)
-//
-//            renderBar(t, start * radius + center, end * radius + center, size, color)
-//        }
-//    }
+    fun createCircleMesh(center: IVector3, axis: IVector3, radius: Double, size: Double = 0.05): IMesh {
+
+        val quality = 16
+        val meshes = mutableListOf<IMesh>()
+        for (i in 0..360 / quality) {
+            val angle0 = Math.toRadians(i.toDouble() * quality)
+            val angle1 = Math.toRadians((i.toDouble() + 1) * quality)
+
+            val (axis0, axis1) = axis.getPerpendicularPlane()
+
+            val start = axis0 * Math.sin(angle0) + axis1 * Math.cos(angle0)
+            val end = axis0 * Math.sin(angle1) + axis1 * Math.cos(angle1)
+
+            meshes += createBarMesh(start * radius + center, end * radius + center, size)
+        }
+        return if (meshes.isEmpty()) Mesh() else meshes.reduce { acc, mesh -> acc.merge(mesh) }
+    }
 
     fun appendAABB(buffer: UniversalShader.Buffer, box: AABB, color: IVector3 = vec3Of(1, 1, 1)) {
 

@@ -118,8 +118,13 @@ fun <T> List<T>.combine(multi: Boolean, element: T): List<T> {
 }
 
 inline fun <T, R> Option<T>.ifDefined(func: (T) -> R): Option<R> {
-    if(isDefined()){
+    if (isDefined()) {
         return map(func)
     }
     return Option.None
+}
+
+fun <T> List<T>.getCyclic(index: Int): T {
+    val ind = index % size
+    return get(if (ind < 0) ind + size else ind)
 }

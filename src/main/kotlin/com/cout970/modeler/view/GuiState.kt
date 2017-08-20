@@ -22,7 +22,6 @@ class GuiState {
 
     var renderLights: Boolean = false
 
-    var holdingSelection: ISelectable? = null
     var hoveredObject: ISelectable? = null
     var tmpModel: IModel? = null
 

@@ -17,7 +17,7 @@ class CursorParameters(
         fun create(zoom: Double, containerSize: IVector2): CursorParameters {
             val scale = zoom / 10 * Config.cursorArrowsScale * (1000 / containerSize.yd)
             val length = Config.cursorArrowsDispersion * scale
-            val width = 0.0625 * scale * 2
+            val width = 0.0625 * scale * 3
             return CursorParameters(length, width)
         }
     }

@@ -86,6 +86,7 @@ class Initializer {
         Debugger.setInit(state)
         gui.selectionHandler.listeners.add(gui.guiUpdater::onSelectionUpdate)
         gui.selectionHandler.listeners.add(gui.canvasManager::onSelectionUpdate)
+        gui.projectManager.modelChangeListeners.add(gui.canvasManager::onModelUpdate)
         gui.canvasManager.processor = taskHistory
 
 

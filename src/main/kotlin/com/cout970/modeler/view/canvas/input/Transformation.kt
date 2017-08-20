@@ -4,15 +4,12 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.view.Gui
 import com.cout970.modeler.view.canvas.*
-import com.cout970.modeler.view.canvas.cursor.Cursor
 import com.cout970.modeler.view.canvas.helpers.CanvasHelper
 import com.cout970.modeler.view.canvas.helpers.RotationHelper
 import com.cout970.modeler.view.canvas.helpers.ScaleHelper
 import com.cout970.modeler.view.canvas.helpers.TranslationHelper
 import com.cout970.modeler.view.event.IInput
 import com.cout970.vector.api.IVector2
-import com.cout970.vector.extensions.plus
-import com.cout970.vector.extensions.times
 
 /**
  * Created by cout970 on 2017/08/16.
@@ -23,8 +20,8 @@ data class TransformationStep(
         val offset: Float = 0f
 )
 
-fun TransformationStep.next(gui: Gui, hovered: ISelectable, pos: Pair<IVector2, IVector2>, canvas: Canvas,
-                            cursor: Cursor) : Pair<TransformationStep, Cursor?> {
+fun TransformationStep.next(gui: Gui, hovered: ISelectable, pos: Pair<IVector2, IVector2>,
+                            canvas: Canvas): TransformationStep {
 
     val mode = gui.state.transformationMode
     val oldModel = gui.projectManager.model
@@ -60,15 +57,10 @@ fun TransformationStep.next(gui: Gui, hovered: ISelectable, pos: Pair<IVector2, 
                 else -> null
             }
 
-            val newCursor = when(hovered is ITranslatable && mode == TransformationMode.TRANSLATION){
-                true -> Cursor(cursor.center + (hovered as ITranslatable).translationAxis * offset)
-                else -> null
-            }
-
-            return TransformationStep(model, newOffset) to newCursor
+            return TransformationStep(model, newOffset)
         }
     }
-    return this to null
+    return this
 }
 
 
