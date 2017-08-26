@@ -45,6 +45,7 @@ class KeyBindings {
     var exportTexture = KeyBind(Keyboard.KEY_T, CTRL, ALT, SHIFT)
     var setTextureMode = KeyBind(Keyboard.KEY_T, CTRL)
     var setModelMode = KeyBind(Keyboard.KEY_M, CTRL)
+    var toggleVisibility = KeyBind(Keyboard.KEY_V, SHIFT)
 
     var newProject = KeyBind(Keyboard.KEY_N, CTRL, ALT, SHIFT)
     var openProject = KeyBind(Keyboard.KEY_O, CTRL, ALT, SHIFT)

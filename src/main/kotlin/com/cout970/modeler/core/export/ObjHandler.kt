@@ -37,8 +37,8 @@ class ObjExporter {
         val texCoords = LinkedList<IVector2>()
         val texCoordsMap = LinkedHashSet<IVector2>()
 
-        val normals = LinkedList<IVector3>()
-        val normalsMap = LinkedHashSet<IVector3>()
+//        val normals = LinkedList<IVector3>()
+//        val normalsMap = LinkedHashSet<IVector3>()
 
         val groups = mutableListOf<ObjGroup>()
 
@@ -88,9 +88,9 @@ class ObjExporter {
             writer.write(String.format("vt %s %s\n", format.format(a.xd), format.format(a.yd)))
         }
         writer.append('\n')
-        for (a in normals) {
-            writer.write(String.format("vn %s %s %s\n", format.format(a.xd), format.format(a.yd), format.format(a.zd)))
-        }
+//        for (a in normals) {
+//            writer.write(String.format("vn %s %s %s\n", format.format(a.xd), format.format(a.yd), format.format(a.zd)))
+//        }
         for (group in groups) {
             writer.write("usemtl ${group.material.replace(' ', '_')}\n\n")
             writer.append("g ${group.name.replace(' ', '_')}\n")

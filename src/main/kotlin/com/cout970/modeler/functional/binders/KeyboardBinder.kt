@@ -26,6 +26,10 @@ class KeyboardBinder(val dispatcher: Dispatcher) {
                 switchOrthoProjection.check(e) -> "view.switch.ortho"
                 setTextureMode.check(e) -> "view.set.texture.mode"
                 setModelMode.check(e) -> "view.set.model.mode"
+                setTranslationCursorMode.check(e) -> "cursor.set.mode.translate"
+                setRotationCursorMode.check(e) -> "cursor.set.mode.rotate"
+                setScaleCursorMode.check(e) -> "cursor.set.mode.scale"
+                toggleVisibility.check(e) -> "model.toggle.visibility"
                 e.keycode == Keyboard.KEY_F1 -> "debug"
                 else -> null
             }

@@ -5,6 +5,7 @@ import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.core.model.getSelectedObjectRefs
 import com.cout970.modeler.core.model.selection.Selection
 import com.cout970.modeler.functional.SelectionHandler
 import com.cout970.modeler.functional.injection.Inject
@@ -97,5 +98,26 @@ class SelectModelPart : IUseCase {
             )
         }
         return TaskNone
+    }
+}
+
+class ToggleVisibility : IUseCase {
+
+    override val key: String = "model.toggle.visibility"
+
+    @Inject lateinit var selection: Option<ISelection>
+    @Inject lateinit var model: IModel
+
+    override fun createTask(): ITask {
+        val sel = selection.orNull() ?: return TaskNone
+        val first = model.getSelectedObjectRefs(sel).first() ?: return TaskNone
+        var newModel = model
+        val target = !model.isVisible(first)
+
+        model.getSelectedObjectRefs(sel).forEach {
+            newModel = newModel.setVisible(it, target)
+        }
+
+        return TaskUpdateModel(model, newModel)
     }
 }

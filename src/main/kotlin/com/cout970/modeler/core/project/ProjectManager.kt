@@ -3,6 +3,8 @@ package com.cout970.modeler.core.project
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
+import com.cout970.modeler.core.animation.Animation
+import com.cout970.modeler.core.animation.KeyFrame
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.selection.ClipboardNone
 import com.cout970.modeler.core.model.selection.IClipboard
@@ -21,6 +23,11 @@ class ProjectManager {
     val loadedMaterials: List<IMaterial> get() = model.materials
 
     var clipboard: IClipboard = ClipboardNone
+
+    var animation = Animation(listOf(
+            KeyFrame(0f, mapOf()),
+            KeyFrame(10f, mapOf())
+    ))
 
     val modelChangeListeners: MutableList<(old: IModel, new: IModel) -> Unit> = mutableListOf()
     val materialChangeListeners: MutableList<(old: IMaterial?, new: IMaterial?) -> Unit> = mutableListOf()
