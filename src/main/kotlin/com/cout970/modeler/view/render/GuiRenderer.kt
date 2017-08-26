@@ -1,6 +1,7 @@
 package com.cout970.modeler.view.render
 
 import com.cout970.modeler.view.event.CustomCallbackKeeper
+import com.cout970.modeler.view.gui.editor.bottompanel.BottomPanel
 import org.liquidengine.legui.component.Frame
 import org.liquidengine.legui.listener.EventProcessor
 import org.liquidengine.legui.system.context.CallbackKeeper
@@ -30,6 +31,9 @@ class GuiRenderer(rootFrame: Frame, window: Long) {
         RendererProvider.setRendererProvider(NvgRendererProvider.getInstance())
         renderer = NvgRenderer(context, NvgRendererProvider.getInstance())
         renderer.initialize()
+        (RendererProvider.getInstance() as? NvgRendererProvider)?.putComponentRenderer(
+                BottomPanel.TimelinePanel::class.java,
+                BottomPanel.TimelinePanel.TimelinePanelRenderer)
     }
 
     fun updateEvents() {

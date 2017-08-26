@@ -38,7 +38,7 @@ data class ObjectCube(
 
     override val mesh: IMesh by lazy { generateMesh() }
 
-    override fun getCenter(): IVector3 = subTransformation.preRotation //mesh.middle()
+    override fun getCenter(): IVector3 = mesh.middle()//subTransformation.preRotation
 
     fun generateMesh(): IMesh {
         val cube = MeshFactory.createCube(size, pos)

@@ -32,4 +32,6 @@ class GuiState {
     var textureSelectionHash: Int = -1
     var materialsHash: Int = -1
     var visibilityHash: Int = -1
+
+    var playAnimation = false
 }

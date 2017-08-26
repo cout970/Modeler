@@ -23,7 +23,8 @@ class GuiUpdater {
             gui.editorPanel.leftPanelModule.presenter,
             gui.editorPanel.centerPanelModule.presenter,
             gui.editorPanel.rightPanelModule.presenter,
-            gui.editorPanel.leftPanelModule.presenter.editCubePresenter
+            gui.editorPanel.leftPanelModule.presenter.editCubePresenter,
+            gui.editorPanel.bottomPanelModule.presenter
     )
 
     fun initGui(gui: Gui) {
