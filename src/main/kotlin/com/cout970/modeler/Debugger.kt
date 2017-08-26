@@ -8,18 +8,18 @@ import com.cout970.modeler.core.log.log
  */
 object Debugger {
 
-    private lateinit var state: ProgramState
+    private lateinit var state: Program
 
     var drawVboCount = 0
     var drawRegionsCount = 0
     var drawVaoCount = 0
     var buildVaoCount = 0
 
-    fun setInit(state: ProgramState) {
+    fun setInit(state: Program) {
         this.state = state
     }
 
-    fun debug(code: ProgramState.() -> Unit) {
+    fun debug(code: Program.() -> Unit) {
         log(Level.DEBUG) { "Debug Start" }
         state.code()
         log(Level.DEBUG) { "Debug End" }

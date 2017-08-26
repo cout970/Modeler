@@ -2,6 +2,9 @@ package com.cout970.modeler
 
 import com.cout970.glutilities.structure.Timer
 import com.cout970.glutilities.window.GLFWLoader
+import com.cout970.modeler.controller.AutoRunner
+import com.cout970.modeler.controller.FutureExecutor
+import com.cout970.modeler.controller.TaskHistory
 import com.cout970.modeler.core.config.ConfigManager
 import com.cout970.modeler.core.export.ExportManager
 import com.cout970.modeler.core.log.Level
@@ -10,14 +13,11 @@ import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.resource.ResourceLoader
-import com.cout970.modeler.functional.AutoRunner
-import com.cout970.modeler.functional.FutureExecutor
-import com.cout970.modeler.functional.TaskHistory
-import com.cout970.modeler.view.GuiInitializer
-import com.cout970.modeler.view.event.EventController
-import com.cout970.modeler.view.render.RenderManager
-import com.cout970.modeler.view.window.Loop
-import com.cout970.modeler.view.window.WindowHandler
+import com.cout970.modeler.gui.GuiInitializer
+import com.cout970.modeler.input.event.EventController
+import com.cout970.modeler.input.window.Loop
+import com.cout970.modeler.input.window.WindowHandler
+import com.cout970.modeler.render.RenderManager
 import java.io.File
 
 /**
@@ -25,7 +25,7 @@ import java.io.File
  */
 class Initializer {
 
-    fun init(programArguments: List<String>): ProgramState {
+    fun init(programArguments: List<String>): Program {
 
         log(Level.FINE) { "Loading config" }
         ConfigManager.loadConfig()
@@ -70,7 +70,7 @@ class Initializer {
 
         parseArgs(programArguments, exportManager, projectManager)
 
-        val state = ProgramState(
+        val state = Program(
                 resourceLoader = resourceLoader,
                 windowHandler = windowHandler,
                 eventController = eventController,
@@ -144,7 +144,7 @@ class Initializer {
         }
     }
 
-    fun start(program: ProgramState) {
+    fun start(program: Program) {
         log(Level.FINE) { "Starting loop" }
         program.mainLoop.run()
         log(Level.FINE) { "Ending loop" }

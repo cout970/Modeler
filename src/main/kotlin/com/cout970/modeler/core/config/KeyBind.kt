@@ -2,7 +2,7 @@ package com.cout970.modeler.core.config
 
 import com.cout970.glutilities.device.Keyboard
 import com.cout970.glutilities.event.EventKeyUpdate
-import com.cout970.modeler.view.event.IInput
+import com.cout970.modeler.input.event.IInput
 import org.lwjgl.glfw.GLFW
 
 /**

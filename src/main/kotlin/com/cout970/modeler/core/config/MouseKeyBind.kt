@@ -1,7 +1,7 @@
 package com.cout970.modeler.core.config
 
 import com.cout970.glutilities.event.EventMouseClick
-import com.cout970.modeler.view.event.IInput
+import com.cout970.modeler.input.event.IInput
 
 /**
  * Created by cout970 on 2016/12/07.

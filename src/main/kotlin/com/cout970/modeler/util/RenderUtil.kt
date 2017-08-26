@@ -4,8 +4,8 @@ import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.core.model.AABB
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.mesh.MeshFactory
-import com.cout970.modeler.view.render.tool.append
-import com.cout970.modeler.view.render.tool.shader.UniversalShader
+import com.cout970.modeler.render.tool.append
+import com.cout970.modeler.render.tool.shader.UniversalShader
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
 import org.joml.Matrix4d
