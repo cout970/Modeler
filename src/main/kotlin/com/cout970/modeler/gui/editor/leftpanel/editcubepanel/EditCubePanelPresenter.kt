@@ -33,34 +33,34 @@ class EditCubePanelPresenter(val editCubePanel: EditCubePanel) : ComponentPresen
 
     fun setSize(size: IVector3) {
         val panel = editCubePanel.sizePanel
-        panel.sizeXInput.text = formatter.format(size.xf)
-        panel.sizeYInput.text = formatter.format(size.yf)
-        panel.sizeZInput.text = formatter.format(size.zf)
+        panel.sizeX.textField.text = formatter.format(size.xf)
+        panel.sizeY.textField.text = formatter.format(size.yf)
+        panel.sizeZ.textField.text = formatter.format(size.zf)
     }
 
     fun setPos(pos: IVector3) {
         val panel = editCubePanel.posPanel
-        panel.posXInput.text = formatter.format(pos.xf)
-        panel.posYInput.text = formatter.format(pos.yf)
-        panel.posZInput.text = formatter.format(pos.zf)
+        panel.posX.textField.text = formatter.format(pos.xf)
+        panel.posY.textField.text = formatter.format(pos.yf)
+        panel.posZ.textField.text = formatter.format(pos.zf)
     }
     fun setRotation(rot: IVector3) {
         val panel = editCubePanel.rotationPanel
-        panel.rotXInput.text = formatter.format(rot.xf)
-        panel.rotYInput.text = formatter.format(rot.yf)
-        panel.rotZInput.text = formatter.format(rot.zf)
+        panel.rotX.textField.text = formatter.format(rot.xf)
+        panel.rotY.textField.text = formatter.format(rot.yf)
+        panel.rotZ.textField.text = formatter.format(rot.zf)
     }
 
     fun setRotationPos(pos: IVector3) {
         val panel = editCubePanel.rotationPosPanel
-        panel.posXInput.text = formatter.format(pos.xf)
-        panel.posYInput.text = formatter.format(pos.yf)
-        panel.posZInput.text = formatter.format(pos.zf)
+        panel.pivotX.textField.text = formatter.format(pos.xf)
+        panel.pivotY.textField.text = formatter.format(pos.yf)
+        panel.pivotZ.textField.text = formatter.format(pos.zf)
     }
 
     fun setTextureOffset(pos: IVector2) {
         val panel = editCubePanel.textureOffsetPanel
-        panel.posXInput.text = formatter.format(pos.xf)
-        panel.posYInput.text = formatter.format(pos.yf)
+        panel.texX.textField.text = formatter.format(pos.xf)
+        panel.texY.textField.text = formatter.format(pos.yf)
     }
 }

@@ -19,6 +19,8 @@ class CButton(
         val command: String
 ) : Button(text, posX.toFloat(), posY.toFloat(), sizeX.toFloat(), sizeY.toFloat()) {
 
+    constructor() : this("", 0, 0, 10, 10, "")
+
     init {
         textState.textColor = Config.colorPalette.textColor.toColor()
         backgroundColor = Config.colorPalette.buttonColor.toColor()

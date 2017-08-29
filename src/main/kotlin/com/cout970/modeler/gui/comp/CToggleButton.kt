@@ -2,6 +2,7 @@ package com.cout970.modeler.gui.comp
 
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.GuiState
+import com.cout970.modeler.util.BooleanPropertyWrapper
 import com.cout970.modeler.util.IPropertyBind
 import com.cout970.modeler.util.toColor
 import org.liquidengine.legui.border.SimpleLineBorder
@@ -15,7 +16,9 @@ class CToggleButton(posX: Number, posY: Number, sizeX: Number, sizeY: Number,
                     val default: Boolean = false, val bindCallback: (GuiState) -> IPropertyBind<Boolean>)
     : ToggleButton(posX.toFloat(), posY.toFloat(), sizeX.toFloat(), sizeY.toFloat()) {
 
-    lateinit var bind: IPropertyBind<Boolean>
+    var bind: IPropertyBind<Boolean>? = null
+
+    constructor() : this(0, 0, 10, 10, false, { BooleanPropertyWrapper(it::useColor) })
 
     init {
         setTransparent()
@@ -25,11 +28,11 @@ class CToggleButton(posX: Number, posY: Number, sizeX: Number, sizeY: Number,
     }
 
     override fun isToggled(): Boolean {
-        return bind.get()
+        return bind?.get() ?: false
     }
 
     override fun setToggled(toggled: Boolean) {
-        bind.set(toggled)
+        bind?.set(toggled)
         super.setToggled(toggled)
         border.isEnabled = toggled
     }

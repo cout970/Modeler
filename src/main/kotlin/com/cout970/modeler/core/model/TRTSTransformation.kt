@@ -2,9 +2,8 @@ package com.cout970.modeler.core.model
 
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.modeler.api.model.ITransformation
-import com.cout970.modeler.util.quatOfAngles
-import com.cout970.modeler.util.toIMatrix
-import com.cout970.modeler.util.toJOML
+import com.cout970.modeler.util.*
+import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
 import org.joml.Matrix4d
@@ -27,7 +26,11 @@ data class TRTSTransformation(
         }
     }
 
-    val position: IVector3 = preRotation + postRotation
+    val translation: IVector3 get() = preRotation + postRotation
+    val rotationPoint: IVector3 get() = preRotation
+    val quaternion: IQuaternion get() = quatOfAngles(rotation)
+
+    fun toOriginRotation() = (rotationPoint to quaternion).fromPivotToOrigin()
 
     // Gson pls
     private constructor() : this(Vector3.ORIGIN, Quaternion.IDENTITY, Vector3.ORIGIN, Vector3.ONE)
@@ -50,20 +53,19 @@ data class TRTSTransformation(
         )
     }
 
-//    fun merge(other: TRTSTransformation): TRTSTransformation {
-//      TODO
-//    }
+    // TODO fix this
+    fun merge(other: TRTSTransformation): TRTSTransformation {
+        val thisTrans = this.translation
+        val thisPivotRot = this.toOriginRotation()
 
-    /*
-    public void RotateAround(Vector3 point, Vector3 axis, float angle)
-		{
-			Vector3 vector = this.position;
-			Quaternion rotation = Quaternion.AngleAxis(angle, axis);
-			Vector3 vector2 = vector - point;
-			vector2 = rotation * vector2;
-			vector = point + vector2;
-			this.position = vector;
-			this.RotateAroundInternal(axis, angle * 0.0174532924f);
-		}
-	*/
+        val otherTrans = other.translation
+        val otherPivotRot = other.toOriginRotation()
+
+        val finalTrans = thisTrans + otherTrans
+        val finalPivotTrans = thisPivotRot.first - otherPivotRot.first
+        val finalPivotRot = (thisPivotRot.second * otherPivotRot.second).toAxisRotations()
+        val finalScale = this.scale * other.scale
+
+        return TRTSTransformation(finalTrans + finalPivotTrans, finalPivotRot, Vector3.ORIGIN, finalScale)
+    }
 }

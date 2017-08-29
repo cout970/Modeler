@@ -40,35 +40,39 @@ class EditorPanel : MutablePanel() {
         position = Vector2f()
 
         topPanelModule.apply {
-            panel.size = Vector2f(newSize.xf, 36f)
+            panel.size = Vector2f(newSize.xf, 48f)
             panel.position = Vector2f()
             layout.rescale()
         }
 
         leftPanelModule.apply {
-            panel.size = Vector2f(190f, newSize.yf - 36f)
-            panel.position = Vector2f(0f, 36f)
+            panel.size = Vector2f(280f, newSize.yf - topPanelModule.panel.size.y)
+            panel.position = Vector2f(0f, topPanelModule.panel.size.y)
             layout.rescale()
         }
 
         rightPanelModule.apply {
-            panel.size = Vector2f(190f, newSize.yf - 36f)
-            panel.position = Vector2f(newSize.xf - 190f, 36f)
+            panel.size = Vector2f(190f, newSize.yf - topPanelModule.panel.size.y)
+            panel.position = Vector2f(newSize.xf - panel.size.x, topPanelModule.panel.size.y)
             layout.rescale()
         }
 
         bottomPanelModule.apply {
-            panel.size = Vector2f(newSize.xf - (leftPanelModule.panel.size.x + rightPanelModule.panel.size.x), 160f)
-            panel.position = Vector2f(leftPanelModule.panel.size.x, newSize.yf - 160f)
+            if (panel.isEnabled) {
+                panel.size = Vector2f(newSize.xf - (leftPanelModule.panel.size.x + rightPanelModule.panel.size.x), 160f)
+            } else {
+                panel.size = Vector2f()
+            }
+            panel.position = Vector2f(leftPanelModule.panel.size.x, newSize.yf - panel.size.y)
             layout.rescale()
         }
 
         centerPanelModule.apply {
             panel.size = Vector2f(
                     newSize.xf - (leftPanelModule.panel.size.x + rightPanelModule.panel.size.x),
-                    newSize.yf - 36f - 160f
+                    newSize.yf - (topPanelModule.panel.size.y) - (bottomPanelModule.panel.size.y)
             )
-            panel.position = Vector2f(leftPanelModule.panel.size.x, 36f)
+            panel.position = Vector2f(leftPanelModule.panel.size.x, topPanelModule.panel.size.y)
             layout.rescale()
             presenter.updateBackground()
             layout.rescale()

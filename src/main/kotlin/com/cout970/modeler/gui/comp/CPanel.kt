@@ -5,7 +5,6 @@ import com.cout970.modeler.gui.GuiResources
 import com.cout970.modeler.gui.GuiState
 import com.cout970.modeler.util.toColor
 import org.joml.Vector2f
-import org.liquidengine.legui.border.SimpleLineBorder
 import org.liquidengine.legui.color.ColorConstants
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Panel
@@ -21,12 +20,9 @@ open class CPanel(
     val id = lastID++
 
     init {
-        border = SimpleLineBorder().apply {
-            thickness = 0.5f
-            color = Config.colorPalette.borderColor.toColor()
-        }
+        border = PixelBorder()
         cornerRadius = 0f
-        backgroundColor = Config.colorPalette.greyColor.toColor()
+        backgroundColor = Config.colorPalette.darkColor.toColor()
         listenerMap.addListener(ScrollEvent::class.java) {
             propagateScroll(it)
         }

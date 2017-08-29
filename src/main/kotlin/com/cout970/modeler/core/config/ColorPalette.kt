@@ -9,6 +9,7 @@ import java.awt.Color
  * Created by cout970 on 2017/01/24.
  */
 data class ColorPalette(
+        val blackColor: IVector3,
         val darkestColor: IVector3,
         val darkColor: IVector3,
         val lightDarkColor: IVector3,
@@ -16,6 +17,7 @@ data class ColorPalette(
         val lightBrightColor: IVector3,
         val brightColor: IVector3,
         val brightestColor: IVector3,
+        val whiteColor: IVector3,
 
         val buttonColor: IVector3,
         val topPanelColor: IVector3,
@@ -35,21 +37,23 @@ data class ColorPalette(
     companion object {
 
         val darkPalette = ColorPalette(
+                blackColor = hexToColor(0x000000),
                 darkestColor = hexToColor(0x282828),
-                darkColor = hexToColor(0x383838),
-                lightDarkColor = hexToColor(0x464646),
+                darkColor = hexToColor(0x313131),
+                lightDarkColor = hexToColor(0x424242),
                 greyColor = hexToColor(0x545454),
                 lightBrightColor = hexToColor(0x626262),
                 brightColor = hexToColor(0x707070),
                 brightestColor = hexToColor(0x878787),
+                whiteColor = hexToColor(0xFFFFFF),
 
                 buttonColor = hexToColor(0x707070),
-                topPanelColor = hexToColor(0x484848),
+                topPanelColor = hexToColor(0x313131),
                 selectedButton = hexToColor(0x707070),
 
                 selectedButtonBorder = hexToColor(0x606060),
                 textColor = hexToColor(0xffffff),
-                modelBackgroundColor = hexToColor(0x252525),
+                modelBackgroundColor = hexToColor(0x141414),
                 textureSelectionColor = hexToColor(0xffff00),
                 modelSelectionColor = hexToColor(0xffff00),
                 borderColor = hexToColor(0xbcbcbc),

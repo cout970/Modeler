@@ -129,11 +129,9 @@ data class ObjectCube(
             return copy(subTransformation = subTransformation.copy(
                     rotation = comb.toIQuaternion().toAxisRotations()
             ))
+//            val other = TRTSTransformation.fromRotationPivot(pivot, rot)
+//            return copy(subTransformation = subTransformation.merge(other))
         }
-
-//        fun quaternionFromMatrix(m: Matrix4d): Quaterniond {
-//            return Quaterniond().lookAlong(m.getColumn(2, Vector4d()).xyz, m.getColumn(1, Vector4d()).xyz)
-//        }
 
         override fun scale(obj: IObject, center: IVector3, axis: IVector3, offset: Float): IObject {
             val newSize = size + axis * offset

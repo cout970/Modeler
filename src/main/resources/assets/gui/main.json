@@ -1,0 +1,40 @@
+{
+    "alias": {
+        "MainPanel": "com.cout970.modeler.gui.editor.EditorPanel"
+    },
+    "root": {
+        "@class": "com.cout970.modeler.gui.editor.EditorPanel",
+        "position": {
+            "x": 0,
+            "y": 0
+        },
+        "size": {
+            "width": 10,
+            "height": 10
+        },
+        "backgroundColor": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+        },
+        "enabled": true,
+        "visible": true,
+        "cornerRadius": 0,
+        "border": {
+            "@type": "SimpleLineBorder",
+            "enabled": false,
+            "THICKNESS": 0.5,
+            "BORDER_COLOR": {
+                "r": 0.7372549,
+                "g": 0.7372549,
+                "b": 0.7372549,
+                "a": 1
+            }
+        },
+        "intersector": {
+            "@class": "org.liquidengine.legui.intersection.RectangleIntersector"
+        },
+        "components": [ ]
+    }
+}

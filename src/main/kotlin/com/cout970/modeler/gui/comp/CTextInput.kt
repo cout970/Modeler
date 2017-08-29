@@ -14,6 +14,8 @@ class CTextInput(val id: String, text: String = "", x: Float = 0f, y: Float = 0f
                  height: Float = 18f)
     : TextInput(text, x, y, width, height) {
 
+    constructor() : this("")
+
     init {
         textState.textColor = Config.colorPalette.textColor.toColor()
         backgroundColor = Config.colorPalette.greyColor.toColor()

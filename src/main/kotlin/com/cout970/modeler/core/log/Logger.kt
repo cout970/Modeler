@@ -11,7 +11,7 @@ import java.util.*
 
 object Logger {
 
-    val DEBUG = false
+    val DEBUG = true
     val level get() = Config.logLevel
     val logs = File("logs").apply { if (!DEBUG && !exists()) mkdir() }
     val stream = (if (DEBUG) System.out else object : PrintStream(File(logs, getFileName())) {

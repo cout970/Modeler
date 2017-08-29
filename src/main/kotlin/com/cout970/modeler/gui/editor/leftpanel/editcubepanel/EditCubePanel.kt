@@ -1,17 +1,13 @@
 package com.cout970.modeler.gui.editor.leftpanel.editcubepanel
 
-import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.comp.*
-import com.cout970.modeler.util.toColor
-import org.liquidengine.legui.component.optional.align.HorizontalAlign
 
 /**
  * Created by cout970 on 2017/07/16.
  */
 
-class EditCubePanel : CPanel(width = 190f, height = 385f) {
+class EditCubePanel : CPanel(width = 280f, height = 600f) {
 
-    val editCubeLabel = CLabel("Edit cube", 5f, 5f, 180f, 24f)
     val sizePanel = CubeSizePanel()
     val posPanel = CubePosPanel()
     val rotationPanel = CubeRotationPanel()
@@ -19,110 +15,98 @@ class EditCubePanel : CPanel(width = 190f, height = 385f) {
     val textureOffsetPanel = CubeTextureOffsetPanel()
 
     init {
-        add(editCubeLabel)
         add(sizePanel)
         add(posPanel)
         add(rotationPanel)
         add(rotationPosPanel)
         add(textureOffsetPanel)
-        sizePanel.position.y = 30f
-        posPanel.position.y = 105f
-        rotationPanel.position.y = 180f
-        rotationPosPanel.position.y = 255f
-        textureOffsetPanel.position.y = 330f
+        var p = 5f
+        sizePanel.position.y = p
+        p += 126f
+        posPanel.position.y = p
+        p += 126f
+        rotationPanel.position.y = p
+        p += 126f
+        rotationPosPanel.position.y = p
+        p += 126f
+        textureOffsetPanel.position.y = p
         setBorderless()
-        backgroundColor = Config.colorPalette.lightDarkColor.toColor()
     }
 
-    class CubeSizePanel : CPanel(width = 190f, height = 75f) {
-        val label = CLabel("Size", 0f, 2f, 190f, 18f)
-        val sizeXInput = CTextInput("cube.size.x", "0.0", 10f, 20f, 50f, 20f)
-        val sizeYInput = CTextInput("cube.size.y", "0.0", 70f, 20f, 50f, 20f)
-        val sizeZInput = CTextInput("cube.size.z", "0.0", 130f, 20f, 50f, 20f)
+    class CubeSizePanel : CPanel(width = 280f, height = 90f) {
+        val label = CLabel("Size", 0f, 0f, 280f, 18f).apply { textState.fontSize = 22f }
+
+        val sizeX = VariableInput("cube.size.x", 14f, 20f)
+        val sizeY = VariableInput("cube.size.y", 103f, 20f)
+        val sizeZ = VariableInput("cube.size.z", 192f, 20f)
 
         init {
             add(label)
-
-            add(sizeXInput.apply { textState.horizontalAlign = HorizontalAlign.CENTER })
-            add(sizeYInput.apply { textState.horizontalAlign = HorizontalAlign.CENTER })
-            add(sizeZInput.apply { textState.horizontalAlign = HorizontalAlign.CENTER })
-            setBorderless()
-            setTransparent()
-        }
-
-    }
-
-    class CubePosPanel : CPanel(width = 190f, height = 75f) {
-        val posXLabel = CLabel("Position X", 15f, 5f, 60f, 18f)
-        val posXInput = CTextInput("cube.pos.x", "0.0", 95f, 5f, 80f, 18f)
-        val posYLabel = CLabel("Position Y", 15f, 28f, 60f, 18f)
-        val posYInput = CTextInput("cube.pos.y", "0.0", 95f, 28f, 80f, 18f)
-        val posZLabel = CLabel("Position Z", 15f, 51f, 60f, 18f)
-        val posZInput = CTextInput("cube.pos.z", "0.0", 95f, 51f, 80f, 18f)
-
-        init {
-            add(posXLabel.apply { textState.horizontalAlign = HorizontalAlign.LEFT })
-            add(posXInput)
-            add(posYLabel.apply { textState.horizontalAlign = HorizontalAlign.LEFT })
-            add(posYInput)
-            add(posZLabel.apply { textState.horizontalAlign = HorizontalAlign.LEFT })
-            add(posZInput)
+            add(sizeX)
+            add(sizeY)
+            add(sizeZ)
             setBorderless()
             setTransparent()
         }
     }
 
-    class CubeRotationPanel : CPanel(width = 190f, height = 175f) {
-        val rotXLabel = CLabel("Rotation X", 15f, 5f, 60f, 18f)
-        val rotXInput = CTextInput("cube.rot.x", "0.0", 95f, 5f, 80f, 18f)
-        val rotYLabel = CLabel("Rotation Y", 15f, 28f, 60f, 18f)
-        val rotYInput = CTextInput("cube.rot.y", "0.0", 95f, 28f, 80f, 18f)
-        val rotZLabel = CLabel("Rotation Z", 15f, 51f, 60f, 18f)
-        val rotZInput = CTextInput("cube.rot.z", "0.0", 95f, 51f, 80f, 18f)
+    class CubePosPanel : CPanel(width = 280f, height = 90f) {
+        val label = CLabel("Position", 0f, 0f, 280f, 18f).apply { textState.fontSize = 22f }
+        val posX = VariableInput("cube.pos.x", 14f, 20f)
+        val posY = VariableInput("cube.pos.y", 103f, 20f)
+        val posZ = VariableInput("cube.pos.z", 192f, 20f)
 
         init {
-            add(rotXLabel.apply { textState.horizontalAlign = HorizontalAlign.LEFT })
-            add(rotXInput)
-            add(rotYLabel.apply { textState.horizontalAlign = HorizontalAlign.LEFT })
-            add(rotYInput)
-            add(rotZLabel.apply { textState.horizontalAlign = HorizontalAlign.LEFT })
-            add(rotZInput)
+            add(label)
+            add(posX)
+            add(posY)
+            add(posZ)
             setBorderless()
             setTransparent()
         }
     }
 
-    class CubeRotationPosPanel : CPanel(width = 190f, height = 75f) {
-        val posXLabel = CLabel("Rot. Pivot X", 15f, 5f, 60f, 18f)
-        val posXInput = CTextInput("cube.rot.pos.x", "0.0", 95f, 5f, 80f, 18f)
-        val posYLabel = CLabel("Rot. Pivot Y", 15f, 28f, 60f, 18f)
-        val posYInput = CTextInput("cube.rot.pos.y", "0.0", 95f, 28f, 80f, 18f)
-        val posZLabel = CLabel("Rot. Pivot Z", 15f, 51f, 60f, 18f)
-        val posZInput = CTextInput("cube.rot.pos.z", "0.0", 95f, 51f, 80f, 18f)
+    class CubeRotationPanel : CPanel(width = 280f, height = 90f) {
+        val label = CLabel("Rotation", 0f, 0f, 280f, 18f).apply { textState.fontSize = 22f }
+        val rotX = VariableInput("cube.rot.x", 14f, 20f)
+        val rotY = VariableInput("cube.rot.y", 103f, 20f)
+        val rotZ = VariableInput("cube.rot.z", 192f, 20f)
 
         init {
-            add(posXLabel.apply { textState.horizontalAlign = HorizontalAlign.LEFT })
-            add(posXInput)
-            add(posYLabel.apply { textState.horizontalAlign = HorizontalAlign.LEFT })
-            add(posYInput)
-            add(posZLabel.apply { textState.horizontalAlign = HorizontalAlign.LEFT })
-            add(posZInput)
+            add(label)
+            add(rotX)
+            add(rotY)
+            add(rotZ)
             setBorderless()
             setTransparent()
         }
     }
 
-    class CubeTextureOffsetPanel : CPanel(width = 190f, height = 75f) {
-        val posXLabel = CLabel("Tex. Offset X", 15f, 5f, 60f, 18f)
-        val posXInput = CTextInput("cube.tex.x", "0.0", 95f, 5f, 80f, 18f)
-        val posYLabel = CLabel("Tex. Offset Y", 15f, 28f, 60f, 18f)
-        val posYInput = CTextInput("cube.tex.y", "0.0", 95f, 28f, 80f, 18f)
+    class CubeRotationPosPanel : CPanel(width = 280f, height = 90f) {
+        val label = CLabel("Rot. Pivot", 0f, 0f, 280f, 18f).apply { textState.fontSize = 22f }
+        val pivotX = VariableInput("cube.rot.pos.x", 14f, 20f)
+        val pivotY = VariableInput("cube.rot.pos.y", 103f, 20f)
+        val pivotZ = VariableInput("cube.rot.pos.z", 192f, 20f)
 
         init {
-            add(posXLabel.apply { textState.horizontalAlign = HorizontalAlign.LEFT })
-            add(posXInput)
-            add(posYLabel.apply { textState.horizontalAlign = HorizontalAlign.LEFT })
-            add(posYInput)
+            add(label)
+            add(pivotX)
+            add(pivotY)
+            add(pivotZ)
+            setBorderless()
+            setTransparent()
+        }
+    }
+
+    class CubeTextureOffsetPanel : CPanel(width = 280f, height = 90f) {
+        val label = CLabel("Tex. Offset", 0f, 0f, 280f, 18f).apply { textState.fontSize = 22f }
+        val texX = VariableInput("cube.tex.x", 14f, 20f)
+        val texY = VariableInput("cube.tex.y", 103f, 20f)
+
+        init {
+            add(label)
+            add(texX)
+            add(texY)
             setBorderless()
             setTransparent()
         }

@@ -2,6 +2,7 @@ package com.cout970.modeler.gui.editor.bottompanel
 
 import com.cout970.modeler.gui.comp.*
 import com.cout970.modeler.util.BooleanPropertyWrapper
+import com.cout970.modeler.util.hide
 import org.joml.Vector2f
 import org.liquidengine.legui.color.ColorConstants
 import org.liquidengine.legui.component.ScrollBar
@@ -26,6 +27,7 @@ class BottomPanel : CPanel() {
         setTransparent()
         setBorderless()
         scrollBar.orientation = Orientation.HORIZONTAL
+        hide()
     }
 
     class ButtonPanel : CPanel() {

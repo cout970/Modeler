@@ -14,6 +14,8 @@ class CTooltip(str: String) : Tooltip(str) {
     var lastTimer = 0L
     var timer = 0
 
+    constructor() : this("")
+
     override fun getTextState(): TextState {
         lastRender = System.currentTimeMillis()
         val state = super.getTextState()
