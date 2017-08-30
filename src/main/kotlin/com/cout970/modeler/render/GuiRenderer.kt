@@ -26,11 +26,11 @@ class GuiRenderer(rootFrame: Frame, window: Long) {
 
     init {
         uiEventProcessor = EventProcessor()
-        context = Context(window, rootFrame, uiEventProcessor)
+        context = Context(window, uiEventProcessor)
         callbackKeeper = CustomCallbackKeeper()
         systemEventProcessor = SystemEventProcessor(rootFrame, context, callbackKeeper)
         RendererProvider.setRendererProvider(NvgRendererProvider.getInstance())
-        renderer = NvgRenderer(context, NvgRendererProvider.getInstance())
+        renderer = NvgRenderer(NvgRendererProvider.getInstance())
         renderer.initialize()
         (RendererProvider.getInstance() as? NvgRendererProvider)?.let {
             it.putComponentRenderer(BottomPanel.TimelinePanel::class.java,
@@ -46,6 +46,6 @@ class GuiRenderer(rootFrame: Frame, window: Long) {
     }
 
     fun render(frame: Frame) {
-        renderer.render(frame)
+        renderer.render(frame, context)
     }
 }

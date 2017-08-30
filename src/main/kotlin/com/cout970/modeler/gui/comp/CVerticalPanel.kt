@@ -31,7 +31,7 @@ open class CVerticalPanel(
     }
 
     fun propagateScroll(e: ScrollEvent<*>) {
-        val newEvent = ScrollEvent(verticalScrollBar, e.context, e.xoffset, e.yoffset)
+        val newEvent = ScrollEvent(verticalScrollBar, e.context, e.frame, e.xoffset, e.yoffset)
         verticalScrollBar.listenerMap.getListeners(ScrollEvent::class.java)?.forEach {
             it.process(newEvent)
         }
