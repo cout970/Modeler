@@ -115,24 +115,28 @@ fun IVector3.distanceInAxis(point: IVector3, axis: IVector3): Double {
     return Math.abs((norm dot point) - (norm dot this))
 }
 
-fun quatOfAngles(x: Number, y: Number, z: Number): IQuaternion {
-    return Quaterniond().rotateXYZ(x.toDouble(), y.toDouble(), z.toDouble()).toIQuaternion()
+inline fun quatOfAngles(x: Number, y: Number, z: Number): IQuaternion {
+    return quatOfAngles(vec3Of(x, y, z))
 }
 
+// uses degrees
 fun quatOfAngles(angles: IVector3): IQuaternion {
-    return Quaterniond().rotateXYZ(angles.x.toDouble(), angles.y.toDouble(), angles.z.toDouble()).toIQuaternion()
+    val rads = angles.toRadians()
+    return Quaterniond().rotateXYZ(rads.x.toDouble(), rads.y.toDouble(), rads.z.toDouble()).toIQuaternion()
 }
 
-fun quatOfAxisAngled(x: Number, y: Number, z: Number, angle: Number): IQuaternion {
+inline fun quatOfAxisAngled(x: Number, y: Number, z: Number, angle: Number): IQuaternion {
     return Quaterniond().rotateAxis(angle.toDouble(), x.toDouble(), y.toDouble(), z.toDouble()).toIQuaternion()
 }
 
+// degrees
 fun quatOfAxisAngled(angles: IVector3, angle: Number): IQuaternion {
+
     return Quaterniond().rotateAxis(
             angle.toDouble(),
-            angles.x.toDouble(),
-            angles.y.toDouble(),
-            angles.z.toDouble()
+            angles.x.toRads(),
+            angles.y.toRads(),
+            angles.z.toRads()
     ).toIQuaternion()
 }
 
@@ -202,6 +206,6 @@ fun IQuaternion.normalize(): IQuaternion {
 
 fun Pair<IVector3, IQuaternion>.fromPivotToOrigin(): Pair<IVector3, IQuaternion> {
     val invPos = -first
-    val finalPos = -second.toJOML().transform(invPos.toJoml3d()).toIVector() + first
+    val finalPos = second.toJOML().transform(invPos.toJoml3d()).toIVector() + first
     return finalPos to second
 }

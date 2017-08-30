@@ -6,7 +6,6 @@ import com.cout970.modeler.util.show
 import com.cout970.modeler.util.text
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.toDegrees
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
@@ -22,7 +21,7 @@ class EditCubePanelPresenter(val editCubePanel: EditCubePanel) : ComponentPresen
     fun showCube(cube: IObjectCube) {
         setSize(cube.size)
         setPos(cube.pos)
-        setRotation(cube.subTransformation.rotation.toDegrees())
+        setRotation(cube.subTransformation.rotation)
         setRotationPos(cube.subTransformation.preRotation)
         setTextureOffset(cube.textureOffset)
         editCubePanel.show()

@@ -20,7 +20,7 @@ open class CPanel(
     val id = lastID++
 
     init {
-        border = PixelBorder()
+        border = PixelBorder().also { it.isEnabled = false }
         cornerRadius = 0f
         backgroundColor = Config.colorPalette.darkColor.toColor()
         listenerMap.addListener(ScrollEvent::class.java) {

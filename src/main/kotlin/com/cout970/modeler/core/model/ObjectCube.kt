@@ -14,7 +14,6 @@ import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
-import org.joml.Quaterniond
 import org.joml.Vector4d
 
 
@@ -117,20 +116,14 @@ data class ObjectCube(
         }
 
         override fun translate(obj: IObject, translation: IVector3): IObject {
-            return copy(pos = pos + translation)
+            return copy(pos = pos + quatOfAngles(-subTransformation.rotation).transform(translation))
+//            return copy(pos = pos + translation)
         }
 
         override fun rotate(obj: IObject, pivot: IVector3, rot: IQuaternion): IObject {
 
-            val actual = quatOfAngles(subTransformation.rotation.toRadians()).toJOML()
-            val trans = rot.toJOML()
-            val comb = actual.mul(trans, Quaterniond())
-
-            return copy(subTransformation = subTransformation.copy(
-                    rotation = comb.toIQuaternion().toAxisRotations()
-            ))
-//            val other = TRTSTransformation.fromRotationPivot(pivot, rot)
-//            return copy(subTransformation = subTransformation.merge(other))
+            val newRot = TRTSTransformation.fromRotationPivot(pivot, rot.toAxisRotations())
+            return copy(subTransformation = subTransformation.merge(newRot))
         }
 
         override fun scale(obj: IObject, center: IVector3, axis: IVector3, offset: Float): IObject {

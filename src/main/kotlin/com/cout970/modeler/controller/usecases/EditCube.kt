@@ -12,7 +12,6 @@ import com.cout970.modeler.gui.comp.Cache
 import com.cout970.modeler.gui.editor.EditorPanel
 import com.cout970.modeler.util.text
 import com.cout970.modeler.util.toRads
-import com.cout970.vector.extensions.toDegrees
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.vec3Of
 import org.funktionale.option.Option
@@ -71,9 +70,9 @@ class UpdateTemplateCube : IUseCase {
             "cube.pos.y" -> setPosY(cube, y = getValue(input, cube.pos.yf) + offset)
             "cube.pos.z" -> setPosZ(cube, z = getValue(input, cube.pos.zf) + offset)
 
-            "cube.rot.x" -> setRotationX(cube, x = getValue(input, cube.subTransformation.rotation.toDegrees().xf) + offset * 15f)
-            "cube.rot.y" -> setRotationY(cube, y = getValue(input, cube.subTransformation.rotation.toDegrees().yf) + offset * 15f)
-            "cube.rot.z" -> setRotationZ(cube, z = getValue(input, cube.subTransformation.rotation.toDegrees().zf) + offset * 15f)
+            "cube.rot.x" -> setRotationX(cube, x = getValue(input, cube.subTransformation.rotation.xf) + offset * 15f)
+            "cube.rot.y" -> setRotationY(cube, y = getValue(input, cube.subTransformation.rotation.yf) + offset * 15f)
+            "cube.rot.z" -> setRotationZ(cube, z = getValue(input, cube.subTransformation.rotation.zf) + offset * 15f)
 
             "cube.rot.pos.x" -> setRotationPosX(cube, x = getValue(input, cube.subTransformation.preRotation.xf) + offset)
             "cube.rot.pos.y" -> setRotationPosY(cube, y = getValue(input, cube.subTransformation.preRotation.yf) + offset)

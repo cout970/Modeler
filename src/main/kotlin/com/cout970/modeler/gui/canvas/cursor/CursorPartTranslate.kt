@@ -75,7 +75,7 @@ class CursorPartRotate(
 
     override fun applyRotation(offset: Float, selection: ISelection, model: IModel): IModel {
         val sel = model.getSelectedObjectRefs(selection)
-        return EditTool.rotate(model, sel, center, quatOfAxisAngled(tangent, offset.toRads()))
+        return EditTool.rotate(model, sel, center, quatOfAxisAngled(tangent, offset))
     }
 
     override fun equals(other: Any?): Boolean {

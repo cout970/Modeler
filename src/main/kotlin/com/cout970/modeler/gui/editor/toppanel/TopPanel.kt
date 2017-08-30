@@ -2,10 +2,7 @@ package com.cout970.modeler.gui.editor.toppanel
 
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.GuiResources
-import com.cout970.modeler.gui.comp.CButton
-import com.cout970.modeler.gui.comp.CPanel
-import com.cout970.modeler.gui.comp.setBorderless
-import com.cout970.modeler.gui.comp.setTransparent
+import com.cout970.modeler.gui.comp.*
 import com.cout970.modeler.util.toColor
 import org.liquidengine.legui.icon.ImageIcon
 
@@ -23,6 +20,7 @@ class TopPanel : CPanel(0f, 48f) {
         backgroundColor = Config.colorPalette.topPanelColor.toColor()
         exportPanel.position.x = 240f
         setBorderless()
+        (border as PixelBorder).also { it.isEnabled = true }.enableBottom = true
     }
 
     class ProjectControlPanel : CPanel(width = 240f, height = 48f) {

@@ -46,7 +46,7 @@ class CanvasRenderer(val renderManager: RenderManager) {
             )
             gui.windowHandler.saveViewport(viewportPos, canvas.size.toIVector()) {
                 renderManager.shader.useShader(ctx) {
-                    if (canvas.viewMode == SelectionTarget.MODEL) {
+                    if (canvas.viewMode == SelectionTarget.MODEL || canvas.viewMode == SelectionTarget.ANIMATION) {
                         worldRenderer.renderWorld(ctx, gui.projectManager.model)
                         centerMarkRenderer.renderCursor(ctx)
                     } else {

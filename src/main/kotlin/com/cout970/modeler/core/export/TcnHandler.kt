@@ -131,7 +131,7 @@ class TcnImporter {
         val rOffset = vOffset * vec3Of(1, -1, -1)
         val rPos = vPos * vec3Of(1, -1, -1) - vec3Of(0, vSize.y, vSize.z)
         val rTexture = vTexture
-        val rRotation = vRotation.toRadians() * vec3Of(1, 1, -1)
+        val rRotation = vRotation * vec3Of(1, 1, -1)
         val rRotPoint = vPos * vec3Of(1, -1, -1) + vec3Of(8, 24, 8)
 
         val fOffset = rPos + rOffset + vec3Of(8, 24, 8)

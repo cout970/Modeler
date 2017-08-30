@@ -21,6 +21,7 @@ class Canvas : CPanel() {
         get() = when (viewMode) {
             SelectionTarget.MODEL -> modelCamera
             SelectionTarget.TEXTURE -> textureCamera
+            SelectionTarget.ANIMATION -> modelCamera
         }
 
     init {

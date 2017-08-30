@@ -40,7 +40,8 @@ interface ISelection {
 
 enum class SelectionTarget {
     MODEL,
-    TEXTURE
+    TEXTURE,
+    ANIMATION
 }
 
 enum class SelectionType {

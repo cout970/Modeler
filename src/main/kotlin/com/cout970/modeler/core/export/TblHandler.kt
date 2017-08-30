@@ -54,7 +54,7 @@ class TblImporter {
                     pos = transformPos(cube),
                     subTransformation = TRTSTransformation.fromRotationPivot(
                             cube.position * vec3Of(1, -1, -1) + CENTER_OFFSET,
-                            cube.rotation.toRadians()
+                            cube.rotation
                     ),
                     size = cube.dimensions,
                     material = material,

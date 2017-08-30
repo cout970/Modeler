@@ -123,6 +123,19 @@ class SetModelMode : IUseCase {
     }
 }
 
+class SetAnimationMode : IUseCase {
+    override val key: String = "view.set.animation.mode"
+
+    @Inject lateinit var canvasContainer: CanvasContainer
+
+    override fun createTask(): ITask {
+        canvasContainer.selectedCanvas?.let {
+            return TaskUpdateCanvasViewMode(it, SelectionTarget.ANIMATION)
+        }
+        return TaskNone
+    }
+}
+
 fun IModel.getObstacles(): List<Pair<IRayObstacle, IObjectRef>> {
     return objectRefs
             .filter { isVisible(it) }

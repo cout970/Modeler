@@ -3,9 +3,9 @@ package core.utils
 import com.cout970.modeler.core.model.TRTSTransformation
 import com.cout970.modeler.util.fromPivotToOrigin
 import com.cout970.modeler.util.quatOfAngles
-import com.cout970.modeler.util.toRads
 import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.*
+import com.cout970.vector.extensions.Quaternion
+import com.cout970.vector.extensions.vec3Of
 import org.junit.Assert
 import org.junit.Test
 
@@ -30,24 +30,24 @@ class TestUtilities {
     fun `Test fromPivotToOrigin with x=1 and rot=90degrees in y`() {
 
         val pos = vec3Of(1, 0, 0)
-        val rot = quatOfAngles(0, 90.toRads(), 0)
+        val rot = quatOfAngles(0, 90, 0)
 
         val (resPos, resRot) = (pos to rot).fromPivotToOrigin()
 
         assertEquals(vec3Of(1, 0, -1), resPos)
-        Assert.assertEquals(quatOfAngles(0, 90.toRads(), 0), resRot)
+        Assert.assertEquals(quatOfAngles(0, 90, 0), resRot)
     }
 
     @Test
     fun `Test fromPivotToOrigin with z=1 and rot=180degrees in y`() {
 
         val pos = vec3Of(0, 0, 1)
-        val rot = quatOfAngles(0, 90.toRads(), 0)
+        val rot = quatOfAngles(0, 90, 0)
 
         val (resPos, resRot) = (pos to rot).fromPivotToOrigin()
 
         assertEquals(vec3Of(1, 0, 1), resPos)
-        Assert.assertEquals(quatOfAngles(0, 90.toRads(), 0), resRot)
+        Assert.assertEquals(quatOfAngles(0, 90, 0), resRot)
     }
 
 

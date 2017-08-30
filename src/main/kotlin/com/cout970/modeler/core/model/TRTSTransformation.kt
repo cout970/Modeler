@@ -35,8 +35,8 @@ data class TRTSTransformation(
     // Gson pls
     private constructor() : this(Vector3.ORIGIN, Quaternion.IDENTITY, Vector3.ORIGIN, Vector3.ONE)
 
-    constructor(pre: IVector3, rot: IQuaternion, post: IVector3, scale: IVector3) : this(pre, rot.toAxisRotations(),
-            post, scale)
+    constructor(pre: IVector3, rot: IQuaternion, post: IVector3, scale: IVector3)
+            : this(pre, rot.toAxisRotations(), post, scale)
 
     override val matrix: IMatrix4 by lazy {
         Matrix4d().apply {
@@ -65,10 +65,15 @@ data class TRTSTransformation(
         val otherPivotRot = other.toOriginRotation()
 
         val finalTrans = thisTrans + otherTrans
-        val finalPivotTrans = thisPivotRot.first - otherPivotRot.first
+        val finalPivotTrans = thisPivotRot.first + otherPivotRot.first
         val finalPivotRot = (thisPivotRot.second * otherPivotRot.second).toAxisRotations()
         val finalScale = this.scale * other.scale
 
-        return TRTSTransformation(finalTrans + finalPivotTrans, finalPivotRot, Vector3.ORIGIN, finalScale)
+        return TRTSTransformation(
+                preRotation = finalTrans + finalPivotTrans,
+                rotation = finalPivotRot,
+                postRotation = Vector3.ORIGIN,
+                scale = finalScale
+        )
     }
 }

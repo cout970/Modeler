@@ -1,5 +1,6 @@
 package com.cout970.modeler.render
 
+import com.cout970.modeler.gui.comp.PixelBorder
 import com.cout970.modeler.gui.editor.bottompanel.BottomPanel
 import com.cout970.modeler.input.event.CustomCallbackKeeper
 import org.liquidengine.legui.component.Frame
@@ -31,9 +32,11 @@ class GuiRenderer(rootFrame: Frame, window: Long) {
         RendererProvider.setRendererProvider(NvgRendererProvider.getInstance())
         renderer = NvgRenderer(context, NvgRendererProvider.getInstance())
         renderer.initialize()
-        (RendererProvider.getInstance() as? NvgRendererProvider)?.putComponentRenderer(
-                BottomPanel.TimelinePanel::class.java,
-                BottomPanel.TimelinePanel.TimelinePanelRenderer)
+        (RendererProvider.getInstance() as? NvgRendererProvider)?.let {
+            it.putComponentRenderer(BottomPanel.TimelinePanel::class.java,
+                    BottomPanel.TimelinePanel.TimelinePanelRenderer)
+            it.putBorderRenderer(PixelBorder::class.java, PixelBorder.PixelBorderRenderer)
+        }
     }
 
     fun updateEvents() {
