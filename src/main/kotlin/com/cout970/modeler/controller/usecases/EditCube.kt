@@ -12,7 +12,9 @@ import com.cout970.modeler.gui.comp.Cache
 import com.cout970.modeler.gui.editor.EditorPanel
 import com.cout970.modeler.util.text
 import com.cout970.modeler.util.toRads
-import com.cout970.vector.extensions.*
+import com.cout970.vector.extensions.toDegrees
+import com.cout970.vector.extensions.vec2Of
+import com.cout970.vector.extensions.vec3Of
 import org.funktionale.option.Option
 import org.funktionale.option.getOrElse
 import org.liquidengine.legui.component.Component

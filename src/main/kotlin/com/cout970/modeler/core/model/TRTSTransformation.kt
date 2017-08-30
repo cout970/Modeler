@@ -35,6 +35,9 @@ data class TRTSTransformation(
     // Gson pls
     private constructor() : this(Vector3.ORIGIN, Quaternion.IDENTITY, Vector3.ORIGIN, Vector3.ONE)
 
+    constructor(pre: IVector3, rot: IQuaternion, post: IVector3, scale: IVector3) : this(pre, rot.toAxisRotations(),
+            post, scale)
+
     override val matrix: IMatrix4 by lazy {
         Matrix4d().apply {
             translate(preRotation.xd, preRotation.yd, preRotation.zd)

@@ -9,9 +9,6 @@ import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.render.tool.shader.UniversalShader
 import com.cout970.modeler.util.ITickeable
-import com.cout970.vector.extensions.xf
-import com.cout970.vector.extensions.yf
-import com.cout970.vector.extensions.zf
 import java.awt.Color
 
 /**

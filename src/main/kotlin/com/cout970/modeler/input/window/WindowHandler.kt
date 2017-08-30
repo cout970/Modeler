@@ -8,8 +8,6 @@ import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.util.ITickeable
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.vec2Of
-import com.cout970.vector.extensions.xi
-import com.cout970.vector.extensions.yi
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose
 import org.lwjgl.glfw.GLFWImage

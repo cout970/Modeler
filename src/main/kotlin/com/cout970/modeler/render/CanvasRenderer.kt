@@ -13,7 +13,6 @@ import com.cout970.modeler.util.toIVector
 import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.vec3Of
-import com.cout970.vector.extensions.yf
 
 /**
  * Created by cout970 on 2017/05/16.

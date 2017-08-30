@@ -7,9 +7,6 @@ import com.cout970.modeler.util.text
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.toDegrees
-import com.cout970.vector.extensions.xf
-import com.cout970.vector.extensions.yf
-import com.cout970.vector.extensions.zf
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*

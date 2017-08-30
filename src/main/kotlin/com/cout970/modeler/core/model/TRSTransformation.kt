@@ -6,7 +6,8 @@ import com.cout970.modeler.util.toIMatrix
 import com.cout970.modeler.util.toJOML
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.*
+import com.cout970.vector.extensions.Quaternion
+import com.cout970.vector.extensions.Vector3
 import org.joml.Matrix4d
 
 /**

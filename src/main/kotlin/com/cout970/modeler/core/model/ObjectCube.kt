@@ -44,7 +44,7 @@ data class ObjectCube(
         val cube = MeshFactory.createCube(size, pos)
         val pos = cube.pos.map { Vector4d(it.xd, it.yd, it.zd, 1.0) }
                 .map(subTransformation.matrix.toJOML()::transform)
-                .map { it.toIVector() }
+                .map { vec3Of(it.x, it.y, it.z) }
         return updateTextures(Mesh(pos, cube.tex, cube.faces), size, textureOffset, textureSize)
     }
 

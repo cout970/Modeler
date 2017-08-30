@@ -2,7 +2,6 @@ package com.cout970.modeler.gui.canvas.cursor
 
 import com.cout970.modeler.core.config.Config
 import com.cout970.vector.api.IVector2
-import com.cout970.vector.extensions.yd
 
 /**
  * Created by cout970 on 2017/02/04.

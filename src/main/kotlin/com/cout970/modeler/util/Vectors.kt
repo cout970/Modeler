@@ -1,7 +1,7 @@
 package com.cout970.modeler.util
 
 import com.cout970.matrix.api.IMatrix4
-import com.cout970.matrix.extensions.*
+import com.cout970.matrix.extensions.mat4Of
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3

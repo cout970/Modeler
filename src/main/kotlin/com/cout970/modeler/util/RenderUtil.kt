@@ -50,8 +50,8 @@ object RenderUtil {
         return mesh.run {
             Mesh(
                     pos.map {
-                        matrix.transform(Vector4d(it.xd, it.yd, it.zd, 1.0)).toIVector()
-                    },
+                        matrix.transform(Vector4d(it.xd, it.yd, it.zd, 1.0))
+                    }.map { vec3Of(it.x, it.y, it.z) },
                     tex,
                     faces)
         }

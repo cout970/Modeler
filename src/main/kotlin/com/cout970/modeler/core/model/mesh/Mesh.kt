@@ -3,13 +3,10 @@ package com.cout970.modeler.core.model.mesh
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
-import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.util.toJOML
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.xd
-import com.cout970.vector.extensions.yd
-import com.cout970.vector.extensions.zd
+import com.cout970.vector.extensions.vec3Of
 import org.joml.Vector4d
 
 /**
@@ -35,8 +32,13 @@ class Mesh(
 
     override fun transform(trans: ITransformation): IMesh {
         val matrix = trans.matrix.toJOML()
-        return Mesh(pos.map { matrix.transform(Vector4d(it.xd, it.yd, it.zd, 1.0)).toIVector() },
-                tex, faces)
+        return Mesh(
+                pos = pos.map {
+                    matrix.transform(Vector4d(it.xd, it.yd, it.zd, 1.0))
+                }.map { vec3Of(it.x, it.y, it.z) },
+                tex = tex,
+                faces = faces
+        )
     }
 
     override fun merge(other: IMesh): IMesh {

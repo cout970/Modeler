@@ -5,8 +5,6 @@ import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.vec2Of
-import com.cout970.vector.extensions.xd
-import com.cout970.vector.extensions.yd
 import org.joml.Matrix4d
 import org.joml.Vector3d
 

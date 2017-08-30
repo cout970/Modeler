@@ -10,8 +10,6 @@ import com.cout970.modeler.gui.editor.rightpanel.ModuleRightPanel
 import com.cout970.modeler.gui.editor.toppanel.ModuleTopPanel
 import com.cout970.modeler.util.toJoml2f
 import com.cout970.vector.api.IVector2
-import com.cout970.vector.extensions.xf
-import com.cout970.vector.extensions.yf
 import org.joml.Vector2f
 
 /**

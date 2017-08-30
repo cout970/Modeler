@@ -5,7 +5,7 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.log.print
 import com.cout970.vector.api.IVector2
-import com.cout970.vector.extensions.*
+import com.cout970.vector.extensions.times
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File

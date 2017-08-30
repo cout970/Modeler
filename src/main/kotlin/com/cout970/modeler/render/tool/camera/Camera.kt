@@ -9,9 +9,6 @@ import com.cout970.modeler.util.toRads
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.Vector3
-import com.cout970.vector.extensions.xd
-import com.cout970.vector.extensions.yd
-import com.cout970.vector.extensions.zd
 import org.joml.Matrix4d
 
 /**

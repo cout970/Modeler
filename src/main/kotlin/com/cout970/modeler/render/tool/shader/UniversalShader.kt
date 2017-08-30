@@ -13,9 +13,6 @@ import com.cout970.modeler.util.FloatArrayList
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.Vector3
-import com.cout970.vector.extensions.xf
-import com.cout970.vector.extensions.yf
-import com.cout970.vector.extensions.zf
 import org.lwjgl.opengl.GL20
 import java.util.function.Consumer
 
