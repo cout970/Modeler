@@ -5,7 +5,9 @@ import com.cout970.modeler.api.model.`object`.IObjectTransformer
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.core.model.material.MaterialRef
+import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.util.middle
+import com.cout970.modeler.util.scale
 import com.cout970.modeler.util.toAxisRotations
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
@@ -18,6 +20,8 @@ data class Object(
         override val mesh: IMesh,
         override val material: IMaterialRef = MaterialRef(-1)
 ) : IObject {
+
+    private constructor() : this("", Mesh())
 
     override fun getCenter(): IVector3 = mesh.middle()
 
@@ -35,7 +39,7 @@ data class Object(
         }
 
         override fun scale(obj: IObject, center: IVector3, axis: IVector3, offset: Float): IObject {
-            return this@Object
+            return copy(mesh = Mesh(mesh.pos.map { it.scale(center, axis, offset) }, mesh.tex, mesh.faces))
         }
 
         override fun withMaterial(obj: IObject, materialRef: IMaterialRef): IObject {

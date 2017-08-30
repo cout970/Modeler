@@ -12,8 +12,16 @@ import com.cout970.modeler.render.tool.camera.CameraHandler
 
 class Canvas : CPanel() {
 
-    val cameraHandler = CameraHandler()
     var viewMode: SelectionTarget = SelectionTarget.MODEL
+
+    val modelCamera = CameraHandler()
+    val textureCamera = CameraHandler()
+
+    val cameraHandler
+        get() = when (viewMode) {
+            SelectionTarget.MODEL -> modelCamera
+            SelectionTarget.TEXTURE -> textureCamera
+        }
 
     init {
         setTransparent()
