@@ -1,6 +1,7 @@
 package com.cout970.modeler.core.resource
 
 import com.cout970.modeler.core.log.print
+import java.io.File
 import java.net.URI
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -51,5 +52,18 @@ class ResourcePath(val uri: URI) {
             return true
         }
         return false
+    }
+
+    companion object {
+        fun fromResourceLocation(str: String): ResourcePath {
+            if (str.contains(':')) {
+                return fromResourceLocation(str.substringBefore(':'), str.substringAfter(':'))
+            }
+            return File(str).toResourcePath()
+        }
+
+        fun fromResourceLocation(domain: String, path: String): ResourcePath {
+            return File("$domain/$path").toResourcePath()
+        }
     }
 }

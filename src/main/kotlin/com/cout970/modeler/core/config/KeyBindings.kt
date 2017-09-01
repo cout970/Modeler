@@ -46,6 +46,9 @@ class KeyBindings {
     var setTextureMode = KeyBind(Keyboard.KEY_T, CTRL)
     var setModelMode = KeyBind(Keyboard.KEY_M, CTRL)
     var toggleVisibility = KeyBind(Keyboard.KEY_V, SHIFT)
+    var showLeftPanel = KeyBind(Keyboard.KEY_L, ALT)
+    var showRightPanel = KeyBind(Keyboard.KEY_R, ALT)
+    var showBottomPanel = KeyBind(Keyboard.KEY_B, ALT)
 
     var newProject = KeyBind(Keyboard.KEY_N, CTRL, ALT, SHIFT)
     var openProject = KeyBind(Keyboard.KEY_O, CTRL, ALT, SHIFT)

@@ -30,6 +30,9 @@ class KeyboardBinder(val dispatcher: Dispatcher) {
                 setRotationCursorMode.check(e) -> "cursor.set.mode.rotate"
                 setScaleCursorMode.check(e) -> "cursor.set.mode.scale"
                 toggleVisibility.check(e) -> "model.toggle.visibility"
+                showLeftPanel.check(e) -> "show.left.panel"
+                showRightPanel.check(e) -> "show.right.panel"
+                showBottomPanel.check(e) -> "show.bottom.panel"
                 e.keycode == Keyboard.KEY_F1 -> "debug"
                 else -> null
             }

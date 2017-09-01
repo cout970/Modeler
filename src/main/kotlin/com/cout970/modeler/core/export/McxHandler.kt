@@ -1,27 +1,36 @@
 package com.cout970.modeler.core.export
 
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.`object`.IObject
+import com.cout970.modeler.core.model.Model
+import com.cout970.modeler.core.model.Object
+import com.cout970.modeler.core.model.material.MaterialRef
+import com.cout970.modeler.core.model.material.TexturedMaterial
+import com.cout970.modeler.core.model.mesh.FaceIndex
+import com.cout970.modeler.core.model.mesh.Mesh
+import com.cout970.modeler.core.resource.ResourcePath
 import com.cout970.modeler.util.Direction
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.times
 import com.google.gson.GsonBuilder
+import java.io.InputStream
 import java.io.OutputStream
 
 /**
  * Created by cout970 on 2017/01/26.
  */
+private val GSON = GsonBuilder()
+        .registerTypeAdapter(IVector3::class.java, Vector3Serializer())
+        .registerTypeAdapter(IVector2::class.java, Vector2Serializer())
+        .registerTypeAdapter(QuadIndices::class.java, QuadIndicesSerializer())
+        .setPrettyPrinting()
+        .create()!!
+
 
 class McxExporter {
 
-    val GSON = GsonBuilder()
-            .registerTypeAdapter(IVector3::class.java, Vector3Serializer())
-            .registerTypeAdapter(IVector2::class.java, Vector2Serializer())
-            .registerTypeAdapter(QuadIndices::class.java, QuadIndicesSerializer())
-            .setPrettyPrinting()
-            .create()!!
-
-    fun export(output: OutputStream, model: IModel, domain: String) {
+    fun export(output: OutputStream, model: IModel, prefix: String) {
 
         val posSet = mutableSetOf<IVector3>()
         val texSet = mutableSetOf<IVector2>()
@@ -38,7 +47,7 @@ class McxExporter {
         var particleTexture: String? = null
 
         model.objects.forEach { obj ->
-            val texture = "$domain:${model.getMaterial(obj.material).name}"
+            val texture = "$prefix${model.getMaterial(obj.material).name.replace(".png", "")}"
             val mesh = obj.mesh
             val localIndices = mesh.faces.map { face ->
                 val (ap, bp, cp, dp) = face.pos
@@ -63,7 +72,7 @@ class McxExporter {
         val data = ModelData(
                 useAmbientOcclusion = true,
                 use3dInGui = true,
-                particleTexture = particleTexture ?: "minecraft:missigno",
+                particleTexture = particleTexture ?: "${prefix}unknown",
                 parts = parts,
                 quads = QuadStorage(pos.map { it * (1 / 16.0) }, tex, indices)
         )
@@ -73,23 +82,65 @@ class McxExporter {
         output.close()
     }
 
-    data class ModelData(
-            val useAmbientOcclusion: Boolean,
-            val use3dInGui: Boolean,
-            val particleTexture: String,
-            val parts: List<Part>,
-            val quads: QuadStorage
-    )
 
-    data class Part(val name: String, val from: Int, val to: Int, val side: Direction?, val texture: String)
+}
 
-    class QuadStorage(val pos: List<IVector3>, val tex: List<IVector2>, val indices: List<QuadIndices>) {
+class McxImporter {
 
-        override fun toString(): String {
-            return "QuadStorage(pos=[${pos.size}], tex=[${tex.size}], indices=[${indices.size}])"
+    fun import(input: InputStream): IModel {
+
+        val model = GSON.fromJson(input.reader(), ModelData::class.java)
+
+        val materialPaths = (listOf(model.particleTexture) + model.parts.map { it.texture }).distinct()
+        val materials = materialPaths.map {
+            val name = it.substringAfter(':').substringAfter('/')
+            TexturedMaterial(name, ResourcePath.fromResourceLocation(it))
         }
+        val materialMap = materialPaths.zip(materials.indices).toMap()
+
+        val objects = model.parts.map { it.toObject(materialMap, model) }
+
+        return Model(objects, materials, objects.map { true })
     }
 
-    class QuadIndices(val a: Int, val b: Int, val c: Int, val d: Int,
-                      val at: Int, val bt: Int, val ct: Int, val dt: Int)
+    fun Part.toObject(materials: Map<String, Int>, model: ModelData): IObject {
+//        if(side == null && (to - from) == 6){ // probably a cube
+//
+//        }
+        // not a cube
+        val storage = model.quads
+        val quadIndices = storage.indices.subList(from, to)
+        val pos = quadIndices.flatMap {
+            listOf(storage.pos[it.a], storage.pos[it.b], storage.pos[it.c], storage.pos[it.d])
+        }
+        val tex = quadIndices.flatMap {
+            listOf(storage.tex[it.at], storage.tex[it.bt], storage.tex[it.ct], storage.tex[it.dt])
+        }
+        val faces = quadIndices.map { FaceIndex(listOf(it.a to it.at, it.b to it.bt, it.c to it.ct, it.d to it.dt)) }
+
+        val mesh = Mesh(pos, tex, faces)
+
+        return Object(name, mesh, MaterialRef(materials[texture] ?: -1))
+    }
 }
+
+
+data class ModelData(
+        val useAmbientOcclusion: Boolean,
+        val use3dInGui: Boolean,
+        val particleTexture: String,
+        val parts: List<Part>,
+        val quads: QuadStorage
+)
+
+data class Part(val name: String, val from: Int, val to: Int, val side: Direction?, val texture: String)
+
+class QuadStorage(val pos: List<IVector3>, val tex: List<IVector2>, val indices: List<QuadIndices>) {
+
+    override fun toString(): String {
+        return "QuadStorage(pos=[${pos.size}], tex=[${tex.size}], indices=[${indices.size}])"
+    }
+}
+
+class QuadIndices(val a: Int, val b: Int, val c: Int, val d: Int,
+                  val at: Int, val bt: Int, val ct: Int, val dt: Int)

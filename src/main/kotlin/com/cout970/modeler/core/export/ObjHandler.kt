@@ -13,12 +13,10 @@ import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.resource.ResourcePath
-import com.cout970.modeler.core.resource.toResourcePath
 import com.cout970.modeler.util.join
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
-import java.io.File
 import java.io.OutputStream
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -300,7 +298,7 @@ class ObjImporter {
 private data class ObjMaterial(val name: String) {
     var map_Ka: String = ""
 
-    fun toMaterial(): IMaterial = TexturedMaterial(name, File(map_Ka).toResourcePath())
+    fun toMaterial(): IMaterial = TexturedMaterial(name, ResourcePath.fromResourceLocation(map_Ka))
 }
 
 private class MeshData(

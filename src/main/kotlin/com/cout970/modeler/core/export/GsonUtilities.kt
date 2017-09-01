@@ -152,9 +152,9 @@ class ObjectSerializer : JsonSerializer<IObject>, JsonDeserializer<IObject> {
 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IObject {
         val obj = json.asJsonObject
-        if (obj.has("size")) {
+        return if (obj.has("size")) {
 
-            return ObjectCube(
+            ObjectCube(
                     name = context.deserialize(obj["name"], String::class.java),
                     pos = context.deserialize(obj["pos"], IVector3::class.java),
                     subTransformation = context.deserialize(obj["subTransformation"], TRTSTransformation::class.java),
@@ -165,7 +165,7 @@ class ObjectSerializer : JsonSerializer<IObject>, JsonDeserializer<IObject> {
                     mirrored = context.deserialize(obj["mirrored"], Boolean::class.java)
             )
         } else {
-            return context.deserialize(json, Object::class.java)
+            context.deserialize(json, Object::class.java)
         }
     }
 }
@@ -199,9 +199,9 @@ class MaterialRefSerializer : JsonSerializer<IMaterialRef>, JsonDeserializer<IMa
     }
 }
 
-class QuadIndicesSerializer : JsonSerializer<McxExporter.QuadIndices> {
+class QuadIndicesSerializer : JsonSerializer<QuadIndices> {
 
-    override fun serialize(src: McxExporter.QuadIndices, typeOfSrc: Type?,
+    override fun serialize(src: QuadIndices, typeOfSrc: Type?,
                            context: JsonSerializationContext?): JsonElement {
         val arr = JsonArray()
         arr.add(JsonArray().apply { add(src.a); add(src.b); add(src.c); add(src.d) })
