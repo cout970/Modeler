@@ -1,8 +1,9 @@
-package com.cout970.modeler.gui.popup;
+package com.cout970.modeler.gui.dialogs;
 
 import com.cout970.modeler.core.export.ExportFormat;
 import com.cout970.modeler.core.export.ExportProperties;
 import com.cout970.modeler.util.CollectionsKt;
+import com.cout970.modeler.util.PopupsKt;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 import org.lwjgl.PointerBuffer;

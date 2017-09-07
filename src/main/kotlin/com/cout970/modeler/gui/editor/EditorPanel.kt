@@ -8,9 +8,12 @@ import com.cout970.modeler.gui.editor.centerpanel.ModuleCenterPanel
 import com.cout970.modeler.gui.editor.leftpanel.ModuleLeftPanel
 import com.cout970.modeler.gui.editor.rightpanel.ModuleRightPanel
 import com.cout970.modeler.gui.editor.toppanel.ModuleTopPanel
+import com.cout970.modeler.gui.react.leguicomp.Panel
 import com.cout970.modeler.util.toJoml2f
 import com.cout970.vector.api.IVector2
 import org.joml.Vector2f
+import org.liquidengine.legui.component.Component
+import org.liquidengine.legui.component.Container
 
 /**
  * Created by cout970 on 2017/06/09.
@@ -23,19 +26,31 @@ class EditorPanel : MutablePanel() {
     val centerPanelModule = ModuleCenterPanel()
     val bottomPanelModule = ModuleBottomPanel()
 
+//    val reactBase = panel {
+//        scalable = FillWindow()
+//        setTransparent()
+//        setBorderless()
+//    }
+
     init {
         add(topPanelModule.panel)
         add(leftPanelModule.panel)
         add(rightPanelModule.panel)
         add(centerPanelModule.panel)
         add(bottomPanelModule.panel)
+//        add(reactBase)
         setTransparent()
         setBorderless()
+//        ReactRenderer.render(reactBase){
+//            com.cout970.modeler.gui.react.components.LeftPanel { }
+//        }
     }
 
     override fun updateSizes(newSize: IVector2) {
         size = newSize.toJoml2f()
         position = Vector2f()
+
+//        recursiveUpdateSize(reactBase, Panel(), newSize)
 
         topPanelModule.apply {
             panel.size = Vector2f(newSize.xf, 48f)
@@ -74,6 +89,17 @@ class EditorPanel : MutablePanel() {
             layout.rescale()
             presenter.updateBackground()
             layout.rescale()
+        }
+    }
+
+    fun recursiveUpdateSize(c: Component, parent: Container<*>, windowSize: IVector2) {
+        if (c is Panel) {
+            c.scalable?.updateScale(c, parent, windowSize)
+        }
+        (c as? Container<*>)?.apply {
+            childs?.forEach {
+                recursiveUpdateSize(it, this, windowSize)
+            }
         }
     }
 }
