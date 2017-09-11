@@ -7,7 +7,10 @@ import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
-import com.cout970.modeler.core.model.*
+import com.cout970.modeler.core.model.Model
+import com.cout970.modeler.core.model.Object
+import com.cout970.modeler.core.model.ObjectCube
+import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.material.TexturedMaterial
@@ -156,9 +159,7 @@ class ObjectSerializer : JsonSerializer<IObject>, JsonDeserializer<IObject> {
 
             ObjectCube(
                     name = context.deserialize(obj["name"], String::class.java),
-                    pos = context.deserialize(obj["pos"], IVector3::class.java),
-                    subTransformation = context.deserialize(obj["subTransformation"], TRTSTransformation::class.java),
-                    size = context.deserialize(obj["size"], IVector3::class.java),
+                    transformation = context.deserialize(obj["transformation"], TRSTransformation::class.java),
                     material = context.deserialize(obj["material"], IMaterialRef::class.java),
                     textureOffset = context.deserialize(obj["textureOffset"], IVector2::class.java),
                     textureSize = context.deserialize(obj["textureSize"], IVector2::class.java),

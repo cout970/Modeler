@@ -4,7 +4,7 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.ObjectCube
-import com.cout970.modeler.core.model.TRTSTransformation
+import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.resource.ResourcePath
@@ -51,12 +51,10 @@ class TblImporter {
         return list.map { cube ->
             ObjectCube(
                     name = cube.name,
-                    pos = transformPos(cube),
-                    subTransformation = TRTSTransformation.fromRotationPivot(
+                    transformation = TRSTransformation.fromRotationPivot(
                             cube.position * vec3Of(1, -1, -1) + CENTER_OFFSET,
                             cube.rotation
-                    ),
-                    size = cube.dimensions,
+                    ).merge(TRSTransformation(translation = transformPos(cube), scale = cube.dimensions)),
                     material = material,
                     textureOffset = cube.txOffset,
                     textureSize = texSize,
@@ -93,18 +91,18 @@ class TblImporter {
     ) {
         override fun toString(): String {
             return "TblModel(\n" +
-                   "    modelName='$modelName',\n" +
-                   "    authorName='$authorName',\n" +
-                   "    projVersion=$projVersion,\n" +
-                   "    metadata=$metadata,\n" +
-                   "    textureWidth=$textureWidth,\n" +
-                   "    textureHeight=$textureHeight,\n" +
-                   "    scale=$scale,\n" +
-                   "    cubeGroups=[... size:${cubeGroups.size}],\n" +
-                   "    cubes=[... size:${cubes.size}],\n" +
-                   "    anims=$anims,\n" +
-                   "    cubeCount=$cubeCount\n" +
-                   ")"
+                    "    modelName='$modelName',\n" +
+                    "    authorName='$authorName',\n" +
+                    "    projVersion=$projVersion,\n" +
+                    "    metadata=$metadata,\n" +
+                    "    textureWidth=$textureWidth,\n" +
+                    "    textureHeight=$textureHeight,\n" +
+                    "    scale=$scale,\n" +
+                    "    cubeGroups=[... size:${cubeGroups.size}],\n" +
+                    "    cubes=[... size:${cubes.size}],\n" +
+                    "    anims=$anims,\n" +
+                    "    cubeCount=$cubeCount\n" +
+                    ")"
         }
     }
 

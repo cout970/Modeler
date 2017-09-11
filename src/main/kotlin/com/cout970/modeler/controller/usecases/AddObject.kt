@@ -8,7 +8,7 @@ import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.tasks.TaskUpdateModel
 import com.cout970.modeler.core.model.Object
 import com.cout970.modeler.core.model.ObjectCube
-import com.cout970.modeler.core.model.TRTSTransformation
+import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.mesh.MeshFactory
 import com.cout970.vector.api.IVector3
@@ -50,9 +50,7 @@ class AddTemplateCube : IUseCase {
     override fun createTask(): ITask {
         val obj = ObjectCube(
                 name,
-                pos,
-                TRTSTransformation.IDENTITY,
-                size,
+                TRSTransformation(translation = pos, scale = size),
                 material = material
         )
         return addObject(model, obj)

@@ -1,9 +1,12 @@
 package com.cout970.modeler.gui.editor.leftpanel.editcubepanel
 
 import com.cout970.modeler.api.model.`object`.IObjectCube
+import com.cout970.modeler.core.model.pos
+import com.cout970.modeler.core.model.size
 import com.cout970.modeler.gui.ComponentPresenter
 import com.cout970.modeler.util.show
 import com.cout970.modeler.util.text
+import com.cout970.modeler.util.toAxisRotations
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import java.text.DecimalFormat
@@ -21,8 +24,8 @@ class EditCubePanelPresenter(val editCubePanel: EditCubePanel) : ComponentPresen
     fun showCube(cube: IObjectCube) {
         setSize(cube.size)
         setPos(cube.pos)
-        setRotation(cube.subTransformation.rotation)
-        setRotationPos(cube.subTransformation.preRotation)
+        setRotation(cube.transformation.rotation.toAxisRotations())
+//        setRotationPos(cube.transformation.preRotation)
         setTextureOffset(cube.textureOffset)
         editCubePanel.show()
     }
@@ -47,12 +50,12 @@ class EditCubePanelPresenter(val editCubePanel: EditCubePanel) : ComponentPresen
         panel.rotZ.textField.text = formatter.format(rot.zf)
     }
 
-    fun setRotationPos(pos: IVector3) {
-        val panel = editCubePanel.rotationPosPanel
-        panel.pivotX.textField.text = formatter.format(pos.xf)
-        panel.pivotY.textField.text = formatter.format(pos.yf)
-        panel.pivotZ.textField.text = formatter.format(pos.zf)
-    }
+//    fun setRotationPos(pos: IVector3) {
+//        val panel = editCubePanel.rotationPosPanel
+//        panel.pivotX.textField.text = formatter.format(pos.xf)
+//        panel.pivotY.textField.text = formatter.format(pos.yf)
+//        panel.pivotZ.textField.text = formatter.format(pos.zf)
+//    }
 
     fun setTextureOffset(pos: IVector2) {
         val panel = editCubePanel.textureOffsetPanel

@@ -21,11 +21,13 @@ data class Object(
         override val material: IMaterialRef = MaterialRef(-1)
 ) : IObject {
 
+    @Suppress("unused")
     private constructor() : this("", Mesh())
 
     override fun getCenter(): IVector3 = mesh.middle()
 
-    override val transformer: IObjectTransformer = object : IObjectTransformer {
+    override val transformer: IObjectTransformer = object : IObjectTransformer
+    {
         override fun withMesh(obj: IObject, newMesh: IMesh): IObject {
             return copy(mesh = newMesh)
         }
@@ -35,7 +37,7 @@ data class Object(
         }
 
         override fun rotate(obj: IObject, pivot: IVector3, rot: IQuaternion): IObject {
-            return copy(mesh = mesh.transform(TRTSTransformation.fromRotationPivot(pivot, rot.toAxisRotations())))
+            return copy(mesh = mesh.transform(TRSTransformation.fromRotationPivot(pivot, rot.toAxisRotations())))
         }
 
         override fun scale(obj: IObject, center: IVector3, axis: IVector3, offset: Float): IObject {

@@ -1,4 +1,3 @@
-
 #version 400 core
 
 // Input vertex parameters

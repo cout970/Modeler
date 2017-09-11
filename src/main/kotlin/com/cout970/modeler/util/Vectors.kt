@@ -205,7 +205,6 @@ fun IQuaternion.normalize(): IQuaternion {
 }
 
 fun Pair<IVector3, IQuaternion>.fromPivotToOrigin(): Pair<IVector3, IQuaternion> {
-    val invPos = -first
-    val finalPos = second.toJOML().transform(invPos.toJoml3d()).toIVector() + first
+    val finalPos = -(second.toJOML().transform((-first).toJoml3d()).toIVector()) + first
     return finalPos to second
 }

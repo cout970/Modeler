@@ -9,7 +9,7 @@ import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.ObjectCube
-import com.cout970.modeler.core.model.TRTSTransformation
+import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.material.TexturedMaterial
@@ -67,8 +67,8 @@ class TcnImporter {
         for (i in 0..shapes.length - 1) {
             val shape = shapes.item(i)
             val shapeAttributes = shape.attributes ?:
-                                  throw IllegalStateException(
-                                          "Shape #" + (i + 1) + " has no attributes")
+                    throw IllegalStateException(
+                            "Shape #" + (i + 1) + " has no attributes")
 
             var shapeType: String? = null
             val type = shapeAttributes.getNamedItem("type")
@@ -138,9 +138,8 @@ class TcnImporter {
 
         val cube = ObjectCube(
                 name = shapeName,
-                size = rSize,
-                pos = fOffset,
-                subTransformation = TRTSTransformation.fromRotationPivot(rRotPoint, rRotation),
+                transformation = TRSTransformation.fromRotationPivot(rRotPoint, rRotation)
+                        .merge(TRSTransformation(translation = fOffset, scale = rSize)),
                 textureOffset = rTexture,
                 textureSize = textureSize,
                 mirrored = mirrored,

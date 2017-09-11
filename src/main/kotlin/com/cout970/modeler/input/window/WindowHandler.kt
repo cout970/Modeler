@@ -36,6 +36,7 @@ class WindowHandler(private val timer: Timer) : ITickeable {
         window = WindowBuilder.build {
             title = WINDOW_TITLE
             size = vec2Of(800, 600)
+            vSync = true
 //            properties.put(GLFW_DECORATED, GLFW_FALSE)
 //            properties.put(GLFW_MAXIMIZED, GLFW_TRUE)
         }
@@ -64,8 +65,10 @@ class WindowHandler(private val timer: Timer) : ITickeable {
 
     override fun tick() {
         window.swapBuffers()
+        Thread.sleep(33)
         GL11.glViewport(0, 0, window.size.xi, window.size.yi)
         window.setTitle("$WINDOW_TITLE [${timer.fps} FPS]")
+
     }
 
     fun resetViewport() {

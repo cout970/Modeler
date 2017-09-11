@@ -7,10 +7,14 @@ import com.cout970.modeler.controller.injection.Inject
 import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.tasks.TaskNone
 import com.cout970.modeler.controller.tasks.TaskUpdateModel
+import com.cout970.modeler.core.model.pos
+import com.cout970.modeler.core.model.size
 import com.cout970.modeler.gui.comp.CTextInput
 import com.cout970.modeler.gui.comp.Cache
 import com.cout970.modeler.gui.editor.EditorPanel
+import com.cout970.modeler.util.quatOfAngles
 import com.cout970.modeler.util.text
+import com.cout970.modeler.util.toAxisRotations
 import com.cout970.modeler.util.toRads
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.vec3Of
@@ -70,22 +74,22 @@ class UpdateTemplateCube : IUseCase {
             "cube.pos.y" -> setPosY(cube, y = getValue(input, cube.pos.yf) + offset)
             "cube.pos.z" -> setPosZ(cube, z = getValue(input, cube.pos.zf) + offset)
 
-            "cube.rot.x" -> setRotationX(cube, x = getValue(input, cube.subTransformation.rotation.xf) + offset * 15f)
-            "cube.rot.y" -> setRotationY(cube, y = getValue(input, cube.subTransformation.rotation.yf) + offset * 15f)
-            "cube.rot.z" -> setRotationZ(cube, z = getValue(input, cube.subTransformation.rotation.zf) + offset * 15f)
+            "cube.rot.x" -> setRotationX(cube, x = getValue(input, cube.transformation.rotation.toAxisRotations().xf) + offset * 15f)
+            "cube.rot.y" -> setRotationY(cube, y = getValue(input, cube.transformation.rotation.toAxisRotations().yf) + offset * 15f)
+            "cube.rot.z" -> setRotationZ(cube, z = getValue(input, cube.transformation.rotation.toAxisRotations().zf) + offset * 15f)
 
-            "cube.rot.pos.x" -> setRotationPosX(cube, x = getValue(input, cube.subTransformation.preRotation.xf) + offset)
-            "cube.rot.pos.y" -> setRotationPosY(cube, y = getValue(input, cube.subTransformation.preRotation.yf) + offset)
-            "cube.rot.pos.z" -> setRotationPosZ(cube, z = getValue(input, cube.subTransformation.preRotation.zf) + offset)
+//            "cube.rot.pos.x" -> setRotationPosX(cube, x = getValue(input, cube.transformation.preRotation.xf) + offset)
+//            "cube.rot.pos.y" -> setRotationPosY(cube, y = getValue(input, cube.transformation.preRotation.yf) + offset)
+//            "cube.rot.pos.z" -> setRotationPosZ(cube, z = getValue(input, cube.transformation.preRotation.zf) + offset)
 
             "cube.tex.x" -> setTextureOffsetX(cube, x = getValue(input, cube.textureOffset.xf) + offset)
             "cube.tex.y" -> setTextureOffsetY(cube, y = getValue(input, cube.textureOffset.yf) + offset)
 
             else -> null
-            //@formatter:on
+        //@formatter:on
         }
         if (obj != null) {
-            if (cube.size == obj.size && cube.pos == obj.pos && cube.subTransformation == obj.subTransformation && cube.textureOffset == obj.textureOffset) {
+            if (cube.size == obj.size && cube.pos == obj.pos && cube.transformation == obj.transformation && cube.textureOffset == obj.textureOffset) {
                 return null
             }
         }
@@ -117,40 +121,41 @@ class UpdateTemplateCube : IUseCase {
     }
 
     fun setRotationX(cube: IObjectCube, x: Float): IObjectCube {
-        val oldRot = cube.subTransformation.rotation
-        val trans = cube.subTransformation.copy(rotation = vec3Of(x.clampRot(), oldRot.y, oldRot.z))
+        val oldRot = cube.transformation.rotation.toAxisRotations()
+        val trans = cube.transformation.copy(rotation = quatOfAngles(x.clampRot(), oldRot.y, oldRot.z))
         return cube.withSubTransformation(trans)
     }
 
     fun setRotationY(cube: IObjectCube, y: Float): IObjectCube {
-        val oldRot = cube.subTransformation.rotation
-        val trans = cube.subTransformation.copy(rotation = vec3Of(oldRot.x, y.clampRot(), oldRot.z))
+        val oldRot = cube.transformation.rotation.toAxisRotations()
+
+        val trans = cube.transformation.copy(rotation = quatOfAngles(oldRot.x, y.clampRot(), oldRot.z))
         return cube.withSubTransformation(trans)
     }
 
     fun setRotationZ(cube: IObjectCube, z: Float): IObjectCube {
-        val oldRot = cube.subTransformation.rotation
-        val trans = cube.subTransformation.copy(rotation = vec3Of(oldRot.x, oldRot.y, z.clampRot()))
+        val oldRot = cube.transformation.rotation.toAxisRotations()
+        val trans = cube.transformation.copy(rotation = quatOfAngles(oldRot.x, oldRot.y, z.clampRot()))
         return cube.withSubTransformation(trans)
     }
 
-    fun setRotationPosX(cube: IObjectCube, x: Float): IObjectCube {
-        val oldPos = cube.subTransformation.preRotation
-        val trans = cube.subTransformation.copy(preRotation = vec3Of(x, oldPos.y, oldPos.z))
-        return cube.withSubTransformation(trans)
-    }
-
-    fun setRotationPosY(cube: IObjectCube, y: Float): IObjectCube {
-        val oldPos = cube.subTransformation.preRotation
-        val trans = cube.subTransformation.copy(preRotation = vec3Of(oldPos.x, y, oldPos.z))
-        return cube.withSubTransformation(trans)
-    }
-
-    fun setRotationPosZ(cube: IObjectCube, z: Float): IObjectCube {
-        val oldPos = cube.subTransformation.preRotation
-        val trans = cube.subTransformation.copy(preRotation = vec3Of(oldPos.x, oldPos.y, z))
-        return cube.withSubTransformation(trans)
-    }
+//    fun setRotationPosX(cube: IObjectCube, x: Float): IObjectCube {
+//        val oldPos = cube.transformation.preRotation
+//        val trans = cube.transformation.copy(preRotation = vec3Of(x, oldPos.y, oldPos.z))
+//        return cube.withSubTransformation(trans)
+//    }
+//
+//    fun setRotationPosY(cube: IObjectCube, y: Float): IObjectCube {
+//        val oldPos = cube.transformation.preRotation
+//        val trans = cube.transformation.copy(preRotation = vec3Of(oldPos.x, y, oldPos.z))
+//        return cube.withSubTransformation(trans)
+//    }
+//
+//    fun setRotationPosZ(cube: IObjectCube, z: Float): IObjectCube {
+//        val oldPos = cube.transformation.preRotation
+//        val trans = cube.transformation.copy(preRotation = vec3Of(oldPos.x, oldPos.y, z))
+//        return cube.withSubTransformation(trans)
+//    }
 
     fun setTextureOffsetX(cube: IObjectCube, x: Float): IObjectCube {
         return cube.withTextureOffset(vec2Of(x, cube.textureOffset.yf))
@@ -165,7 +170,7 @@ class UpdateTemplateCube : IUseCase {
             this > 180f -> this - 360f
             this < -180f -> this + 360f
             else -> this
-        }.toRads()
+        }.toDouble()
     }
 
     fun getValue(input: TextInput, default: Float): Float {

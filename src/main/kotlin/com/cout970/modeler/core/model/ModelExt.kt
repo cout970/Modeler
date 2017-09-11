@@ -2,6 +2,7 @@ package com.cout970.modeler.core.model
 
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.`object`.IObject
+import com.cout970.modeler.api.model.`object`.IObjectCube
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.core.model.selection.ObjectRef
@@ -22,3 +23,7 @@ fun IModel.getSelectedObjectRefs(sel: ISelection): List<IObjectRef> {
         if (sel.isSelected(ref)) ref else null
     }
 }
+
+val IObjectCube.pos get() = transformation.translation
+val IObjectCube.rot get() = transformation.rotation
+val IObjectCube.size get() = transformation.scale

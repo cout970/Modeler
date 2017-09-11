@@ -23,9 +23,7 @@ import org.joml.Vector4d
 data class ObjectCube(
         override val name: String,
 
-        override val pos: IVector3,
-        override val subTransformation: TRTSTransformation,
-        override val size: IVector3,
+        override val transformation: TRSTransformation,
 
         override val material: IMaterialRef = MaterialRef(-1),
 
@@ -37,12 +35,15 @@ data class ObjectCube(
 
     override val mesh: IMesh by lazy { generateMesh() }
 
-    override fun getCenter(): IVector3 = mesh.middle()//subTransformation.preRotation
+    override fun getCenter(): IVector3 = mesh.middle()//transformation.preRotation
+
+    val size: IVector3 get() = transformation.scale
+    val pos: IVector3 get() = transformation.translation
 
     fun generateMesh(): IMesh {
-        val cube = MeshFactory.createCube(size, pos)
+        val cube = MeshFactory.createCube(Vector3.ONE, Vector3.ORIGIN)
         val pos = cube.pos.map { Vector4d(it.xd, it.yd, it.zd, 1.0) }
-                .map(subTransformation.matrix.toJOML()::transform)
+                .map(transformation.matrix.toJOML()::transform)
                 .map { vec3Of(it.x, it.y, it.z) }
         return updateTextures(Mesh(pos, cube.tex, cube.faces), size, textureOffset, textureSize)
     }
@@ -102,11 +103,11 @@ data class ObjectCube(
         )
     }
 
-    override fun withSize(size: IVector3): IObjectCube = copy(size = size)
+    override fun withSize(size: IVector3): IObjectCube = copy(transformation = transformation.copy(scale = size))
 
-    override fun withPos(pos: IVector3): IObjectCube = copy(pos = pos)
+    override fun withPos(pos: IVector3): IObjectCube = copy(transformation = transformation.copy(translation = pos))
 
-    override fun withSubTransformation(transform: TRTSTransformation): IObjectCube = copy(subTransformation = transform)
+    override fun withSubTransformation(transform: TRSTransformation): IObjectCube = copy(transformation = transform)
 
     override fun withTextureOffset(tex: IVector2): IObjectCube = copy(textureOffset = tex)
 
@@ -116,19 +117,19 @@ data class ObjectCube(
         }
 
         override fun translate(obj: IObject, translation: IVector3): IObject {
-            return copy(pos = pos + quatOfAngles(-subTransformation.rotation).transform(translation))
-//            return copy(pos = pos + translation)
+//            val newPos = pos + quatOfAngles(-transformation.rotation.toAxisRotations()).transform(translation)
+            val newPos = pos + translation
+            return copy(transformation = transformation.copy(translation = newPos))
         }
 
         override fun rotate(obj: IObject, pivot: IVector3, rot: IQuaternion): IObject {
-
-            val newRot = TRTSTransformation.fromRotationPivot(pivot, rot.toAxisRotations())
-            return copy(subTransformation = subTransformation.merge(newRot))
+            val newRot = TRSTransformation.fromRotationPivot(pivot, rot.toAxisRotations())
+            return copy(transformation = transformation.merge(newRot))
         }
 
         override fun scale(obj: IObject, center: IVector3, axis: IVector3, offset: Float): IObject {
             val newSize = size + axis * offset
-            return copy(size = newSize)
+            return copy(transformation = transformation.copy(scale = newSize))
         }
 
         override fun withMaterial(obj: IObject, materialRef: IMaterialRef): IObject {
