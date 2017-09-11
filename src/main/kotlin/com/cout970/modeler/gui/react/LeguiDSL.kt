@@ -18,3 +18,4 @@ fun Container<Panel>.panel(func: Panel.() -> Unit) {
     func(panel)
     add(panel)
 }
+

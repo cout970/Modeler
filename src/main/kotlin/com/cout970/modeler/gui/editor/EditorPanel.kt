@@ -8,7 +8,11 @@ import com.cout970.modeler.gui.editor.centerpanel.ModuleCenterPanel
 import com.cout970.modeler.gui.editor.leftpanel.ModuleLeftPanel
 import com.cout970.modeler.gui.editor.rightpanel.ModuleRightPanel
 import com.cout970.modeler.gui.editor.toppanel.ModuleTopPanel
+import com.cout970.modeler.gui.react.ReactRenderer.render
+import com.cout970.modeler.gui.react.components.LeftPanel
 import com.cout970.modeler.gui.react.leguicomp.Panel
+import com.cout970.modeler.gui.react.panel
+import com.cout970.modeler.gui.react.scalable.FillWindow
 import com.cout970.modeler.util.toJoml2f
 import com.cout970.vector.api.IVector2
 import org.joml.Vector2f
@@ -26,11 +30,11 @@ class EditorPanel : MutablePanel() {
     val centerPanelModule = ModuleCenterPanel()
     val bottomPanelModule = ModuleBottomPanel()
 
-//    val reactBase = panel {
-//        scalable = FillWindow()
-//        setTransparent()
-//        setBorderless()
-//    }
+    val reactBase = panel {
+        scalable = FillWindow()
+        setTransparent()
+        setBorderless()
+    }
 
     init {
         add(topPanelModule.panel)
@@ -41,9 +45,9 @@ class EditorPanel : MutablePanel() {
 //        add(reactBase)
         setTransparent()
         setBorderless()
-//        ReactRenderer.render(reactBase){
-//            com.cout970.modeler.gui.react.components.LeftPanel { }
-//        }
+        render(reactBase) {
+            LeftPanel { }
+        }
     }
 
     override fun updateSizes(newSize: IVector2) {

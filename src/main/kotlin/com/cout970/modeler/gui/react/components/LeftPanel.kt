@@ -1,6 +1,7 @@
 package com.cout970.modeler.gui.react.components
 
 import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.gui.comp.setBorderless
 import com.cout970.modeler.gui.react.IComponentFactory
 import com.cout970.modeler.gui.react.ReactComponent
 import com.cout970.modeler.gui.react.panel
@@ -11,7 +12,7 @@ import org.liquidengine.legui.component.Component
 /**
  * Created by cout970 on 2017/09/07.
  */
-class LeftPanel : ReactComponent<Unit, Unit>() {
+class LeftPanel private constructor() : ReactComponent<Unit, Unit>() {
 
     init {
         setState(Unit)
@@ -20,6 +21,9 @@ class LeftPanel : ReactComponent<Unit, Unit>() {
     override fun render(): Component = panel {
         backgroundColor = Config.colorPalette.darkestColor.toColor()
         scalable = FixedXFillY(0f, 280f)
+        setBorderless()
+
+        +GridButtonPanel {}
     }
 
     companion object : IComponentFactory<Unit, Unit, LeftPanel> {

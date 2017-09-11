@@ -11,4 +11,8 @@ import org.liquidengine.legui.component.Panel as LeguiPanel
 class Panel : LeguiPanel<LeguiComponent>(){
 
     var scalable: IScalable? = null
+
+    operator fun LeguiComponent.unaryPlus() {
+        add(this)
+    }
 }

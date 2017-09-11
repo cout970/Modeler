@@ -74,10 +74,12 @@ open class CPanel(
     }
 }
 
-fun Component.setBorderless() {
+fun Component.setBorderless(): Component {
     border.isEnabled = false
+    return this
 }
 
-fun Component.setTransparent() {
+fun Component.setTransparent(): Component {
     backgroundColor = ColorConstants.transparent()
+    return this
 }
