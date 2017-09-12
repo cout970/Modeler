@@ -5,8 +5,8 @@ import com.cout970.modeler.controller.injection.Inject
 import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.model.AABB
 import com.cout970.modeler.gui.GuiState
-import com.cout970.modeler.gui.popup.ExportDialog
-import com.cout970.modeler.gui.popup.ImportDialog
+import com.cout970.modeler.gui.dialogs.ExportDialog
+import com.cout970.modeler.gui.dialogs.ImportDialog
 import com.cout970.modeler.util.toPointerBuffer
 import org.lwjgl.PointerBuffer
 import org.lwjgl.util.tinyfd.TinyFileDialogs

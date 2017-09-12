@@ -1,4 +1,4 @@
-package com.cout970.modeler.gui.popup
+package com.cout970.modeler.util
 
 import java.awt.Point
 import java.awt.Toolkit
@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage
 import javax.swing.JDialog
 
 /**
- * Created by cout970 on 2016/12/29.
+ * Created by cout970 on 2017/09/04.
  */
 
 val popupImage = BufferedImage(16, 16, BufferedImage.TYPE_INT_RGB).apply {
