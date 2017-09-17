@@ -7,18 +7,21 @@ import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Container
 import org.liquidengine.legui.component.Frame
 import org.liquidengine.legui.component.TextInput
+import org.liquidengine.legui.event.Event
 import org.liquidengine.legui.event.MouseClickEvent
+import org.liquidengine.legui.listener.EventListener
 import org.liquidengine.legui.system.context.Context
 
-val Component.absolutePosition: IVector2 get() {
-    var sum = this.position.toIVector()
-    var parent = this.parent
-    while (parent != null) {
-        sum += parent.position.toIVector()
-        parent = parent.parent
+val Component.absolutePosition: IVector2
+    get() {
+        var sum = this.position.toIVector()
+        var parent = this.parent
+        while (parent != null) {
+            sum += parent.position.toIVector()
+            parent = parent.parent
+        }
+        return sum
     }
-    return sum
-}
 
 inline fun <T : Component> T.onClick(id: Int, crossinline func: (Int) -> Unit): T {
     listenerMap.addListener(MouseClickEvent::class.java, {
@@ -83,3 +86,30 @@ fun Context.unfocus() {
 }
 
 inline fun <reified T> Component?.parent(): T? = this?.parent as? T
+
+inline fun <reified T : Event<Component>> Component.getListeners(): List<Pair<Component, EventListener<T>>> {
+    val list = mutableListOf<Pair<Component, EventListener<T>>>()
+    forEachComponent {
+        list += it.listenerMap.getListeners(T::class.java).map { listener -> it to listener }
+    }
+    return list
+}
+
+@Suppress("UNCHECKED_CAST")
+fun Component.forEachChild(func: (Component) -> Unit) {
+    when (this) {
+        is Container<*> -> (this as Container<Component>).childs.forEach { it.forEachChild(func) }
+        else -> func(this)
+    }
+}
+
+@Suppress("UNCHECKED_CAST")
+fun Component.forEachComponent(func: (Component) -> Unit) {
+    when (this) {
+        is Container<*> -> {
+            func(this)
+            (this as Container<Component>).childs.forEach { it.forEachComponent(func) }
+        }
+        else -> func(this)
+    }
+}

@@ -5,7 +5,6 @@ import com.cout970.modeler.gui.GuiResources
 import com.cout970.modeler.util.toColor
 import org.joml.Vector2f
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
-import org.liquidengine.legui.icon.ImageIcon
 
 /**
  * Created by cout970 on 2017/08/29.
@@ -32,7 +31,8 @@ class VariableInput(cmd: String, posX: Float, posY: Float) : CPanel(0f, 0f, 75f,
     override fun loadResources(resources: GuiResources) {
         super.loadResources(resources)
 
-        topButton.setImage(ImageIcon(resources.upIcon))
-        bottomButton.setImage(ImageIcon(resources.downIcon))
+        //TODO
+//        topButton.setImage(ImageIcon(resources.upIcon))
+//        bottomButton.setImage(ImageIcon(resources.downIcon))
     }
 }

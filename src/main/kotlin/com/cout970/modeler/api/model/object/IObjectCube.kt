@@ -14,6 +14,6 @@ interface IObjectCube : IObject {
 
     fun withSize(size: IVector3): IObjectCube
     fun withPos(pos: IVector3): IObjectCube
-    fun withSubTransformation(transform: TRSTransformation): IObjectCube
+    fun withTransformation(transform: TRSTransformation): IObjectCube
     fun withTextureOffset(tex: IVector2): IObjectCube
 }

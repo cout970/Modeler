@@ -7,9 +7,7 @@ import com.cout970.modeler.gui.GuiResources
 import com.cout970.modeler.gui.comp.*
 import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.toColor
-import org.joml.Vector2f
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
-import org.liquidengine.legui.icon.ImageIcon
 
 class RightPanel : CPanel() {
 
@@ -47,8 +45,9 @@ class RightPanel : CPanel() {
         }
 
         override fun loadResources(resources: GuiResources) {
-            addTemplateButton.setImage(ImageIcon(resources.addTemplateCubeIcon).also { it.size = Vector2f(32f) })
-            addMeshButton.setImage(ImageIcon(resources.addMeshCubeIcon).also { it.size = Vector2f(32f) })
+            //TODO
+//            addTemplateButton.setImage(ImageIcon(resources.addTemplateCubeIcon).also { it.size = Vector2f(32f) })
+//            addMeshButton.setImage(ImageIcon(resources.addMeshCubeIcon).also { it.size = Vector2f(32f) })
             super.loadResources(resources)
         }
     }
@@ -74,7 +73,7 @@ class RightPanel : CPanel() {
         }
 
         override fun loadResources(resources: GuiResources) {
-            importMaterialButton.setImage(ImageIcon(resources.addTemplateCubeIcon).also { it.size = Vector2f(32f) })
+//            importMaterialButton.setImage(ImageIcon(resources.addTemplateCubeIcon).also { it.size = Vector2f(32f) })
             super.loadResources(resources)
         }
     }
@@ -109,9 +108,9 @@ class RightPanel : CPanel() {
         }
 
         override fun loadResources(resources: GuiResources) {
-            showButton.setImage(ImageIcon(resources.showIcon).also { it.size = Vector2f(24f) })
-            hideButton.setImage(ImageIcon(resources.hideIcon).also { it.size = Vector2f(24f) })
-            delButton.setImage(ImageIcon(resources.deleteIcon).also { it.size = Vector2f(18f) })
+//            showButton.setImage(ImageIcon(resources.showIcon).also { it.size = Vector2f(24f) })
+//            hideButton.setImage(ImageIcon(resources.hideIcon).also { it.size = Vector2f(24f) })
+//            delButton.setImage(ImageIcon(resources.deleteIcon).also { it.size = Vector2f(18f) })
             super.loadResources(resources)
         }
     }
@@ -146,8 +145,8 @@ class RightPanel : CPanel() {
         }
 
         override fun loadResources(resources: GuiResources) {
-            applyButton.setImage(ImageIcon(resources.applyMaterial).apply { size = Vector2f(22f) })
-            loadButton.setImage(ImageIcon(resources.loadMaterial).apply { size = Vector2f(20f) })
+//            applyButton.setImage(ImageIcon(resources.applyMaterial).apply { size = Vector2f(22f) })
+//            loadButton.setImage(ImageIcon(resources.loadMaterial).apply { size = Vector2f(20f) })
             super.loadResources(resources)
         }
     }

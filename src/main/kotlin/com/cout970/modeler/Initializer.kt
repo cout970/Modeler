@@ -105,12 +105,13 @@ class Initializer {
 
         log(Level.FINE) { "Reloading gui resources" }
         gui.resources.reload(resourceLoader)
-        gui.root.mainPanel!!.loadResources(gui.resources)
+        gui.root.loadResources(gui.resources)
 
         log(Level.FINE) { "[GuiInitializer] Binding text inputs" }
         gui.dispatcher.state = state
         futureExecutor.programState = state
         gui.guiUpdater.bindTextInputs(gui.editorPanel)
+
         gui.buttonBinder.bindButtons(gui.root.mainPanel!!)
         gui.root.mainPanel!!.bindProperties(gui.state)
 

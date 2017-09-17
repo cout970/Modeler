@@ -1,5 +1,6 @@
 package com.cout970.modeler.gui.editor
 
+import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.MutablePanel
 import com.cout970.modeler.gui.comp.setBorderless
 import com.cout970.modeler.gui.comp.setTransparent
@@ -7,9 +8,9 @@ import com.cout970.modeler.gui.editor.bottompanel.ModuleBottomPanel
 import com.cout970.modeler.gui.editor.centerpanel.ModuleCenterPanel
 import com.cout970.modeler.gui.editor.leftpanel.ModuleLeftPanel
 import com.cout970.modeler.gui.editor.rightpanel.ModuleRightPanel
-import com.cout970.modeler.gui.editor.toppanel.ModuleTopPanel
 import com.cout970.modeler.gui.react.ReactRenderer.render
-import com.cout970.modeler.gui.react.components.LeftPanel
+import com.cout970.modeler.gui.react.components.RightPanel
+import com.cout970.modeler.gui.react.components.TopButtonPanel
 import com.cout970.modeler.gui.react.leguicomp.Panel
 import com.cout970.modeler.gui.react.panel
 import com.cout970.modeler.gui.react.scalable.FillWindow
@@ -24,7 +25,8 @@ import org.liquidengine.legui.component.Container
  */
 class EditorPanel : MutablePanel() {
 
-    val topPanelModule = ModuleTopPanel()
+    lateinit var gui: Gui
+
     val leftPanelModule = ModuleLeftPanel()
     val rightPanelModule = ModuleRightPanel()
     val centerPanelModule = ModuleCenterPanel()
@@ -37,16 +39,26 @@ class EditorPanel : MutablePanel() {
     }
 
     init {
-        add(topPanelModule.panel)
         add(leftPanelModule.panel)
         add(rightPanelModule.panel)
         add(centerPanelModule.panel)
         add(bottomPanelModule.panel)
-//        add(reactBase)
+        add(reactBase)
         setTransparent()
         setBorderless()
-        render(reactBase) {
-            LeftPanel { }
+
+    }
+
+    fun update() {
+        render(gui, reactBase) {
+            panel {
+                scalable = FillWindow()
+                setTransparent()
+                setBorderless()
+
+                +TopButtonPanel { }
+                +RightPanel { }
+            }
         }
     }
 
@@ -54,23 +66,17 @@ class EditorPanel : MutablePanel() {
         size = newSize.toJoml2f()
         position = Vector2f()
 
-//        recursiveUpdateSize(reactBase, Panel(), newSize)
-
-        topPanelModule.apply {
-            panel.size = Vector2f(newSize.xf, 48f)
-            panel.position = Vector2f()
-            layout.rescale()
-        }
+        recursiveUpdateSize(reactBase, Panel(), newSize)
 
         leftPanelModule.apply {
-            panel.size = Vector2f(280f, newSize.yf - topPanelModule.panel.size.y)
-            panel.position = Vector2f(0f, topPanelModule.panel.size.y)
+            panel.size = Vector2f(280f, newSize.yf - 48f)
+            panel.position = Vector2f(0f, 48f)
             layout.rescale()
         }
 
         rightPanelModule.apply {
-            panel.size = Vector2f(190f, newSize.yf - topPanelModule.panel.size.y)
-            panel.position = Vector2f(newSize.xf - panel.size.x, topPanelModule.panel.size.y)
+            panel.size = Vector2f(190f, newSize.yf - 48f)
+            panel.position = Vector2f(newSize.xf - panel.size.x, 48f)
             layout.rescale()
         }
 
@@ -87,9 +93,9 @@ class EditorPanel : MutablePanel() {
         centerPanelModule.apply {
             panel.size = Vector2f(
                     newSize.xf - (leftPanelModule.panel.size.x + rightPanelModule.panel.size.x),
-                    newSize.yf - (topPanelModule.panel.size.y) - (bottomPanelModule.panel.size.y)
+                    newSize.yf - (48f) - (bottomPanelModule.panel.size.y)
             )
-            panel.position = Vector2f(leftPanelModule.panel.size.x, topPanelModule.panel.size.y)
+            panel.position = Vector2f(leftPanelModule.panel.size.x, 48f)
             layout.rescale()
             presenter.updateBackground()
             layout.rescale()

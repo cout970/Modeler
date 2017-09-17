@@ -12,7 +12,7 @@ import org.liquidengine.legui.component.Component
 /**
  * Created by cout970 on 2017/09/07.
  */
-class LeftPanel private constructor() : ReactComponent<Unit, Unit>() {
+class LeftPanel private constructor() : ReactComponent<Unit, Unit>(Unit) {
 
     init {
         setState(Unit)

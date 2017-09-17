@@ -4,6 +4,8 @@ import com.cout970.glutilities.event.EventFrameBufferSize
 import com.cout970.glutilities.event.EventMouseScroll
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.selection.ISelection
+import com.cout970.modeler.gui.react.event.EventModelUpdate
+import com.cout970.modeler.util.getListeners
 import com.cout970.vector.extensions.vec2Of
 import org.liquidengine.legui.component.Container
 import org.liquidengine.legui.system.context.Context
@@ -32,6 +34,9 @@ class GuiUpdater {
     }
 
     fun onModelUpdate(old: IModel, new: IModel) {
+        gui.editorPanel.reactBase.getListeners<EventModelUpdate>().forEach { (comp, listener) ->
+            listener.process(EventModelUpdate(comp, leguiContext, gui.root, new, old))
+        }
         presenters.forEach { it.onModelUpdate(old, new) }
     }
 

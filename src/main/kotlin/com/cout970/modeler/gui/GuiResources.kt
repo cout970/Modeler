@@ -24,30 +24,7 @@ class GuiResources {
     lateinit var baseCubeTexture: Texture
     lateinit var centerMarkTexture: Texture
 
-    lateinit var deleteIcon: BufferedImage
-    lateinit var showIcon: BufferedImage
-    lateinit var hideIcon: BufferedImage
-    lateinit var applyMaterial: BufferedImage
-    lateinit var loadMaterial: BufferedImage
-    lateinit var addTemplateCubeIcon: BufferedImage
-    lateinit var addMeshCubeIcon: BufferedImage
-
-    lateinit var newProjectIcon: BufferedImage
-    lateinit var loadProjectCubeIcon: BufferedImage
-    lateinit var saveProjectIcon: BufferedImage
-    lateinit var saveAsProjectIcon: BufferedImage
-    lateinit var editProjectIcon: BufferedImage
-
-    lateinit var importModelIcon: BufferedImage
-    lateinit var exportModelIcon: BufferedImage
-    lateinit var exportTextureIcon: BufferedImage
-    lateinit var exportHitboxIcon: BufferedImage
-
-    lateinit var showGridsIcon: BufferedImage
-    lateinit var hideGridsIcon: BufferedImage
-
-    lateinit var upIcon: BufferedImage
-    lateinit var downIcon: BufferedImage
+    val iconMap = mutableMapOf<String, BufferedImage>()
 
 
     fun reload(loader: ResourceLoader) {
@@ -62,28 +39,30 @@ class GuiResources {
         baseCubeTexture = loader.getTexture("assets/textures/models/cube.png").apply { magFilter = Texture.PIXELATED }
         centerMarkTexture = loader.getTexture("assets/textures/models/center_mark.png")
 
-        deleteIcon = BufferedImage("assets/textures/delete.png")
-        showIcon = BufferedImage("assets/textures/show.png")
-        hideIcon = BufferedImage("assets/textures/hide.png")
-        applyMaterial = BufferedImage("assets/textures/apply_material.png")
-        loadMaterial = BufferedImage("assets/textures/load_material.png")
-        addTemplateCubeIcon = BufferedImage("assets/textures/add_template_cube.png")
-        addMeshCubeIcon = BufferedImage("assets/textures/add_mesh_cube.png")
-        newProjectIcon = BufferedImage("assets/textures/new_project.png")
-        loadProjectCubeIcon = BufferedImage("assets/textures/load_project.png")
-        saveProjectIcon = BufferedImage("assets/textures/save_project.png")
-        saveAsProjectIcon = BufferedImage("assets/textures/save_as_project.png")
-        editProjectIcon = BufferedImage("assets/textures/edit_project.png")
-        importModelIcon = BufferedImage("assets/textures/import_model.png")
-        exportModelIcon = BufferedImage("assets/textures/export_model.png")
-        exportTextureIcon = BufferedImage("assets/textures/export_texture.png")
-        exportHitboxIcon = BufferedImage("assets/textures/export_hitbox.png")
-        showGridsIcon = BufferedImage("assets/textures/show_grids.png")
-        hideGridsIcon = BufferedImage("assets/textures/hide_grids.png")
-        upIcon = BufferedImage("assets/textures/up.png")
-        downIcon = BufferedImage("assets/textures/down.png")
+        iconMap.put("deleteIcon", BufferedImage("assets/textures/delete.png"))
+        iconMap.put("showIcon", BufferedImage("assets/textures/show.png"))
+        iconMap.put("hideIcon", BufferedImage("assets/textures/hide.png"))
+        iconMap.put("applyMaterial", BufferedImage("assets/textures/apply_material.png"))
+        iconMap.put("loadMaterial", BufferedImage("assets/textures/load_material.png"))
+        iconMap.put("addTemplateCubeIcon", BufferedImage("assets/textures/add_template_cube.png"))
+        iconMap.put("addMeshCubeIcon", BufferedImage("assets/textures/add_mesh_cube.png"))
+        iconMap.put("newProjectIcon", BufferedImage("assets/textures/new_project.png"))
+        iconMap.put("loadProjectCubeIcon", BufferedImage("assets/textures/load_project.png"))
+        iconMap.put("saveProjectIcon", BufferedImage("assets/textures/save_project.png"))
+        iconMap.put("saveAsProjectIcon", BufferedImage("assets/textures/save_as_project.png"))
+        iconMap.put("editProjectIcon", BufferedImage("assets/textures/edit_project.png"))
+        iconMap.put("importModelIcon", BufferedImage("assets/textures/import_model.png"))
+        iconMap.put("exportModelIcon", BufferedImage("assets/textures/export_model.png"))
+        iconMap.put("exportTextureIcon", BufferedImage("assets/textures/export_texture.png"))
+        iconMap.put("exportHitboxIcon", BufferedImage("assets/textures/export_hitbox.png"))
+        iconMap.put("showGridsIcon", BufferedImage("assets/textures/show_grids.png"))
+        iconMap.put("hideGridsIcon", BufferedImage("assets/textures/hide_grids.png"))
+        iconMap.put("upIcon", BufferedImage("assets/textures/up.png"))
+        iconMap.put("downIcon", BufferedImage("assets/textures/down.png"))
 
         MaterialNone.loadTexture(loader)
         log(Level.FINE) { "[GuiResources] Gui resources loaded" }
     }
+
+    fun getIcon(name: String): BufferedImage? = iconMap[name]
 }

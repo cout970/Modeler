@@ -1,5 +1,6 @@
 package com.cout970.modeler.gui.react
 
+import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.react.leguicomp.LeguiComponentBridge
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Container
@@ -11,27 +12,22 @@ import org.liquidengine.legui.component.Frame as LeguiFrame
 
 object ReactRenderer {
 
-    fun render(base: Container<Component>, comp: Component? = null, func: () -> Component) {
-        val subTree = recursiveUnwrapping(func())
-        if (comp == null) {
-            base.clearChilds()
-            base.add(subTree)
-        } else {
-            base.remove(comp)
-            base.add(subTree)
-        }
+    fun render(gui: Gui, base: Container<Component>, func: () -> Component) {
+        val controller = ReactContext(gui, base, func)
+        controller.render()
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun recursiveUnwrapping(c: Component): Component {
+    fun recursiveUnwrapping(c: Component, ctx: ReactContext): Component {
         if (c is Container<*>) {
-            val unwrapped = c.childs.map { recursiveUnwrapping(it) }
+            val unwrapped = c.childs.map { recursiveUnwrapping(it, ctx) }
             c.clearChilds()
             (c as Container<Component>).addAll(unwrapped)
         }
         if (c is LeguiComponentBridge<*, *, *>) {
             val comp = (c.factory as IComponentFactory<Any, Any, *>).build(c.props as Any)
-            return comp.render()
+            comp.context = ctx
+            return recursiveUnwrapping(comp.render(), ctx)
         }
         return c
     }

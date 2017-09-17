@@ -4,6 +4,7 @@ import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.gui.comp.CButton
+import com.cout970.modeler.gui.react.leguicomp.IconButton
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Container
 import org.liquidengine.legui.event.MouseClickEvent
@@ -20,11 +21,16 @@ class ButtonBinder(val dispatcher: Dispatcher) {
 
     fun bindButtons(panel: Container<*>) {
         panel.childs.forEach {
-            if (it is CButton) {
-                log(Level.FINEST) { "Binding button: ${it.command}" }
-                it.listenerMap.setButtonListener { onButtonPress(it.command, it) }
-            } else if (it is Container<*>) {
-                bindButtons(it)
+            when (it) {
+                is CButton -> {
+                    log(Level.FINEST) { "Binding button: ${it.command}" }
+                    it.listenerMap.setButtonListener { onButtonPress(it.command, it) }
+                }
+                is IconButton -> {
+                    log(Level.FINEST) { "Binding button: ${it.id}" }
+                    it.listenerMap.setButtonListener { onButtonPress(it.id, it) }
+                }
+                is Container<*> -> bindButtons(it)
             }
         }
     }

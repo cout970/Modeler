@@ -23,13 +23,15 @@ class Debug : IUseCase {
             //            //reload gui
             gui.editorPanel = EditorPanel()
             gui.root.mainPanel = gui.editorPanel
+            gui.editorPanel.gui = gui
+            gui.editorPanel.update()
             gui.guiUpdater.initGui(gui)
             gui.guiUpdater.bindTextInputs(gui.editorPanel)
             gui.buttonBinder.bindButtons(gui.root.mainPanel!!)
             gui.root.mainPanel!!.bindProperties(gui.state)
             gui.root.updateSizes(gui.root.size.toIVector())
             gui.resources.reload(resourceLoader)
-            gui.root.mainPanel!!.loadResources(gui.resources)
+            gui.root.loadResources(gui.resources)
 //
             //Test import
 //            val prop = ImportProperties(

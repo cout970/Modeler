@@ -13,7 +13,7 @@ import org.liquidengine.legui.component.Component
 /**
  * Created by cout970 on 2017/09/08.
  */
-class GridButtonPanel private constructor() : ReactComponent<Unit, Unit>() {
+class GridButtonPanel private constructor() : ReactComponent<Unit, Unit>(Unit) {
 
     init {
         setState(Unit)

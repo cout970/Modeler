@@ -19,3 +19,9 @@ fun Container<Panel>.panel(func: Panel.() -> Unit) {
     add(panel)
 }
 
+fun Panel.panel(func: Panel.() -> Unit) {
+    val panel = Panel()
+    func(panel)
+    add(panel)
+}
+

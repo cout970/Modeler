@@ -3,6 +3,7 @@ package com.cout970.modeler.gui.comp
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.GuiResources
 import com.cout970.modeler.gui.GuiState
+import com.cout970.modeler.gui.IResourceReloadable
 import com.cout970.modeler.util.toColor
 import org.joml.Vector2f
 import org.liquidengine.legui.color.ColorConstants
@@ -15,7 +16,7 @@ import org.liquidengine.legui.event.ScrollEvent
  */
 open class CPanel(
         x: Float = 0f, y: Float = 0f, width: Float = 10f, height: Float = 10f
-) : Panel<Component>(Vector2f(x, y), Vector2f(width, height)) {
+) : Panel<Component>(Vector2f(x, y), Vector2f(width, height)), IResourceReloadable {
 
     val id = lastID++
 
@@ -39,7 +40,7 @@ open class CPanel(
         private var lastID = 0
     }
 
-    open fun loadResources(resources: GuiResources) {
+    override fun loadResources(resources: GuiResources) {
         childs.filterIsInstance<CPanel>()
                 .forEach { it.loadResources(resources) }
     }

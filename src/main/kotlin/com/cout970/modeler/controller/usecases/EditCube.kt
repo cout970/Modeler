@@ -15,7 +15,6 @@ import com.cout970.modeler.gui.editor.EditorPanel
 import com.cout970.modeler.util.quatOfAngles
 import com.cout970.modeler.util.text
 import com.cout970.modeler.util.toAxisRotations
-import com.cout970.modeler.util.toRads
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.vec3Of
 import org.funktionale.option.Option
@@ -123,20 +122,20 @@ class UpdateTemplateCube : IUseCase {
     fun setRotationX(cube: IObjectCube, x: Float): IObjectCube {
         val oldRot = cube.transformation.rotation.toAxisRotations()
         val trans = cube.transformation.copy(rotation = quatOfAngles(x.clampRot(), oldRot.y, oldRot.z))
-        return cube.withSubTransformation(trans)
+        return cube.withTransformation(trans)
     }
 
     fun setRotationY(cube: IObjectCube, y: Float): IObjectCube {
         val oldRot = cube.transformation.rotation.toAxisRotations()
 
         val trans = cube.transformation.copy(rotation = quatOfAngles(oldRot.x, y.clampRot(), oldRot.z))
-        return cube.withSubTransformation(trans)
+        return cube.withTransformation(trans)
     }
 
     fun setRotationZ(cube: IObjectCube, z: Float): IObjectCube {
         val oldRot = cube.transformation.rotation.toAxisRotations()
         val trans = cube.transformation.copy(rotation = quatOfAngles(oldRot.x, oldRot.y, z.clampRot()))
-        return cube.withSubTransformation(trans)
+        return cube.withTransformation(trans)
     }
 
 //    fun setRotationPosX(cube: IObjectCube, x: Float): IObjectCube {

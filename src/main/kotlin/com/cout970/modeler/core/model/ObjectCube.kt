@@ -9,7 +9,9 @@ import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.mesh.MeshFactory
-import com.cout970.modeler.util.*
+import com.cout970.modeler.util.middle
+import com.cout970.modeler.util.toAxisRotations
+import com.cout970.modeler.util.toJOML
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -45,6 +47,7 @@ data class ObjectCube(
         val pos = cube.pos.map { Vector4d(it.xd, it.yd, it.zd, 1.0) }
                 .map(transformation.matrix.toJOML()::transform)
                 .map { vec3Of(it.x, it.y, it.z) }
+
         return updateTextures(Mesh(pos, cube.tex, cube.faces), size, textureOffset, textureSize)
     }
 
@@ -107,7 +110,7 @@ data class ObjectCube(
 
     override fun withPos(pos: IVector3): IObjectCube = copy(transformation = transformation.copy(translation = pos))
 
-    override fun withSubTransformation(transform: TRSTransformation): IObjectCube = copy(transformation = transform)
+    override fun withTransformation(transform: TRSTransformation): IObjectCube = copy(transformation = transform)
 
     override fun withTextureOffset(tex: IVector2): IObjectCube = copy(textureOffset = tex)
 
