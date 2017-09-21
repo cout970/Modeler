@@ -3,12 +3,13 @@ package com.cout970.modeler.gui.react.components
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.material.MaterialRef
-import com.cout970.modeler.core.model.selection.ClipboardNone.selection
 import com.cout970.modeler.gui.comp.setBorderless
 import com.cout970.modeler.gui.comp.setTransparent
 import com.cout970.modeler.gui.react.IComponentFactory
 import com.cout970.modeler.gui.react.ReactComponent
+import com.cout970.modeler.gui.react.event.EventMaterialUpdate
 import com.cout970.modeler.gui.react.event.EventModelUpdate
+import com.cout970.modeler.gui.react.event.EventSelectionUpdate
 import com.cout970.modeler.gui.react.leguicomp.FixedLabel
 import com.cout970.modeler.gui.react.leguicomp.IconButton
 import com.cout970.modeler.gui.react.leguicomp.VerticalPanel
@@ -36,9 +37,16 @@ class RightPanel private constructor() : ReactComponent<Unit, Unit>(Unit) {
         listenerMap.addListener(EventModelUpdate::class.java) {
             setState(state)
         }
+        listenerMap.addListener(EventMaterialUpdate::class.java) {
+            setState(state)
+        }
+        listenerMap.addListener(EventSelectionUpdate::class.java) {
+            setState(state)
+        }
 
         val materialOfSelectedObjects = mutableListOf<IMaterialRef>()
         val model = context.gui.projectManager.model
+        val selection = context.gui.selectionHandler.getSelection()
 
         panel {
             setBorderless()
@@ -57,7 +65,7 @@ class RightPanel private constructor() : ReactComponent<Unit, Unit>(Unit) {
                 model.objectRefs.forEachIndexed { index, ref ->
                     val name = model.getObject(ref).name
 
-                    val color = if (selection.isSelected(ref)) {
+                    val color = if (selection?.isSelected(ref) == true) {
                         materialOfSelectedObjects += model.getObject(ref).material
                         Config.colorPalette.selectedButton.toColor()
                     } else {

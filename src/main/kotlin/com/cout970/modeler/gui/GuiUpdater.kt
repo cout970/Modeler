@@ -3,9 +3,13 @@ package com.cout970.modeler.gui
 import com.cout970.glutilities.event.EventFrameBufferSize
 import com.cout970.glutilities.event.EventMouseScroll
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.selection.ISelection
+import com.cout970.modeler.gui.react.event.EventMaterialUpdate
 import com.cout970.modeler.gui.react.event.EventModelUpdate
+import com.cout970.modeler.gui.react.event.EventSelectionUpdate
 import com.cout970.modeler.util.getListeners
+import com.cout970.modeler.util.toNullable
 import com.cout970.vector.extensions.vec2Of
 import org.liquidengine.legui.component.Container
 import org.liquidengine.legui.system.context.Context
@@ -41,7 +45,16 @@ class GuiUpdater {
     }
 
     fun onSelectionUpdate(old: ISelection?, new: ISelection?) {
+        gui.editorPanel.reactBase.getListeners<EventSelectionUpdate>().forEach { (comp, listener) ->
+            listener.process(EventSelectionUpdate(comp, leguiContext, gui.root, new.toNullable(), old.toNullable()))
+        }
         presenters.forEach { it.onSelectionUpdate(old, new) }
+    }
+
+    fun onMaterialUpdate(old: IMaterial?, new: IMaterial?) {
+        gui.editorPanel.reactBase.getListeners<EventMaterialUpdate>().forEach { (comp, listener) ->
+            listener.process(EventMaterialUpdate(comp, leguiContext, gui.root, new.toNullable(), old.toNullable()))
+        }
     }
 
     fun onFramebufferSizeUpdated(event: EventFrameBufferSize): Boolean {

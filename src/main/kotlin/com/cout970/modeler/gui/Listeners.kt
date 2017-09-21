@@ -40,6 +40,7 @@ class Listeners : ITickeable {
         gui.projectManager.materialChangeListeners.add { _, _ ->
             gui.state.materialsHash = (System.currentTimeMillis() and 0xFFFFFFFF).toInt()
         }
+        gui.projectManager.materialChangeListeners.add(gui.guiUpdater::onMaterialUpdate)
     }
 
     fun onModelChange(old: IModel, new: IModel) {

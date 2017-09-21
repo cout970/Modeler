@@ -28,7 +28,7 @@ class ModelObjectItem private constructor(props: ModelObjectProps) : ReactCompon
     }
 
     override fun render(parentSize: IVector2): Component = panel {
-        backgroundColor = Config.colorPalette.lightDarkColor.toColor()
+        backgroundColor = props.color
         cornerRadius = 0f
         width = 182f
         height = 24f
