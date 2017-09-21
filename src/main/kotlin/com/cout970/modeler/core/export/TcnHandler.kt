@@ -67,8 +67,8 @@ class TcnImporter {
         for (i in 0..shapes.length - 1) {
             val shape = shapes.item(i)
             val shapeAttributes = shape.attributes ?:
-                    throw IllegalStateException(
-                            "Shape #" + (i + 1) + " has no attributes")
+                                  throw IllegalStateException(
+                                          "Shape #" + (i + 1) + " has no attributes")
 
             var shapeType: String? = null
             val type = shapeAttributes.getNamedItem("type")
@@ -101,7 +101,7 @@ class TcnImporter {
 
         val shapeChildren = shape.childNodes
         //extract properties
-        for (j in 0..shapeChildren.length - 1) {
+        for (j in 0 until shapeChildren.length) {
 
             val shapeChild = shapeChildren.item(j)
             val name = shapeChild.nodeName
@@ -136,15 +136,16 @@ class TcnImporter {
 
         val fOffset = rPos + rOffset + vec3Of(8, 24, 8)
 
-        val cube = ObjectCube(
+        val transformation = TRSTransformation(translation = fOffset, scale = rSize).merge(
+                TRSTransformation.fromRotationPivot(rRotPoint, rRotation))
+
+        return ObjectCube(
                 name = shapeName,
-                transformation = TRSTransformation.fromRotationPivot(rRotPoint, rRotation)
-                        .merge(TRSTransformation(translation = fOffset, scale = rSize)),
+                transformation = transformation,
                 textureOffset = rTexture,
                 textureSize = textureSize,
                 mirrored = mirrored,
                 material = texture
         )
-        return cube
     }
 }
