@@ -200,7 +200,7 @@ class MaterialRefSerializer : JsonSerializer<IMaterialRef>, JsonDeserializer<IMa
     }
 }
 
-class QuadIndicesSerializer : JsonSerializer<QuadIndices> {
+class QuadIndicesSerializer : JsonSerializer<QuadIndices>, JsonDeserializer<QuadIndices> {
 
     override fun serialize(src: QuadIndices, typeOfSrc: Type?,
                            context: JsonSerializationContext?): JsonElement {
@@ -208,6 +208,16 @@ class QuadIndicesSerializer : JsonSerializer<QuadIndices> {
         arr.add(JsonArray().apply { add(src.a); add(src.b); add(src.c); add(src.d) })
         arr.add(JsonArray().apply { add(src.at); add(src.bt); add(src.ct); add(src.dt) })
         return arr
+    }
+
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): QuadIndices {
+        val arr = json.asJsonArray
+        val pos = arr[0].asJsonArray
+        val tex = arr[1].asJsonArray
+        return QuadIndices(
+                pos[0].asInt, pos[1].asInt, pos[2].asInt, pos[3].asInt,
+                tex[0].asInt, tex[1].asInt, tex[2].asInt, tex[3].asInt
+        )
     }
 }
 

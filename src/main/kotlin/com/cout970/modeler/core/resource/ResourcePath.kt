@@ -55,6 +55,24 @@ class ResourcePath(val uri: URI) {
     }
 
     companion object {
+
+        fun textureFromResourceLocation(str: String, path: ResourcePath): ResourcePath {
+            if (str.contains(':')) {
+                val domain = str.substringBefore(':')
+                val file = fromResourceLocation(domain, "textures/" + str.substringAfter(':') + ".png")
+
+                val strPath = path.uri.toASCIIString()
+                if (strPath.contains(domain)) {
+                    val index = strPath.indexOf(domain)
+                    val root = strPath.substring(0 until index)
+                    val relative = File(".").toURI().relativize(file.uri).toASCIIString()
+                    return ResourcePath(URI(root + relative))
+                }
+                return file
+            }
+            return File("textures/$str.png").toResourcePath()
+        }
+
         fun fromResourceLocation(str: String): ResourcePath {
             if (str.contains(':')) {
                 return fromResourceLocation(str.substringBefore(':'), str.substringAfter(':'))
@@ -62,8 +80,6 @@ class ResourcePath(val uri: URI) {
             return File(str).toResourcePath()
         }
 
-        fun fromResourceLocation(domain: String, path: String): ResourcePath {
-            return File("$domain/$path").toResourcePath()
-        }
+        fun fromResourceLocation(domain: String, path: String): ResourcePath = File("$domain/$path").toResourcePath()
     }
 }

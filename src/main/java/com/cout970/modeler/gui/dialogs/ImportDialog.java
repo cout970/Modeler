@@ -24,7 +24,7 @@ public class ImportDialog {
     private JPanel root;
     private JCheckBox flipUVCheckBox;
 
-    private static final PointerBuffer extensions = CollectionsKt.toPointerBuffer(Arrays.asList("*.obj", "*.tcn", "*.json", "*.tbl"));
+    private static final PointerBuffer extensions = CollectionsKt.toPointerBuffer(Arrays.asList("*.obj", "*.tcn", "*.json", "*.tbl", "*.mcx"));
 
     @SuppressWarnings("unchecked")
     public static void show(Function1<ImportProperties, Unit> returnFun) {
@@ -34,6 +34,7 @@ public class ImportDialog {
         dialog.comboBox1.addItem("Techne (*.tcn, *.zip)");
         dialog.comboBox1.addItem("Minecraft (*.json)");
         dialog.comboBox1.addItem("Tabula (*.tbl)");
+        dialog.comboBox1.addItem("MCX (*.mcx)");
         //buttons
         dialog.cancelButton.addActionListener(e -> {
             returnFun.invoke(null);
@@ -49,7 +50,7 @@ public class ImportDialog {
         dialog.selectButton.addActionListener(e -> {
             frame.toBack();
             String file = TinyFileDialogs.tinyfd_openFileDialog("Import", "",
-                    extensions, "Model Files (*.tcn, *.obj, *.json, *.tbl)",
+                    extensions, "Model Files (*.tcn, *.obj, *.json, *.tbl, *.mcx)",
                     false);
             if (file != null) {
                 if (file.endsWith(".obj")) {
@@ -60,6 +61,8 @@ public class ImportDialog {
                     dialog.comboBox1.setSelectedIndex(2);
                 } else if (file.endsWith(".tbl")) {
                     dialog.comboBox1.setSelectedIndex(3);
+                } else if (file.endsWith(".mcx")) {
+                    dialog.comboBox1.setSelectedIndex(4);
                 }
             }
             dialog.textField1.setText(file);

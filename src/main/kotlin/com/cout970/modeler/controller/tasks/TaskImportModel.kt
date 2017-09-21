@@ -43,19 +43,22 @@ class TaskImportModel(
     }
 
     fun import(): IModel {
-        val file = File(properties.path)
+        val file = File(properties.path).toResourcePath()
         return when (properties.format) {
             ImportFormat.OBJ -> {
-                ModelImporters.objImporter.import(file.toResourcePath(), properties.flipUV)
+                ModelImporters.objImporter.import(file, properties.flipUV)
             }
             ImportFormat.TCN -> {
-                ModelImporters.tcnImporter.import(file.toResourcePath())
+                ModelImporters.tcnImporter.import(file)
             }
             ImportFormat.JSON -> {
-                ModelImporters.jsonImporter.import(file.toResourcePath())
+                ModelImporters.jsonImporter.import(file)
             }
             ImportFormat.TBL -> {
-                ModelImporters.tblImporter.import(file.toResourcePath())
+                ModelImporters.tblImporter.import(file)
+            }
+            ImportFormat.MCX -> {
+                ModelImporters.mcxImporter.import(file)
             }
         }
     }

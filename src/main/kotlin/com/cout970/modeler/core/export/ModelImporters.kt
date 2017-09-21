@@ -13,4 +13,5 @@ object ModelImporters {
     val tblImporter = TblImporter()
 
     val mcxExporter = McxExporter()
+    val mcxImporter = McxImporter()
 }

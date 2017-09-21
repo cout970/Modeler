@@ -14,7 +14,6 @@ import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.times
 import com.google.gson.GsonBuilder
-import java.io.InputStream
 import java.io.OutputStream
 
 /**
@@ -87,14 +86,14 @@ class McxExporter {
 
 class McxImporter {
 
-    fun import(input: InputStream): IModel {
+    fun import(path: ResourcePath): IModel {
 
-        val model = GSON.fromJson(input.reader(), ModelData::class.java)
+        val model = GSON.fromJson(path.inputStream().reader(), ModelData::class.java)
 
         val materialPaths = (listOf(model.particleTexture) + model.parts.map { it.texture }).distinct()
         val materials = materialPaths.map {
-            val name = it.substringAfter(':').substringAfter('/')
-            TexturedMaterial(name, ResourcePath.fromResourceLocation(it))
+            val name = it.substringAfter(':').substringAfterLast('/')
+            TexturedMaterial(name, ResourcePath.textureFromResourceLocation(it, path))
         }
         val materialMap = materialPaths.zip(materials.indices).toMap()
 
@@ -116,9 +115,18 @@ class McxImporter {
         val tex = quadIndices.flatMap {
             listOf(storage.tex[it.at], storage.tex[it.bt], storage.tex[it.ct], storage.tex[it.dt])
         }
-        val faces = quadIndices.map { FaceIndex(listOf(it.a to it.at, it.b to it.bt, it.c to it.ct, it.d to it.dt)) }
+        val faces = quadIndices.map {
+            FaceIndex(listOf(
+                    pos.indexOf(storage.pos[it.a]) to tex.indexOf(storage.tex[it.at]),
+                    pos.indexOf(storage.pos[it.b]) to tex.indexOf(storage.tex[it.bt]),
+                    pos.indexOf(storage.pos[it.c]) to tex.indexOf(storage.tex[it.ct]),
+                    pos.indexOf(storage.pos[it.d]) to tex.indexOf(storage.tex[it.dt])))
+        }
 
-        val mesh = Mesh(pos, tex, faces)
+        if (faces.any { it.index.any { it.first == -1 } }) {
+            println("here!")
+        }
+        val mesh = Mesh(pos.map { it * 16.0 }, tex, faces)
 
         return Object(name, mesh, MaterialRef(materials[texture] ?: -1))
     }

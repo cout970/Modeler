@@ -7,7 +7,8 @@ enum class ImportFormat {
     OBJ, //wavefront models
     TCN, //techne models
     JSON, //minecraft models
-    TBL //tabula
+    TBL, //tabula
+    MCX
 }
 
 enum class ExportFormat {
