@@ -2,7 +2,7 @@ package com.cout970.modeler.gui.react
 
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.react.leguicomp.LeguiComponentBridge
-import com.cout970.modeler.gui.react.leguicomp.Panel
+import com.cout970.modeler.util.toIVector
 import com.cout970.vector.api.IVector2
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Container
@@ -20,7 +20,7 @@ interface IReactComponent<out P, S> {
 
     fun setState(state: S)
 
-    fun render(): Component
+    fun render(parentSize: IVector2): Component
 }
 
 abstract class ReactComponent<out P, S : Any>(override val props: P) : IReactComponent<P, S> {
@@ -48,25 +48,15 @@ class ReactContext(
         val func: () -> Component
 ) {
 
-    fun bind() {
-        gui.buttonBinder.bindButtons(root)
-    }
-
     fun render() {
-        val subTree = ReactRenderer.recursiveUnwrapping(func(), this)
+        val subTree = ReactRenderer.recursiveUnwrapping(func(), this, root.size.toIVector())
         root.clearChilds()
         root.add(subTree)
-        bind()
+        gui.buttonBinder.bindButtons(root)
         gui.root.loadResources(gui.resources)
     }
 
-    fun reRender(comp: IReactComponent<*, *>) {
-        // fixme
-        render()
-        gui.editorPanel.let {
-            it.recursiveUpdateSize(it.reactBase, Panel(), gui.windowHandler.window.getFrameBufferSize())
-        }
-    }
+    fun reRender(comp: IReactComponent<*, *>) = gui.editorPanel.reRender()
 }
 
 interface IComponentFactory<P, S, out C : IReactComponent<P, S>> {
@@ -78,9 +68,4 @@ interface IComponentFactory<P, S, out C : IReactComponent<P, S>> {
     operator fun invoke(props: P = createDefaultProps(), func: P.() -> Unit = {}): LeguiComponentBridge<P, S, C> {
         return LeguiComponentBridge(this, props)
     }
-}
-
-interface IScalable {
-
-    fun updateScale(comp: Component, parent: Container<*>, windowSize: IVector2)
 }

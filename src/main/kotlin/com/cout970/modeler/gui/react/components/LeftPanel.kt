@@ -7,6 +7,7 @@ import com.cout970.modeler.gui.react.ReactComponent
 import com.cout970.modeler.gui.react.panel
 import com.cout970.modeler.gui.react.scalable.FixedXFillY
 import com.cout970.modeler.util.toColor
+import com.cout970.vector.api.IVector2
 import org.liquidengine.legui.component.Component
 
 /**
@@ -18,9 +19,9 @@ class LeftPanel private constructor() : ReactComponent<Unit, Unit>(Unit) {
         setState(Unit)
     }
 
-    override fun render(): Component = panel {
+    override fun render(parentSize: IVector2): Component = panel {
         backgroundColor = Config.colorPalette.darkestColor.toColor()
-        scalable = FixedXFillY(0f, 280f)
+        FixedXFillY(280f).updateScale(this, parentSize)
         setBorderless()
 
         +GridButtonPanel {}

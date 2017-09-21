@@ -5,6 +5,7 @@ import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.gui.comp.CButton
 import com.cout970.modeler.gui.react.leguicomp.IconButton
+import com.cout970.modeler.gui.react.leguicomp.TextButton
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Container
 import org.liquidengine.legui.event.MouseClickEvent
@@ -27,8 +28,12 @@ class ButtonBinder(val dispatcher: Dispatcher) {
                     it.listenerMap.setButtonListener { onButtonPress(it.command, it) }
                 }
                 is IconButton -> {
-                    log(Level.FINEST) { "Binding button: ${it.id}" }
-                    it.listenerMap.setButtonListener { onButtonPress(it.id, it) }
+                    log(Level.FINEST) { "Binding button: ${it.command} in $it" }
+                    it.listenerMap.setButtonListener { onButtonPress(it.command, it) }
+                }
+                is TextButton -> {
+                    log(Level.FINEST) { "Binding button: ${it.command} in $it" }
+                    it.listenerMap.setButtonListener { onButtonPress(it.command, it) }
                 }
                 is Container<*> -> bindButtons(it)
             }

@@ -1,34 +1,30 @@
 package com.cout970.modeler.gui.react.leguicomp
 
-import com.cout970.modeler.gui.GuiResources
-import com.cout970.modeler.gui.IResourceReloadable
+import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.comp.CTooltip
 import com.cout970.modeler.gui.comp.setBorderless
-import com.cout970.modeler.gui.comp.setTransparent
+import com.cout970.modeler.util.toColor
 import org.liquidengine.legui.component.Button
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.icon.ImageIcon
 
 /**
- * Created by cout970 on 2017/09/15.
+ * Created by cout970 on 2017/09/21.
  */
-class IconButton(
-        val command: String = "",
-        val icon: String = "",
-        posX: Float = 0f, posY: Float = 0f,
-        sizeX: Float = 16f, sizeY: Float = 16f
-) : Button("", posX, posY, sizeX, sizeY), IResourceReloadable {
+class TextButton(
+        val command: String,
+        text: String,
+        posX: Number,
+        posY: Number,
+        sizeX: Number,
+        sizeY: Number
+) : Button(text, posX.toFloat(), posY.toFloat(), sizeX.toFloat(), sizeY.toFloat()) {
 
     init {
-        setBorderless()
-        setTransparent()
+        textState.textColor = Config.colorPalette.textColor.toColor()
+        backgroundColor = Config.colorPalette.buttonColor.toColor()
         cornerRadius = 0f
-    }
-
-    override fun loadResources(resources: GuiResources) {
-        resources.getIcon(icon)?.let {
-            setImage(ImageIcon(it))
-        }
+        setBorderless()
     }
 
     override fun setTooltip(tooltip: String) {
@@ -47,5 +43,5 @@ class IconButton(
         textState.padding.x += 5f
     }
 
-    override fun toString(): String = "IconButton(id='$command', icon='$icon')"
+    override fun toString(): String = "TextButton(command='$command')"
 }

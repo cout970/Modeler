@@ -11,6 +11,6 @@ class TaskUpdateSelectedMaterial(val ref: IMaterialRef) : ITask {
     override fun run(state: Program) {
         state.gui.state.selectedMaterial = ref
         state.gui.state.materialsHash = (System.currentTimeMillis() and 0xFFFFFFFF).toInt()
-        state.gui.editorPanel.rightPanelModule.presenter.updateObjectList()
+        state.gui.editorPanel.reRender()
     }
 }

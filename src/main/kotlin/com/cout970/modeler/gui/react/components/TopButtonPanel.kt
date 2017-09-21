@@ -9,6 +9,7 @@ import com.cout970.modeler.gui.react.leguicomp.IconButton
 import com.cout970.modeler.gui.react.panel
 import com.cout970.modeler.gui.react.scalable.FixedYFillX
 import com.cout970.modeler.util.toColor
+import com.cout970.vector.api.IVector2
 import org.liquidengine.legui.component.Component
 
 /**
@@ -20,9 +21,9 @@ class TopButtonPanel private constructor() : ReactComponent<Unit, Unit>(Unit) {
         setState(Unit)
     }
 
-    override fun render(): Component = panel {
+    override fun render(parentSize: IVector2): Component = panel {
         backgroundColor = Config.colorPalette.darkestColor.toColor()
-        scalable = FixedYFillX(0f, 48f)
+        FixedYFillX(48f).updateScale(this, parentSize)
         setBorderless()
 
         panel {

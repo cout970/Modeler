@@ -44,6 +44,8 @@ class GuiResources {
         iconMap.put("hideIcon", BufferedImage("assets/textures/hide.png"))
         iconMap.put("applyMaterial", BufferedImage("assets/textures/apply_material.png"))
         iconMap.put("loadMaterial", BufferedImage("assets/textures/load_material.png"))
+        iconMap.put("addMaterialIcon", BufferedImage("assets/textures/add_material.png"))
+        iconMap.put("removeMaterialIcon", BufferedImage("assets/textures/remove_material.png"))
         iconMap.put("addTemplateCubeIcon", BufferedImage("assets/textures/add_template_cube.png"))
         iconMap.put("addMeshCubeIcon", BufferedImage("assets/textures/add_mesh_cube.png"))
         iconMap.put("newProjectIcon", BufferedImage("assets/textures/new_project.png"))

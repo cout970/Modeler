@@ -11,14 +11,11 @@ import com.cout970.modeler.gui.editor.rightpanel.ModuleRightPanel
 import com.cout970.modeler.gui.react.ReactRenderer.render
 import com.cout970.modeler.gui.react.components.RightPanel
 import com.cout970.modeler.gui.react.components.TopButtonPanel
-import com.cout970.modeler.gui.react.leguicomp.Panel
 import com.cout970.modeler.gui.react.panel
-import com.cout970.modeler.gui.react.scalable.FillWindow
+import com.cout970.modeler.gui.react.scalable.FillParent
 import com.cout970.modeler.util.toJoml2f
 import com.cout970.vector.api.IVector2
 import org.joml.Vector2f
-import org.liquidengine.legui.component.Component
-import org.liquidengine.legui.component.Container
 
 /**
  * Created by cout970 on 2017/06/09.
@@ -33,7 +30,6 @@ class EditorPanel : MutablePanel() {
     val bottomPanelModule = ModuleBottomPanel()
 
     val reactBase = panel {
-        scalable = FillWindow()
         setTransparent()
         setBorderless()
     }
@@ -46,13 +42,20 @@ class EditorPanel : MutablePanel() {
         add(reactBase)
         setTransparent()
         setBorderless()
-
     }
 
-    fun update() {
+    fun reRender() {
+        updateSizes(gui.windowHandler.window.getFrameBufferSize())
+    }
+
+    override fun updateSizes(newSize: IVector2) {
+        size = newSize.toJoml2f()
+        position = Vector2f()
+
+        FillParent.updateScale(reactBase, newSize)
         render(gui, reactBase) {
             panel {
-                scalable = FillWindow()
+                FillParent.updateScale(this, newSize)
                 setTransparent()
                 setBorderless()
 
@@ -60,13 +63,6 @@ class EditorPanel : MutablePanel() {
                 +RightPanel { }
             }
         }
-    }
-
-    override fun updateSizes(newSize: IVector2) {
-        size = newSize.toJoml2f()
-        position = Vector2f()
-
-        recursiveUpdateSize(reactBase, Panel(), newSize)
 
         leftPanelModule.apply {
             panel.size = Vector2f(280f, newSize.yf - 48f)
@@ -99,17 +95,6 @@ class EditorPanel : MutablePanel() {
             layout.rescale()
             presenter.updateBackground()
             layout.rescale()
-        }
-    }
-
-    fun recursiveUpdateSize(c: Component, parent: Container<*>, windowSize: IVector2) {
-        if (c is Panel) {
-            c.scalable?.updateScale(c, parent, windowSize)
-        }
-        (c as? Container<*>)?.apply {
-            childs?.forEach {
-                recursiveUpdateSize(it, this, windowSize)
-            }
         }
     }
 }

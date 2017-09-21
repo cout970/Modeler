@@ -1,9 +1,7 @@
 package com.cout970.modeler.controller.usecases
 
 import com.cout970.modeler.api.model.IModel
-import com.cout970.modeler.api.model.selection.ISelection
-import com.cout970.modeler.api.model.selection.SelectionTarget
-import com.cout970.modeler.api.model.selection.SelectionType
+import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.controller.SelectionHandler
 import com.cout970.modeler.controller.injection.Inject
 import com.cout970.modeler.controller.tasks.ITask
@@ -13,9 +11,8 @@ import com.cout970.modeler.controller.tasks.TaskUpdateSelection
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.getSelectedObjectRefs
 import com.cout970.modeler.core.model.selection.Selection
-import com.cout970.modeler.gui.editor.rightpanel.RightPanel
 import com.cout970.modeler.input.event.IInput
-import com.cout970.modeler.util.parent
+import com.cout970.modeler.util.toNullable
 import org.funktionale.option.Option
 import org.funktionale.option.toOption
 import org.liquidengine.legui.component.Component
@@ -32,18 +29,21 @@ class DeleteItem : IUseCase {
     @Inject lateinit var model: IModel
 
     override fun createTask(): ITask {
-        component.parent<RightPanel.ListItem>()?.let { item ->
-            val selection = Selection(
-                    SelectionTarget.MODEL,
-                    SelectionType.OBJECT,
-                    listOf(item.ref)
-            )
-            return DeleteSelected().also {
-                it.selection = selection.toOption()
-                it.model = model
-            }.createTask()
-        }
-        return TaskNone
+        return component.toNullable()
+                .map { it.metadata["ref"] }
+                .map { it as? IObjectRef }
+                .map { ref ->
+                    val selection = Selection(
+                            SelectionTarget.MODEL,
+                            SelectionType.OBJECT,
+                            listOf(ref as IRef)
+                    )
+                    DeleteSelected().also {
+                        it.selection = selection.toOption()
+                        it.model = model
+                    }.createTask()
+                }
+                .getOr(TaskNone)
     }
 }
 
@@ -55,11 +55,14 @@ class HideItem : IUseCase {
     @Inject lateinit var model: IModel
 
     override fun createTask(): ITask {
-        component.parent<RightPanel.ListItem>()?.let { item ->
-            val newModel = model.setVisible(item.ref, false)
-            return TaskUpdateModel(oldModel = model, newModel = newModel)
-        }
-        return TaskNone
+        return component.toNullable()
+                .map { it.metadata["ref"] }
+                .flatMap { it as? IObjectRef }
+                .map { ref ->
+                    val newModel = model.setVisible(ref, false)
+                    TaskUpdateModel(oldModel = model, newModel = newModel) as ITask
+                }
+                .getOr(TaskNone)
     }
 }
 
@@ -71,11 +74,14 @@ class ShowItem : IUseCase {
     @Inject lateinit var model: IModel
 
     override fun createTask(): ITask {
-        component.parent<RightPanel.ListItem>()?.let { item ->
-            val newModel = model.setVisible(item.ref, true)
-            return TaskUpdateModel(oldModel = model, newModel = newModel)
-        }
-        return TaskNone
+        return component.toNullable()
+                .map { it.metadata["ref"] }
+                .flatMap { it as? IObjectRef }
+                .map { ref ->
+                    val newModel = model.setVisible(ref, true)
+                    TaskUpdateModel(oldModel = model, newModel = newModel) as ITask
+                }
+                .getOr(TaskNone)
     }
 }
 
@@ -89,15 +95,18 @@ class SelectModelPart : IUseCase {
     @Inject lateinit var selectionHandler: SelectionHandler
 
     override fun createTask(): ITask {
-        component.parent<RightPanel.ListItem>()?.let { item ->
-            val multiSelection = Config.keyBindings.multipleSelection.check(input)
-            val sel = selectionHandler.makeSelection(selection, multiSelection, item.ref)
-            return TaskUpdateSelection(
-                    oldSelection = selection.orNull(),
-                    newSelection = sel.orNull()
-            )
-        }
-        return TaskNone
+        return component.toNullable()
+                .map { it.metadata["ref"] }
+                .flatMap { it as? IObjectRef }
+                .map { ref ->
+                    val multiSelection = Config.keyBindings.multipleSelection.check(input)
+                    val sel = selectionHandler.makeSelection(selection, multiSelection, ref)
+                    TaskUpdateSelection(
+                            oldSelection = selection.orNull(),
+                            newSelection = sel.orNull()
+                    ) as ITask
+                }
+                .getOr(TaskNone)
     }
 }
 
@@ -109,15 +118,18 @@ class ToggleVisibility : IUseCase {
     @Inject lateinit var model: IModel
 
     override fun createTask(): ITask {
-        val sel = selection.orNull() ?: return TaskNone
-        val first = model.getSelectedObjectRefs(sel).first() ?: return TaskNone
-        var newModel = model
-        val target = !model.isVisible(first)
+        return selection.toNullable()
+                .map { it to model.getSelectedObjectRefs(it).first() }
+                .map { (sel, first) ->
+                    var newModel = model
+                    val target = !model.isVisible(first)
 
-        model.getSelectedObjectRefs(sel).forEach {
-            newModel = newModel.setVisible(it, target)
-        }
+                    model.getSelectedObjectRefs(sel).forEach {
+                        newModel = newModel.setVisible(it, target)
+                    }
 
-        return TaskUpdateModel(model, newModel)
+                    TaskUpdateModel(model, newModel) as ITask
+                }
+                .getOr(TaskNone)
     }
 }

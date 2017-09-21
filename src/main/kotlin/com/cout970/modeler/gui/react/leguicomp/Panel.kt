@@ -1,6 +1,5 @@
 package com.cout970.modeler.gui.react.leguicomp
 
-import com.cout970.modeler.gui.react.IScalable
 import org.liquidengine.legui.component.Component as LeguiComponent
 import org.liquidengine.legui.component.Panel as LeguiPanel
 
@@ -22,7 +21,17 @@ class Panel : LeguiPanel<LeguiComponent>() {
             size.y = y
         }
 
-    var scalable: IScalable? = null
+    var posX: Float
+        get() = position.x
+        set(x) {
+            position.x = x
+        }
+
+    var posY: Float
+        get() = position.y
+        set(y) {
+            position.y = y
+        }
 
     operator fun LeguiComponent.unaryPlus() {
         add(this)

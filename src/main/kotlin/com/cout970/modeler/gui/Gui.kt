@@ -39,6 +39,5 @@ data class Gui(
         guiUpdater.initGui(this)
         canvasManager.gui = this
         editorPanel.gui = this
-        editorPanel.update()
     }
 }
