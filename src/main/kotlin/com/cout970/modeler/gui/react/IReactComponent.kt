@@ -13,26 +13,26 @@ import org.liquidengine.legui.component.Container
 interface IReactComponent<out P, S> {
 
     var context: ReactContext
-    var parent: Container<Component>
+//    var parent: LeguiComponentWrapper<*, *, *>?
 
     val state: S
     val props: P
 
-    fun setState(state: S)
+    fun updateState(state: S)
 
     fun render(parentSize: IVector2): Component
 }
 
+//data class ReactRenderContext(val parentSize: IVector2)
+
 abstract class ReactComponent<out P, S : Any>(override val props: P) : IReactComponent<P, S> {
 
     override lateinit var context: ReactContext
-    override lateinit var parent: Container<Component>
 
     private var _state: S? = null
-
     override val state: S get() = _state!!
 
-    override fun setState(state: S) {
+    override fun updateState(state: S) {
         if (_state != null) {
             this._state = state
             context.reRender(this)
@@ -56,7 +56,10 @@ class ReactContext(
         gui.root.loadResources(gui.resources)
     }
 
-    fun reRender(comp: IReactComponent<*, *>) = gui.editorPanel.reRender()
+    fun reRender(comp: IReactComponent<*, *>) {
+
+        gui.editorPanel.reRender()
+    }
 }
 
 interface IComponentFactory<P, S, out C : IReactComponent<P, S>> {

@@ -12,3 +12,7 @@ class LeguiComponentBridge<P, S, out C : IReactComponent<P, S>>(
         val factory: IComponentFactory<P, S, C>,
         val props: P
 ) : Component()
+
+class LeguiComponentWrapper<out P, S, out C : IReactComponent<P, S>>(
+        val component: C
+) : Component()

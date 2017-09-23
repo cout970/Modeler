@@ -24,7 +24,7 @@ class ModelMaterialItem private constructor(props: ModelMaterialProps) : ReactCo
         props) {
 
     init {
-        setState(false)
+        updateState(false)
     }
 
     override fun render(parentSize: IVector2): Component = panel {

@@ -18,7 +18,7 @@ import org.liquidengine.legui.component.Component
 class TopButtonPanel private constructor() : ReactComponent<Unit, Unit>(Unit) {
 
     init {
-        setState(Unit)
+        updateState(Unit)
     }
 
     override fun render(parentSize: IVector2): Component = panel {

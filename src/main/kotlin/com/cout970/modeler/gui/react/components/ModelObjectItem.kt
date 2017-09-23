@@ -24,7 +24,7 @@ import org.liquidengine.legui.component.optional.align.HorizontalAlign
 class ModelObjectItem private constructor(props: ModelObjectProps) : ReactComponent<ModelObjectProps, Boolean>(props) {
 
     init {
-        setState(false)
+        updateState(false)
     }
 
     override fun render(parentSize: IVector2): Component = panel {

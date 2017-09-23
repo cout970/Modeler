@@ -25,7 +25,7 @@ import org.liquidengine.legui.component.Component
 class RightPanel private constructor() : ReactComponent<Unit, Unit>(Unit) {
 
     init {
-        setState(Unit)
+        updateState(Unit)
     }
 
     override fun render(parentSize: IVector2): Component = panel {
@@ -35,13 +35,13 @@ class RightPanel private constructor() : ReactComponent<Unit, Unit>(Unit) {
         setBorderless()
 
         listenerMap.addListener(EventModelUpdate::class.java) {
-            setState(state)
+            updateState(state)
         }
         listenerMap.addListener(EventMaterialUpdate::class.java) {
-            setState(state)
+            updateState(state)
         }
         listenerMap.addListener(EventSelectionUpdate::class.java) {
-            setState(state)
+            updateState(state)
         }
 
         val materialOfSelectedObjects = mutableListOf<IMaterialRef>()
