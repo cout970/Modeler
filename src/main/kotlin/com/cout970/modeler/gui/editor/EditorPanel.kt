@@ -53,6 +53,9 @@ class EditorPanel : MutablePanel() {
         position = Vector2f()
 
         FillParent.updateScale(reactBase, newSize)
+//        RComponentRenderer.render(reactBase){
+//            RButton { RButton.Props(Vector2f(50f, 50f)) }
+//        }
         render(gui, reactBase) {
             panel {
                 FillParent.updateScale(this, newSize)

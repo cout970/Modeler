@@ -1,23 +1,60 @@
 package com.cout970.modeler.gui.react.tests
 
-import com.cout970.modeler.gui.react.ReactContext
 import org.liquidengine.legui.component.Component
 
 /**
  * Created by cout970 on 2017/09/23.
  */
-abstract class RComponent<out P : Any, S : Any>(val props: P) : Component() {
+abstract class RComponent<P : Any, S : Any>(var props: P) {
 
-    lateinit var context: ReactContext
+    lateinit var context: RContext
 
     private lateinit var stateField: S
+
+    private var sealed = false
 
     var state: S
         get() = stateField
         set(value) {
+            if (sealed) {
+                throw IllegalStateException(
+                        "State can't be changed after the component is created, use replaceState instead")
+            }
             stateField = value
         }
 
+    abstract fun build(context: RBuildContext): Component
 
-    abstract fun render(context: RContext): Component
+    fun replaceState(newState: S) {
+        if (shouldComponentUpdate(props, newState)) {
+            stateField = newState
+            context.markDirty(this)
+            return
+        }
+        stateField = newState
+    }
+
+    fun seal() {
+        sealed = true
+    }
+
+    open fun componentWillMount() {
+
+    }
+
+    open fun componentDidMount() {
+
+    }
+
+    open fun componentWillUnmount() {
+
+    }
+
+    open fun shouldComponentUpdate(nextProps: P, nextState: S): Boolean {
+        return true
+    }
+
+    fun transferState(state: S) {
+        stateField = state
+    }
 }

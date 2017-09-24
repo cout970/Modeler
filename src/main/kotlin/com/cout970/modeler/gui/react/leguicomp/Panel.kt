@@ -36,4 +36,8 @@ class Panel : LeguiPanel<LeguiComponent>() {
     operator fun LeguiComponent.unaryPlus() {
         add(this)
     }
+
+    override fun toString(): String {
+        return "Panel(${childs.joinToString { it.toString() }})"
+    }
 }
