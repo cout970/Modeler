@@ -1,4 +1,4 @@
-package com.cout970.modeler.gui.react.tests
+package com.cout970.modeler.gui.react.core
 
 import org.joml.Vector2f
 import org.joml.Vector4f
@@ -14,7 +14,7 @@ import org.liquidengine.legui.listener.ListenerMap
 
 class RComponentWrapper<out C : RComponent<P, S>, P : Any, S : Any>(
         val props: P,
-        val spec: RComponentSpec<C, P, S>
+        val spec: () -> C
 ) : Panel<Component>() {
 
     lateinit var component: RComponent<P, S>
@@ -27,7 +27,8 @@ class RComponentWrapper<out C : RComponent<P, S>, P : Any, S : Any>(
         }
 
     fun init(ctx: RContext) {
-        component = spec.build(props)
+        component = spec()
+        component.transferProps(props)
         component.context = ctx
         component.seal()
     }
@@ -36,13 +37,24 @@ class RComponentWrapper<out C : RComponent<P, S>, P : Any, S : Any>(
         return component.build(ctx)
     }
 
-    override fun getSize(): Vector2f {
-        return subTree.size
+    fun onUpdateChild() {
+        position = subTree.position
+        size = subTree.size
+        subTree.position = Vector2f()
     }
 
-    override fun getPosition(): Vector2f {
-        return subTree.position
-    }
+//    override fun getSize(): Vector2f {
+//        return subTree.size
+//    }
+//
+//    override fun setSize(size: Vector2f?) {
+//        subTree.size = size
+//    }
+
+    //    override fun setPosition(position: Vector2f?) {
+//        subTree.position = position
+//    }
+
 
     override fun getBorder(): Border {
         return subTree.border
@@ -92,14 +104,6 @@ class RComponentWrapper<out C : RComponent<P, S>, P : Any, S : Any>(
         subTree.listenerMap = listenerMap
     }
 
-    override fun setPosition(position: Vector2f?) {
-        subTree.position = position
-    }
-
-    override fun setSize(size: Vector2f?) {
-        subTree.size = size
-    }
-
     override fun setBackgroundColor(backgroundColor: Vector4f?) {
         subTree.backgroundColor = backgroundColor
     }
@@ -146,10 +150,6 @@ class RComponentWrapper<out C : RComponent<P, S>, P : Any, S : Any>(
 
     override fun setFocused(focused: Boolean) {
         subTree.isFocused = focused
-    }
-
-    override fun setPosition(x: Float, y: Float) {
-        subTree.setPosition(x, y)
     }
 
     override fun setFocusedStrokeColor(r: Float, g: Float, b: Float, a: Float) {

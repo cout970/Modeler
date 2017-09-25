@@ -1,5 +1,6 @@
-package com.cout970.modeler.gui.react.tests
+package com.cout970.modeler.gui.react.core
 
+import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.util.toIVector
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Container
@@ -9,8 +10,8 @@ import org.liquidengine.legui.component.Container
  */
 object RComponentRenderer {
 
-    fun render(root: Container<Component>, virtualTree: () -> Component) {
-        buildAll(RContext(root, virtualTree))
+    fun render(root: Container<Component>, gui: Gui, virtualTree: () -> Component) {
+        buildAll(RContext(root, gui, virtualTree))
     }
 
     fun buildAll(ctx: RContext) {
@@ -22,12 +23,20 @@ object RComponentRenderer {
             it.clearChilds()
             it.add(root)
         }
+        ctx.let {
+            it.gui.buttonBinder.bindButtons(it.root)
+            it.gui.root.loadResources(it.gui.resources)
+        }
     }
 
     fun buildComponent(wrapper: RComponentWrapper<*, *, *>) {
         val buildCtx = RBuildContext(
                 parentSize = wrapper.getParent()?.size?.toIVector() ?: wrapper.getSize().toIVector())
         updateSubTree(wrapper, buildCtx, wrapper.component.context)
+        wrapper.component.context.let {
+            it.gui.buttonBinder.bindButtons(it.root)
+            it.gui.root.loadResources(it.gui.resources)
+        }
     }
 
     private fun updateSubTree(wrapper: RComponentWrapper<*, *, *>, buildCtx: RBuildContext, ctx: RContext) {
@@ -40,6 +49,7 @@ object RComponentRenderer {
 
         wrapper.clearChilds()
         wrapper.add(finalTree)
+        wrapper.onUpdateChild()
     }
 
     @Suppress("UNCHECKED_CAST")

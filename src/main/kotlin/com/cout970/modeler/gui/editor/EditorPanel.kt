@@ -7,10 +7,10 @@ import com.cout970.modeler.gui.comp.setTransparent
 import com.cout970.modeler.gui.editor.bottompanel.ModuleBottomPanel
 import com.cout970.modeler.gui.editor.centerpanel.ModuleCenterPanel
 import com.cout970.modeler.gui.editor.leftpanel.ModuleLeftPanel
-import com.cout970.modeler.gui.editor.rightpanel.ModuleRightPanel
-import com.cout970.modeler.gui.react.ReactRenderer.render
 import com.cout970.modeler.gui.react.components.RightPanel
 import com.cout970.modeler.gui.react.components.TopButtonPanel
+import com.cout970.modeler.gui.react.core.RComponentRenderer
+import com.cout970.modeler.gui.react.core.invoke
 import com.cout970.modeler.gui.react.panel
 import com.cout970.modeler.gui.react.scalable.FillParent
 import com.cout970.modeler.util.toJoml2f
@@ -25,7 +25,6 @@ class EditorPanel : MutablePanel() {
     lateinit var gui: Gui
 
     val leftPanelModule = ModuleLeftPanel()
-    val rightPanelModule = ModuleRightPanel()
     val centerPanelModule = ModuleCenterPanel()
     val bottomPanelModule = ModuleBottomPanel()
 
@@ -36,7 +35,6 @@ class EditorPanel : MutablePanel() {
 
     init {
         add(leftPanelModule.panel)
-        add(rightPanelModule.panel)
         add(centerPanelModule.panel)
         add(bottomPanelModule.panel)
         add(reactBase)
@@ -53,19 +51,17 @@ class EditorPanel : MutablePanel() {
         position = Vector2f()
 
         FillParent.updateScale(reactBase, newSize)
-//        RComponentRenderer.render(reactBase){
-//            RButton { RButton.Props(Vector2f(50f, 50f)) }
-//        }
-        render(gui, reactBase) {
+        RComponentRenderer.render(reactBase, gui) {
             panel {
                 FillParent.updateScale(this, newSize)
                 setTransparent()
                 setBorderless()
 
-                +TopButtonPanel { }
-                +RightPanel { }
+                +TopButtonPanel {}
+                +RightPanel { RightPanel.Props(gui.projectManager, gui.selectionHandler, gui.state) }
             }
         }
+
 
         leftPanelModule.apply {
             panel.size = Vector2f(280f, newSize.yf - 48f)
@@ -73,15 +69,9 @@ class EditorPanel : MutablePanel() {
             layout.rescale()
         }
 
-        rightPanelModule.apply {
-            panel.size = Vector2f(190f, newSize.yf - 48f)
-            panel.position = Vector2f(newSize.xf - panel.size.x, 48f)
-            layout.rescale()
-        }
-
         bottomPanelModule.apply {
             if (panel.isEnabled) {
-                panel.size = Vector2f(newSize.xf - (leftPanelModule.panel.size.x + rightPanelModule.panel.size.x), 160f)
+                panel.size = Vector2f(newSize.xf - (leftPanelModule.panel.size.x + 190f), 160f)
             } else {
                 panel.size = Vector2f()
             }
@@ -91,7 +81,7 @@ class EditorPanel : MutablePanel() {
 
         centerPanelModule.apply {
             panel.size = Vector2f(
-                    newSize.xf - (leftPanelModule.panel.size.x + rightPanelModule.panel.size.x),
+                    newSize.xf - (leftPanelModule.panel.size.x + 190f),
                     newSize.yf - (48f) - (bottomPanelModule.panel.size.y)
             )
             panel.position = Vector2f(leftPanelModule.panel.size.x, 48f)

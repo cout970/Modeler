@@ -1,8 +1,9 @@
-package com.cout970.modeler.gui.react.tests.example
+package com.cout970.modeler.gui.react.core.example
 
-import com.cout970.modeler.gui.react.leguicomp.Panel
+import com.cout970.modeler.gui.react.core.RBuildContext
+import com.cout970.modeler.gui.react.core.RComponent
+import com.cout970.modeler.gui.react.core.RComponentSpec
 import com.cout970.modeler.gui.react.panel
-import com.cout970.modeler.gui.react.tests.*
 import org.joml.Vector2f
 import org.liquidengine.legui.color.ColorConstants
 import org.liquidengine.legui.component.Component
@@ -13,13 +14,13 @@ import org.liquidengine.legui.event.MouseClickEvent
  * Created by cout970 on 2017/09/23.
  */
 
-class RButton private constructor(props: Props) : RComponent<RButton.Props, RButton.State>(props) {
+class RButton : RComponent<RButton.Props, RButton.State>() {
 
     init {
         state = State(false)
     }
 
-    override fun build(context: RBuildContext): Component {
+    override fun build(ctx: RBuildContext): Component {
         return panel {
             size = props.size
             position = Vector2f()
@@ -43,18 +44,5 @@ class RButton private constructor(props: Props) : RComponent<RButton.Props, RBut
 
     data class State(val on: Boolean)
 
-    companion object : RComponentSpec<RButton, Props, State> {
-
-        override fun build(props: Props): RButton = RButton(props)
-    }
-}
-
-fun main(args: Array<String>) {
-    val root = Panel()
-
-    RComponentRenderer.render(root) {
-        RButton { RButton.Props(Vector2f(80f, 30f)) }
-    }
-
-    println(root)
+    companion object : RComponentSpec<RButton, Props, State>
 }

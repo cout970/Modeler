@@ -1,19 +1,16 @@
 package com.cout970.modeler.gui.react.components
 
 import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.core.model.selection.ObjectRef
 import com.cout970.modeler.gui.comp.CButton
 import com.cout970.modeler.gui.comp.setBorderless
 import com.cout970.modeler.gui.comp.setTransparent
-import com.cout970.modeler.gui.react.IComponentFactory
-import com.cout970.modeler.gui.react.ReactComponent
+import com.cout970.modeler.gui.react.core.RBuildContext
+import com.cout970.modeler.gui.react.core.RComponent
+import com.cout970.modeler.gui.react.core.RComponentSpec
 import com.cout970.modeler.gui.react.leguicomp.IconButton
 import com.cout970.modeler.gui.react.panel
 import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.show
-import com.cout970.modeler.util.toColor
-import com.cout970.vector.api.IVector2
 import org.joml.Vector4f
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
@@ -21,13 +18,13 @@ import org.liquidengine.legui.component.optional.align.HorizontalAlign
 /**
  * Created by cout970 on 2017/09/16.
  */
-class ModelObjectItem private constructor(props: ModelObjectProps) : ReactComponent<ModelObjectProps, Boolean>(props) {
+class ModelObjectItem : RComponent<ModelObjectProps, Boolean>() {
 
     init {
-        updateState(false)
+        state = false
     }
 
-    override fun render(parentSize: IVector2): Component = panel {
+    override fun build(ctx: RBuildContext): Component = panel {
         backgroundColor = props.color
         cornerRadius = 0f
         width = 182f
@@ -60,18 +57,7 @@ class ModelObjectItem private constructor(props: ModelObjectProps) : ReactCompon
         }
     }
 
-    companion object : IComponentFactory<ModelObjectProps, Boolean, ModelObjectItem> {
-
-        override fun createDefaultProps() = ModelObjectProps(
-                ref = ObjectRef(-1),
-                name = "",
-                visible = true,
-                color = Config.colorPalette.lightDarkColor.toColor(),
-                index = 0
-        )
-
-        override fun build(props: ModelObjectProps): ModelObjectItem = ModelObjectItem(props)
-    }
+    companion object : RComponentSpec<ModelObjectItem, ModelObjectProps, Boolean>
 }
 
 data class ModelObjectProps(

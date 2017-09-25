@@ -26,9 +26,9 @@ class ShowRightPanel : IUseCase {
 
     override fun createTask(): ITask {
         return ModifyGui { gui ->
-            gui.editorPanel.rightPanelModule.panel.let {
-                if (it.isEnabled) it.hide() else it.show()
-            }
+            //            gui.editorPanel.rightPanelModule.panel.let {
+//                if (it.isEnabled) it.hide() else it.show()
+//            }
         }
     }
 }

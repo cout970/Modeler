@@ -17,15 +17,15 @@ class CTooltip(str: String) : Tooltip(str) {
     constructor() : this("")
 
     override fun getTextState(): TextState {
-        lastRender = System.currentTimeMillis()
+//        lastRender = System.currentTimeMillis()
         val state = super.getTextState()
-        size = Vector2f(state.fontSize * state.length() / 2, 20f)
-        if (controller != null) {
-            position.x = (controller.size.x - size.x) / 2f
-            if (super.getScreenPosition().x < 0f) {
-                position.x -= super.getScreenPosition().x
-            }
-        }
+//        size = Vector2f(state.fontSize * state.length() / 2, 20f)
+//        if (controller != null) {
+//            position.x = (controller.size.x - size.x) / 2f
+//            if (super.getScreenPosition().x < 0f) {
+//                position.x -= super.getScreenPosition().x
+//            }
+//        }
         return state
     }
 

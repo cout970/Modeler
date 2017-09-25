@@ -1,13 +1,16 @@
-package com.cout970.modeler.gui.react.tests
+package com.cout970.modeler.gui.react.core
 
 import org.liquidengine.legui.component.Component
 
 /**
  * Created by cout970 on 2017/09/23.
  */
-abstract class RComponent<P : Any, S : Any>(var props: P) {
+abstract class RComponent<P : Any, S : Any>() {
 
     lateinit var context: RContext
+
+    lateinit var props: P
+        private set
 
     private lateinit var stateField: S
 
@@ -23,7 +26,7 @@ abstract class RComponent<P : Any, S : Any>(var props: P) {
             stateField = value
         }
 
-    abstract fun build(context: RBuildContext): Component
+    abstract fun build(ctx: RBuildContext): Component
 
     fun replaceState(newState: S) {
         if (shouldComponentUpdate(props, newState)) {
@@ -52,6 +55,10 @@ abstract class RComponent<P : Any, S : Any>(var props: P) {
 
     open fun shouldComponentUpdate(nextProps: P, nextState: S): Boolean {
         return true
+    }
+
+    fun transferProps(props: P) {
+        this.props = props
     }
 
     fun transferState(state: S) {

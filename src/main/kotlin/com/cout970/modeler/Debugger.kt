@@ -25,6 +25,15 @@ object Debugger {
         log(Level.DEBUG) { "Debug End" }
     }
 
+    fun debugLog(a: Any): Boolean {
+        if (a is String) {
+            log(level = Level.DEBUG) { "$a -> ${a.length}" }
+        } else {
+            log(level = Level.DEBUG) { a.toString() }
+        }
+        return false
+    }
+
     fun postTick() {
 
 //        val count = GL30.glGenVertexArrays()

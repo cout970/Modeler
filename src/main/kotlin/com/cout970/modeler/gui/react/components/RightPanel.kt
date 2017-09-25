@@ -1,12 +1,17 @@
 package com.cout970.modeler.gui.react.components
 
 import com.cout970.modeler.api.model.material.IMaterialRef
+import com.cout970.modeler.controller.SelectionHandler
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.material.MaterialRef
+import com.cout970.modeler.core.project.ProjectManager
+import com.cout970.modeler.gui.GuiState
 import com.cout970.modeler.gui.comp.setBorderless
 import com.cout970.modeler.gui.comp.setTransparent
-import com.cout970.modeler.gui.react.IComponentFactory
-import com.cout970.modeler.gui.react.ReactComponent
+import com.cout970.modeler.gui.react.core.RBuildContext
+import com.cout970.modeler.gui.react.core.RComponent
+import com.cout970.modeler.gui.react.core.RComponentSpec
+import com.cout970.modeler.gui.react.core.invoke
 import com.cout970.modeler.gui.react.event.EventMaterialUpdate
 import com.cout970.modeler.gui.react.event.EventModelUpdate
 import com.cout970.modeler.gui.react.event.EventSelectionUpdate
@@ -16,43 +21,42 @@ import com.cout970.modeler.gui.react.leguicomp.VerticalPanel
 import com.cout970.modeler.gui.react.panel
 import com.cout970.modeler.gui.react.scalable.FixedXFillY
 import com.cout970.modeler.util.toColor
-import com.cout970.vector.api.IVector2
 import org.liquidengine.legui.component.Component
 
 /**
  * Created by cout970 on 2017/09/16.
  */
-class RightPanel private constructor() : ReactComponent<Unit, Unit>(Unit) {
+class RightPanel : RComponent<RightPanel.Props, Unit>() {
 
     init {
-        updateState(Unit)
+        state = Unit
     }
 
-    override fun render(parentSize: IVector2): Component = panel {
+    override fun build(ctx: RBuildContext): Component = panel {
         backgroundColor = Config.colorPalette.darkestColor.toColor()
-        posX = parentSize.xf - 190f
-        FixedXFillY(190f).updateScale(this, parentSize)
+        posX = ctx.parentSize.xf - 190f
+        FixedXFillY(190f).updateScale(this, ctx.parentSize)
         setBorderless()
 
         listenerMap.addListener(EventModelUpdate::class.java) {
-            updateState(state)
+            replaceState(state)
         }
         listenerMap.addListener(EventMaterialUpdate::class.java) {
-            updateState(state)
+            replaceState(state)
         }
         listenerMap.addListener(EventSelectionUpdate::class.java) {
-            updateState(state)
+            replaceState(state)
         }
 
         val materialOfSelectedObjects = mutableListOf<IMaterialRef>()
-        val model = context.gui.projectManager.model
-        val selection = context.gui.selectionHandler.getSelection()
+        val model = props.projectManager.model
+        val selection = props.selectionHandler.getSelection()
 
         panel {
             setBorderless()
             setTransparent()
             width = 190f
-            height = parentSize.yf * 0.5f
+            height = ctx.parentSize.yf * 0.5f
 
             +FixedLabel("Model parts", 5f, 5f, 180f, 24f)
             +IconButton("cube.template.new", "addTemplateCubeIcon", 5f, 30f, 32f, 32f).also {
@@ -72,7 +76,7 @@ class RightPanel private constructor() : ReactComponent<Unit, Unit>(Unit) {
                         Config.colorPalette.lightDarkColor.toColor()
                     }
 
-                    +ModelObjectItem(ModelObjectProps(ref, name, model.isVisible(ref), color, index))
+                    +ModelObjectItem { ModelObjectProps(ref, name, model.isVisible(ref), color, index) }
                 }
                 container.size.y = model.objectRefs.size * 24f
                 resize()
@@ -83,8 +87,8 @@ class RightPanel private constructor() : ReactComponent<Unit, Unit>(Unit) {
             setBorderless()
 
             width = 190f
-            height = parentSize.yf * 0.5f
-            position.y = parentSize.yf * 0.5f
+            height = ctx.parentSize.yf * 0.5f
+            position.y = ctx.parentSize.yf * 0.5f
 
             +FixedLabel("Materials", 5f, 5f, 180f, 24f)
             +IconButton("material.view.import", "addMaterialIcon", 5f, 30f, 32f, 32f)
@@ -96,11 +100,11 @@ class RightPanel private constructor() : ReactComponent<Unit, Unit>(Unit) {
 
                     val color = when (ref) {
                         in materialOfSelectedObjects -> Config.colorPalette.greyColor.toColor()
-                        context.gui.state.selectedMaterial -> Config.colorPalette.brightColor.toColor()
+                        props.guiState.selectedMaterial -> Config.colorPalette.brightColor.toColor()
                         else -> Config.colorPalette.lightDarkColor.toColor()
                     }
 
-                    +ModelMaterialItem(ModelMaterialProps(ref, name, index, color))
+                    +ModelMaterialItem { ModelMaterialProps(ref, name, index, color) }
                 }
                 container.size.y = model.materialRefs.size * 24f + 24f
                 resize()
@@ -108,10 +112,7 @@ class RightPanel private constructor() : ReactComponent<Unit, Unit>(Unit) {
         }
     }
 
-    companion object : IComponentFactory<Unit, Unit, RightPanel> {
+    class Props(val projectManager: ProjectManager, val selectionHandler: SelectionHandler, val guiState: GuiState)
 
-        override fun createDefaultProps() = Unit
-
-        override fun build(props: Unit): RightPanel = RightPanel()
-    }
+    companion object : RComponentSpec<RightPanel, Props, Unit>
 }

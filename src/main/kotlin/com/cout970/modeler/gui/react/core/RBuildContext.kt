@@ -1,4 +1,4 @@
-package com.cout970.modeler.gui.react.tests
+package com.cout970.modeler.gui.react.core
 
 import com.cout970.vector.api.IVector2
 
