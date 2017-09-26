@@ -23,9 +23,10 @@ object RComponentRenderer {
             it.clearChilds()
             it.add(root)
         }
-        ctx.let {
-            it.gui.buttonBinder.bindButtons(it.root)
-            it.gui.root.loadResources(it.gui.resources)
+        ctx.gui.let { gui ->
+            gui.root.bindButtons(gui.buttonBinder)
+            gui.root.bindProperties(gui.state)
+            gui.root.loadResources(gui.resources)
         }
     }
 

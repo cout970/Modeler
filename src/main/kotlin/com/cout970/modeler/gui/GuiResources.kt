@@ -57,8 +57,8 @@ class GuiResources {
         iconMap.put("exportModelIcon", BufferedImage("assets/textures/export_model.png"))
         iconMap.put("exportTextureIcon", BufferedImage("assets/textures/export_texture.png"))
         iconMap.put("exportHitboxIcon", BufferedImage("assets/textures/export_hitbox.png"))
-        iconMap.put("showGridsIcon", BufferedImage("assets/textures/show_grids.png"))
-        iconMap.put("hideGridsIcon", BufferedImage("assets/textures/hide_grids.png"))
+        iconMap.put("disable_grid", BufferedImage("assets/textures/show_grids.png"))
+        iconMap.put("active_grid", BufferedImage("assets/textures/hide_grids.png"))
         iconMap.put("upIcon", BufferedImage("assets/textures/up.png"))
         iconMap.put("downIcon", BufferedImage("assets/textures/down.png"))
 

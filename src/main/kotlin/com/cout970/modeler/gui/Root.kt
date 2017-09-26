@@ -1,5 +1,8 @@
 package com.cout970.modeler.gui
 
+import com.cout970.modeler.controller.binders.ButtonBinder
+import com.cout970.modeler.gui.react.leguicomp.ToggleButton
+import com.cout970.modeler.util.IPropertyBind
 import com.cout970.modeler.util.size
 import com.cout970.modeler.util.toJoml2f
 import com.cout970.vector.api.IVector2
@@ -32,5 +35,21 @@ class Root : Frame(1f, 1f) {
     private fun recursiveLoadResources(it: Component, res: GuiResources) {
         if (it is IResourceReloadable) it.loadResources(res)
         (it as? Container<*>)?.childs?.forEach { recursiveLoadResources(it, res) }
+    }
+
+    fun bindProperties(state: GuiState) {
+        val properties = state.getBooleanProperties()
+        recursiveBindProperties(mainPanel!!, properties)
+    }
+
+    private fun recursiveBindProperties(it: Component, properties: Map<String, IPropertyBind<Boolean>>) {
+        when (it) {
+            is ToggleButton -> it.bindProperties(properties)
+            is Container<*> -> it.childs.forEach { recursiveBindProperties(it, properties) }
+        }
+    }
+
+    fun bindButtons(buttonBinder: ButtonBinder) {
+        buttonBinder.bindButtons(mainPanel!!)
     }
 }

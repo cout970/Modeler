@@ -14,7 +14,7 @@ import org.liquidengine.legui.component.Component
 /**
  * Created by cout970 on 2017/09/07.
  */
-class LeftPanel : RComponent<Unit, Unit>() {
+class LeftPanel : RComponent<LeftPanel.Props, Unit>() {
 
     init {
         state = Unit
@@ -22,11 +22,14 @@ class LeftPanel : RComponent<Unit, Unit>() {
 
     override fun build(ctx: RBuildContext): Component = panel {
         backgroundColor = Config.colorPalette.darkestColor.toColor()
+        posY = 48f
         FixedXFillY(280f).updateScale(this, ctx.parentSize)
         setBorderless()
 
         +GridButtonPanel { Unit }
     }
 
-    companion object : RComponentSpec<LeftPanel, Unit, Unit>
+    class Props()
+
+    companion object : RComponentSpec<LeftPanel, Props, Unit>
 }

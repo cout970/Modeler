@@ -5,6 +5,7 @@ import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.gui.canvas.ISelectable
 import com.cout970.modeler.gui.canvas.TransformationMode
+import com.cout970.modeler.util.BooleanPropertyWrapper
 
 /**
  * Created by cout970 on 2017/06/12.
@@ -13,7 +14,7 @@ class GuiState {
 
     var transformationMode = TransformationMode.TRANSLATION
 
-    var useTexture = false
+    var useTexture = true
     var useColor = false
     var useLight = true
 
@@ -34,4 +35,13 @@ class GuiState {
     var visibilityHash: Int = -1
 
     var playAnimation = false
+
+    fun getBooleanProperties() = mapOf(
+            "drawTextureGridLines" to BooleanPropertyWrapper(this::drawTextureGridLines),
+            "drawModelGridLines" to BooleanPropertyWrapper(this::drawModelGridLines),
+            "renderLights" to BooleanPropertyWrapper(this::renderLights),
+            "useTexture" to BooleanPropertyWrapper(this::useTexture),
+            "useColor" to BooleanPropertyWrapper(this::useColor),
+            "useLight" to BooleanPropertyWrapper(this::useLight)
+    )
 }

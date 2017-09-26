@@ -24,17 +24,31 @@ class GridButtonPanel : RComponent<Unit, Unit>() {
 
     override fun build(ctx: RBuildContext): Component = panel {
         backgroundColor = Config.colorPalette.darkestColor.toColor()
-        FixedYFillX(280f).updateScale(this, ctx.parentSize)
+        FixedYFillX(28f).updateScale(this, ctx.parentSize)
         setBorderless()
 
-        +ToggleButton(5f, 2f, 24f, 24f, true, "")
+        +ToggleButton("drawModelGridLines", "grid", true, 5f, 2f, 24f, 24f)
                 .setBorderless()
                 .apply { cornerRadius = 0f }
 
-        +ToggleButton(34f, 2f, 24f, 24f, true, "drawTextureGridLines")
+        +ToggleButton("drawTextureGridLines", "grid", true, 35f, 2f, 24f, 24f)
+                .setBorderless()
+                .apply { cornerRadius = 0f }
+
+        +ToggleButton("renderLights", "show_lights", false, 65f, 2f, 24f, 24f)
+                .setBorderless()
+                .apply { cornerRadius = 0f }
+
+        +ToggleButton("useTexture", "texture", true, 95f, 2f, 24f, 24f)
+                .setBorderless()
+                .apply { cornerRadius = 0f }
+
+        +ToggleButton("useColor", "color", false, 125f, 2f, 24f, 24f)
+                .setBorderless()
+                .apply { cornerRadius = 0f }
+
+        +ToggleButton("useLight", "color", true, 155f, 2f, 24f, 24f)
                 .setBorderless()
                 .apply { cornerRadius = 0f }
     }
-
-
 }

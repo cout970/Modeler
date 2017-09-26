@@ -7,7 +7,10 @@ import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.render.tool.*
 import com.cout970.modeler.render.tool.shader.UniversalShader
 import com.cout970.modeler.util.RenderUtil
+import com.cout970.vector.api.IVector3
+import com.cout970.vector.extensions.vec3Of
 import org.lwjgl.opengl.GL11
+import java.awt.Color
 
 /**
  * Created by cout970 on 2017/06/09.
@@ -67,11 +70,11 @@ class ModelRenderer {
 
         map.forEach { material, list ->
             model.getMaterial(material).bind()
-            list.forEach { (objIndex, obj) ->
+            list.forEach { (objIndex, _) ->
                 ctx.shader.apply {
-                    useTexture.setInt(1)
-                    useColor.setInt(0)
-                    useLight.setInt(1)
+                    useTexture.setBoolean(ctx.gui.state.useTexture)
+                    useColor.setBoolean(ctx.gui.state.useColor)
+                    useLight.setBoolean(ctx.gui.state.useLight)
                     matrixM.setMatrix4(Matrix4.IDENTITY)
                     accept(modelCache[objIndex])
                 }
@@ -83,6 +86,11 @@ class ModelRenderer {
         list.forEach { it.close() }
         return model.objects
                 .map { it.mesh }
-                .map { it.createVao(buffer) }
+                .map { it.createVao(buffer, getColor(it.hashCode())) }
+    }
+
+    fun getColor(hash: Int): IVector3 {
+        val c = Color.getHSBColor((hash.toDouble() / Int.MAX_VALUE.toDouble()).toFloat() * 360f, 0.5f, 1f)
+        return vec3Of(c.blue / 255f, c.green / 255f, c.red / 255f)
     }
 }

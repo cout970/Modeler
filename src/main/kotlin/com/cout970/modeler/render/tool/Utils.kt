@@ -67,6 +67,6 @@ fun IMesh.append(buffer: UniversalShader.Buffer, color: IVector3 = Vector3.ONE) 
 
 fun IMesh.createVao(buffer: UniversalShader.Buffer, color: IVector3 = Vector3.ONE): VAO {
     return buffer.build(GL11.GL_QUADS) {
-        append(buffer)
+        append(buffer, color)
     }
 }

@@ -76,4 +76,22 @@ class Mesh(
         }
         return Mesh(newPos, newTex, newFaces)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Mesh) return false
+
+        if (pos != other.pos) return false
+        if (tex != other.tex) return false
+        if (faces != other.faces) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = pos.hashCode()
+        result = 31 * result + tex.hashCode()
+        result = 31 * result + faces.hashCode()
+        return result
+    }
 }

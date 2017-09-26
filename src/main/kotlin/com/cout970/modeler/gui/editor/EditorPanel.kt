@@ -7,6 +7,7 @@ import com.cout970.modeler.gui.comp.setTransparent
 import com.cout970.modeler.gui.editor.bottompanel.ModuleBottomPanel
 import com.cout970.modeler.gui.editor.centerpanel.ModuleCenterPanel
 import com.cout970.modeler.gui.editor.leftpanel.ModuleLeftPanel
+import com.cout970.modeler.gui.react.components.LeftPanel
 import com.cout970.modeler.gui.react.components.RightPanel
 import com.cout970.modeler.gui.react.components.TopButtonPanel
 import com.cout970.modeler.gui.react.core.RComponentRenderer
@@ -59,9 +60,9 @@ class EditorPanel : MutablePanel() {
 
                 +TopButtonPanel {}
                 +RightPanel { RightPanel.Props(gui.projectManager, gui.selectionHandler, gui.state) }
+                +LeftPanel { LeftPanel.Props() }
             }
         }
-
 
         leftPanelModule.apply {
             panel.size = Vector2f(280f, newSize.yf - 48f)

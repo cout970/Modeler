@@ -4,7 +4,6 @@ import com.cout970.modeler.Debugger
 import com.cout970.modeler.Program
 import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.tasks.TaskNone
-import com.cout970.modeler.gui.editor.EditorPanel
 
 /**
  * Created by cout970 on 2017/07/20.
@@ -19,14 +18,14 @@ class Debug : IUseCase {
         Debugger.debug {
 
             //            //reload gui
-            gui.editorPanel = EditorPanel()
-            gui.root.mainPanel = gui.editorPanel
-            gui.editorPanel.gui = gui
-            gui.guiUpdater.initGui(gui)
+//            gui.editorPanel = EditorPanel()
+//            gui.root.mainPanel = gui.editorPanel
+//            gui.editorPanel.gui = gui
+//            gui.guiUpdater.initGui(gui)
 
-            gui.guiUpdater.bindTextInputs(gui.editorPanel)
-            gui.buttonBinder.bindButtons(gui.root.mainPanel!!)
-            gui.root.mainPanel!!.bindProperties(gui.state)
+//            gui.guiUpdater.bindTextInputs(gui.editorPanel)
+//            gui.buttonBinder.bindButtons(gui.root.mainPanel!!)
+//            gui.root.mainPanel!!.bindProperties(gui.state)
 
             gui.editorPanel.reRender()
             gui.resources.reload(resourceLoader)

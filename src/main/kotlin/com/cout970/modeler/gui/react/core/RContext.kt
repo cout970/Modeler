@@ -13,7 +13,8 @@ class RContext(val root: Container<Component>, val gui: Gui, val virtualTree: ()
     fun <P : Any, S : Any> markDirty(comp: RComponent<P, S>) {
         findParent(comp, root)?.let {
             RComponentRenderer.buildComponent(it)
-            gui.buttonBinder.bindButtons(root)
+            gui.root.bindButtons(gui.buttonBinder)
+            gui.root.bindProperties(gui.state)
             gui.root.loadResources(gui.resources)
         }
     }
