@@ -1,5 +1,6 @@
 package com.cout970.modeler.render.tool.camera
 
+import com.cout970.glutilities.device.Keyboard
 import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.core.config.Config
@@ -51,7 +52,9 @@ class CameraUpdater(
 
     private fun moveCamera(selectedScene: Canvas) {
 
-        val move = Config.keyBindings.moveCamera.check(input)
+        val move = Config.keyBindings.moveCamera.check(input) ||
+                   (input.keyboard.isKeyPressed(Keyboard.KEY_SPACE) && input.mouse.isButtonPressed(1))
+
         val rotate = Config.keyBindings.rotateCamera.check(input)
 
         if (!move && !rotate) return
