@@ -35,7 +35,7 @@ class GridButtonPanel : RComponent<Unit, Unit>() {
                 .setBorderless()
                 .apply { cornerRadius = 0f }
 
-        +ToggleButton("renderLights", "show_lights", false, 65f, 2f, 24f, 24f)
+        +ToggleButton("renderLights", "focus", false, 65f, 2f, 24f, 24f)
                 .setBorderless()
                 .apply { cornerRadius = 0f }
 
@@ -47,7 +47,7 @@ class GridButtonPanel : RComponent<Unit, Unit>() {
                 .setBorderless()
                 .apply { cornerRadius = 0f }
 
-        +ToggleButton("useLight", "color", true, 155f, 2f, 24f, 24f)
+        +ToggleButton("useLight", "light", true, 155f, 2f, 24f, 24f)
                 .setBorderless()
                 .apply { cornerRadius = 0f }
     }

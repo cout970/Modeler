@@ -2,6 +2,7 @@ package com.cout970.modeler.gui
 
 import com.cout970.glutilities.event.*
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.input.event.EventController
 import com.cout970.modeler.render.tool.camera.CameraUpdater
@@ -53,7 +54,7 @@ class Listeners : ITickeable {
             if (mousePos.isInside(canvas.absolutePosition, canvas.size.toIVector())) {
                 canvas.run {
                     val camera = canvas.cameraHandler.camera
-                    val scroll = -e.offsetY * Config.cameraScrollSpeed
+                    val scroll = -e.offsetY * Config.cameraScrollSpeed * if (canvas.viewMode == SelectionTarget.TEXTURE) 2.0 else 1.0
                     if (camera.zoom > 0.5 || scroll > 0) {
                         canvas.cameraHandler.setZoom(camera.zoom + scroll * (camera.zoom / 60f))
                     }

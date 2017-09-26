@@ -141,9 +141,9 @@ class MaterialRenderer {
 
         material.bind()
         ctx.shader.apply {
-            useColor.setInt(0)
-            useLight.setInt(0)
-            useTexture.setInt(1)
+            useColor.setBoolean(false)
+            useLight.setBoolean(false)
+            useTexture.setBoolean(true)
             matrixM.setMatrix4(Matrix4.IDENTITY)
             accept(vao)
         }
