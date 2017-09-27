@@ -24,7 +24,8 @@ class RContext(val root: Container<Component>, val gui: Gui, val virtualTree: ()
         tree.childs.forEach {
             if (it is RComponentWrapper<*, *, *>) {
                 if (it.component == child) return it
-            } else if (it is Container<*>) {
+            }
+            if (it is Container<*>) {
                 findParent(child, it as Container<Component>)?.let { return it }
             }
         }

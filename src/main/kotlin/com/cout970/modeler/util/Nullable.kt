@@ -11,12 +11,12 @@ sealed class Nullable<T> {
     data class NonNull<T>(val value: T) : Nullable<T>()
     object Null : Nullable<Nothing>()
 
-    fun <R> map(func: (T) -> R): Nullable<R> = when (this) {
+    inline fun <R> map(func: (T) -> R): Nullable<R> = when (this) {
         is Null -> castNull()
         is NonNull -> Nullable.NonNull(func(value))
     }
 
-    fun <R> flatMap(func: (T) -> R?): Nullable<R> = when (this) {
+    inline fun <R> flatMap(func: (T) -> R?): Nullable<R> = when (this) {
         is Null -> castNull()
         is NonNull -> {
             val result = func(value)
@@ -24,12 +24,12 @@ sealed class Nullable<T> {
         }
     }
 
-    fun <R> flatMapNullable(func: (T) -> Nullable<R>): Nullable<R> = when (this) {
+    inline fun <R> flatMapNullable(func: (T) -> Nullable<R>): Nullable<R> = when (this) {
         is Null -> castNull()
         is NonNull -> func(value)
     }
 
-    fun getOrCompute(default: () -> T): T = when (this) {
+    inline fun getOrCompute(default: () -> T): T = when (this) {
         is Null -> default()
         is NonNull -> value
     }
@@ -54,6 +54,11 @@ sealed class Nullable<T> {
         is NonNull -> this
     }
 
+    inline fun ifNotNull(func: (T) -> Unit) {
+        if (this is NonNull) {
+            func(this.value)
+        }
+    }
 
     companion object {
         @Suppress("UNCHECKED_CAST")

@@ -34,9 +34,10 @@ object RComponentRenderer {
         val buildCtx = RBuildContext(
                 parentSize = wrapper.getParent()?.size?.toIVector() ?: wrapper.getSize().toIVector())
         updateSubTree(wrapper, buildCtx, wrapper.component.context)
-        wrapper.component.context.let {
-            it.gui.buttonBinder.bindButtons(it.root)
-            it.gui.root.loadResources(it.gui.resources)
+        wrapper.component.context.gui.let { gui ->
+            gui.root.bindButtons(gui.buttonBinder)
+            gui.root.bindProperties(gui.state)
+            gui.root.loadResources(gui.resources)
         }
     }
 
