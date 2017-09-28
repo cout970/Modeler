@@ -75,8 +75,10 @@ class ModelRenderer {
                     useTexture.setBoolean(ctx.gui.state.useTexture)
                     useColor.setBoolean(ctx.gui.state.useColor)
                     useLight.setBoolean(ctx.gui.state.useLight)
+                    showHiddenFaces.setBoolean(ctx.gui.state.showHiddenFaces)
                     matrixM.setMatrix4(Matrix4.IDENTITY)
                     accept(modelCache[objIndex])
+                    showHiddenFaces.setBoolean(false)
                 }
             }
         }

@@ -40,7 +40,7 @@ uniform float reflectivity = 0.0;
 uniform float ambient = 0.1;
 
 // if hiden faces should be rendered as red
-uniform bool showHidenFaces = true;
+uniform bool showHiddenFaces = true;
 
 uniform vec3 globalColor = vec3(1.0, 1.0, 1.0);
 
@@ -73,7 +73,7 @@ void main(void){
     }
 
     // if the face is not visible then paint it red
-    if(showHidenFaces){
+    if(showHiddenFaces){
         if(!gl_FrontFacing){
             out_color = vec4(1.0, 0.5, 0.5, 1.0);
         }

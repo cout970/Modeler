@@ -17,6 +17,7 @@ class GuiState {
     var useTexture = true
     var useColor = false
     var useLight = true
+    var showHiddenFaces = true
 
     var drawTextureGridLines: Boolean = true
     var drawModelGridLines: Boolean = true
@@ -42,6 +43,7 @@ class GuiState {
             "renderLights" to BooleanPropertyWrapper(this::renderLights),
             "useTexture" to BooleanPropertyWrapper(this::useTexture),
             "useColor" to BooleanPropertyWrapper(this::useColor),
-            "useLight" to BooleanPropertyWrapper(this::useLight)
+            "useLight" to BooleanPropertyWrapper(this::useLight),
+            "showInvisible" to BooleanPropertyWrapper(this::showHiddenFaces)
     )
 }

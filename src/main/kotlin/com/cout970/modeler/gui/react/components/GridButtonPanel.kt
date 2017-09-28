@@ -27,7 +27,7 @@ class GridButtonPanel : RComponent<Unit, Unit>() {
         FixedYFillX(28f).updateScale(this, ctx.parentSize)
         setBorderless()
 
-        +ToggleButton("drawModelGridLines", "grid", true, 5f, 2f, 24f, 24f)
+        +ToggleButton("drawModelGridLines", "model_grid", true, 5f, 2f, 24f, 24f)
                 .setBorderless()
                 .apply { cornerRadius = 0f }
 
@@ -48,6 +48,10 @@ class GridButtonPanel : RComponent<Unit, Unit>() {
                 .apply { cornerRadius = 0f }
 
         +ToggleButton("useLight", "light", true, 155f, 2f, 24f, 24f)
+                .setBorderless()
+                .apply { cornerRadius = 0f }
+
+        +ToggleButton("showInvisible", "invisible", true, 185f, 2f, 24f, 24f)
                 .setBorderless()
                 .apply { cornerRadius = 0f }
     }

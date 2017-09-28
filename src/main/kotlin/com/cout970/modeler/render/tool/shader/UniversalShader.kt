@@ -30,6 +30,7 @@ class UniversalShader(resourceLoader: ResourceLoader) : Consumer<VAO> {
     val lightPos: UniformVariable.UniformVariableArray
     val lightCount: UniformVariable
     val useLight: UniformVariable
+    val showHiddenFaces: UniformVariable
     val textureSampler: UniformVariable
     val useTexture: UniformVariable
     val useColor: UniformVariable
@@ -56,6 +57,7 @@ class UniversalShader(resourceLoader: ResourceLoader) : Consumer<VAO> {
         lightPos = program.createUniformVariableArray("lightPos")
         lightCount = program.createUniformVariable("lightCount")
         useLight = program.createUniformVariable("useLight")
+        showHiddenFaces = program.createUniformVariable("showHiddenFaces")
         textureSampler = program.createUniformVariable("textureSampler")
         useTexture = program.createUniformVariable("useTexture")
         useColor = program.createUniformVariable("useColor")

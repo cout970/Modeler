@@ -51,7 +51,7 @@ class ToggleButton(
             setImage(ImageIcon(it))
         }
         resources.getIcon("disable_" + icon)?.let {
-            togglededBackgroundIcon = ImageIcon(it)
+            backgroundIcon = ImageIcon(it)
         }
     }
 
