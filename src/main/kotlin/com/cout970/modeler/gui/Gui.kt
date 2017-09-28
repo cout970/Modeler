@@ -18,7 +18,6 @@ import com.cout970.modeler.input.window.WindowHandler
 
 data class Gui(
         val root: Root,
-        val guiUpdater: GuiUpdater,
         val canvasContainer: CanvasContainer,
         val listeners: Listeners,
         val windowHandler: WindowHandler,
@@ -36,7 +35,6 @@ data class Gui(
 ) {
 
     init {
-        guiUpdater.initGui(this)
         canvasManager.gui = this
         editorPanel.gui = this
     }

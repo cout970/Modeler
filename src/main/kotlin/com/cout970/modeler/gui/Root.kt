@@ -9,12 +9,16 @@ import com.cout970.vector.api.IVector2
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Container
 import org.liquidengine.legui.component.Frame
+import org.liquidengine.legui.system.context.Context
 
 /**
  * Created by cout970 on 2017/05/14.
  */
 
 class Root : Frame(1f, 1f) {
+
+    //@Inject
+    lateinit var context: Context
 
     var mainPanel: MutablePanel? = null
         set(value) {

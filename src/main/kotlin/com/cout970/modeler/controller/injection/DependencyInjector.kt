@@ -72,7 +72,6 @@ class DependencyInjector {
                     TaskHistory::class.java -> taskHistory
                 //gui
                     Root::class.java -> gui.root
-                    GuiUpdater::class.java -> gui.guiUpdater
                     CanvasContainer::class.java -> gui.canvasContainer
                     Listeners::class.java -> gui.listeners
                     WindowHandler::class.java -> gui.windowHandler

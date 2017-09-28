@@ -28,7 +28,7 @@ class RenderManager : ITickeable {
         this.gui = gui
         log(Level.FINE) { "[RenderManager] Creating GuiRenderer" }
         guiRenderer = GuiRenderer(gui.root, gui.windowHandler.window.id)
-        gui.guiUpdater.leguiContext = guiRenderer.context
+        gui.root.context = guiRenderer.context
         log(Level.FINE) { "[RenderManager] Creating Universal Shader" }
         shader = UniversalShader(resourceLoader)
         log(Level.FINE) { "[RenderManager] Creating CanvasRenderer" }

@@ -32,8 +32,6 @@ class GuiInitializer(
         log(Level.FINE) { "[GuiInitializer] Initializing GUI" }
         log(Level.FINE) { "[GuiInitializer] Creating gui resources" }
         val guiResources = GuiResources()
-        log(Level.FINE) { "[GuiInitializer] Creating GuiUpdater" }
-        val guiUpdater = GuiUpdater()
         log(Level.FINE) { "[GuiInitializer] Creating Root Frame" }
         val root = Root()
         log(Level.FINE) { "[GuiInitializer] Creating Editor Panel" }
@@ -59,7 +57,6 @@ class GuiInitializer(
 
         return Gui(
                 root = root,
-                guiUpdater = guiUpdater,
                 canvasContainer = canvasContainer,
                 listeners = listeners,
                 windowHandler = windowHandler,

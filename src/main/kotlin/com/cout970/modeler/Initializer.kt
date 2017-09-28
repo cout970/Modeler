@@ -84,11 +84,7 @@ class Initializer {
         )
 
         Debugger.setInit(state)
-        gui.selectionHandler.listeners.add(gui.guiUpdater::onSelectionUpdate)
-        gui.selectionHandler.listeners.add(gui.canvasManager::onSelectionUpdate)
-        gui.projectManager.modelChangeListeners.add(gui.canvasManager::onModelUpdate)
         gui.canvasManager.processor = taskHistory
-
 
         log(Level.FINE) { "Starting GLFW" }
         GLFWLoader.init()
@@ -110,7 +106,6 @@ class Initializer {
         log(Level.FINE) { "[GuiInitializer] Binding text inputs" }
         gui.dispatcher.state = state
         futureExecutor.programState = state
-        gui.guiUpdater.bindTextInputs(gui.editorPanel)
 
         gui.buttonBinder.bindButtons(gui.root.mainPanel!!)
         gui.root.mainPanel!!.bindProperties(gui.state)
