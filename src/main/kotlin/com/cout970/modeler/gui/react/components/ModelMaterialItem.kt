@@ -17,7 +17,7 @@ import org.liquidengine.legui.component.optional.align.HorizontalAlign
  * Created by cout970 on 2017/09/16.
  */
 
-class ModelMaterialItem : RComponent<ModelMaterialProps, Boolean>() {
+class ModelMaterialItem : RComponent<ModelMaterialItem.Props, Boolean>() {
 
     init {
         state = false
@@ -51,7 +51,8 @@ class ModelMaterialItem : RComponent<ModelMaterialProps, Boolean>() {
         }
     }
 
-    companion object : RComponentSpec<ModelMaterialItem, ModelMaterialProps, Boolean>
+    data class Props(val ref: IMaterialRef, val name: String, val index: Int, val color: Vector4f)
+
+    companion object : RComponentSpec<ModelMaterialItem, Props, Boolean>
 }
 
-data class ModelMaterialProps(val ref: IMaterialRef, val name: String, val index: Int, val color: Vector4f)

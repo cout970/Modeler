@@ -25,10 +25,6 @@ class GuiUpdater {
     lateinit var gui: Gui
 
     val presenters get() = listOf(
-            gui.editorPanel.leftPanelModule.presenter,
-            gui.editorPanel.centerPanelModule.presenter,
-//            gui.editorPanel.rightPanelModule.presenter,
-            gui.editorPanel.leftPanelModule.presenter.editCubePresenter,
             gui.editorPanel.bottomPanelModule.presenter
     )
 

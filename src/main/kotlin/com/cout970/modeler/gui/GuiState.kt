@@ -14,15 +14,18 @@ class GuiState {
 
     var transformationMode = TransformationMode.TRANSLATION
 
-    var useTexture = true
-    var useColor = false
-    var useLight = true
-    var showHiddenFaces = true
+    var useTexture: Boolean = true
+    var useColor: Boolean = false
+    var useLight: Boolean = true
+    var showHiddenFaces: Boolean = true
 
     var drawTextureGridLines: Boolean = true
     var drawModelGridLines: Boolean = true
 
     var renderLights: Boolean = false
+
+    var showLeftPanel = true
+    var showRightPanel = true
 
     var hoveredObject: ISelectable? = null
     var tmpModel: IModel? = null
@@ -44,6 +47,8 @@ class GuiState {
             "useTexture" to BooleanPropertyWrapper(this::useTexture),
             "useColor" to BooleanPropertyWrapper(this::useColor),
             "useLight" to BooleanPropertyWrapper(this::useLight),
-            "showInvisible" to BooleanPropertyWrapper(this::showHiddenFaces)
+            "showInvisible" to BooleanPropertyWrapper(this::showHiddenFaces),
+            "showLeftPanel" to BooleanPropertyWrapper(this::showLeftPanel),
+            "showRightPanel" to BooleanPropertyWrapper(this::showRightPanel)
     )
 }

@@ -1,12 +1,12 @@
 package com.cout970.modeler.gui.canvas
 
 import com.cout970.modeler.gui.canvas.layout.*
-import com.cout970.modeler.gui.comp.CPanel
+import com.cout970.modeler.gui.react.leguicomp.Panel
 
 /**
  * Created by cout970 on 2017/05/03.
  */
-class CanvasContainer(val panel: CPanel) {
+class CanvasContainer(var panel: Panel) {
 
     val layoutOne = LayoutOne(this)
     val layoutTwo = LayoutTwo(this)

@@ -114,6 +114,7 @@ class Initializer {
 
         gui.buttonBinder.bindButtons(gui.root.mainPanel!!)
         gui.root.mainPanel!!.bindProperties(gui.state)
+        gui.root.updateSizes(windowHandler.window.getFrameBufferSize())
 
         log(Level.FINE) { "Searching for last project" }
         exportManager.loadLastProjectIfExists(projectManager)

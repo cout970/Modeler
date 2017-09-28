@@ -20,6 +20,7 @@ import com.cout970.modeler.gui.react.leguicomp.IconButton
 import com.cout970.modeler.gui.react.leguicomp.VerticalPanel
 import com.cout970.modeler.gui.react.panel
 import com.cout970.modeler.gui.react.scalable.FixedXFillY
+import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.toColor
 import org.liquidengine.legui.component.Component
 
@@ -51,6 +52,10 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
         val materialOfSelectedObjects = mutableListOf<IMaterialRef>()
         val model = props.projectManager.model
         val selection = props.selectionHandler.getSelection()
+
+        if (props.hide) {
+            hide()
+        }
 
         panel {
             setBorderless()
@@ -104,7 +109,7 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
                         else -> Config.colorPalette.lightDarkColor.toColor()
                     }
 
-                    +ModelMaterialItem { ModelMaterialProps(ref, name, index, color) }
+                    +ModelMaterialItem { ModelMaterialItem.Props(ref, name, index, color) }
                 }
                 container.size.y = model.materialRefs.size * 24f + 24f
                 resize()
@@ -112,7 +117,8 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
         }
     }
 
-    class Props(val projectManager: ProjectManager, val selectionHandler: SelectionHandler, val guiState: GuiState)
+    class Props(val projectManager: ProjectManager, val selectionHandler: SelectionHandler, val guiState: GuiState,
+                val hide: Boolean)
 
     companion object : RComponentSpec<RightPanel, Props, Unit>
 }

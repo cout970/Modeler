@@ -23,6 +23,11 @@ class KeyboardBinder(val dispatcher: Dispatcher) {
                 paste.check(e) -> "model.selection.paste"
                 undo.check(e) -> "model.undo"
                 redo.check(e) -> "model.redo"
+
+                showLeftPanel.check(e) -> "show.left.panel"
+                showRightPanel.check(e) -> "show.right.panel"
+                showBottomPanel.check(e) -> "show.bottom.panel"
+
                 switchOrthoProjection.check(e) -> "view.switch.ortho"
                 setTextureMode.check(e) -> "view.set.texture.mode"
                 setModelMode.check(e) -> "view.set.model.mode"
@@ -30,9 +35,6 @@ class KeyboardBinder(val dispatcher: Dispatcher) {
                 setRotationCursorMode.check(e) -> "cursor.set.mode.rotate"
                 setScaleCursorMode.check(e) -> "cursor.set.mode.scale"
                 toggleVisibility.check(e) -> "model.toggle.visibility"
-                showLeftPanel.check(e) -> "show.left.panel"
-                showRightPanel.check(e) -> "show.right.panel"
-                showBottomPanel.check(e) -> "show.bottom.panel"
                 e.keycode == Keyboard.KEY_F1 -> "debug"
                 else -> null
             }

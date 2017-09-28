@@ -11,6 +11,7 @@ import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.gui.canvas.CanvasManager
 import com.cout970.modeler.gui.editor.EditorPanel
+import com.cout970.modeler.gui.react.leguicomp.Panel
 import com.cout970.modeler.input.event.EventController
 import com.cout970.modeler.input.window.WindowHandler
 import com.cout970.modeler.render.RenderManager
@@ -39,7 +40,7 @@ class GuiInitializer(
         val editorPanel = EditorPanel()
         root.mainPanel = editorPanel
         log(Level.FINE) { "[GuiInitializer] Creating CanvasContainer" }
-        val canvasContainer = CanvasContainer(editorPanel.centerPanelModule.panel.canvasPanel)
+        val canvasContainer = CanvasContainer(Panel())
         log(Level.FINE) { "[GuiInitializer] Creating CanvasManager" }
         val canvasManager = CanvasManager()
         log(Level.FINE) { "[GuiInitializer] Creating Listeners" }

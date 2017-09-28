@@ -14,9 +14,8 @@ class ShowLeftPanel : IUseCase {
 
     override fun createTask(): ITask {
         return ModifyGui { gui ->
-            gui.editorPanel.leftPanelModule.panel.let {
-                if (it.isEnabled) it.hide() else it.show()
-            }
+            gui.state.showLeftPanel = !gui.state.showLeftPanel
+            gui.editorPanel.reRender()
         }
     }
 }
@@ -26,9 +25,8 @@ class ShowRightPanel : IUseCase {
 
     override fun createTask(): ITask {
         return ModifyGui { gui ->
-            //            gui.editorPanel.rightPanelModule.panel.let {
-//                if (it.isEnabled) it.hide() else it.show()
-//            }
+            gui.state.showRightPanel = !gui.state.showRightPanel
+            gui.editorPanel.reRender()
         }
     }
 }
