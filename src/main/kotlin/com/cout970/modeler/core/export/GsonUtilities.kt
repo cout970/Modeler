@@ -106,7 +106,9 @@ class QuaternionSerializer : JsonSerializer<IQuaternion>, JsonDeserializer<IQuat
 class ModelSerializer : JsonSerializer<IModel>, JsonDeserializer<IModel> {
 
     override fun serialize(src: IModel, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-        return context.serialize(src)
+        return context.serialize(src).asJsonObject.apply {
+            this.remove("id")
+        }
     }
 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IModel {
@@ -150,23 +152,27 @@ class TransformationSerializer : JsonSerializer<ITransformation>, JsonDeserializ
 class ObjectSerializer : JsonSerializer<IObject>, JsonDeserializer<IObject> {
 
     override fun serialize(src: IObject, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-        return context.serialize(src)
+        return context.serialize(src).asJsonObject.apply {
+            addProperty("class", src.javaClass.simpleName)
+        }
     }
 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IObject {
         val obj = json.asJsonObject
-        return if (obj.has("size")) {
+        return when (obj["class"].asString) {
+            "ObjectCube" -> {
+                ObjectCube(
+                        name = context.deserialize(obj["name"], String::class.java),
+                        transformation = context.deserialize(obj["transformation"], TRSTransformation::class.java),
+                        material = context.deserialize(obj["material"], IMaterialRef::class.java),
+                        textureOffset = context.deserialize(obj["textureOffset"], IVector2::class.java),
+                        textureSize = context.deserialize(obj["textureSize"], IVector2::class.java),
+                        mirrored = context.deserialize(obj["mirrored"], Boolean::class.java)
+                )
+            }
+            "Object" -> context.deserialize(json, Object::class.java)
 
-            ObjectCube(
-                    name = context.deserialize(obj["name"], String::class.java),
-                    transformation = context.deserialize(obj["transformation"], TRSTransformation::class.java),
-                    material = context.deserialize(obj["material"], IMaterialRef::class.java),
-                    textureOffset = context.deserialize(obj["textureOffset"], IVector2::class.java),
-                    textureSize = context.deserialize(obj["textureSize"], IVector2::class.java),
-                    mirrored = context.deserialize(obj["mirrored"], Boolean::class.java)
-            )
-        } else {
-            context.deserialize(json, Object::class.java)
+            else -> throw IllegalStateException("Unknown Class: ${obj["class"]}")
         }
     }
 }

@@ -18,14 +18,6 @@ class Debug : IUseCase {
         Debugger.debug {
 
             //            //reload gui
-//            gui.editorPanel = EditorPanel()
-//            gui.root.mainPanel = gui.editorPanel
-//            gui.editorPanel.gui = gui
-//            gui.guiUpdater.initGui(gui)
-
-//            gui.guiUpdater.bindTextInputs(gui.editorPanel)
-//            gui.buttonBinder.bindButtons(gui.root.mainPanel!!)
-//            gui.root.mainPanel!!.bindProperties(gui.state)
 
             gui.editorPanel.reRender()
             gui.resources.reload(resourceLoader)
