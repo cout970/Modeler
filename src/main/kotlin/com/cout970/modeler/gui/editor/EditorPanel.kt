@@ -5,7 +5,6 @@ import com.cout970.modeler.gui.ModelAccessor
 import com.cout970.modeler.gui.MutablePanel
 import com.cout970.modeler.gui.comp.setBorderless
 import com.cout970.modeler.gui.comp.setTransparent
-import com.cout970.modeler.gui.editor.bottompanel.ModuleBottomPanel
 import com.cout970.modeler.gui.react.components.CenterPanel
 import com.cout970.modeler.gui.react.components.LeftPanel
 import com.cout970.modeler.gui.react.components.RightPanel
@@ -25,7 +24,6 @@ class EditorPanel : MutablePanel() {
 
     lateinit var gui: Gui
 
-    val bottomPanelModule = ModuleBottomPanel()
 
     val reactBase = panel {
         setTransparent()
@@ -33,7 +31,6 @@ class EditorPanel : MutablePanel() {
     }
 
     init {
-        add(bottomPanelModule.panel)
         add(reactBase)
         setTransparent()
         setBorderless()

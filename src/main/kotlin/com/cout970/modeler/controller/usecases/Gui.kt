@@ -2,8 +2,6 @@ package com.cout970.modeler.controller.usecases
 
 import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.tasks.ModifyGui
-import com.cout970.modeler.util.hide
-import com.cout970.modeler.util.show
 
 /**
  * Created by cout970 on 2017/08/31.
@@ -36,9 +34,9 @@ class ShowBottomPanel : IUseCase {
 
     override fun createTask(): ITask {
         return ModifyGui { gui ->
-            gui.editorPanel.bottomPanelModule.panel.let {
-                if (it.isEnabled) it.hide() else it.show()
-            }
+            //            gui.editorPanel.bottomPanelModule.panel.let {
+//                if (it.isEnabled) it.hide() else it.show()
+//            }
         }
     }
 }

@@ -24,8 +24,8 @@ class GuiUpdater {
     lateinit var leguiContext: Context
     lateinit var gui: Gui
 
-    val presenters get() = listOf(
-            gui.editorPanel.bottomPanelModule.presenter
+    val presenters
+        get() = listOf<ComponentPresenter>(
     )
 
     fun initGui(gui: Gui) {
