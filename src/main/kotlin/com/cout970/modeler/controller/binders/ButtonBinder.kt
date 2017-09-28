@@ -28,12 +28,16 @@ class ButtonBinder(val dispatcher: Dispatcher) {
                     it.listenerMap.setButtonListener { onButtonPress(it.command, it) }
                 }
                 is IconButton -> {
-                    log(Level.FINEST) { "Binding button: ${it.command} in $it" }
-                    it.listenerMap.setButtonListener { onButtonPress(it.command, it) }
+                    if (it.command != "") {
+                        log(Level.FINEST) { "Binding button: ${it.command} in $it" }
+                        it.listenerMap.setButtonListener { onButtonPress(it.command, it) }
+                    }
                 }
                 is TextButton -> {
-                    log(Level.FINEST) { "Binding button: ${it.command} in $it" }
-                    it.listenerMap.setButtonListener { onButtonPress(it.command, it) }
+                    if (it.command != "") {
+                        log(Level.FINEST) { "Binding button: ${it.command} in $it" }
+                        it.listenerMap.setButtonListener { onButtonPress(it.command, it) }
+                    }
                 }
                 is Container<*> -> bindButtons(it)
             }

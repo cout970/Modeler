@@ -4,3 +4,39 @@ detect duplicated shapes
 join shapes
 add cursor to mark location of pasted/new object
 add fog
+
+
+A = {q0}
+C(d(A, a)) = C({q1}) = {q1, q3, q0} = B
+C(d(A, b)) = C({q2}) = {q2, q3, q0} = C
+
+C(d(B, a)) = C({q4, q1}) = {q4, q1, q3, q0} = D
+C(d(B, b)) = C({q2}) = {q2, q3, q0} = C
+
+C(d(C, a)) = C({q4, q1}) = {q4, q1, q3, q0} = D
+C(d(C, b)) = C({q2}) = {q2, q3, q0} = C
+
+C(d(D, a)) = C({q4, q1}) = {q4, q1, q3, q0} = D
+C(d(D, b)) = C({q5, q2}) = {q5, q2, q3, q0} = E
+
+C(d(E, a)) = C({q4, q1}) = {q4, q1, q3, q0} = D
+C(d(E, b)) = C({q6, q2}) = {q6, q2, q3, q0} = F
+
+C(d(F, a)) = C({q7, q1}) = {q7, q9, q6, q1, q3, q0} = G
+C(d(F, b)) = C({q8, q2}) = {q8, q9, q6, q2, q3, q0} = H
+
+C(d(G, a)) = C({q7, q1}) = {q7, q9, q6, q1, q3, q0} = G
+C(d(G, b)) = C({q8, q2}) = {q8, q9, q6, q2, q3, q0} = H
+
+C(d(H, a)) = C({q7, q1}) = {q7, q9, q6, q1, q3, q0} = G
+C(d(H, b)) = C({q8, q2}) = {q8, q9, q6, q2, q3, q0} = H
+
+
+A =  {q0}
+B =  {q1, q3, q0}
+C =  {q2, q3, q0}
+D =  {q4, q1, q3, q0}
+E =  {q5, q2, q3, q0}
+F =  {q6, q2, q3, q0}
+*G = {q7, q9, q6, q1, q3, q0}
+*H = {q8, q9, q6, q2, q3, q0}

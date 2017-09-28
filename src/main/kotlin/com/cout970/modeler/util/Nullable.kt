@@ -60,12 +60,19 @@ sealed class Nullable<T> {
         }
     }
 
+    inline fun ifNull(func: () -> Unit) {
+        if (this is Null) {
+            func()
+        }
+    }
+
     companion object {
         @Suppress("UNCHECKED_CAST")
         fun <T> castNull(): Nullable<T> = Null as Nullable<T>
     }
 }
 
+// TODO change to asNullable()
 fun <T> T?.toNullable(): Nullable<T> = when (this) {
     null -> Nullable.castNull()
     else -> Nullable.NonNull(this)

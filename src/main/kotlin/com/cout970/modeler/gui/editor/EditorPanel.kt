@@ -61,7 +61,7 @@ class EditorPanel : MutablePanel() {
 
                 +TopButtonPanel {}
                 +RightPanel { RightPanel.Props(gui.projectManager, gui.selectionHandler, gui.state) }
-                +LeftPanel { LeftPanel.Props(ModelAccessor(gui.projectManager, gui.selectionHandler)) }
+                +LeftPanel { LeftPanel.Props(ModelAccessor(gui.projectManager, gui.selectionHandler), gui.dispatcher) }
             }
         }
 

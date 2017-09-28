@@ -114,6 +114,8 @@ data class ObjectCube(
 
     override fun withTextureOffset(tex: IVector2): IObjectCube = copy(textureOffset = tex)
 
+    override fun withTextureSize(size: IVector2): IObjectCube = copy(textureSize = size)
+
     override val transformer: IObjectTransformer = object : IObjectTransformer {
         override fun withMesh(obj: IObject, newMesh: IMesh): IObject {
             return Object(name, newMesh, material)
