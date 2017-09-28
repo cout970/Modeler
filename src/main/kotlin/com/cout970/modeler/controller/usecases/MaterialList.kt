@@ -9,6 +9,7 @@ import com.cout970.modeler.core.model.getSelectedObjectRefs
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.resource.toResourcePath
+import com.cout970.modeler.util.asNullable
 import com.cout970.modeler.util.toNullable
 import org.funktionale.option.Option
 import org.liquidengine.legui.component.Component
@@ -31,7 +32,7 @@ class ApplyMaterial : IUseCase {
         return selection
                 .toNullable()
                 .map { selection ->
-                    component.toNullable()
+                    component.asNullable()
                             .map { it.metadata["ref"] }
                             .flatMap { it as? IMaterialRef }
                             .map { makeTask(selection, it) }
@@ -57,7 +58,7 @@ class LoadMaterial : IUseCase {
 
     override fun createTask(): ITask {
         return component
-                .toNullable()
+                .asNullable()
                 .map { it.metadata["ref"] }
                 .flatMap { it as? IMaterialRef }
                 .flatMapNullable { ref ->
@@ -68,7 +69,7 @@ class LoadMaterial : IUseCase {
                             textureExtensions,
                             "PNG texture (*.png)",
                             false
-                    ).toNullable()
+                    ).asNullable()
                             .map { makeTask(it, ref) }
 
                 }.getOr(TaskNone)
@@ -112,7 +113,7 @@ class SelectMaterial : IUseCase {
 
     override fun createTask(): ITask {
         return component.metadata["ref"]
-                .toNullable()
+                .asNullable()
                 .flatMap { it as? IMaterialRef }
                 .map { TaskUpdateSelectedMaterial(it) as ITask }
                 .getOr(TaskNone)

@@ -72,8 +72,7 @@ sealed class Nullable<T> {
     }
 }
 
-// TODO change to asNullable()
-fun <T> T?.toNullable(): Nullable<T> = when (this) {
+fun <T> T?.asNullable(): Nullable<T> = when (this) {
     null -> Nullable.castNull()
     else -> Nullable.NonNull(this)
 }

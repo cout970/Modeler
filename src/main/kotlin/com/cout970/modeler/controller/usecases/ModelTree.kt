@@ -12,6 +12,7 @@ import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.getSelectedObjectRefs
 import com.cout970.modeler.core.model.selection.Selection
 import com.cout970.modeler.input.event.IInput
+import com.cout970.modeler.util.asNullable
 import com.cout970.modeler.util.toNullable
 import org.funktionale.option.Option
 import org.funktionale.option.toOption
@@ -29,7 +30,7 @@ class DeleteItem : IUseCase {
     @Inject lateinit var model: IModel
 
     override fun createTask(): ITask {
-        return component.toNullable()
+        return component.asNullable()
                 .map { it.metadata["ref"] }
                 .map { it as? IObjectRef }
                 .map { ref ->
@@ -55,7 +56,7 @@ class HideItem : IUseCase {
     @Inject lateinit var model: IModel
 
     override fun createTask(): ITask {
-        return component.toNullable()
+        return component.asNullable()
                 .map { it.metadata["ref"] }
                 .flatMap { it as? IObjectRef }
                 .map { ref ->
@@ -74,7 +75,7 @@ class ShowItem : IUseCase {
     @Inject lateinit var model: IModel
 
     override fun createTask(): ITask {
-        return component.toNullable()
+        return component.asNullable()
                 .map { it.metadata["ref"] }
                 .flatMap { it as? IObjectRef }
                 .map { ref ->
@@ -95,7 +96,7 @@ class SelectModelPart : IUseCase {
     @Inject lateinit var selectionHandler: SelectionHandler
 
     override fun createTask(): ITask {
-        return component.toNullable()
+        return component.asNullable()
                 .map { it.metadata["ref"] }
                 .flatMap { it as? IObjectRef }
                 .map { ref ->

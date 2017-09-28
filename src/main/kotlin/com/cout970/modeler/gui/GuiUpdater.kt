@@ -8,8 +8,8 @@ import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.gui.react.event.EventMaterialUpdate
 import com.cout970.modeler.gui.react.event.EventModelUpdate
 import com.cout970.modeler.gui.react.event.EventSelectionUpdate
+import com.cout970.modeler.util.asNullable
 import com.cout970.modeler.util.getListeners
-import com.cout970.modeler.util.toNullable
 import com.cout970.vector.extensions.vec2Of
 import org.liquidengine.legui.component.Container
 import org.liquidengine.legui.system.context.Context
@@ -46,14 +46,14 @@ class GuiUpdater {
 
     fun onSelectionUpdate(old: ISelection?, new: ISelection?) {
         gui.editorPanel.reactBase.getListeners<EventSelectionUpdate>().forEach { (comp, listener) ->
-            listener.process(EventSelectionUpdate(comp, leguiContext, gui.root, new.toNullable(), old.toNullable()))
+            listener.process(EventSelectionUpdate(comp, leguiContext, gui.root, new.asNullable(), old.asNullable()))
         }
         presenters.forEach { it.onSelectionUpdate(old, new) }
     }
 
     fun onMaterialUpdate(old: IMaterial?, new: IMaterial?) {
         gui.editorPanel.reactBase.getListeners<EventMaterialUpdate>().forEach { (comp, listener) ->
-            listener.process(EventMaterialUpdate(comp, leguiContext, gui.root, new.toNullable(), old.toNullable()))
+            listener.process(EventMaterialUpdate(comp, leguiContext, gui.root, new.asNullable(), old.asNullable()))
         }
     }
 

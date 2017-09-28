@@ -12,10 +12,10 @@ import com.cout970.modeler.gui.react.core.RComponentSpec
 import com.cout970.modeler.gui.react.leguicomp.IconButton
 import com.cout970.modeler.gui.react.leguicomp.Panel
 import com.cout970.modeler.gui.react.panel
+import com.cout970.modeler.util.asNullable
 import com.cout970.modeler.util.text
 import com.cout970.modeler.util.toColor
 import com.cout970.modeler.util.toJoml2f
-import com.cout970.modeler.util.toNullable
 import com.cout970.vector.api.IVector2
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.TextInput
@@ -114,7 +114,7 @@ class ValueInput : RComponent<ValueInput.Props, Unit>() {
     fun onGainFocus(input: TextInput) {
         input.listenerMap.getListeners(MouseClickEvent::class.java)
                 .firstOrNull()
-                .toNullable()
+                .asNullable()
                 .flatMap { it as? MouseClickEventListener }
                 .map { it.ignoreNextEvent = true }
     }
