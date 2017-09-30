@@ -17,6 +17,8 @@ import org.liquidengine.legui.system.context.Context
 class DropDown(val cmd: String, val x: Float = 0f, val y: Float = 0f, val width: Float = 10f,
                val height: Float = 10f) : SelectBox(x, y, width, height) {
 
+    val selectedIndex get() = elements.indexOf(selection)
+
     init {
         selectionListPanel.verticalScrollBar.apply {
             backgroundColor = Config.colorPalette.brightestColor.toColor()

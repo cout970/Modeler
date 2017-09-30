@@ -5,10 +5,7 @@ import com.cout970.modeler.gui.ModelAccessor
 import com.cout970.modeler.gui.MutablePanel
 import com.cout970.modeler.gui.comp.setBorderless
 import com.cout970.modeler.gui.comp.setTransparent
-import com.cout970.modeler.gui.react.components.CenterPanel
-import com.cout970.modeler.gui.react.components.LeftPanel
-import com.cout970.modeler.gui.react.components.RightPanel
-import com.cout970.modeler.gui.react.components.TopButtonPanel
+import com.cout970.modeler.gui.react.components.*
 import com.cout970.modeler.gui.react.core.RComponentRenderer.render
 import com.cout970.modeler.gui.react.core.invoke
 import com.cout970.modeler.gui.react.panel
@@ -74,7 +71,16 @@ class EditorPanel : MutablePanel() {
                     )
                 }
 
-//                +ImportDialog { }
+                gui.state.popup?.let {
+                    when (it.name) {
+                        "import" -> {
+                            +ImportDialog { ImportDialog.Props(it) }
+                        }
+                        "export" -> {
+                            +ExportDialog { ExportDialog.Props(it) }
+                        }
+                    }
+                }
             }
         }
     }

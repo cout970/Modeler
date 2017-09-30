@@ -24,6 +24,8 @@ class GuiState {
 
     var renderLights: Boolean = false
 
+    var popup: Popup? = null
+
     var showLeftPanel = true
     var showRightPanel = true
 
