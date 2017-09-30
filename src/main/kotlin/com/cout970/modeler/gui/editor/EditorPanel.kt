@@ -24,7 +24,6 @@ class EditorPanel : MutablePanel() {
 
     lateinit var gui: Gui
 
-
     val reactBase = panel {
         setTransparent()
         setBorderless()
@@ -51,9 +50,7 @@ class EditorPanel : MutablePanel() {
                 setTransparent()
                 setBorderless()
 
-                +TopButtonPanel {
-
-                }
+                +TopButtonPanel { }
                 +RightPanel {
                     RightPanel.Props(
                             projectManager = gui.projectManager,
@@ -76,6 +73,8 @@ class EditorPanel : MutablePanel() {
                             canvasContainer = gui.canvasContainer
                     )
                 }
+
+//                +ImportDialog { }
             }
         }
     }
