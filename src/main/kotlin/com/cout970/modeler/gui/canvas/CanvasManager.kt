@@ -82,7 +82,7 @@ class CanvasManager {
     fun updateSelectedCanvas() {
         val mousePos = gui.input.mouse.getMousePos()
         gui.canvasContainer.canvas.forEach { canvas ->
-            if (mousePos.isInside(canvas.absolutePosition, canvas.size.toIVector())) {
+            if (mousePos.isInside(canvas.absolutePositionV, canvas.size.toIVector())) {
                 gui.canvasContainer.selectedCanvas = canvas
             }
         }
@@ -116,7 +116,7 @@ class CanvasManager {
     private fun getCanvasUnderTheMouse(): Option<Canvas> {
         val pos = gui.input.mouse.getMousePos()
         val canvas = gui.canvasContainer.canvas
-        val affectedCanvas = canvas.filter { pos.isInside(it.absolutePosition, it.size.toIVector()) }
+        val affectedCanvas = canvas.filter { pos.isInside(it.absolutePositionV, it.size.toIVector()) }
 
         return affectedCanvas.firstOption()
     }

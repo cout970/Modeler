@@ -2,7 +2,7 @@ package com.cout970.modeler.gui.canvas.helpers
 
 import com.cout970.modeler.gui.canvas.Canvas
 import com.cout970.modeler.gui.canvas.SceneSpaceContext
-import com.cout970.modeler.util.absolutePosition
+import com.cout970.modeler.util.absolutePositionV
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.util.toJOML
 import com.cout970.modeler.util.toJoml3d
@@ -25,7 +25,7 @@ object CanvasHelper {
 
     fun getMouseSpaceContext(canvas: Canvas, absMousePos: IVector2): SceneSpaceContext {
         val matrix = canvas.cameraHandler.camera.getMatrix(canvas.size.toIVector()).toJOML()
-        val mousePos = absMousePos - canvas.absolutePosition
+        val mousePos = absMousePos - canvas.absolutePositionV
         val viewportSize = canvas.size.toIVector()
         val viewport = intArrayOf(0, 0, viewportSize.xi, viewportSize.yi)
 

@@ -11,7 +11,6 @@ import com.cout970.modeler.gui.react.leguicomp.DropDown
 import com.cout970.modeler.gui.react.leguicomp.FixedLabel
 import com.cout970.modeler.gui.react.leguicomp.TextButton
 import com.cout970.modeler.gui.react.panel
-import com.cout970.modeler.util.text
 import com.cout970.modeler.util.toColor
 import com.cout970.modeler.util.toJoml2f
 import com.cout970.modeler.util.toPointerBuffer
@@ -20,6 +19,9 @@ import org.liquidengine.legui.border.SimpleLineBorder
 import org.liquidengine.legui.component.CheckBox
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.TextInput
+import org.liquidengine.legui.component.event.checkbox.CheckBoxChangeValueEvent
+import org.liquidengine.legui.component.event.selectbox.SelectBoxChangeSelectionEvent
+import org.liquidengine.legui.component.event.textinput.TextInputContentChangeEvent
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.event.MouseClickEvent
 import org.liquidengine.legui.icon.CharIcon
@@ -29,16 +31,17 @@ import java.util.*
 /**
  * Created by cout970 on 2017/09/28.
  */
-class ImportDialog : RComponent<ImportDialog.Props, Unit>() {
+class ImportDialog : RComponent<ImportDialog.Props, ImportDialog.State>() {
 
     init {
-        state = Unit
+        state = State("", 0, false, false)
     }
 
     override fun build(ctx: RBuildContext): Component = panel {
         size = ctx.parentSize.toJoml2f()
         backgroundColor = Vector4f(1f, 1f, 1f, 0.05f)
 
+        // Centered panel
         panel {
             backgroundColor = Config.colorPalette.darkestColor.toColor()
             border = SimpleLineBorder(Config.colorPalette.greyColor.toColor(), 2f)
@@ -47,9 +50,6 @@ class ImportDialog : RComponent<ImportDialog.Props, Unit>() {
             posX = (ctx.parentSize.xf - width) / 2f
             posY = (ctx.parentSize.yf - height) / 2f
 
-            val path = TextInput("", 90f, 50f, 250f, 24f)
-            val dropdown = DropDown("", 90f, 100f, 350f, 24f)
-            val uvCheckbox = CheckBox("Flip UV", 360f, 150f, 80f, 24f)
 
             // first line
             +FixedLabel("Import Model", 0f, 8f, 460f, 24f).apply {
@@ -62,7 +62,11 @@ class ImportDialog : RComponent<ImportDialog.Props, Unit>() {
                 textState.horizontalAlign = HorizontalAlign.LEFT
             }
 
-            +path
+            +TextInput(state.text, 90f, 50f, 250f, 24f).apply {
+                listenerMap.addListener(TextInputContentChangeEvent::class.java) {
+                    replaceState(state.copy(text = it.newValue))
+                }
+            }
 
             +TextButton("", "Select", 360f, 50f, 80f, 24f).apply {
                 listenerMap.addListener(MouseClickEvent::class.java) {
@@ -75,18 +79,15 @@ class ImportDialog : RComponent<ImportDialog.Props, Unit>() {
                                 false
                         )
                         if (file != null) {
-                            if (file.endsWith(".obj")) {
-                                dropdown.setSelected(0, true)
-                            } else if (file.endsWith(".zip") || file.endsWith(".tcn")) {
-                                dropdown.setSelected(1, true)
-                            } else if (file.endsWith(".json")) {
-                                dropdown.setSelected(2, true)
-                            } else if (file.endsWith(".tbl")) {
-                                dropdown.setSelected(3, true)
-                            } else if (file.endsWith(".mcx")) {
-                                dropdown.setSelected(4, true)
+                            val newOption = when {
+                                file.endsWith(".obj") -> 0
+                                file.endsWith(".zip") || file.endsWith(".tcn") -> 1
+                                file.endsWith(".json") -> 2
+                                file.endsWith(".tbl") -> 3
+                                file.endsWith(".mcx") -> 4
+                                else -> state.option
                             }
-                            path.text = file
+                            replaceState(state.copy(text = file, option = newOption, forceUpdate = !state.forceUpdate))
                         }
                     }
                 }
@@ -98,44 +99,49 @@ class ImportDialog : RComponent<ImportDialog.Props, Unit>() {
                 textState.horizontalAlign = HorizontalAlign.LEFT
             }
 
-            +dropdown.apply {
+            +DropDown("", 90f, 100f, 350f, 24f).apply {
                 elementHeight = 22f
                 buttonWidth = 22f
                 visibleCount = 5
-                addElement("Obj (*.obj)")
-                addElement("Techne (*.tcn, *.zip)")
-                addElement("Minecraft (*.json)")
-                addElement("Tabula (*.tbl)")
-                addElement("MCX (*.mcx)")
-                setSelected(0, true)
+                options.forEach { addElement(it) }
+                setSelected(state.option, true)
+
+                listenerMap.addListener(SelectBoxChangeSelectionEvent::class.java) {
+                    replaceState(state.copy(option = options.indexOf(it.newValue)))
+                }
             }
 
             //fourth line
-            +uvCheckbox.apply {
+            +CheckBox("Flip UV", 360f, 150f, 80f, 24f).apply {
 
                 backgroundColor = Config.colorPalette.buttonColor.toColor()
                 textState.fontSize = 18f
                 textState.padding.x = 5f
+                isChecked = state.flipUV
 
-//            if (dropdown.elements.indexOf(dropdown.selection) != 0) { // disable
-//                isEnabled = false
-//                textState.textColor = Config.colorPalette.darkestColor.toColor()
-//                (iconChecked as CharIcon).color = Config.colorPalette.darkestColor.toColor()
-//                (iconUnchecked as CharIcon).color = Config.colorPalette.darkestColor.toColor()
-//            } else { // enable
-                textState.textColor = Config.colorPalette.textColor.toColor()
-                (iconChecked as CharIcon).color = Config.colorPalette.whiteColor.toColor()
-                (iconUnchecked as CharIcon).color = Config.colorPalette.whiteColor.toColor()
-//            }
+                if (state.option != 0) { // disable
+                    isEnabled = false
+                    textState.textColor = Config.colorPalette.darkestColor.toColor()
+                    (iconChecked as CharIcon).color = Config.colorPalette.darkestColor.toColor()
+                    (iconUnchecked as CharIcon).color = Config.colorPalette.darkestColor.toColor()
+                } else { // enable
+                    textState.textColor = Config.colorPalette.textColor.toColor()
+                    (iconChecked as CharIcon).color = Config.colorPalette.whiteColor.toColor()
+                    (iconUnchecked as CharIcon).color = Config.colorPalette.whiteColor.toColor()
+                }
+
+                listenerMap.addListener(CheckBoxChangeValueEvent::class.java) {
+                    replaceState(state.copy(flipUV = it.isNewValue))
+                }
             }
 
             //fifth line
             +TextButton("", "Import", 270f, 200f, 80f, 24f).apply {
                 listenerMap.addListener(MouseClickEvent::class.java) {
                     props.popup.returnFunc(ImportProperties(
-                            path = path.text,
-                            format = ImportFormat.values()[dropdown.selectedIndex],
-                            flipUV = uvCheckbox.isChecked
+                            path = state.text,
+                            format = ImportFormat.values()[state.option],
+                            flipUV = state.flipUV
                     ))
                 }
             }
@@ -145,15 +151,26 @@ class ImportDialog : RComponent<ImportDialog.Props, Unit>() {
                     props.popup.returnFunc(null)
                 }
             }
-
-            //TODO fix state
         }
     }
 
 
+    override fun shouldComponentUpdate(nextProps: Props, nextState: State): Boolean {
+        return state.flipUV != nextState.flipUV || state.option != nextState.option || state.forceUpdate != nextState.forceUpdate
+    }
+
     class Props(val popup: Popup)
 
-    companion object : RComponentSpec<ImportDialog, Props, Unit> {
+    data class State(val text: String, val option: Int, val flipUV: Boolean, val forceUpdate: Boolean)
+
+    companion object : RComponentSpec<ImportDialog, Props, State> {
+        private val options = listOf(
+                "Obj (*.obj)",
+                "Techne (*.tcn, *.zip)",
+                "Minecraft (*.json)",
+                "Tabula (*.tbl)",
+                "MCX (*.mcx)"
+        )
         private val extensions = Arrays.asList("*.obj", "*.tcn", "*.json", "*.tbl", "*.mcx").toPointerBuffer()
     }
 }

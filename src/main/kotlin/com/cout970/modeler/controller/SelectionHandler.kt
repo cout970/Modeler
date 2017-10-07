@@ -49,7 +49,7 @@ class SelectionHandler {
         } else {
             if (selection.selectionTarget == SelectionTarget.MODEL && selection.selectionType == SelectionType.OBJECT) {
                 (selection as? Selection)?.let {
-                    ref = it.list as List<IObjectRef>
+                    ref = it.list.toList() as List<IObjectRef>
                 }
             }
         }
@@ -67,7 +67,8 @@ class SelectionHandler {
             if (sel.selectionType == SelectionType.OBJECT &&
                 sel.selectionTarget == SelectionTarget.MODEL && sel is Selection) {
 
-                Selection(SelectionTarget.MODEL, SelectionType.OBJECT, sel.list.combine(multiSelection, ref)).toOption()
+                Selection(SelectionTarget.MODEL, SelectionType.OBJECT,
+                        sel.list.toList().combine(multiSelection, ref)).toOption()
             } else {
                 Option.None
             }

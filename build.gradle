@@ -16,7 +16,7 @@ switch (OperatingSystem.current()) {
 }
 
 buildscript {
-    ext.kotlin_version = '1.1.5'
+    ext.kotlin_version = '1.1.50'
 
     repositories {
         mavenCentral()
@@ -58,11 +58,11 @@ repositories {
 }
 
 project.ext.lwjglVersion = "3.1.2-SNAPSHOT"
-project.ext.legui_version = "1.1.8-SNAPSHOT"
+project.ext.legui_version = "1.2.4-SNAPSHOT"
 
 dependencies {
     compile files(
-            "./lib/GlUtilities-1.0.jar",
+            "./lib/GlUtilities-1.0.2.jar",
             "./lib/MatrixLib-1.0.jar",
             "./lib/RaytraceLib-1.0.jar",
             "./lib/VectorLib-1.0.jar")

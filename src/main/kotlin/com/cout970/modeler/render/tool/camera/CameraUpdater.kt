@@ -7,7 +7,7 @@ import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.canvas.Canvas
 import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.input.event.IInput
-import com.cout970.modeler.util.absolutePosition
+import com.cout970.modeler.util.absolutePositionV
 import com.cout970.modeler.util.isInside
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.util.toRads
@@ -41,7 +41,7 @@ class CameraUpdater(
             if (selectedCanvas == null) {
                 val mousePos = input.mouse.getMousePos()
                 val hover = canvasContainer.canvas.indexOfFirst { canvas ->
-                    mousePos.isInside(canvas.absolutePosition, canvas.size.toIVector())
+                    mousePos.isInside(canvas.absolutePositionV, canvas.size.toIVector())
                 }
                 selectedCanvas = if (hover == -1) null else canvasContainer.canvas[hover]
             }

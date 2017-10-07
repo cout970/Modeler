@@ -54,7 +54,6 @@ class Listeners : ITickeable {
 
     fun onFramebufferSizeUpdated(event: EventFrameBufferSize): Boolean {
         if (event.height == 0 || event.width == 0) return false
-        println(vec2Of(event.width, event.height))
         gui.root.updateSizes(vec2Of(event.width, event.height))
         return false
     }
@@ -80,7 +79,7 @@ class Listeners : ITickeable {
     fun onMouseScroll(e: EventMouseScroll): Boolean {
         val mousePos = gui.input.mouse.getMousePos()
         gui.canvasContainer.canvas.forEach { canvas ->
-            if (mousePos.isInside(canvas.absolutePosition, canvas.size.toIVector())) {
+            if (mousePos.isInside(canvas.absolutePositionV, canvas.size.toIVector())) {
                 canvas.run {
                     val camera = canvas.cameraHandler.camera
                     val scroll = -e.offsetY * Config.cameraScrollSpeed * if (canvas.viewMode == SelectionTarget.TEXTURE) 2.0 else 1.0

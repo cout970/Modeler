@@ -6,7 +6,6 @@ import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.toColor
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Component
-import org.liquidengine.legui.component.Panel
 import org.liquidengine.legui.component.ScrollablePanel
 
 /**
@@ -14,7 +13,7 @@ import org.liquidengine.legui.component.ScrollablePanel
  */
 class VerticalPanel(
         x: Float = 0f, y: Float = 0f, width: Float = 10f, height: Float = 10f
-) : ScrollablePanel<Panel<*>>(Vector2f(x, y), Vector2f(width, height)) {
+) : ScrollablePanel<Component>(Vector2f(x, y), Vector2f(width, height)) {
 
     init {
         setTransparent()

@@ -6,8 +6,9 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.render.tool.*
 import com.cout970.modeler.render.tool.shader.UniversalShader
-import com.cout970.modeler.util.RenderUtil
 import com.cout970.vector.api.IVector3
+import com.cout970.vector.extensions.Vector2
+import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.vec3Of
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -33,15 +34,20 @@ class ModelRenderer {
 
     fun renderSelection(ctx: RenderContext, modelToRender: IModel) {
         val vao = selectionCache.getOrCreate(ctx) {
-            ctx.buffer.build(GL11.GL_QUADS) {
+
+            ctx.buffer.build(GL11.GL_LINES) {
                 val selection = ctx.gui.selectionHandler.ref
 
                 val objSel = modelToRender.objects.filterIndexed { index, _ -> selection.any { it.objectIndex == index } }
                 objSel.forEach {
                     it.mesh.forEachEdge { (a, b) ->
-                        RenderUtil.appendBar(this, a.pos, b.pos,
-                                size = Config.selectionThickness.toDouble(),
-                                color = Config.colorPalette.modelSelectionColor)
+                        add(a.pos, Vector2.ORIGIN, Vector3.ZERO, Config.colorPalette.modelSelectionColor)
+                        add(b.pos, Vector2.ORIGIN, Vector3.ZERO, Config.colorPalette.modelSelectionColor)
+
+//                        Old selection rendering (really inefficient)
+//                        RenderUtil.appendBar(this, a.pos, b.pos,
+//                                size = Config.selectionThickness.toDouble(),
+//                                color = Config.colorPalette.modelSelectionColor)
                     }
                 }
             }
@@ -51,7 +57,9 @@ class ModelRenderer {
             useColor.setInt(1)
             useLight.setInt(0)
             matrixM.setMatrix4(Matrix4.IDENTITY)
+            GL11.glLineWidth(Config.selectionThickness * 20f)
             accept(vao)
+            GL11.glLineWidth(1f)
         }
     }
 

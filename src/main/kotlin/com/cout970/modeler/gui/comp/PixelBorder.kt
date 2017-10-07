@@ -27,11 +27,11 @@ class PixelBorder : Border() {
         override fun renderBorder(border: PixelBorder, comp: Component, context: Context, nanovg: Long) {
 
             if (border.enableTop) {
-                NvgRenderUtils.drawRectangle(nanovg, border.color, comp.screenPosition, Vector2f(comp.size.x, 1f))
+                NvgRenderUtils.drawRectangle(nanovg, border.color, comp.absolutePosition, Vector2f(comp.size.x, 1f))
             }
             if (border.enableBottom) {
                 NvgRenderUtils.drawRectangle(nanovg, border.color,
-                        Vector2f(comp.screenPosition.x, comp.screenPosition.y + comp.size.y - 1),
+                        Vector2f(comp.absolutePosition.x, comp.absolutePosition.y + comp.size.y - 1),
                         Vector2f(comp.size.x, 1f))
             }
         }

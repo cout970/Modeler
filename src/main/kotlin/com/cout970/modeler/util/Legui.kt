@@ -1,36 +1,16 @@
 package com.cout970.modeler.util
 
 import com.cout970.vector.api.IVector2
-import com.cout970.vector.extensions.plus
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Container
 import org.liquidengine.legui.component.Frame
 import org.liquidengine.legui.component.TextInput
 import org.liquidengine.legui.event.Event
-import org.liquidengine.legui.event.MouseClickEvent
 import org.liquidengine.legui.listener.EventListener
 import org.liquidengine.legui.system.context.Context
 
-val Component.absolutePosition: IVector2
-    get() {
-        var sum = this.position.toIVector()
-        var parent = this.parent
-        while (parent != null) {
-            sum += parent.position.toIVector()
-            parent = parent.parent
-        }
-        return sum
-    }
-
-inline fun <T : Component> T.onClick(id: Int, crossinline func: (Int) -> Unit): T {
-    listenerMap.addListener(MouseClickEvent::class.java, {
-        if (it.action == MouseClickEvent.MouseClickAction.PRESS) {
-            func(id)
-        }
-    })
-    return this
-}
+val Component.absolutePositionV: IVector2 get() = absolutePosition.toIVector()
 
 var Frame.size: Vector2f
     get() = componentLayer.container.size

@@ -123,9 +123,6 @@ class McxImporter {
                     pos.indexOf(storage.pos[it.d]) to tex.indexOf(storage.tex[it.dt])))
         }
 
-        if (faces.any { it.index.any { it.first == -1 } }) {
-            println("here!")
-        }
         val mesh = Mesh(pos.map { it * 16.0 }, tex, faces)
 
         return Object(name, mesh, MaterialRef(materials[texture] ?: -1))

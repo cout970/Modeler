@@ -9,7 +9,7 @@ import com.cout970.modeler.render.tool.RenderContext
 import com.cout970.modeler.render.tool.shader.UniversalShader
 import com.cout970.modeler.render.world.CenterMarkRenderer
 import com.cout970.modeler.render.world.WorldRenderer
-import com.cout970.modeler.util.absolutePosition
+import com.cout970.modeler.util.absolutePositionV
 import com.cout970.modeler.util.toIVector
 import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.vec2Of
@@ -45,7 +45,7 @@ class CanvasRenderer(val renderManager: RenderManager) {
             )
             val viewportPos = vec2Of(
                     canvas.absolutePosition.x,
-                    gui.windowHandler.window.size.yf - (canvas.absolutePosition.yf + canvas.size.y)
+                    gui.windowHandler.window.size.yf - (canvas.absolutePositionV.yf + canvas.size.y)
             )
             gui.windowHandler.saveViewport(viewportPos, canvas.size.toIVector()) {
                 renderManager.shader.useShader(ctx) {

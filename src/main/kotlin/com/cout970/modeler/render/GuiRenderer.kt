@@ -4,10 +4,10 @@ import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.gui.comp.PixelBorder
 import com.cout970.modeler.input.event.CustomCallbackKeeper
 import org.liquidengine.legui.component.Frame
-import org.liquidengine.legui.listener.EventProcessor
+import org.liquidengine.legui.listener.processor.EventProcessor
 import org.liquidengine.legui.system.context.CallbackKeeper
 import org.liquidengine.legui.system.context.Context
-import org.liquidengine.legui.system.processor.SystemEventProcessor
+import org.liquidengine.legui.system.handler.processor.SystemEventProcessor
 import org.liquidengine.legui.system.renderer.Renderer
 import org.liquidengine.legui.system.renderer.RendererProvider
 import org.liquidengine.legui.system.renderer.nvg.NvgRenderer
@@ -16,36 +16,35 @@ import org.liquidengine.legui.system.renderer.nvg.NvgRendererProvider
 /**
  * Created by cout970 on 2016/12/02.
  */
-class GuiRenderer(rootFrame: Frame, window: Long) {
+class GuiRenderer(val rootFrame: Frame, window: Long) {
 
     val context: Context
     val callbackKeeper: CallbackKeeper
-    val uiEventProcessor: EventProcessor
     val systemEventProcessor: SystemEventProcessor
     val renderer: Renderer
 
     init {
-        uiEventProcessor = EventProcessor()
-        context = Context(window, uiEventProcessor)
+        context = Context(window)
         callbackKeeper = CustomCallbackKeeper()
-        systemEventProcessor = SystemEventProcessor(rootFrame, context, callbackKeeper)
+        systemEventProcessor = SystemEventProcessor()
+        systemEventProcessor.addDefaultCallbacks(callbackKeeper)
         RendererProvider.setRendererProvider(NvgRendererProvider.getInstance())
-        renderer = NvgRenderer(NvgRendererProvider.getInstance())
+        renderer = NvgRenderer()
         renderer.initialize()
-        (RendererProvider.getInstance() as? NvgRendererProvider)?.let {
-            it.putBorderRenderer(PixelBorder::class.java, PixelBorder.PixelBorderRenderer)
-        }
+
+        (RendererProvider.getInstance() as? NvgRendererProvider)
+                ?.putBorderRenderer(PixelBorder::class.java, PixelBorder.PixelBorderRenderer)
     }
 
     fun updateEvents() {
         context.updateGlfwWindow()
-        uiEventProcessor.processEvent()
-        systemEventProcessor.processEvent()
+        EventProcessor.getInstance().processEvents()
+        systemEventProcessor.processEvents(rootFrame, context)
     }
 
-    fun render(frame: Frame) {
+    fun render() {
         Profiler.startSection("guiRender")
-        renderer.render(frame, context)
+        renderer.render(rootFrame, context)
         Profiler.endSection()
     }
 }

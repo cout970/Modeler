@@ -11,6 +11,8 @@ import com.cout970.modeler.controller.TaskHistory
 import com.cout970.modeler.controller.binders.ButtonBinder
 import com.cout970.modeler.controller.binders.KeyboardBinder
 import com.cout970.modeler.core.export.ExportManager
+import com.cout970.modeler.core.log.Level
+import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.model.selection.IClipboard
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.project.ProjectProperties
@@ -58,8 +60,9 @@ class DependencyInjector {
                         type.rawType == Option::class.java && genericType == ISelection::class.java -> gui.selectionHandler.getModelSelection()
                         type.rawType == Nullable::class.java && genericType == ISelection::class.java -> gui.selectionHandler.getModelSelection().toNullable()
                         else -> {
-                            println(genericType)
-                            println(genericType.javaClass)
+                            log(Level.ERROR) {
+                                "Found unknown type in IUseCase, type = $genericType, type class = ${genericType.javaClass}"
+                            }
                             null
                         }
                     }

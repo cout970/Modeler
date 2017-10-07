@@ -46,7 +46,7 @@ class RenderManager : ITickeable {
         Profiler.startSection("render")
         GLStateMachine.clear()
         canvasRenderer.render(gui)
-        guiRenderer.render(gui.root)
+        guiRenderer.render()
         gui.windowHandler.resetViewport()
         Profiler.endSection()
     }

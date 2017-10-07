@@ -40,12 +40,12 @@ object Logger {
         val minute = time[Calendar.MINUTE]
 
         val name = "log_${year}_${month + 1}_${day}_$hour-$minute.log"
-        var try_ = 0
+        var tryNum = 0
         if (File(name).exists()) {
-            while (File("log_${year}_${month + 1}_${day}_$hour-${minute}_$try_.log").exists()) {
-                try_++
+            while (File("log_${year}_${month + 1}_${day}_$hour-${minute}_$tryNum.log").exists()) {
+                tryNum++
             }
-            return "log_${year}_${month + 1}_${day}_$hour-${minute}_$try_.log"
+            return "log_${year}_${month + 1}_${day}_$hour-${minute}_$tryNum.log"
         }
         return name
     }

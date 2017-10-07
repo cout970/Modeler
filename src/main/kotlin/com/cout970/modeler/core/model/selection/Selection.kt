@@ -9,8 +9,11 @@ import com.cout970.modeler.api.model.selection.*
 data class Selection(
         override val selectionTarget: SelectionTarget,
         override val selectionType: SelectionType,
-        val list: List<IRef>
+        val list: Set<IRef>
 ) : ISelection {
+
+    constructor(selectionTarget: SelectionTarget, selectionType: SelectionType, list: List<IRef>)
+            : this(selectionTarget, selectionType, list.toSet())
 
     override val size: Int get() = list.size
 
