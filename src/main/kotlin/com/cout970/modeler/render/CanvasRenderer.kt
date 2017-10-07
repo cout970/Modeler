@@ -1,6 +1,7 @@
 package com.cout970.modeler.render
 
 import com.cout970.modeler.api.model.selection.SelectionTarget
+import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.render.texture.MaterialRenderer
 import com.cout970.modeler.render.tool.Light
@@ -30,8 +31,10 @@ class CanvasRenderer(val renderManager: RenderManager) {
     )
 
     fun render(gui: Gui) {
+        Profiler.startSection("canvasRender")
 
-        gui.canvasContainer.canvas.forEach { canvas ->
+        gui.canvasContainer.canvas.forEachIndexed { index, canvas ->
+            Profiler.startSection("canvas_$index")
             val ctx = RenderContext(
                     camera = canvas.cameraHandler.camera,
                     lights = lights,
@@ -56,6 +59,8 @@ class CanvasRenderer(val renderManager: RenderManager) {
                     }
                 }
             }
+            Profiler.endSection()
         }
+        Profiler.endSection()
     }
 }

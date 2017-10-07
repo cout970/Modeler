@@ -54,6 +54,7 @@ class Listeners : ITickeable {
 
     fun onFramebufferSizeUpdated(event: EventFrameBufferSize): Boolean {
         if (event.height == 0 || event.width == 0) return false
+        println(vec2Of(event.width, event.height))
         gui.root.updateSizes(vec2Of(event.width, event.height))
         return false
     }

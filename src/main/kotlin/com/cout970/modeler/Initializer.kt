@@ -7,10 +7,7 @@ import com.cout970.modeler.controller.FutureExecutor
 import com.cout970.modeler.controller.TaskHistory
 import com.cout970.modeler.core.config.ConfigManager
 import com.cout970.modeler.core.export.ExportManager
-import com.cout970.modeler.core.log.Level
-import com.cout970.modeler.core.log.Logger
-import com.cout970.modeler.core.log.log
-import com.cout970.modeler.core.log.print
+import com.cout970.modeler.core.log.*
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.gui.GuiInitializer
@@ -65,7 +62,8 @@ class Initializer {
 
         log(Level.FINE) { "Creating Loop" }
         val mainLoop = Loop(
-                listOf(renderManager, gui.listeners, eventController, windowHandler, futureExecutor, autoRunner),
+                listOf(renderManager, gui.listeners, eventController, windowHandler, futureExecutor, autoRunner,
+                        Profiler),
                 timer, windowHandler::shouldClose)
 
         parseArgs(programArguments, exportManager, projectManager)

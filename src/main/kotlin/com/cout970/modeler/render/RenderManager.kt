@@ -4,6 +4,7 @@ import com.cout970.glutilities.structure.GLStateMachine
 import com.cout970.modeler.Debugger
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.log.Level
+import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.gui.Gui
@@ -42,10 +43,12 @@ class RenderManager : ITickeable {
     }
 
     override fun tick() {
+        Profiler.startSection("render")
         GLStateMachine.clear()
         canvasRenderer.render(gui)
         guiRenderer.render(gui.root)
         gui.windowHandler.resetViewport()
+        Profiler.endSection()
     }
 
     override fun postTick() {

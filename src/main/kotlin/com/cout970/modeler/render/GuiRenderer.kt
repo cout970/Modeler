@@ -1,5 +1,6 @@
 package com.cout970.modeler.render
 
+import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.gui.comp.PixelBorder
 import com.cout970.modeler.input.event.CustomCallbackKeeper
 import org.liquidengine.legui.component.Frame
@@ -43,6 +44,8 @@ class GuiRenderer(rootFrame: Frame, window: Long) {
     }
 
     fun render(frame: Frame) {
+        Profiler.startSection("guiRender")
         renderer.render(frame, context)
+        Profiler.endSection()
     }
 }

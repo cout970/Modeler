@@ -24,6 +24,9 @@ import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.input.window.Loop
 import com.cout970.modeler.input.window.WindowHandler
 import com.cout970.modeler.render.RenderManager
+import com.cout970.modeler.util.Nullable
+import com.cout970.modeler.util.toNullable
+import org.funktionale.option.Option
 import org.liquidengine.legui.component.Component
 import sun.reflect.generics.reflectiveObjects.WildcardTypeImpl
 import java.lang.reflect.ParameterizedType
@@ -44,15 +47,21 @@ class DependencyInjector {
             val value: Any? = state.run {
 
                 if (type is ParameterizedType) {
-                    val genericType = (type.actualTypeArguments[0] as WildcardTypeImpl).upperBounds[0]
-                    when (genericType) {
-                        ISelection::class.java -> gui.selectionHandler.getModelSelection()
+                    val template = type.actualTypeArguments[0]
+
+                    val genericType = when (template) {
+                        is WildcardTypeImpl -> template.upperBounds[0]
+                        else -> template
+                    }
+
+                    when {
+                        type.rawType == Option::class.java && genericType == ISelection::class.java -> gui.selectionHandler.getModelSelection()
+                        type.rawType == Nullable::class.java && genericType == ISelection::class.java -> gui.selectionHandler.getModelSelection().toNullable()
                         else -> {
                             println(genericType)
                             println(genericType.javaClass)
                             null
                         }
-
                     }
                 } else when (type) {
                     IModel::class.java -> projectManager.model
