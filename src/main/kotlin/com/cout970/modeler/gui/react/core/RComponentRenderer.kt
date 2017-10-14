@@ -112,30 +112,6 @@ object RComponentRenderer {
         return newContainer.apply { clearChilds(); addAll(childs) }
     }
 
-//    private fun updateSubTree(wrapper: RComponentWrapper<*, *, *>, buildCtx: RBuildContext, ctx: RContext) {
-//        val oldTree = wrapper.getChilds().firstOrNull()
-//
-//        val newTree = wrapper.buildSubTree(buildCtx)
-//        val expandedTree = expandSubTree(newTree, buildCtx, ctx)
-//
-//        val finalTree = if (oldTree != null) mergeTrees(oldTree, expandedTree) else expandedTree
-//
-//        wrapper.clearChilds()
-//        wrapper.add(finalTree)
-//        wrapper.onUpdateChild()
-//    }
-
-//    @Suppress("UNCHECKED_CAST")
-//    private fun expandSubTree(tree: Component, buildCtx: RBuildContext, ctx: RContext): Component {
-//        if (tree is RComponentWrapper<*, *, *>) return tree.apply { this.init(ctx); updateSubTree(this, buildCtx, ctx) }
-//        if (tree !is Container<*>) return tree
-//        val container = tree as Container<Component>
-//
-//        val childs = container.childs.map { expandSubTree(it, updateBuildContext(buildCtx, container), ctx) }
-//
-//        return container.apply { clearChilds(); addAll(childs) }
-//    }
-
     private fun updateBuildContext(old: RBuildContext, parent: Component): RBuildContext =
             old.copy(parentSize = parent.size.toIVector())
 

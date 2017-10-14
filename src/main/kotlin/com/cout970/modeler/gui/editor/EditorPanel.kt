@@ -50,7 +50,7 @@ class EditorPanel : MutablePanel() {
                 +RightPanel {
                     RightPanel.Props(
                             modelAccessor = ModelAccessor(gui.projectManager, gui.selectionHandler),
-                            guiState = gui.state,
+                            selectedMaterial = { gui.state.selectedMaterial },
                             hide = !gui.state.showRightPanel
                     )
                 }

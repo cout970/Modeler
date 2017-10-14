@@ -2,8 +2,6 @@ package com.cout970.modeler.gui.react.components
 
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.core.model.material.MaterialRef
-import com.cout970.modeler.gui.GuiState
 import com.cout970.modeler.gui.ModelAccessor
 import com.cout970.modeler.gui.comp.setBorderless
 import com.cout970.modeler.gui.comp.setTransparent
@@ -11,10 +9,8 @@ import com.cout970.modeler.gui.react.core.RBuildContext
 import com.cout970.modeler.gui.react.core.RComponent
 import com.cout970.modeler.gui.react.core.RComponentSpec
 import com.cout970.modeler.gui.react.core.invoke
-import com.cout970.modeler.gui.react.event.EventMaterialUpdate
 import com.cout970.modeler.gui.react.leguicomp.FixedLabel
 import com.cout970.modeler.gui.react.leguicomp.IconButton
-import com.cout970.modeler.gui.react.leguicomp.VerticalPanel
 import com.cout970.modeler.gui.react.panel
 import com.cout970.modeler.gui.react.scalable.FixedXFillY
 import com.cout970.modeler.util.hide
@@ -37,21 +33,9 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
         FixedXFillY(190f).updateScale(this, ctx.parentSize)
         setBorderless()
 
-//        listenerMap.addListener(EventModelUpdate::class.java) {
-//            replaceState(state)
-//        }
-        listenerMap.addListener(EventMaterialUpdate::class.java) {
-            replaceState(state)
-        }
-
-        val materialOfSelectedObjects = mutableListOf<IMaterialRef>()
-        val model = props.modelAccessor.model
-        val selection = props.modelAccessor.selection
-
         if (props.hide) {
             hide()
         }
-
         panel {
             setBorderless()
             setTransparent()
@@ -79,26 +63,18 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
             +FixedLabel("Materials", 5f, 5f, 180f, 24f)
             +IconButton("material.view.import", "addMaterialIcon", 5f, 30f, 32f, 32f)
             +IconButton("material.view.remove", "removeMaterialIcon", 45f, 30f, 32f, 32f)
-            +VerticalPanel(0f, 70f, 190f, height - 64f).apply {
-
-                (model.materialRefs + listOf(MaterialRef(-1))).forEachIndexed { index, ref ->
-                    val name = model.getMaterial(ref).name
-
-                    val color = when (ref) {
-                        in materialOfSelectedObjects -> Config.colorPalette.greyColor.toColor()
-                        props.guiState.selectedMaterial -> Config.colorPalette.brightColor.toColor()
-                        else -> Config.colorPalette.lightDarkColor.toColor()
-                    }
-
-                    +ModelMaterialItem { ModelMaterialItem.Props(ref, name, index, color) }
-                }
-                container.size.y = model.materialRefs.size * 24f + 24f
-                resize()
+            +ModelMaterialList {
+                ModelMaterialList.Props(
+                        modelAccessor = props.modelAccessor,
+                        selectedMaterial = props.selectedMaterial,
+                        pos = vec2Of(0f, 70f),
+                        size = vec2Of(190f, height - 64f)
+                )
             }
         }
     }
 
-    class Props(val modelAccessor: ModelAccessor, val guiState: GuiState, val hide: Boolean)
+    class Props(val modelAccessor: ModelAccessor, val selectedMaterial: () -> IMaterialRef, val hide: Boolean)
 
     companion object : RComponentSpec<RightPanel, Props, Unit>
 }
