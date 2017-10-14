@@ -1,11 +1,10 @@
 package com.cout970.modeler.gui.react.components
 
 import com.cout970.modeler.api.model.material.IMaterialRef
-import com.cout970.modeler.controller.SelectionHandler
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.material.MaterialRef
-import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.gui.GuiState
+import com.cout970.modeler.gui.ModelAccessor
 import com.cout970.modeler.gui.comp.setBorderless
 import com.cout970.modeler.gui.comp.setTransparent
 import com.cout970.modeler.gui.react.core.RBuildContext
@@ -13,8 +12,6 @@ import com.cout970.modeler.gui.react.core.RComponent
 import com.cout970.modeler.gui.react.core.RComponentSpec
 import com.cout970.modeler.gui.react.core.invoke
 import com.cout970.modeler.gui.react.event.EventMaterialUpdate
-import com.cout970.modeler.gui.react.event.EventModelUpdate
-import com.cout970.modeler.gui.react.event.EventSelectionUpdate
 import com.cout970.modeler.gui.react.leguicomp.FixedLabel
 import com.cout970.modeler.gui.react.leguicomp.IconButton
 import com.cout970.modeler.gui.react.leguicomp.VerticalPanel
@@ -22,6 +19,7 @@ import com.cout970.modeler.gui.react.panel
 import com.cout970.modeler.gui.react.scalable.FixedXFillY
 import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.toColor
+import com.cout970.vector.extensions.vec2Of
 import org.liquidengine.legui.component.Component
 
 /**
@@ -39,19 +37,16 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
         FixedXFillY(190f).updateScale(this, ctx.parentSize)
         setBorderless()
 
-        listenerMap.addListener(EventModelUpdate::class.java) {
-            replaceState(state)
-        }
+//        listenerMap.addListener(EventModelUpdate::class.java) {
+//            replaceState(state)
+//        }
         listenerMap.addListener(EventMaterialUpdate::class.java) {
-            replaceState(state)
-        }
-        listenerMap.addListener(EventSelectionUpdate::class.java) {
             replaceState(state)
         }
 
         val materialOfSelectedObjects = mutableListOf<IMaterialRef>()
-        val model = props.projectManager.model
-        val selection = props.selectionHandler.getSelection()
+        val model = props.modelAccessor.model
+        val selection = props.modelAccessor.selection
 
         if (props.hide) {
             hide()
@@ -70,22 +65,8 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
             +IconButton("cube.mesh.new", "addMeshCubeIcon", 40f, 30f, 32f, 32f).also {
                 it.setTooltip("Create Cube Mesh")
             }
-            +VerticalPanel(0f, 70f, 190f, height - 64f).apply {
-                model.objectRefs.forEachIndexed { index, ref ->
-                    val name = model.getObject(ref).name
 
-                    val color = if (selection?.isSelected(ref) == true) {
-                        materialOfSelectedObjects += model.getObject(ref).material
-                        Config.colorPalette.selectedButton.toColor()
-                    } else {
-                        Config.colorPalette.lightDarkColor.toColor()
-                    }
-
-                    +ModelObjectItem { ModelObjectProps(ref, name, model.isVisible(ref), color, index) }
-                }
-                container.size.y = model.objectRefs.size * 24f
-                resize()
-            }
+            +ModelObjectList { ModelObjectList.Props(props.modelAccessor, vec2Of(0f, 70f), vec2Of(190f, height - 72f)) }
         }
         panel {
             setTransparent()
@@ -117,8 +98,7 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
         }
     }
 
-    class Props(val projectManager: ProjectManager, val selectionHandler: SelectionHandler, val guiState: GuiState,
-                val hide: Boolean)
+    class Props(val modelAccessor: ModelAccessor, val guiState: GuiState, val hide: Boolean)
 
     companion object : RComponentSpec<RightPanel, Props, Unit>
 }

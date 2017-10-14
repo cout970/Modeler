@@ -50,8 +50,7 @@ class EditorPanel : MutablePanel() {
                 +TopButtonPanel { }
                 +RightPanel {
                     RightPanel.Props(
-                            projectManager = gui.projectManager,
-                            selectionHandler = gui.selectionHandler,
+                            modelAccessor = ModelAccessor(gui.projectManager, gui.selectionHandler),
                             guiState = gui.state,
                             hide = !gui.state.showRightPanel
                     )

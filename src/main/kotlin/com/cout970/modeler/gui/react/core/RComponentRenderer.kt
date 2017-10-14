@@ -16,7 +16,7 @@ object RComponentRenderer {
 
     fun buildAll(ctx: RContext) {
 
-        val buildContext = RBuildContext(ctx.root.size.toIVector())
+        val buildContext = RBuildContext(ctx.root.size.toIVector(), ctx.gui.root.context)
         val root = expandSubTree(ctx.virtualTree(), buildContext, ctx)
 
         ctx.root.also {
@@ -32,7 +32,9 @@ object RComponentRenderer {
 
     fun buildComponent(wrapper: RComponentWrapper<*, *, *>) {
         val buildCtx = RBuildContext(
-                parentSize = wrapper.getParent()?.size?.toIVector() ?: wrapper.getSize().toIVector())
+                parentSize = wrapper.getParent()?.size?.toIVector() ?: wrapper.getSize().toIVector(),
+                leguiCtx = wrapper.component.context.gui.root.context
+        )
         updateSubTree(wrapper, buildCtx, wrapper.component.context)
         wrapper.component.context.gui.let { gui ->
             gui.root.bindButtons(gui.buttonBinder)
@@ -79,6 +81,7 @@ object RComponentRenderer {
             oldC.componentWillUnmount()
             newC.componentWillMount()
             newC.transferState(oldC.state)
+            newC.transferProps(oldC.props)
             newC.componentDidMount()
             return new
         }

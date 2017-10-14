@@ -27,7 +27,7 @@ class ModelObjectItem : RComponent<ModelObjectProps, Boolean>() {
     override fun build(ctx: RBuildContext): Component = panel {
         backgroundColor = props.color
         cornerRadius = 0f
-        width = 182f
+        width = 180f
         height = 24f
         posY = props.index * 24f
         setBorderless()
@@ -65,5 +65,5 @@ data class ModelObjectProps(
         val name: String,
         val visible: Boolean,
         val color: Vector4f,
-        val index: Int
+        val index: Float
 )
