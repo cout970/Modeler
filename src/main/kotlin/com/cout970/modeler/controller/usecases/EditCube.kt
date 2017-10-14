@@ -3,7 +3,6 @@ package com.cout970.modeler.controller.usecases
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.`object`.IObjectCube
 import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.controller.injection.Inject
 import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.tasks.TaskNone
@@ -12,12 +11,11 @@ import com.cout970.modeler.core.model.ObjectCubeNone
 import com.cout970.modeler.core.model.pos
 import com.cout970.modeler.core.model.size
 import com.cout970.modeler.gui.editor.EditorPanel
+import com.cout970.modeler.util.asNullable
 import com.cout970.modeler.util.quatOfAngles
 import com.cout970.modeler.util.toAxisRotations
-import com.cout970.modeler.util.toNullable
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.vec3Of
-import org.funktionale.option.Option
 import org.liquidengine.legui.component.Component
 import javax.script.ScriptEngineManager
 
@@ -35,7 +33,6 @@ class UpdateTemplateCube : IUseCase {
 
     @Inject lateinit var component: Component
     @Inject lateinit var model: IModel
-    @Inject lateinit var selection: Option<ISelection>
     @Inject lateinit var editorPanel: EditorPanel
 
     data class PipeArgs(
@@ -47,8 +44,8 @@ class UpdateTemplateCube : IUseCase {
     )
 
     override fun createTask(): ITask {
-        return selection
-                .toNullable()
+        asNullable()
+        return asNullable()
                 .flatMap {
                     val ref = component.metadata["cube_ref"] as? IObjectRef ?: return@flatMap null
                     val offset = component.metadata["offset"] as? Float ?: return@flatMap null

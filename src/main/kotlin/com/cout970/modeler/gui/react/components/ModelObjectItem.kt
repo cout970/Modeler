@@ -25,6 +25,7 @@ class ModelObjectItem : RComponent<ModelObjectProps, Boolean>() {
     }
 
     override fun build(ctx: RBuildContext): Component = panel {
+
         backgroundColor = props.color
         cornerRadius = 0f
         width = 180f

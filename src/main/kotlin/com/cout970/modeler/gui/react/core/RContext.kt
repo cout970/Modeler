@@ -11,11 +11,11 @@ import org.liquidengine.legui.component.Container
 class RContext(val root: Container<Component>, val gui: Gui, val virtualTree: () -> Component) {
 
     fun <P : Any, S : Any> markDirty(comp: RComponent<P, S>) {
+//        log(Level.DEBUG) {
+//            "RComponent(state=${comp.state}, props=${comp.props}, type=${comp.javaClass})"
+//        }
         findParent(comp, root)?.let {
             RComponentRenderer.buildComponent(it)
-            gui.root.bindButtons(gui.buttonBinder)
-            gui.root.bindProperties(gui.state)
-            gui.root.loadResources(gui.resources)
         }
     }
 

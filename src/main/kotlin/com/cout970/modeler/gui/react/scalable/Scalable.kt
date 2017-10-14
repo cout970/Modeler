@@ -14,13 +14,6 @@ interface IScalable {
     fun updateScale(comp: Component, parentSize: IVector2)
 }
 
-object FillParent : IScalable {
-
-    override fun updateScale(comp: Component, parentSize: IVector2) {
-        comp.size = parentSize.toJoml2f()
-    }
-}
-
 class FixedXFillY(val xSize: Float) : IScalable {
 
     override fun updateScale(comp: Component, parentSize: IVector2) {

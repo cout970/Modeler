@@ -1,6 +1,11 @@
 package com.cout970.modeler.gui.react
 
+import com.cout970.modeler.core.log.Level
+import com.cout970.modeler.core.log.log
+import com.cout970.modeler.gui.react.core.RComponentWrapper
+import com.cout970.modeler.gui.react.event.EventSelectionUpdate
 import com.cout970.modeler.gui.react.leguicomp.Panel
+import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Container
 
 /**
@@ -25,3 +30,23 @@ fun Panel.panel(func: Panel.() -> Unit) {
     add(panel)
 }
 
+fun Component.printTree(prefix: String = "") {
+    val flag = this.listenerMap.getListeners(EventSelectionUpdate::class.java).isNotEmpty()
+
+    if (this is Container<*>) {
+        if (this is RComponentWrapper<*, *, *>) {
+            log(Level.DEBUG) { "$prefix${component.javaClass}($flag)" }
+        } else {
+            log(Level.DEBUG) { "$prefix${this.javaClass}($flag)" }
+        }
+        this.childs.forEach {
+            it.printTree(prefix + "|   ")
+        }
+    } else {
+        log(Level.DEBUG) { "$prefix${this.javaClass}($flag)" }
+    }
+}
+
+private fun spaces(amount: Int): String = buildString {
+    (0 until amount).forEach { append(' ') }
+}

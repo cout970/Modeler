@@ -44,7 +44,9 @@ class ModelObjectList : RComponent<ModelObjectList.Props, ModelObjectList.State>
         val objectRefs = model.objectRefs
 
         for (index in start until end) {
-            if (index !in objectRefs.indices) break
+            if (index !in objectRefs.indices) {
+                break
+            }
 
             val ref = objectRefs[index]
             val name = model.getObject(ref).name

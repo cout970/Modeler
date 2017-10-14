@@ -3,10 +3,9 @@ package com.cout970.modeler.gui.react.core
 import org.joml.Vector2f
 import org.joml.Vector4f
 import org.liquidengine.legui.border.Border
+import org.liquidengine.legui.color.ColorConstants.transparent
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Panel
-import org.liquidengine.legui.intersection.Intersector
-import org.liquidengine.legui.listener.ListenerMap
 
 /**
  * Created by cout970 on 2017/09/24.
@@ -17,6 +16,7 @@ class RComponentWrapper<out C : RComponent<P, S>, P : Any, S : Any>(
         val spec: () -> C
 ) : Panel<Component>() {
 
+    var initialized = false
     lateinit var component: RComponent<P, S>
 
     val subTree: Component
@@ -31,6 +31,7 @@ class RComponentWrapper<out C : RComponent<P, S>, P : Any, S : Any>(
         component.transferProps(props)
         component.context = ctx
         component.seal()
+        initialized = true
     }
 
     fun buildSubTree(ctx: RBuildContext): Component {
@@ -43,33 +44,13 @@ class RComponentWrapper<out C : RComponent<P, S>, P : Any, S : Any>(
         subTree.position = Vector2f()
     }
 
-//    override fun getSize(): Vector2f {
-//        return subTree.size
-//    }
-//
-//    override fun setSize(size: Vector2f?) {
-//        subTree.size = size
-//    }
-
-    //    override fun setPosition(position: Vector2f?) {
-//        subTree.position = position
-//    }
-
-
-    override fun getBorder(): Border {
-        return subTree.border
-    }
-
-    override fun getListenerMap(): ListenerMap {
-        return subTree.listenerMap
-    }
 
     override fun getBackgroundColor(): Vector4f {
-        return subTree.backgroundColor
+        return transparent()
     }
 
     override fun getFocusedStrokeColor(): Vector4f {
-        return subTree.focusedStrokeColor
+        return transparent()
     }
 
     override fun getCornerRadius(): Float {
@@ -84,10 +65,6 @@ class RComponentWrapper<out C : RComponent<P, S>, P : Any, S : Any>(
         return subTree.isVisible
     }
 
-    override fun getIntersector(): Intersector {
-        return subTree.intersector
-    }
-
     override fun isHovered(): Boolean {
         return subTree.isHovered
     }
@@ -100,36 +77,12 @@ class RComponentWrapper<out C : RComponent<P, S>, P : Any, S : Any>(
         return subTree.isPressed
     }
 
-    override fun setListenerMap(listenerMap: ListenerMap?) {
-        subTree.listenerMap = listenerMap
-    }
-
-    override fun setBackgroundColor(backgroundColor: Vector4f?) {
-        subTree.backgroundColor = backgroundColor
-    }
-
-    override fun setBackgroundColor(r: Float, g: Float, b: Float, a: Float) {
-        subTree.setBackgroundColor(r, g, b, a)
-    }
-
-    override fun setFocusedStrokeColor(focusedStrokeColor: Vector4f?) {
-        subTree.focusedStrokeColor = focusedStrokeColor
-    }
-
     override fun setEnabled(enabled: Boolean) {
         subTree.isEnabled = enabled
     }
 
     override fun setVisible(visible: Boolean) {
         subTree.isVisible = visible
-    }
-
-    override fun intersects(point: Vector2f?): Boolean {
-        return subTree.intersects(point)
-    }
-
-    override fun setIntersector(intersector: Intersector?) {
-        subTree.intersector = intersector
     }
 
     override fun getMetadata(): MutableMap<String, Any> {
