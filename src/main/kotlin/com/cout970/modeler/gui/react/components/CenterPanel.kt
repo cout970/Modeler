@@ -9,6 +9,7 @@ import com.cout970.modeler.gui.react.core.RComponent
 import com.cout970.modeler.gui.react.core.RComponentSpec
 import com.cout970.modeler.gui.react.leguicomp.FixedLabel
 import com.cout970.modeler.gui.react.leguicomp.Panel
+import com.cout970.modeler.gui.react.leguicomp.ProfilerDiagram
 import com.cout970.modeler.gui.react.panel
 import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.toColor
@@ -32,7 +33,6 @@ class CenterPanel : RComponent<CenterPanel.Props, Unit>() {
         posY = 48f
         setTransparent()
         setBorderless()
-
 
         val canvas = Panel().apply {
             position = Vector2f()
@@ -85,6 +85,17 @@ class CenterPanel : RComponent<CenterPanel.Props, Unit>() {
 
             +FixedLabel("Alt + M", 150f + x, y + 75f, 100f,
                     24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+
+        }
+
+        +ProfilerDiagram().apply {
+            setTransparent()
+            setBorderless()
+            val size = Math.min(this@root.width / 2, this@root.height / 2)
+            width = size + 100
+            height = size
+            posX = this@root.width - size
+            posY = 0f
 
         }
     }

@@ -4,13 +4,11 @@ import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
 import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.Vector3
-import com.cout970.vector.extensions.distance
-import com.cout970.vector.extensions.div
-import com.cout970.vector.extensions.plus
+import com.cout970.vector.extensions.*
 import org.funktionale.option.Option
 import org.lwjgl.PointerBuffer
 import org.lwjgl.system.MemoryUtil
+import java.awt.Color
 
 /**
  * Created by cout970 on 2016/12/09.
@@ -127,4 +125,9 @@ inline fun <T, R> Option<T>.ifDefined(func: (T) -> R): Option<R> {
 fun <T> List<T>.getCyclic(index: Int): T {
     val ind = index % size
     return get(if (ind < 0) ind + size else ind)
+}
+
+fun getColor(hash: Int): IVector3 {
+    val c = Color.getHSBColor((hash.toDouble() / Int.MAX_VALUE.toDouble()).toFloat() * 360f, 0.5f, 1f)
+    return vec3Of(c.blue / 255f, c.green / 255f, c.red / 255f)
 }

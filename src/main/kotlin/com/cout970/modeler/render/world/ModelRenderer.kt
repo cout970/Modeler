@@ -6,12 +6,10 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.render.tool.*
 import com.cout970.modeler.render.tool.shader.UniversalShader
-import com.cout970.vector.api.IVector3
+import com.cout970.modeler.util.getColor
 import com.cout970.vector.extensions.Vector2
 import com.cout970.vector.extensions.Vector3
-import com.cout970.vector.extensions.vec3Of
 import org.lwjgl.opengl.GL11
-import java.awt.Color
 
 /**
  * Created by cout970 on 2017/06/09.
@@ -97,10 +95,5 @@ class ModelRenderer {
         return model.objects
                 .map { it.mesh }
                 .map { it.createVao(buffer, getColor(it.hashCode())) }
-    }
-
-    fun getColor(hash: Int): IVector3 {
-        val c = Color.getHSBColor((hash.toDouble() / Int.MAX_VALUE.toDouble()).toFloat() * 360f, 0.5f, 1f)
-        return vec3Of(c.blue / 255f, c.green / 255f, c.red / 255f)
     }
 }

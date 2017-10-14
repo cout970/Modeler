@@ -7,7 +7,7 @@ import org.liquidengine.legui.component.Panel as LeguiPanel
  * Created by cout970 on 2017/09/07.
  */
 
-class Panel : LeguiPanel<LeguiComponent>() {
+open class Panel : LeguiPanel<LeguiComponent>() {
 
     var width: Float
         get() = size.x
