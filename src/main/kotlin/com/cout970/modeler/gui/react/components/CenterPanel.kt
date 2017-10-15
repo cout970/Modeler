@@ -88,16 +88,7 @@ class CenterPanel : RComponent<CenterPanel.Props, Unit>() {
 
         }
 
-        +ProfilerDiagram().apply {
-            setTransparent()
-            setBorderless()
-            val size = Math.min(this@root.width / 2, this@root.height / 2)
-            width = size + 100
-            height = size
-            posX = this@root.width - size
-            posY = 0f
-
-        }
+        +ProfilerDiagram()
     }
 
     class Props(val leftPanelHidden: Boolean, val rightPanelHidden: Boolean, val canvasContainer: CanvasContainer)

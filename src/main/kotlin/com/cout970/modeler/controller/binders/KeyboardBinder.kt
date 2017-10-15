@@ -37,6 +37,7 @@ class KeyboardBinder(val dispatcher: Dispatcher) {
                 toggleVisibility.check(e) -> "model.toggle.visibility"
                 selectAll.check(e) -> "model.select.all"
                 e.keycode == Keyboard.KEY_F1 -> "debug"
+                e.keycode == Keyboard.KEY_F3 -> "debug.show.profiling"
                 else -> null
             }
             if (key != null) {

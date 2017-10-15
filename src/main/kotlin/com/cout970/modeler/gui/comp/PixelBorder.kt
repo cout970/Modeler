@@ -8,7 +8,7 @@ import org.liquidengine.legui.border.Border
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.system.context.Context
 import org.liquidengine.legui.system.renderer.nvg.NvgBorderRenderer
-import org.liquidengine.legui.system.renderer.nvg.util.NvgRenderUtils
+import org.liquidengine.legui.system.renderer.nvg.util.NvgShapes
 
 /**
  * Created by cout970 on 2017/08/29.
@@ -27,12 +27,13 @@ class PixelBorder : Border() {
         override fun renderBorder(border: PixelBorder, comp: Component, context: Context, nanovg: Long) {
 
             if (border.enableTop) {
-                NvgRenderUtils.drawRectangle(nanovg, border.color, comp.absolutePosition, Vector2f(comp.size.x, 1f))
+                NvgShapes.drawRect(nanovg, comp.absolutePosition, Vector2f(comp.size.x, 1f), border.color)
             }
             if (border.enableBottom) {
-                NvgRenderUtils.drawRectangle(nanovg, border.color,
+                NvgShapes.drawRect(nanovg,
                         Vector2f(comp.absolutePosition.x, comp.absolutePosition.y + comp.size.y - 1),
-                        Vector2f(comp.size.x, 1f))
+                        Vector2f(comp.size.x, 1f),
+                        border.color)
             }
         }
     }

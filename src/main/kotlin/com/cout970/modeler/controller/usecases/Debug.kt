@@ -34,3 +34,12 @@ class Debug : IUseCase {
         return TaskNone
     }
 }
+
+class ShowDebug : IUseCase {
+    override val key: String = "debug.show.profiling"
+
+    override fun createTask(): ITask {
+        Debugger.showProfiling = !Debugger.showProfiling
+        return TaskNone
+    }
+}

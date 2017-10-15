@@ -13,8 +13,8 @@ object Profiler : ITickeable {
 
     private val sectionStack = ArrayDeque<SectionStarted>()
     private val profiledSections = mutableListOf<SectionFinished>()
-    lateinit var lastLog: ProfilingLog
-    lateinit var renderLog: ProfilingLog
+    private val acumLogs = mutableListOf<ProfilingLog>()
+    lateinit var renderLog: List<Pair<String, Double>>
     var lastTime = -1L
 
     fun startSection(section: String) {
@@ -43,10 +43,18 @@ object Profiler : ITickeable {
     override fun tick() {
         endAll()
         if (profiledSections.isNotEmpty()) {
-            lastLog = ProfilingLog(profiledSections.toList())
+            val log = ProfilingLog(profiledSections.toList())
+            acumLogs.add(log)
+
             if (System.currentTimeMillis() - lastTime > 500) {
                 lastTime = System.currentTimeMillis()
-                renderLog = lastLog
+                renderLog = acumLogs
+                        .flatMap { it.data }
+                        .groupBy { it.name }
+                        .entries
+                        .map { it.key to it.value.map { it.end - it.start }.average() }
+
+                acumLogs.clear()
             }
             profiledSections.clear()
         }

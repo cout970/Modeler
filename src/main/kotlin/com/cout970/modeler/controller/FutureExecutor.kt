@@ -1,6 +1,7 @@
 package com.cout970.modeler.controller
 
 import com.cout970.modeler.Program
+import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.util.ITickeable
 import java.util.*
 
@@ -24,8 +25,10 @@ class FutureExecutor : ITickeable, IFutureExecutor {
     override fun tick() = Unit
 
     override fun postTick() {
+        Profiler.startSection("runTasks")
         while (queue.isNotEmpty()) {
             queue.poll().invoke(programState)
         }
+        Profiler.endSection()
     }
 }

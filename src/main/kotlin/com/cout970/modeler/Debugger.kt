@@ -15,6 +15,8 @@ object Debugger {
     var drawVaoCount = 0
     var buildVaoCount = 0
 
+    var showProfiling = false
+
     fun setInit(state: Program) {
         this.state = state
     }

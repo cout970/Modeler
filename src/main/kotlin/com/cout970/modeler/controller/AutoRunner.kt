@@ -4,6 +4,7 @@ import com.cout970.modeler.controller.tasks.TaskExportModel
 import com.cout970.modeler.core.export.ExportFormat
 import com.cout970.modeler.core.export.ExportProperties
 import com.cout970.modeler.core.log.Level
+import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.resource.ResourceLoader
@@ -27,6 +28,7 @@ class AutoRunner(
 
     override fun tick() {
         if (enableAutoExport) {
+            Profiler.startSection("autoExport")
             if (projectManager.model.hashCode() != lastHash) {
                 lastHash = projectManager.model.hashCode()
                 log(Level.FINE) { "Exporting model" }
@@ -35,10 +37,13 @@ class AutoRunner(
                         ExportProperties(path, ExportFormat.MCX, "", "magneticraft")
                 ))
             }
+            Profiler.endSection()
         }
         if (enableAutoImport) {
+            Profiler.startSection("autoImport")
             val mat = projectManager.model.materials
             mat.filter { it.hasChanged() }.forEach { it.loadTexture(resourceLoader) }
+            Profiler.endSection()
         }
     }
 }

@@ -4,6 +4,7 @@ import com.cout970.glutilities.device.Keyboard
 import com.cout970.glutilities.device.Mouse
 import com.cout970.glutilities.event.*
 import com.cout970.glutilities.window.GLFWWindow
+import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.util.ITickeable
 import java.util.*
 
@@ -38,18 +39,22 @@ class EventController : ITickeable, IEventController, IInput {
     }
 
     override fun tick() {
+        Profiler.startSection("pollEvents")
         EventManager.pollEvents()
         eventQueue.toList().forEach { it() }
         eventQueue.clear()
         mouse.update()
+        Profiler.endSection()
     }
 
     private fun onEvent(event: Event) {
+        Profiler.startSection("onEvent")
         eventQueue.add {
             listeners[event.javaClass]?.run {
                 any { it.onEvent(event) }
             }
         }
+        Profiler.endSection()
     }
 
     @Suppress("UNCHECKED_CAST")

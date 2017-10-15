@@ -3,6 +3,7 @@ package com.cout970.modeler.input.window
 import com.cout970.glutilities.structure.Timer
 import com.cout970.glutilities.window.GLFWWindow
 import com.cout970.glutilities.window.WindowBuilder
+import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.util.ITickeable
 import com.cout970.modeler.util.VSyncTimer
@@ -64,10 +65,15 @@ class WindowHandler(private val timer: Timer) : ITickeable {
     fun shouldClose() = window.shouldClose()
 
     override fun tick() {
+        Profiler.startSection("windows")
+        Profiler.startSection("swapBuffers")
         window.swapBuffers()
+        Profiler.nextSection("vsyncWait")
         vsync.waitIfNecessary()
+        Profiler.endSection()
         GL11.glViewport(0, 0, window.size.xi, window.size.yi)
         window.setTitle("$WINDOW_TITLE [${timer.fps} FPS]")
+        Profiler.endSection()
     }
 
     fun resetViewport() {

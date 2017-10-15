@@ -33,8 +33,10 @@ class CanvasRenderer(val renderManager: RenderManager) {
     fun render(gui: Gui) {
         Profiler.startSection("canvasRender")
 
+        // on each canvas
         gui.canvasContainer.canvas.forEachIndexed { index, canvas ->
             Profiler.startSection("canvas_$index")
+            // rendering context
             val ctx = RenderContext(
                     camera = canvas.cameraHandler.camera,
                     lights = lights,
@@ -43,16 +45,21 @@ class CanvasRenderer(val renderManager: RenderManager) {
                     gui = gui,
                     buffer = buffer
             )
+            // viewportSize
             val viewportPos = vec2Of(
                     canvas.absolutePosition.x,
                     gui.windowHandler.window.size.yf - (canvas.absolutePositionV.yf + canvas.size.y)
             )
+            // change view port
             gui.windowHandler.saveViewport(viewportPos, canvas.size.toIVector()) {
+                // enable shaders
                 renderManager.shader.useShader(ctx) {
+                    // if this canvas is 3D
                     if (canvas.viewMode == SelectionTarget.MODEL || canvas.viewMode == SelectionTarget.ANIMATION) {
                         worldRenderer.renderWorld(ctx, gui.projectManager.model)
                         centerMarkRenderer.renderCursor(ctx)
                     } else {
+                        // if this canvas is only 2D
                         val ref = gui.state.selectedMaterial
                         val material = gui.projectManager.model.getMaterial(ref)
                         materialRenderer.renderWorld(ctx, ref, material)

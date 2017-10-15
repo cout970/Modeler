@@ -58,7 +58,7 @@ repositories {
 }
 
 project.ext.lwjglVersion = "3.1.2-SNAPSHOT"
-project.ext.legui_version = "1.2.4-SNAPSHOT"
+project.ext.legui_version = "1.2.7-SNAPSHOT"
 
 dependencies {
     compile files(
