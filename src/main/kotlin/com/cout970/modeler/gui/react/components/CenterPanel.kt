@@ -62,6 +62,8 @@ class CenterPanel : RComponent<CenterPanel.Props, Unit>() {
 
             val x = size.x / 2 - 125f
             val y = size.y / 2 - 50f
+
+            // first level
             +FixedLabel("Open new view:", x, y + 0f, 100f,
                     24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
 
@@ -74,6 +76,14 @@ class CenterPanel : RComponent<CenterPanel.Props, Unit>() {
             +FixedLabel("Change mode:", x, y + 75f, 100f,
                     24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
 
+            +FixedLabel("Hide left:", x, y + 100f, 100f,
+                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+
+            +FixedLabel("Hide right:", x, y + 125f, 100f,
+                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+
+            // second level
+
             +FixedLabel("Alt + N", 150f + x, y + 0f, 100f,
                     24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
 
@@ -84,6 +94,12 @@ class CenterPanel : RComponent<CenterPanel.Props, Unit>() {
                     24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
 
             +FixedLabel("Alt + M", 150f + x, y + 75f, 100f,
+                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+
+            +FixedLabel("Alt + L", 150f + x, y + 100f, 100f,
+                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+
+            +FixedLabel("Alt + R", 150f + x, y + 125f, 100f,
                     24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
 
         }

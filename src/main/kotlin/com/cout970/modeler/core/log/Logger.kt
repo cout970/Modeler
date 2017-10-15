@@ -1,5 +1,6 @@
 package com.cout970.modeler.core.log
 
+import com.cout970.modeler.Debugger
 import com.cout970.modeler.core.config.Config
 import java.io.File
 import java.io.PrintStream
@@ -11,10 +12,9 @@ import java.util.*
 
 object Logger {
 
-    val DEBUG = true
     val level get() = Config.logLevel
-    val logs = File("logs").apply { if (!DEBUG && !exists()) mkdir() }
-    val stream = (if (DEBUG) System.out else object : PrintStream(File(logs, getFileName())) {
+    val logs = File("logs").apply { if (!Debugger.DEBUG && !exists()) mkdir() }
+    val stream = (if (Debugger.DEBUG) System.out else object : PrintStream(File(logs, getFileName())) {
         override fun println() {
             super.println()
             System.out.println()

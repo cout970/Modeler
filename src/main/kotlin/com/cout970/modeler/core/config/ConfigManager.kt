@@ -1,7 +1,7 @@
 package com.cout970.modeler.core.config
 
+import com.cout970.modeler.Debugger
 import com.cout970.modeler.core.export.ColorSerializer
-import com.cout970.modeler.core.log.Logger
 import com.cout970.modeler.core.resource.createIfNeeded
 import com.cout970.vector.api.IVector3
 import com.google.gson.GsonBuilder
@@ -16,7 +16,7 @@ object ConfigManager {
 
     fun loadConfig() {
         val file = File("config.json")
-        if (file.exists() && !Logger.DEBUG) {
+        if (file.exists() && !Debugger.DEBUG) {
             val gson = GsonBuilder().setLenient().registerTypeAdapter(IVector3::class.java,
                     ColorSerializer()).setPrettyPrinting().create()
             val json = JsonParser().parse(file.createIfNeeded().reader()).asJsonObject

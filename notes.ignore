@@ -1,5 +1,11 @@
 use "jvisualvm.exe -J-Dorg.netbeans.profiler.separateConsole=true"
 
+remove material
+config menu
+add program version to the saves to detect incompatible formats
+export hitbox dialog
+texture editing
+
 detect duplicated shapes
 join shapes
 add cursor to mark location of pasted/new object

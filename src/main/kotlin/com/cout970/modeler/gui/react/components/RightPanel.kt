@@ -32,15 +32,20 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
         posX = ctx.parentSize.xf - 190f
         FixedXFillY(190f).updateScale(this, ctx.parentSize)
         setBorderless()
+        val topSize = 85f
 
         if (props.hide) {
             hide()
         }
+
+        +ModelStatistics { ModelStatistics.Props(props.modelAccessor) }
+
         panel {
             setBorderless()
             setTransparent()
             width = 190f
-            height = ctx.parentSize.yf * 0.5f
+            height = (ctx.parentSize.yf - topSize) * 0.5f
+            posY = topSize
 
             +FixedLabel("Model parts", 5f, 5f, 180f, 24f)
             +IconButton("cube.template.new", "addTemplateCubeIcon", 5f, 30f, 32f, 32f).also {
@@ -53,12 +58,12 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
             +ModelObjectList { ModelObjectList.Props(props.modelAccessor, vec2Of(0f, 70f), vec2Of(190f, height - 72f)) }
         }
         panel {
-            setTransparent()
             setBorderless()
+            setTransparent()
 
             width = 190f
-            height = ctx.parentSize.yf * 0.5f
-            position.y = ctx.parentSize.yf * 0.5f
+            height = (ctx.parentSize.yf - topSize) * 0.5f
+            posY = topSize + (ctx.parentSize.yf - topSize) * 0.5f
 
             +FixedLabel("Materials", 5f, 5f, 180f, 24f)
             +IconButton("material.view.import", "addMaterialIcon", 5f, 30f, 32f, 32f)

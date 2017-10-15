@@ -20,7 +20,6 @@ import com.cout970.modeler.gui.react.event.EventSelectionUpdate
 import com.cout970.modeler.gui.react.leguicomp.FixedLabel
 import com.cout970.modeler.gui.react.panel
 import com.cout970.modeler.util.asNullable
-import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.toNullable
 import com.cout970.vector.extensions.Vector2
 import com.cout970.vector.extensions.Vector3
@@ -60,10 +59,6 @@ class EditCubePanel : RComponent<EditCubePanel.Props, Unit>() {
                 .getOr(ObjectRef(-1))
 
         val cube = (props.access.model.getObject(cubeRef) as? IObjectCube).asNullable()
-
-        cube.ifNull {
-            hide()
-        }
 
         val pos = { cube.map { it.pos }.getOr(Vector3.ORIGIN) }
         val rotation = { cube.map { it.rotation }.getOr(Vector3.ORIGIN) }

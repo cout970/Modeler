@@ -10,6 +10,8 @@ object Debugger {
 
     private lateinit var state: Program
 
+    val DEBUG: Boolean by lazy { System.getProperty("editor.debug") == "true" }
+
     var drawVboCount = 0
     var drawRegionsCount = 0
     var drawVaoCount = 0

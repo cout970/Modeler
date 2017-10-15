@@ -44,7 +44,6 @@ class UpdateTemplateCube : IUseCase {
     )
 
     override fun createTask(): ITask {
-        asNullable()
         return asNullable()
                 .flatMap {
                     val ref = component.metadata["cube_ref"] as? IObjectRef ?: return@flatMap null
@@ -58,7 +57,7 @@ class UpdateTemplateCube : IUseCase {
                     PipeArgs(ref, offset, cmd, text, cube)
                 }
                 .flatMap { (ref, offset, cmd, text, cube) ->
-                    val newObject = updateCube(cube, cmd, text, offset) ?: return@flatMap null
+                    val newObject = updateCube(cube, cmd, text, offset) ?: return@flatMap Pair(ref, cube)
                     Pair(ref, newObject)
                 }
                 .map { (ref, cube) ->
