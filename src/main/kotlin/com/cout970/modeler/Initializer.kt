@@ -7,7 +7,10 @@ import com.cout970.modeler.controller.FutureExecutor
 import com.cout970.modeler.controller.TaskHistory
 import com.cout970.modeler.core.config.ConfigManager
 import com.cout970.modeler.core.export.ExportManager
-import com.cout970.modeler.core.log.*
+import com.cout970.modeler.core.log.Level
+import com.cout970.modeler.core.log.Profiler
+import com.cout970.modeler.core.log.log
+import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.gui.GuiInitializer
@@ -27,7 +30,6 @@ class Initializer {
         log(Level.FINE) { "Loading config" }
         ConfigManager.loadConfig()
         log(Level.FINE) { "Config loaded" }
-        log(Level.NORMAL) { "Log level: ${Logger.level}" }
 
         log(Level.FINE) { "Creating ResourceLoader" }
         val resourceLoader = ResourceLoader()
