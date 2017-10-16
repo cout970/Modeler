@@ -1,7 +1,7 @@
 package com.cout970.modeler.gui.react.components
 
 import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.gui.ModelAccessor
+import com.cout970.modeler.gui.IModelAccessor
 import com.cout970.modeler.gui.comp.setTransparent
 import com.cout970.modeler.gui.react.core.RBuildContext
 import com.cout970.modeler.gui.react.core.RComponent
@@ -36,7 +36,7 @@ class ModelObjectList : RComponent<ModelObjectList.Props, ModelObjectList.State>
 
         val scrollSize = size.y / 24.0
         val model = props.modelAccessor.model
-        val selection = props.modelAccessor.selection
+        val selection = props.modelAccessor.modelSelection
         val maxScroll = Math.max(0.0, model.objects.size - Math.ceil(scrollSize)).toFloat()
 
         val start = Math.floor(state.scroll.toDouble()).toInt()
@@ -105,7 +105,7 @@ class ModelObjectList : RComponent<ModelObjectList.Props, ModelObjectList.State>
         }
     }
 
-    class Props(val modelAccessor: ModelAccessor, val pos: IVector2, val size: IVector2)
+    class Props(val modelAccessor: IModelAccessor, val pos: IVector2, val size: IVector2)
     data class State(val scroll: Float, val scrolling: Boolean)
 
     companion object : RComponentSpec<ModelObjectList, ModelObjectList.Props, ModelObjectList.State>

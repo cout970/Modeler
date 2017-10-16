@@ -56,12 +56,12 @@ class CanvasRenderer(val renderManager: RenderManager) {
                 renderManager.shader.useShader(ctx) {
                     // if this canvas is 3D
                     if (canvas.viewMode == SelectionTarget.MODEL || canvas.viewMode == SelectionTarget.ANIMATION) {
-                        worldRenderer.renderWorld(ctx, gui.projectManager.model)
+                        worldRenderer.renderWorld(ctx, gui.modelAccessor.model)
                         centerMarkRenderer.renderCursor(ctx)
                     } else {
                         // if this canvas is only 2D
                         val ref = gui.state.selectedMaterial
-                        val material = gui.projectManager.model.getMaterial(ref)
+                        val material = gui.modelAccessor.model.getMaterial(ref)
                         materialRenderer.renderWorld(ctx, ref, material)
                     }
                 }

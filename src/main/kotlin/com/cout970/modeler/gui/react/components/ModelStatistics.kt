@@ -1,7 +1,7 @@
 package com.cout970.modeler.gui.react.components
 
 import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.gui.ModelAccessor
+import com.cout970.modeler.gui.IModelAccessor
 import com.cout970.modeler.gui.react.core.RBuildContext
 import com.cout970.modeler.gui.react.core.RComponent
 import com.cout970.modeler.gui.react.core.RComponentSpec
@@ -58,7 +58,7 @@ class ModelStatistics : RComponent<ModelStatistics.Props, Unit>() {
         }
     }
 
-    class Props(val modelAccessor: ModelAccessor)
+    class Props(val modelAccessor: IModelAccessor)
 
     companion object : RComponentSpec<ModelStatistics, ModelStatistics.Props, Unit>
 }

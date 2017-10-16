@@ -39,16 +39,15 @@ class MaterialRenderer {
             renderMappedAreas(ctx, ref, material)
         }
 
-        val selection = ctx.gui.selectionHandler.getModelSelection()
-        if (selection.isDefined()) {
-            renderSelection(ctx, selection.get(), material)
+        ctx.gui.modelAccessor.modelSelectionHandler.getSelection().ifNotNull {
+            renderSelection(ctx, it, material)
         }
         GLStateMachine.depthTest.enable()
     }
 
     fun renderMappedAreas(ctx: RenderContext, ref: IMaterialRef, material: IMaterial) {
         val vao = areasCache.getOrCreate(ctx) {
-            val model = ctx.gui.projectManager.model
+            val model = ctx.gui.modelAccessor.model
             val objs = model.objectRefs
                     .filter { model.isVisible(it) }
                     .map { model.getObject(it) }
@@ -87,7 +86,7 @@ class MaterialRenderer {
 
     fun renderSelection(ctx: RenderContext, selection: ISelection, material: IMaterial) {
         val vao = selectionCache.getOrCreate(ctx) {
-            val model = ctx.gui.state.tmpModel ?: ctx.gui.projectManager.model
+            val model = ctx.gui.state.tmpModel ?: ctx.gui.modelAccessor.model
             val objs = model.objectRefs
                     .filter { selection.isSelected(it) }
                     .map { model.getObject(it) }

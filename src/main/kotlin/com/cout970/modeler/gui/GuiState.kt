@@ -13,6 +13,7 @@ import com.cout970.modeler.util.BooleanPropertyWrapper
 class GuiState {
 
     var transformationMode = TransformationMode.TRANSLATION
+    var selectionMode = TransformationMode.TRANSLATION
 
     var useTexture: Boolean = true
     var useColor: Boolean = false

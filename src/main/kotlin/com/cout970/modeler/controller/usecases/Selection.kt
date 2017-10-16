@@ -6,9 +6,10 @@ import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.controller.injection.Inject
 import com.cout970.modeler.controller.tasks.ITask
-import com.cout970.modeler.controller.tasks.TaskUpdateSelection
+import com.cout970.modeler.controller.tasks.TaskUpdateModelSelection
 import com.cout970.modeler.core.model.selection.Selection
 import com.cout970.modeler.util.Nullable
+import com.cout970.modeler.util.asNullable
 
 /**
  * Created by cout970 on 2017/10/01.
@@ -23,9 +24,10 @@ class SelectAll : IUseCase {
 
     override fun createTask(): ITask {
         val newSelection = Selection(SelectionTarget.MODEL, SelectionType.OBJECT, model.objectRefs)
-        return TaskUpdateSelection(
-                oldSelection = selection.getOrNull(),
-                newSelection = newSelection
+
+        return TaskUpdateModelSelection(
+                oldSelection = selection,
+                newSelection = newSelection.asNullable()
         )
     }
 }

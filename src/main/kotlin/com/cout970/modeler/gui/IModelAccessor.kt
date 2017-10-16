@@ -2,10 +2,9 @@ package com.cout970.modeler.gui
 
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.selection.ISelection
-import com.cout970.modeler.controller.SelectionHandler
+import com.cout970.modeler.core.model.selection.SelectionHandler
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.util.Nullable
-import com.cout970.modeler.util.toNullable
 
 /**
  * Created by cout970 on 2017/09/27.
@@ -13,11 +12,15 @@ import com.cout970.modeler.util.toNullable
 interface IModelAccessor {
 
     val model: IModel
-    val selection: Nullable<ISelection>
+    val modelSelectionHandler: SelectionHandler
+    val modelSelection: Nullable<ISelection> get() = modelSelectionHandler.getSelection()
 }
 
-class ModelAccessor(val projectManager: ProjectManager, val selectionHandler: SelectionHandler) : IModelAccessor {
+class ModelAccessor(
+        val projectManager: ProjectManager,
+        override val modelSelectionHandler: SelectionHandler
+) : IModelAccessor {
 
     override val model: IModel get() = projectManager.model
-    override val selection: Nullable<ISelection> get() = selectionHandler.getModelSelection().toNullable()
+    override val modelSelection: Nullable<ISelection> get() = modelSelectionHandler.getSelection()
 }

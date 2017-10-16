@@ -5,7 +5,6 @@ import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
-import org.funktionale.option.Option
 import org.lwjgl.PointerBuffer
 import org.lwjgl.system.MemoryUtil
 import java.awt.Color
@@ -113,13 +112,6 @@ fun <T> List<T>.combine(multi: Boolean, element: T): List<T> {
             return listOf(element)
         }
     }
-}
-
-inline fun <T, R> Option<T>.ifDefined(func: (T) -> R): Option<R> {
-    if (isDefined()) {
-        return map(func)
-    }
-    return Option.None
 }
 
 fun <T> List<T>.getCyclic(index: Int): T {

@@ -13,11 +13,12 @@ import com.cout970.modeler.gui.canvas.Canvas
 import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.gui.canvas.helpers.CanvasHelper
 import com.cout970.modeler.input.event.IInput
+import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.getClosest
+import com.cout970.modeler.util.toNullable
 import com.cout970.modeler.util.toRayObstacle
 import com.cout970.raytrace.IRayObstacle
 import com.cout970.vector.extensions.unaryMinus
-import org.funktionale.option.Option
 import org.liquidengine.legui.component.Component
 
 /**
@@ -30,7 +31,7 @@ class CanvasSelectPart : IUseCase {
     override val key: String = "canvas.select"
 
     @Inject lateinit var component: Component
-    @Inject lateinit var selection: Option<ISelection>
+    @Inject lateinit var selection: Nullable<ISelection>
     @Inject lateinit var state: GuiState
     @Inject lateinit var input: IInput
     @Inject lateinit var model: IModel
@@ -50,9 +51,11 @@ class CanvasSelectPart : IUseCase {
                 .getClosest(context.mouseRay)
 
         val multiSelection = Config.keyBindings.multipleSelection.check(input)
-        return TaskUpdateSelection(
-                oldSelection = selection.orNull(),
-                newSelection = gui.selectionHandler.makeSelection(selection, multiSelection, obj?.second).orNull())
+
+        return TaskUpdateModelSelection(
+                oldSelection = selection.toNullable(),
+                newSelection = gui.modelAccessor.modelSelectionHandler.updateSelection(selection.toNullable(),
+                        multiSelection, obj?.second))
     }
 }
 

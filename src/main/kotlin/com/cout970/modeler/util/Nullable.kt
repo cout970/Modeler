@@ -1,7 +1,5 @@
 package com.cout970.modeler.util
 
-import org.funktionale.option.Option
-
 /**
  * Created by cout970 on 2017/09/21.
  */
@@ -66,6 +64,22 @@ sealed class Nullable<T> {
         }
     }
 
+    inline fun eval(func: (T) -> Boolean): Boolean = when (this) {
+        is Null -> false
+        is NonNull -> func(value)
+    }
+
+    inline fun filter(func: (T) -> Boolean): Nullable<T> = when (this) {
+        is Null -> castNull()
+        is NonNull -> if (func(value)) this else castNull()
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    inline fun <reified P> filterIsInstance(): Nullable<P> = when (this) {
+        is Null -> castNull()
+        is NonNull -> if (value is P) this as Nullable<P> else castNull<P>()
+    }
+
     companion object {
         @Suppress("UNCHECKED_CAST")
         fun <T> castNull(): Nullable<T> = Null as Nullable<T>
@@ -75,11 +89,6 @@ sealed class Nullable<T> {
 fun <T> T?.asNullable(): Nullable<T> = when (this) {
     null -> Nullable.castNull()
     else -> Nullable.NonNull(this)
-}
-
-fun <T> Option<T>.toNullable(): Nullable<T> = when (this) {
-    is Option.None -> Nullable.castNull()
-    is Option.Some -> Nullable.NonNull(get())
 }
 
 fun <T> Nullable<T>.toNullable(): Nullable<T> = this

@@ -59,7 +59,7 @@ fun DragTick.nextTick(gui: Gui, canvas: Canvas, targets: List<ISelectable>): Dra
     val newModel = step.model
 
     task = when (newDrag.dragStart == null && drag.dragStart != null && tmpModel != null) {
-        true -> TaskUpdateModel(gui.projectManager.model, tmpModel!!)
+        true -> TaskUpdateModel(gui.modelAccessor.model, tmpModel!!)
         else -> null
     }
 

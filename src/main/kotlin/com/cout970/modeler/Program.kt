@@ -3,6 +3,7 @@ package com.cout970.modeler
 import com.cout970.modeler.controller.FutureExecutor
 import com.cout970.modeler.controller.TaskHistory
 import com.cout970.modeler.core.export.ExportManager
+import com.cout970.modeler.core.model.selection.SelectionHandler
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.gui.Gui
@@ -24,5 +25,6 @@ data class Program(
         val mainLoop: Loop,
         val exportManager: ExportManager,
         val futureExecutor: FutureExecutor,
-        val taskHistory: TaskHistory
+        val taskHistory: TaskHistory,
+        val modelSelectionHandler: SelectionHandler
 )

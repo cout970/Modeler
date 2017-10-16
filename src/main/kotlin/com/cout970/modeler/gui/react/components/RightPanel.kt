@@ -2,7 +2,7 @@ package com.cout970.modeler.gui.react.components
 
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.gui.ModelAccessor
+import com.cout970.modeler.gui.IModelAccessor
 import com.cout970.modeler.gui.comp.setBorderless
 import com.cout970.modeler.gui.comp.setTransparent
 import com.cout970.modeler.gui.react.core.RBuildContext
@@ -79,7 +79,7 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
         }
     }
 
-    class Props(val modelAccessor: ModelAccessor, val selectedMaterial: () -> IMaterialRef, val hide: Boolean)
+    class Props(val modelAccessor: IModelAccessor, val selectedMaterial: () -> IMaterialRef, val hide: Boolean)
 
     companion object : RComponentSpec<RightPanel, Props, Unit>
 }

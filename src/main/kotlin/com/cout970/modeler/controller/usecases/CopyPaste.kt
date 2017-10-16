@@ -10,8 +10,7 @@ import com.cout970.modeler.core.model.getSelectedObjects
 import com.cout970.modeler.core.model.selection.*
 import com.cout970.modeler.core.tool.EditTool
 import com.cout970.modeler.util.Nullable
-import org.funktionale.option.Option
-import org.funktionale.option.getOrElse
+import com.cout970.modeler.util.asNullable
 
 /**
  * Created by cout970 on 2017/07/19.
@@ -22,11 +21,11 @@ class Copy : IUseCase {
     override val key: String = "model.selection.copy"
 
     @Inject lateinit var model: IModel
-    @Inject lateinit var selection: Option<ISelection>
+    @Inject lateinit var selection: Nullable<ISelection>
     @Inject lateinit var clipboard: IClipboard
 
     override fun createTask(): ITask {
-        return selection.map { TaskUpdateClipboard(clipboard, Clipboard(model, it)) }.getOrElse { TaskNone }
+        return selection.map { TaskUpdateClipboard(clipboard, Clipboard(model, it)) as ITask }.getOr(TaskNone)
     }
 }
 
@@ -42,27 +41,28 @@ class Paste : IUseCase {
         if (clipboard != ClipboardNone) {
             val saveSelection = clipboard.selection
             if (saveSelection.selectionTarget == SelectionTarget.MODEL) {
-                return when (saveSelection.selectionType) {
-                    SelectionType.OBJECT -> {
-                        val selectedObjects = clipboard.model.getSelectedObjects(saveSelection)
-                        val newModel = model.addObjects(selectedObjects)
-                        val selRefs = (model.objects.size until model.objects.size + selectedObjects.size).map {
-                            ObjectRef(it)
-                        }
-                        val newSelection = Selection(SelectionTarget.MODEL, SelectionType.OBJECT, selRefs)
-
-                        TaskChain(listOf(
-                                TaskUpdateModel(oldModel = model, newModel = newModel),
-                                TaskUpdateSelection(oldSelection = selection.getOrNull(), newSelection = newSelection)
-                        ))
-                    }
-                    SelectionType.FACE -> TODO("Implement face Paste")
-                    SelectionType.EDGE, SelectionType.VERTEX -> TaskNone
-                }
-
+                return paste(saveSelection)
             }
         }
         return TaskNone
+    }
+
+    fun paste(saveSelection: ISelection): ITask = when (saveSelection.selectionType) {
+        SelectionType.OBJECT -> {
+            val selectedObjects = clipboard.model.getSelectedObjects(saveSelection)
+            val newModel = model.addObjects(selectedObjects)
+            val selRefs = (model.objects.size until model.objects.size + selectedObjects.size)
+                    .map { ObjectRef(it) }
+
+            val newSelection = Selection(SelectionTarget.MODEL, SelectionType.OBJECT, selRefs)
+
+            TaskChain(listOf(
+                    TaskUpdateModel(oldModel = model, newModel = newModel),
+                    TaskUpdateModelSelection(oldSelection = selection, newSelection = newSelection.asNullable())
+            ))
+        }
+        SelectionType.FACE -> TODO("Implement face Paste")
+        SelectionType.EDGE, SelectionType.VERTEX -> TaskNone
     }
 }
 
@@ -71,17 +71,20 @@ class Cut : IUseCase {
     override val key: String = "model.selection.cut"
 
     @Inject lateinit var model: IModel
-    @Inject lateinit var selection: Option<ISelection>
+    @Inject lateinit var selection: Nullable<ISelection>
     @Inject lateinit var clipboard: IClipboard
 
-    override fun createTask(): ITask {
-        return selection.map { sel ->
-            val newModel = EditTool.delete(model, sel)
-            TaskChain(listOf(
-                    TaskUpdateClipboard(oldClipboard = clipboard, newClipboard = Clipboard(model, sel)),
-                    TaskUpdateModel(oldModel = model, newModel = newModel),
-                    TaskUpdateSelection(sel, Selection(SelectionTarget.MODEL, SelectionType.OBJECT, emptyList()))
-            ))
-        }.getOrElse { TaskNone }
+    override fun createTask(): ITask = selection.map(this::cut).getOr(TaskNone)
+
+    fun cut(sel: ISelection): ITask {
+        val newModel = EditTool.delete(model, sel)
+        return TaskChain(listOf(
+                TaskUpdateClipboard(oldClipboard = clipboard, newClipboard = Clipboard(model, sel)),
+                TaskUpdateModel(oldModel = model, newModel = newModel),
+                TaskUpdateModelSelection(
+                        sel.asNullable(),
+                        Selection(SelectionTarget.MODEL, SelectionType.OBJECT, emptyList()).asNullable()
+                )
+        ))
     }
 }

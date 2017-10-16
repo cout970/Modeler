@@ -2,6 +2,7 @@ package com.cout970.modeler
 
 import com.cout970.glutilities.structure.Timer
 import com.cout970.glutilities.window.GLFWLoader
+import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.controller.AutoRunner
 import com.cout970.modeler.controller.FutureExecutor
 import com.cout970.modeler.controller.TaskHistory
@@ -11,9 +12,11 @@ import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
+import com.cout970.modeler.core.model.selection.SelectionHandler
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.gui.GuiInitializer
+import com.cout970.modeler.gui.ModelAccessor
 import com.cout970.modeler.input.event.EventController
 import com.cout970.modeler.input.window.Loop
 import com.cout970.modeler.input.window.WindowHandler
@@ -49,6 +52,8 @@ class Initializer {
         val exportManager = ExportManager(resourceLoader)
         log(Level.FINE) { "Creating RenderManager" }
         val renderManager = RenderManager()
+        log(Level.FINE) { "Creating ModelSelectionHandler" }
+        val modelSelectionHandler = SelectionHandler(SelectionTarget.MODEL)
         log(Level.FINE) { "Creating AutoRunner" }
         val autoRunner = AutoRunner(resourceLoader, projectManager, taskHistory)
 
@@ -59,7 +64,7 @@ class Initializer {
                 renderManager,
                 resourceLoader,
                 timer,
-                projectManager
+                ModelAccessor(projectManager, modelSelectionHandler)
         ).init()
 
         log(Level.FINE) { "Creating Loop" }
@@ -80,7 +85,8 @@ class Initializer {
                 gui = gui,
                 projectManager = projectManager,
                 futureExecutor = futureExecutor,
-                taskHistory = taskHistory
+                taskHistory = taskHistory,
+                modelSelectionHandler = modelSelectionHandler
         )
 
         Debugger.setInit(state)
@@ -97,7 +103,7 @@ class Initializer {
         log(Level.FINE) { "Initializing renderers" }
         renderManager.initOpenGl(resourceLoader, gui)
         log(Level.FINE) { "Registering Input event listeners" }
-        gui.listeners.initListeners(eventController, gui)
+        gui.listeners.initListeners(eventController, projectManager, gui)
 
         log(Level.FINE) { "Reloading gui resources" }
         gui.resources.reload(resourceLoader)

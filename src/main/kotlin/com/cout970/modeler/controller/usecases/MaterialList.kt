@@ -9,9 +9,9 @@ import com.cout970.modeler.core.model.getSelectedObjectRefs
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.resource.toResourcePath
+import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.asNullable
 import com.cout970.modeler.util.toNullable
-import org.funktionale.option.Option
 import org.liquidengine.legui.component.Component
 import org.lwjgl.util.tinyfd.TinyFileDialogs
 import java.io.File
@@ -26,7 +26,7 @@ class ApplyMaterial : IUseCase {
 
     @Inject lateinit var component: Component
     @Inject lateinit var model: IModel
-    @Inject lateinit var selection: Option<ISelection>
+    @Inject lateinit var selection: Nullable<ISelection>
 
     override fun createTask(): ITask {
         return selection

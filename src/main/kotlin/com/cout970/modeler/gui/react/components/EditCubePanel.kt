@@ -49,7 +49,7 @@ class EditCubePanel : RComponent<EditCubePanel.Props, Unit>() {
             replaceState(state)
         }
 
-        val cubeRef = props.access.selection
+        val cubeRef = props.access.modelSelection
                 .toNullable()
                 .flatMap {
                     if (isSelectingOneCube(props.access.model, it)) {

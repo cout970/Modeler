@@ -4,6 +4,7 @@ import com.cout970.glutilities.tessellator.VAO
 import com.cout970.matrix.extensions.Matrix4
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.core.model.selection.ObjectRef
 import com.cout970.modeler.render.tool.*
 import com.cout970.modeler.render.tool.shader.UniversalShader
 import com.cout970.modeler.util.getColor
@@ -34,9 +35,13 @@ class ModelRenderer {
         val vao = selectionCache.getOrCreate(ctx) {
 
             ctx.buffer.build(GL11.GL_LINES) {
-                val selection = ctx.gui.selectionHandler.ref
+                val selection = ctx.gui.modelAccessor.modelSelectionHandler.getSelection()
 
-                val objSel = modelToRender.objects.filterIndexed { index, _ -> selection.any { it.objectIndex == index } }
+                val objSel = modelToRender.objects.filterIndexed { index, _ ->
+                    selection.eval {
+                        it.isSelected(ObjectRef(index))
+                    }
+                }
                 objSel.forEach {
                     it.mesh.forEachEdge { (a, b) ->
                         add(a.pos, Vector2.ORIGIN, Vector3.ZERO, Config.colorPalette.modelSelectionColor)

@@ -24,7 +24,7 @@ fun TransformationStep.next(gui: Gui, hovered: ISelectable, pos: Pair<IVector2, 
                             canvas: Canvas): TransformationStep {
 
     val mode = gui.state.transformationMode
-    val oldModel = gui.projectManager.model
+    val oldModel = gui.modelAccessor.model
 
     val newOffset = when {
         hovered is ITranslatable && mode == TransformationMode.TRANSLATION -> {
@@ -41,7 +41,7 @@ fun TransformationStep.next(gui: Gui, hovered: ISelectable, pos: Pair<IVector2, 
 
     if (newOffset != offset) {
 
-        gui.selectionHandler.getModelSelection().map { sel ->
+        gui.modelAccessor.modelSelectionHandler.getSelection().ifNotNull { sel ->
             val part = oldModel to sel
 
             val model = when {

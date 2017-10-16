@@ -6,6 +6,7 @@ import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.gui.react.event.EventMaterialUpdate
 import com.cout970.modeler.gui.react.event.EventModelUpdate
 import com.cout970.modeler.gui.react.event.EventSelectionUpdate
@@ -23,33 +24,32 @@ class Listeners : ITickeable {
     private lateinit var gui: Gui
     lateinit var cameraUpdater: CameraUpdater
 
-    fun initListeners(eventController: EventController, gui: Gui) {
+    fun initListeners(eventController: EventController, projectManager: ProjectManager, gui: Gui) {
         this.gui = gui
         eventController.addListener(EventKeyUpdate::class.java, this::onKeyPress)
         eventController.addListener(EventFrameBufferSize::class.java, this::onFramebufferSizeUpdated)
         eventController.addListener(EventMouseScroll::class.java, this::onMouseScroll)
         cameraUpdater = CameraUpdater(gui.canvasContainer, eventController, gui.timer)
         gui.root.updateSizes(gui.windowHandler.window.size)
-        gui.projectManager.modelChangeListeners += this::onModelChange
+        projectManager.modelChangeListeners += this::onModelChange
         eventController.addListener(EventMouseClick::class.java, gui.canvasManager::onMouseClick)
 
-        gui.projectManager.modelChangeListeners.add { _, new ->
+        projectManager.modelChangeListeners.add { _, new ->
             gui.state.modelHash = new.hashCode()
             gui.state.visibilityHash = new.visibilities.hashCode()
         }
-        gui.selectionHandler.listeners.add { _, _ ->
-            gui.state.modelSelectionHash = (gui.selectionHandler.lastModified and 0xFFFFFFFF).toInt()
-            gui.state.textureSelectionHash = (gui.selectionHandler.lastModified and 0xFFFFFFFF).toInt()
+        gui.modelAccessor.modelSelectionHandler.addChangeListener { _, _ ->
+            gui.state.modelSelectionHash = (gui.modelAccessor.modelSelectionHandler.lastModified and 0xFFFFFFFF).toInt()
+            gui.state.textureSelectionHash = (gui.modelAccessor.modelSelectionHandler.lastModified and 0xFFFFFFFF).toInt()
         }
-        gui.projectManager.materialChangeListeners.add { _, _ ->
+        projectManager.materialChangeListeners.add { _, _ ->
             gui.state.materialsHash = (System.currentTimeMillis() and 0xFFFFFFFF).toInt()
         }
 
-        gui.projectManager.modelChangeListeners.add(gui.canvasManager::onModelUpdate)
-
-        gui.projectManager.materialChangeListeners.add(this::onMaterialUpdate)
-        gui.selectionHandler.listeners.add(this::onSelectionUpdate)
-        gui.selectionHandler.listeners.add(gui.canvasManager::onSelectionUpdate)
+        projectManager.modelChangeListeners.add(gui.canvasManager::onModelUpdate)
+        projectManager.materialChangeListeners.add(this::onMaterialUpdate)
+        gui.modelAccessor.modelSelectionHandler.addChangeListener(this::onSelectionUpdate)
+        gui.modelAccessor.modelSelectionHandler.addChangeListener(gui.canvasManager::onSelectionUpdate)
     }
 
     fun onFramebufferSizeUpdated(event: EventFrameBufferSize): Boolean {
@@ -64,9 +64,9 @@ class Listeners : ITickeable {
         }
     }
 
-    fun onSelectionUpdate(old: ISelection?, new: ISelection?) {
+    fun onSelectionUpdate(old: Nullable<ISelection>, new: Nullable<ISelection>) {
         gui.editorPanel.reactBase.getListeners<EventSelectionUpdate>().forEach { (comp, listener) ->
-            listener.process(EventSelectionUpdate(comp, gui.root.context, gui.root, new.asNullable(), old.asNullable()))
+            listener.process(EventSelectionUpdate(comp, gui.root.context, gui.root, new, old))
         }
     }
 

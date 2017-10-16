@@ -29,7 +29,7 @@ class Cursor(val center: IVector3 = Vector3.ORIGIN) {
     }
 
     fun getSelectableParts(gui: Gui, camera: Camera, viewport: IVector2): List<ISelectable> {
-        if (gui.selectionHandler.ref.isEmpty()) {
+        if (gui.modelAccessor.modelSelectionHandler.isEmpty()) {
             return emptyList()
         }
         val parameters = CursorParameters.create(camera.zoom, viewport)

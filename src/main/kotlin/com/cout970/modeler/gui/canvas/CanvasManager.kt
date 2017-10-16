@@ -15,8 +15,6 @@ import com.cout970.modeler.util.*
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.plus
 import com.cout970.vector.extensions.times
-import org.funktionale.option.Option
-import org.funktionale.option.firstOption
 
 /**
  * Created by cout970 on 2017/07/22.
@@ -75,7 +73,7 @@ class CanvasManager {
         updateCursorCenter()
     }
 
-    fun onSelectionUpdate(old: ISelection?, new: ISelection?) {
+    fun onSelectionUpdate(old: Nullable<ISelection>, new: Nullable<ISelection>) {
         updateCursorCenter()
     }
 
@@ -89,9 +87,9 @@ class CanvasManager {
     }
 
     fun updateCursorCenter() {
-        val selection = gui.selectionHandler.getModelSelection()
-        selection.ifDefined {
-            val model = gui.state.tmpModel ?: gui.projectManager.model
+        val selection = gui.modelAccessor.modelSelectionHandler.getSelection()
+        selection.ifNotNull {
+            val model = gui.state.tmpModel ?: gui.modelAccessor.model
 
             val newCenter = model.getSelectedObjects(it)
                     .map { it.getCenter() }
@@ -113,31 +111,33 @@ class CanvasManager {
         return false
     }
 
-    private fun getCanvasUnderTheMouse(): Option<Canvas> {
+    private fun getCanvasUnderTheMouse(): Nullable<Canvas> {
         val pos = gui.input.mouse.getMousePos()
         val canvas = gui.canvasContainer.canvas
         val affectedCanvas = canvas.filter { pos.isInside(it.absolutePositionV, it.size.toIVector()) }
 
-        return affectedCanvas.firstOption()
+        return affectedCanvas.firstOrNull().asNullable()
     }
 
     fun selectPart(): Boolean {
         val canvas = getCanvasUnderTheMouse()
-        canvas.forEach { gui.dispatcher.onEvent("canvas.select", it) }
-        return canvas.isDefined()
+        canvas.ifNotNull {
+            gui.dispatcher.onEvent("canvas.select", it)
+            return true
+        }
+        return false
     }
 
     fun moveCamera(): Boolean {
         val canvas = getCanvasUnderTheMouse()
-        if (canvas.isDefined()) {
-
+        canvas.ifNotNull {
             lastClick = if (System.currentTimeMillis() - lastClick < 500) {
-                canvas.forEach { gui.dispatcher.onEvent("canvas.jump.camera", it) }
-                0L
+                gui.dispatcher.onEvent("canvas.jump.camera", it); 0L
             } else {
                 System.currentTimeMillis()
             }
+            return true
         }
-        return canvas.isDefined()
+        return false
     }
 }

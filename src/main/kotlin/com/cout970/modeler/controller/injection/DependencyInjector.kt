@@ -6,7 +6,6 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.controller.FutureExecutor
-import com.cout970.modeler.controller.SelectionHandler
 import com.cout970.modeler.controller.TaskHistory
 import com.cout970.modeler.controller.binders.ButtonBinder
 import com.cout970.modeler.controller.binders.KeyboardBinder
@@ -27,8 +26,6 @@ import com.cout970.modeler.input.window.Loop
 import com.cout970.modeler.input.window.WindowHandler
 import com.cout970.modeler.render.RenderManager
 import com.cout970.modeler.util.Nullable
-import com.cout970.modeler.util.toNullable
-import org.funktionale.option.Option
 import org.liquidengine.legui.component.Component
 import sun.reflect.generics.reflectiveObjects.WildcardTypeImpl
 import java.lang.reflect.ParameterizedType
@@ -57,8 +54,7 @@ class DependencyInjector {
                     }
 
                     when {
-                        type.rawType == Option::class.java && genericType == ISelection::class.java -> gui.selectionHandler.getModelSelection()
-                        type.rawType == Nullable::class.java && genericType == ISelection::class.java -> gui.selectionHandler.getModelSelection().toNullable()
+                        type.rawType == Nullable::class.java && genericType == ISelection::class.java -> gui.modelAccessor.modelSelectionHandler.getSelection()
                         else -> {
                             log(Level.ERROR) {
                                 "Found unknown type in IUseCase, type = $genericType, type class = ${genericType.javaClass}"
@@ -90,11 +86,10 @@ class DependencyInjector {
                     Timer::class.java -> gui.timer
                     IInput::class.java -> gui.input
                     EditorPanel::class.java -> gui.editorPanel
-                    ProjectManager::class.java -> gui.projectManager
+                    ProjectManager::class.java -> projectManager
                     CanvasManager::class.java -> gui.canvasManager
                     GuiResources::class.java -> gui.resources
                     GuiState::class.java -> gui.state
-                    SelectionHandler::class.java -> gui.selectionHandler
                     Dispatcher::class.java -> gui.dispatcher
                     ButtonBinder::class.java -> gui.buttonBinder
                     KeyboardBinder::class.java -> gui.keyboardBinder

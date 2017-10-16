@@ -4,7 +4,7 @@ import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.getSelectedObjectRefs
 import com.cout970.modeler.core.model.material.MaterialRef
-import com.cout970.modeler.gui.ModelAccessor
+import com.cout970.modeler.gui.IModelAccessor
 import com.cout970.modeler.gui.comp.setTransparent
 import com.cout970.modeler.gui.react.core.RBuildContext
 import com.cout970.modeler.gui.react.core.RComponent
@@ -39,7 +39,7 @@ class ModelMaterialList : RComponent<ModelMaterialList.Props, ModelMaterialList.
 
         val scrollSize = size.y / 24.0
         val model = props.modelAccessor.model
-        val selection = props.modelAccessor.selection
+        val selection = props.modelAccessor.modelSelection
         val maxScroll = Math.max(0.0, model.objects.size - Math.ceil(scrollSize)).toFloat()
 
         val start = Math.floor(state.scroll.toDouble()).toInt()
@@ -121,7 +121,7 @@ class ModelMaterialList : RComponent<ModelMaterialList.Props, ModelMaterialList.
     }
 
     class Props(
-            val modelAccessor: ModelAccessor,
+            val modelAccessor: IModelAccessor,
             val selectedMaterial: () -> IMaterialRef,
             val pos: IVector2,
             val size: IVector2

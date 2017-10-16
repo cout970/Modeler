@@ -1,7 +1,6 @@
 package com.cout970.modeler.gui.editor
 
 import com.cout970.modeler.gui.Gui
-import com.cout970.modeler.gui.ModelAccessor
 import com.cout970.modeler.gui.MutablePanel
 import com.cout970.modeler.gui.comp.setBorderless
 import com.cout970.modeler.gui.comp.setTransparent
@@ -49,14 +48,14 @@ class EditorPanel : MutablePanel() {
                 +TopButtonPanel { }
                 +RightPanel {
                     RightPanel.Props(
-                            modelAccessor = ModelAccessor(gui.projectManager, gui.selectionHandler),
+                            modelAccessor = gui.modelAccessor,
                             selectedMaterial = { gui.state.selectedMaterial },
                             hide = !gui.state.showRightPanel
                     )
                 }
                 +LeftPanel {
                     LeftPanel.Props(
-                            access = ModelAccessor(gui.projectManager, gui.selectionHandler),
+                            access = gui.modelAccessor,
                             dispatcher = gui.dispatcher,
                             hide = !gui.state.showLeftPanel
                     )
