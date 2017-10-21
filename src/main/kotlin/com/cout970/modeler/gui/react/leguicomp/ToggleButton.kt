@@ -33,7 +33,7 @@ class ToggleButton(
         border = SimpleLineBorder(Config.colorPalette.selectedButton.toColor(), 1f)
     }
 
-    override fun isToggled(): Boolean = properties[id]?.get() ?: false
+    override fun isToggled(): Boolean = properties[id]?.get() ?: default
 
     override fun setToggled(toggled: Boolean) {
         properties[id]?.set(toggled)

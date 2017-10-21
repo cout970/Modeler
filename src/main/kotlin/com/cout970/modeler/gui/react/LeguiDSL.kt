@@ -2,6 +2,7 @@ package com.cout970.modeler.gui.react
 
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
+import com.cout970.modeler.gui.react.core.RBuildContext
 import com.cout970.modeler.gui.react.core.RComponentWrapper
 import com.cout970.modeler.gui.react.event.EventSelectionUpdate
 import com.cout970.modeler.gui.react.leguicomp.Panel
@@ -49,4 +50,30 @@ fun Component.printTree(prefix: String = "") {
 
 private fun spaces(amount: Int): String = buildString {
     (0 until amount).forEach { append(' ') }
+}
+
+fun Component.fillX(ctx: RBuildContext) {
+    size.x = ctx.parentSize.xf
+}
+
+fun Component.fillY(ctx: RBuildContext) {
+    size.y = ctx.parentSize.yf
+}
+
+fun Component.marginX(ctx: RBuildContext, margin: Float) {
+    size.x = ctx.parentSize.xf - margin * 2
+    position.x = margin
+}
+
+fun Component.marginY(ctx: RBuildContext, margin: Float) {
+    size.y = ctx.parentSize.yf - margin * 2
+    position.y = margin
+}
+
+fun Component.centerX(ctx: RBuildContext) {
+    position.x = (ctx.parentSize.xf - size.x) * 0.5f
+}
+
+fun Component.centerY(ctx: RBuildContext) {
+    position.y = (ctx.parentSize.yf - size.y) * 0.5f
 }

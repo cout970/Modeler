@@ -57,7 +57,8 @@ class EditorPanel : MutablePanel() {
                     LeftPanel.Props(
                             access = gui.modelAccessor,
                             dispatcher = gui.dispatcher,
-                            hide = !gui.state.showLeftPanel
+                            hide = !gui.state.showLeftPanel,
+                            guiState = gui.state
                     )
                 }
                 +CenterPanel {

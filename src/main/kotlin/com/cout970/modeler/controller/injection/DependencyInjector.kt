@@ -93,6 +93,7 @@ class DependencyInjector {
                     Dispatcher::class.java -> gui.dispatcher
                     ButtonBinder::class.java -> gui.buttonBinder
                     KeyboardBinder::class.java -> gui.keyboardBinder
+                    IModelAccessor::class.java -> gui.modelAccessor
 
                     else -> null
                 }

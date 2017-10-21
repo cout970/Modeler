@@ -2,6 +2,7 @@ package com.cout970.modeler.gui.react.components
 
 import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.gui.GuiState
 import com.cout970.modeler.gui.IModelAccessor
 import com.cout970.modeler.gui.comp.setBorderless
 import com.cout970.modeler.gui.react.core.RBuildContext
@@ -35,10 +36,11 @@ class LeftPanel : RComponent<LeftPanel.Props, Unit>() {
         }
 
         +GridButtonPanel {}
+        +SelectionTypeButtons { SelectionTypeButtons.Props(props.guiState) }
         +EditCubePanel { EditCubePanel.Props(props.access, props.dispatcher) }
     }
 
-    class Props(val access: IModelAccessor, val dispatcher: Dispatcher, val hide: Boolean)
+    class Props(val access: IModelAccessor, val dispatcher: Dispatcher, val hide: Boolean, val guiState: GuiState)
 
     companion object : RComponentSpec<LeftPanel, Props, Unit>
 }

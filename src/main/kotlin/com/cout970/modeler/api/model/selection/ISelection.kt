@@ -31,6 +31,7 @@ interface ISelection {
     val selectionTarget: SelectionTarget
     val selectionType: SelectionType
     val size: Int
+    val refs: Set<IRef>
 
     fun isSelected(obj: IObjectRef): Boolean
     fun isSelected(obj: IFaceRef): Boolean
@@ -49,4 +50,11 @@ enum class SelectionType {
     FACE,
     EDGE,
     VERTEX
+}
+
+fun IRef.getSelectionType() = when (this) {
+    is IObjectRef -> SelectionType.OBJECT
+    is IFaceRef -> SelectionType.FACE
+    is IEdgeRef -> SelectionType.EDGE
+    else -> SelectionType.VERTEX
 }

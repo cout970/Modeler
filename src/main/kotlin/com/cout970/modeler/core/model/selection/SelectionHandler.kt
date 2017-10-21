@@ -1,9 +1,6 @@
 package com.cout970.modeler.core.model.selection
 
-import com.cout970.modeler.api.model.selection.IRef
-import com.cout970.modeler.api.model.selection.ISelection
-import com.cout970.modeler.api.model.selection.SelectionTarget
-import com.cout970.modeler.api.model.selection.SelectionType
+import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.asNullable
 import com.cout970.modeler.util.combine
@@ -15,7 +12,8 @@ import com.cout970.modeler.util.combine
 class SelectionHandler(val target: SelectionTarget) {
 
     private val listeners: MutableList<(Nullable<ISelection>, Nullable<ISelection>) -> Unit> = mutableListOf()
-    var type = SelectionType.OBJECT
+    lateinit var typeGetter: () -> SelectionType
+    val type: SelectionType get() = typeGetter()
 
     private var refs = emptySet<IRef>()
         set(value) {
@@ -46,7 +44,8 @@ class SelectionHandler(val target: SelectionTarget) {
     fun setSelection(selection: Nullable<ISelection>) {
         selection.filter { it.selectionTarget == target }
                 .filterIsInstance<Selection>()
-                .ifNotNull { type = it.selectionType; refs = it.list.toSet() }
+                .getOrNull()
+                ?.let { refs = it.refs.toSet() } ?: run { refs = emptySet() }
     }
 
     fun isEmpty() = refs.isEmpty()
@@ -55,11 +54,13 @@ class SelectionHandler(val target: SelectionTarget) {
 
         if (ref == null) return if (multiSelection) selection else Nullable.castNull()
 
+        val type = ref.getSelectionType()
+
         return selection
-                .filter { it.selectionType == SelectionType.OBJECT && it.selectionTarget == target }
+                .filter { it.selectionType == type && it.selectionTarget == target }
                 .filterIsInstance<Selection>()
-                .map { Selection(target, it.selectionType, it.list.toList().combine(multiSelection, ref)) }
-                .getOrCompute { Selection(target, SelectionType.OBJECT, setOf(ref)) }
+                .map { Selection(target, it.selectionType, it.refs.toList().combine(multiSelection, ref)) }
+                .getOrCompute { Selection(target, type, setOf(ref)) }
                 .asNullable()
     }
 }

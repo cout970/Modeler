@@ -36,7 +36,7 @@ class EditCubePanel : RComponent<EditCubePanel.Props, Unit>() {
     }
 
     override fun build(ctx: RBuildContext): Component = panel {
-        posY = 28f
+        posY = 64f
         width = 280f
         height = 500f
         setBorderless()

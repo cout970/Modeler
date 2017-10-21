@@ -3,13 +3,17 @@ package com.cout970.modeler.render.world
 import com.cout970.glutilities.tessellator.VAO
 import com.cout970.matrix.extensions.Matrix4
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.core.model.mesh.MeshFactory
 import com.cout970.modeler.core.model.selection.ObjectRef
 import com.cout970.modeler.render.tool.*
 import com.cout970.modeler.render.tool.shader.UniversalShader
 import com.cout970.modeler.util.getColor
 import com.cout970.vector.extensions.Vector2
 import com.cout970.vector.extensions.Vector3
+import com.cout970.vector.extensions.plus
+import com.cout970.vector.extensions.vec3Of
 import org.lwjgl.opengl.GL11
 
 /**
@@ -32,29 +36,10 @@ class ModelRenderer {
     }
 
     fun renderSelection(ctx: RenderContext, modelToRender: IModel) {
-        val vao = selectionCache.getOrCreate(ctx) {
+        val selectionBox = ctx.gui.modelAccessor.modelSelectionHandler.getSelection()
+        val selection = selectionBox.getOrNull() ?: return
 
-            ctx.buffer.build(GL11.GL_LINES) {
-                val selection = ctx.gui.modelAccessor.modelSelectionHandler.getSelection()
-
-                val objSel = modelToRender.objects.filterIndexed { index, _ ->
-                    selection.eval {
-                        it.isSelected(ObjectRef(index))
-                    }
-                }
-                objSel.forEach {
-                    it.mesh.forEachEdge { (a, b) ->
-                        add(a.pos, Vector2.ORIGIN, Vector3.ZERO, Config.colorPalette.modelSelectionColor)
-                        add(b.pos, Vector2.ORIGIN, Vector3.ZERO, Config.colorPalette.modelSelectionColor)
-
-//                        Old selection rendering (really inefficient)
-//                        RenderUtil.appendBar(this, a.pos, b.pos,
-//                                size = Config.selectionThickness.toDouble(),
-//                                color = Config.colorPalette.modelSelectionColor)
-                    }
-                }
-            }
-        }
+        val vao = selectionCache.getOrCreate(ctx) { buildSelection(ctx, modelToRender, selection) }
         ctx.shader.apply {
             useTexture.setInt(0)
             useColor.setInt(1)
@@ -100,5 +85,74 @@ class ModelRenderer {
         return model.objects
                 .map { it.mesh }
                 .map { it.createVao(buffer, getColor(it.hashCode())) }
+    }
+
+    private fun buildSelection(ctx: RenderContext, modelToRender: IModel,
+                               selection: ISelection): VAO = when (selection.selectionType) {
+        SelectionType.OBJECT -> ctx.buffer.build(GL11.GL_LINES) { appendObjectSelection(modelToRender, selection) }
+        SelectionType.FACE -> ctx.buffer.build(GL11.GL_LINES) { appendFaceSelection(modelToRender, selection) }
+        SelectionType.EDGE -> ctx.buffer.build(GL11.GL_LINES) { appendEdgeSelection(modelToRender, selection) }
+        SelectionType.VERTEX -> ctx.buffer.build(GL11.GL_QUADS) { appendVertexSelection(modelToRender, selection) }
+    }
+
+    private fun UniversalShader.Buffer.appendObjectSelection(modelToRender: IModel,
+                                                             selection: ISelection) {
+
+        val objSel = modelToRender.objects.filterIndexed { index, _ ->
+            selection.isSelected(ObjectRef(index))
+        }
+        objSel.forEach {
+            it.mesh.forEachEdge { (a, b) ->
+                add(a.pos, Vector2.ORIGIN, Vector3.ZERO, Config.colorPalette.modelSelectionColor)
+                add(b.pos, Vector2.ORIGIN, Vector3.ZERO, Config.colorPalette.modelSelectionColor)
+            }
+        }
+    }
+
+    private fun UniversalShader.Buffer.appendFaceSelection(modelToRender: IModel,
+                                                           selection: ISelection) {
+
+        val pairs = selection.refs
+                .filterIsInstance<IFaceRef>()
+                .map { modelToRender.getObject(ObjectRef(it.objectIndex)) to it }
+
+        pairs.forEach { (obj, ref) ->
+            val face = obj.mesh.faces[ref.faceIndex]
+
+            for (index in 0 until face.vertexCount) {
+                val next = (index + 1) % face.vertexCount
+                add(obj.mesh.pos[face.pos[index]], Vector2.ORIGIN, Vector3.ZERO,
+                        Config.colorPalette.modelSelectionColor)
+                add(obj.mesh.pos[face.pos[next]], Vector2.ORIGIN, Vector3.ZERO, Config.colorPalette.modelSelectionColor)
+            }
+        }
+    }
+
+    private fun UniversalShader.Buffer.appendEdgeSelection(modelToRender: IModel,
+                                                           selection: ISelection) {
+
+        val pairs = selection.refs
+                .filterIsInstance<IEdgeRef>()
+                .map { modelToRender.getObject(ObjectRef(it.objectIndex)) to it }
+
+        pairs.forEach { (obj, ref) ->
+            add(obj.mesh.pos[ref.firstIndex], Vector2.ORIGIN, Vector3.ZERO, Config.colorPalette.modelSelectionColor)
+            add(obj.mesh.pos[ref.secondIndex], Vector2.ORIGIN, Vector3.ZERO, Config.colorPalette.modelSelectionColor)
+        }
+    }
+
+
+    private fun UniversalShader.Buffer.appendVertexSelection(modelToRender: IModel,
+                                                             selection: ISelection) {
+
+        val pairs = selection.refs
+                .filterIsInstance<IPosRef>()
+                .map { modelToRender.getObject(ObjectRef(it.objectIndex)) to it }
+
+        pairs.forEach { (obj, ref) ->
+            val point = obj.mesh.pos[ref.posIndex]
+            MeshFactory.createCube(vec3Of(0.5), vec3Of(-0.25) + point)
+                    .append(this, Config.colorPalette.modelSelectionColor)
+        }
     }
 }

@@ -10,7 +10,7 @@ import com.cout970.modeler.controller.tasks.TaskUpdateModelSelection
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.getSelectedObjectRefs
 import com.cout970.modeler.core.model.selection.Selection
-import com.cout970.modeler.core.model.selection.SelectionHandler
+import com.cout970.modeler.gui.IModelAccessor
 import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.asNullable
@@ -95,7 +95,7 @@ class SelectModelPart : IUseCase {
     @Inject lateinit var component: Component
     @Inject lateinit var input: IInput
     @Inject lateinit var selection: Nullable<ISelection>
-    @Inject lateinit var selectionHandler: SelectionHandler
+    @Inject lateinit var modelAccessor: IModelAccessor
 
     override fun createTask(): ITask {
         return component.asNullable()
@@ -107,7 +107,7 @@ class SelectModelPart : IUseCase {
 
     fun select(ref: IObjectRef): ITask {
         val multiSelection = Config.keyBindings.multipleSelection.check(input)
-        val sel = selectionHandler.updateSelection(selection, multiSelection, ref)
+        val sel = modelAccessor.modelSelectionHandler.updateSelection(selection, multiSelection, ref)
         return TaskUpdateModelSelection(
                 oldSelection = selection,
                 newSelection = sel

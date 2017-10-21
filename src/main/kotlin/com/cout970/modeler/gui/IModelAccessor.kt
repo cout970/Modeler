@@ -12,15 +12,20 @@ import com.cout970.modeler.util.Nullable
 interface IModelAccessor {
 
     val model: IModel
+
     val modelSelectionHandler: SelectionHandler
+    val textureSelectionHandler: SelectionHandler
     val modelSelection: Nullable<ISelection> get() = modelSelectionHandler.getSelection()
+    val textureSelection: Nullable<ISelection> get() = textureSelectionHandler.getSelection()
 }
 
 class ModelAccessor(
         val projectManager: ProjectManager,
-        override val modelSelectionHandler: SelectionHandler
+        override val modelSelectionHandler: SelectionHandler,
+        override val textureSelectionHandler: SelectionHandler
 ) : IModelAccessor {
 
     override val model: IModel get() = projectManager.model
     override val modelSelection: Nullable<ISelection> get() = modelSelectionHandler.getSelection()
+    override val textureSelection: Nullable<ISelection> get() = textureSelectionHandler.getSelection()
 }

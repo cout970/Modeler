@@ -1,9 +1,10 @@
 package com.cout970.modeler.controller.usecases
 
 import com.cout970.modeler.api.model.IModel
-import com.cout970.modeler.api.model.selection.IObjectRef
+import com.cout970.modeler.api.model.selection.IRef
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionTarget
+import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.controller.injection.Inject
 import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.config.Config
@@ -13,10 +14,7 @@ import com.cout970.modeler.gui.canvas.Canvas
 import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.gui.canvas.helpers.CanvasHelper
 import com.cout970.modeler.input.event.IInput
-import com.cout970.modeler.util.Nullable
-import com.cout970.modeler.util.getClosest
-import com.cout970.modeler.util.toNullable
-import com.cout970.modeler.util.toRayObstacle
+import com.cout970.modeler.util.*
 import com.cout970.raytrace.IRayObstacle
 import com.cout970.vector.extensions.unaryMinus
 import org.liquidengine.legui.component.Component
@@ -43,19 +41,21 @@ class CanvasSelectPart : IUseCase {
         val canvas = component as Canvas
         val pos = input.mouse.getMousePos()
         val context = CanvasHelper.getMouseSpaceContext(canvas, pos)
-        val obj = model.getObstacles()
-                .mapNotNull { (obj, ref) ->
-                    val res = obj.rayTrace(context.mouseRay)
-                    res?.let { result -> result to ref }
-                }
-                .getClosest(context.mouseRay)
+
+        val obstacles = model.getObstacles(state.selectionType)
+        val res = obstacles.mapNotNull { (obj, ref) -> obj.rayTrace(context.mouseRay)?.let { result -> result to ref } }
+        val obj = res.getClosest(context.mouseRay)
 
         val multiSelection = Config.keyBindings.multipleSelection.check(input)
 
         return TaskUpdateModelSelection(
                 oldSelection = selection.toNullable(),
-                newSelection = gui.modelAccessor.modelSelectionHandler.updateSelection(selection.toNullable(),
-                        multiSelection, obj?.second))
+                newSelection = gui.modelAccessor.modelSelectionHandler.updateSelection(
+                        selection.toNullable(),
+                        multiSelection,
+                        obj?.second
+                )
+        )
     }
 }
 
@@ -74,12 +74,9 @@ class CanvasJumpCamera : IUseCase {
         val canvas = component as Canvas
         val pos = input.mouse.getMousePos()
         val context = CanvasHelper.getMouseSpaceContext(canvas, pos)
-        val obj = model.getObstacles()
-                .mapNotNull { (obj, ref) ->
-                    val res = obj.rayTrace(context.mouseRay)
-                    res?.let { result -> result to ref }
-                }
-                .getClosest(context.mouseRay)
+        val obstacles = model.getObstacles(SelectionType.OBJECT)
+        val res = obstacles.mapNotNull { (obj, ref) -> obj.rayTrace(context.mouseRay)?.let { result -> result to ref } }
+        val obj = res.getClosest(context.mouseRay)
 
         val point = obj?.first ?: return TaskNone
         return TaskUpdateCameraPosition(canvas, -point.hit)
@@ -139,9 +136,15 @@ class SetAnimationMode : IUseCase {
     }
 }
 
-fun IModel.getObstacles(): List<Pair<IRayObstacle, IObjectRef>> {
-    return objectRefs
+fun IModel.getObstacles(selectionType: SelectionType): List<Pair<IRayObstacle, IRef>> {
+    val objs = objectRefs
             .filter { isVisible(it) }
             .map { getObject(it) to it }
-            .map { (obj, ref) -> obj.toRayObstacle() to ref }
+
+    return when (selectionType) {
+        SelectionType.OBJECT -> objs.map { (obj, ref) -> obj.toRayObstacle() to ref }
+        SelectionType.FACE -> objs.flatMap { (obj, ref) -> obj.getFaceRayObstacles(ref) }
+        SelectionType.EDGE -> objs.flatMap { (obj, ref) -> obj.getEdgeRayObstacles(ref) }
+        SelectionType.VERTEX -> objs.flatMap { (obj, ref) -> obj.getVertexRayObstacles(ref) }
+    }
 }

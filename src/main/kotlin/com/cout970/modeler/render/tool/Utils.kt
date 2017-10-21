@@ -2,6 +2,7 @@ package com.cout970.modeler.render.tool
 
 import com.cout970.glutilities.structure.GLStateMachine
 import com.cout970.glutilities.tessellator.VAO
+import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.render.tool.shader.UniversalShader
 import com.cout970.vector.api.IVector2
@@ -11,18 +12,19 @@ import com.cout970.vector.extensions.cross
 import com.cout970.vector.extensions.minus
 import com.cout970.vector.extensions.normalize
 import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL14
 
 /**
  * Created by cout970 on 2017/05/25.
  */
 
 fun GLStateMachine.useBlend(amount: Float, func: () -> Unit) {
-    GLStateMachine.blend.enable()
-    GLStateMachine.blendFunc = GLStateMachine.BlendFunc.CONSTANT_ALPHA to GLStateMachine.BlendFunc.ONE_MINUS_CONSTANT_ALPHA
-    org.lwjgl.opengl.GL14.glBlendColor(1f, 1f, 1f, amount)
+    blend.enable()
+    blendFunc = GLStateMachine.BlendFunc.CONSTANT_ALPHA to GLStateMachine.BlendFunc.ONE_MINUS_CONSTANT_ALPHA
+    GL14.glBlendColor(1f, 1f, 1f, amount)
     func()
-    GLStateMachine.blendFunc = GLStateMachine.BlendFunc.SRC_ALPHA to GLStateMachine.BlendFunc.ONE_MINUS_SRC_ALPHA
-    GLStateMachine.blend.disable()
+    blendFunc = GLStateMachine.BlendFunc.SRC_ALPHA to GLStateMachine.BlendFunc.ONE_MINUS_SRC_ALPHA
+    blend.disable()
 }
 
 data class Vertex(val pos: IVector3, val tex: IVector2, val norm: IVector3)
@@ -57,6 +59,18 @@ inline fun IMesh.forEachEdge(func: (Pair<Vertex, Vertex>) -> Unit) {
         }
     }
     list.distinct().forEach(func)
+}
+
+fun IMesh.mapFaceToEdges(f: IFaceIndex): List<Pair<Vertex, Vertex>> {
+    val (a, b, c, d) = f.pos.map { pos[it] }
+    val ac = c - a
+    val bd = d - b
+    val norm = (ac cross bd).normalize()
+
+    return (0 until f.vertexCount).map { index ->
+        val next = (index + 1) % f.vertexCount
+        (Vertex(pos[f.pos[index]], tex[f.tex[index]], norm) to Vertex(pos[f.pos[next]], tex[f.tex[next]], norm))
+    }
 }
 
 fun IMesh.append(buffer: UniversalShader.Buffer, color: IVector3 = Vector3.ONE) {

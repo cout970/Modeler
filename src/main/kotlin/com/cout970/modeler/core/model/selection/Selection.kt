@@ -9,16 +9,16 @@ import com.cout970.modeler.api.model.selection.*
 data class Selection(
         override val selectionTarget: SelectionTarget,
         override val selectionType: SelectionType,
-        val list: Set<IRef>
+        override val refs: Set<IRef>
 ) : ISelection {
 
     constructor(selectionTarget: SelectionTarget, selectionType: SelectionType, list: List<IRef>)
             : this(selectionTarget, selectionType, list.toSet())
 
-    override val size: Int get() = list.size
+    override val size: Int get() = refs.size
 
-    override fun isSelected(obj: IObjectRef): Boolean = obj in list
-    override fun isSelected(obj: IFaceRef): Boolean = obj in list
-    override fun isSelected(obj: IEdgeRef): Boolean = obj in list
-    override fun isSelected(obj: IPosRef): Boolean = obj in list
+    override fun isSelected(obj: IObjectRef): Boolean = obj in refs
+    override fun isSelected(obj: IFaceRef): Boolean = obj in refs
+    override fun isSelected(obj: IEdgeRef): Boolean = obj in refs
+    override fun isSelected(obj: IPosRef): Boolean = obj in refs
 }

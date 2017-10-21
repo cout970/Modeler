@@ -54,6 +54,8 @@ class Initializer {
         val renderManager = RenderManager()
         log(Level.FINE) { "Creating ModelSelectionHandler" }
         val modelSelectionHandler = SelectionHandler(SelectionTarget.MODEL)
+        log(Level.FINE) { "Creating ModelSelectionHandler" }
+        val textureSelectionHandler = SelectionHandler(SelectionTarget.TEXTURE)
         log(Level.FINE) { "Creating AutoRunner" }
         val autoRunner = AutoRunner(resourceLoader, projectManager, taskHistory)
 
@@ -64,7 +66,7 @@ class Initializer {
                 renderManager,
                 resourceLoader,
                 timer,
-                ModelAccessor(projectManager, modelSelectionHandler)
+                ModelAccessor(projectManager, modelSelectionHandler, textureSelectionHandler)
         ).init()
 
         log(Level.FINE) { "Creating Loop" }
@@ -86,11 +88,14 @@ class Initializer {
                 projectManager = projectManager,
                 futureExecutor = futureExecutor,
                 taskHistory = taskHistory,
-                modelSelectionHandler = modelSelectionHandler
+                modelSelectionHandler = modelSelectionHandler,
+                textureSelectionHandler = textureSelectionHandler
         )
 
         Debugger.setInit(state)
         gui.canvasManager.processor = taskHistory
+        modelSelectionHandler.typeGetter = gui.state::selectionType
+
 
         log(Level.FINE) { "Starting GLFW" }
         GLFWLoader.init()
