@@ -106,10 +106,8 @@ data class Model(
                 materials = materials.filterIndexed { index, _ -> index == materialRef.materialIndex },
                 objects = objects.map {
                     when {
-                        it.material == materialRef -> it.transformer.withMaterial(it, MaterialRef(-1))
-                        it.material > materialRef -> it.transformer.withMaterial(it,
-                                MaterialRef(it.material.materialIndex - 1)
-                        )
+                        it.material == materialRef -> it.withMaterial(MaterialRef(-1))
+                        it.material > materialRef -> it.withMaterial(MaterialRef(it.material.materialIndex - 1))
                         else -> it
                     }
                 }

@@ -2,7 +2,6 @@ package com.cout970.modeler.gui.canvas.cursor
 
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.selection.ISelection
-import com.cout970.modeler.core.model.getSelectedObjectRefs
 import com.cout970.modeler.core.tool.EditTool
 import com.cout970.modeler.gui.canvas.IRotable
 import com.cout970.modeler.gui.canvas.IScalable
@@ -37,10 +36,8 @@ class CursorPartTranslate(
         )
     }
 
-    override fun applyTranslation(offset: Float, selection: ISelection, model: IModel): IModel {
-        val sel = model.getSelectedObjectRefs(selection)
-        return EditTool.translate(model, sel, translationAxis * offset)
-    }
+    override fun applyTranslation(offset: Float, selection: ISelection, model: IModel): IModel =
+            EditTool.translate(model, selection, translationAxis * offset)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -74,8 +71,7 @@ class CursorPartRotate(
     }
 
     override fun applyRotation(offset: Float, selection: ISelection, model: IModel): IModel {
-        val sel = model.getSelectedObjectRefs(selection)
-        return EditTool.rotate(model, sel, center, quatOfAxisAngled(tangent, offset))
+        return EditTool.rotate(model, selection, center, quatOfAxisAngled(tangent, offset))
     }
 
     override fun equals(other: Any?): Boolean {
@@ -113,8 +109,7 @@ class CursorPartScale(
     }
 
     override fun applyScale(offset: Float, selection: ISelection, model: IModel): IModel {
-        val sel = model.getSelectedObjectRefs(selection)
-        return EditTool.scale(model, sel, center, scaleAxis, offset)
+        return EditTool.scale(model, selection, center, scaleAxis, offset)
     }
 
     override fun equals(other: Any?): Boolean {

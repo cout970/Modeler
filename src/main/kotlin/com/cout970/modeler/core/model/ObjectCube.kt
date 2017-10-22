@@ -2,9 +2,9 @@ package com.cout970.modeler.core.model
 
 import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.`object`.IObjectCube
-import com.cout970.modeler.api.model.`object`.IObjectTransformer
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IMesh
+import com.cout970.modeler.api.model.transformer.IObjectTransformer
 import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
@@ -116,10 +116,11 @@ data class ObjectCube(
 
     override fun withTextureSize(size: IVector2): IObjectCube = copy(textureSize = size)
 
+    override fun withMesh(newMesh: IMesh): IObject = Object(name, newMesh, material)
+
+    override fun withMaterial(materialRef: IMaterialRef): IObject = copy(material = materialRef)
+
     override val transformer: IObjectTransformer = object : IObjectTransformer {
-        override fun withMesh(obj: IObject, newMesh: IMesh): IObject {
-            return Object(name, newMesh, material)
-        }
 
         override fun translate(obj: IObject, translation: IVector3): IObject {
 //            val newPos = pos + quatOfAngles(-transformation.rotation.toAxisRotations()).transform(translation)
@@ -135,10 +136,6 @@ data class ObjectCube(
         override fun scale(obj: IObject, center: IVector3, axis: IVector3, offset: Float): IObject {
             val newSize = size + axis * offset
             return copy(transformation = transformation.copy(scale = newSize))
-        }
-
-        override fun withMaterial(obj: IObject, materialRef: IMaterialRef): IObject {
-            return copy(material = materialRef)
         }
     }
 }

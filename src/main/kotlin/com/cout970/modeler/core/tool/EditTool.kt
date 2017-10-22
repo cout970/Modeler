@@ -2,18 +2,24 @@ package com.cout970.modeler.core.tool
 
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.`object`.IObject
-import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.modeler.api.model.selection.ISelection
-import com.cout970.modeler.api.model.selection.SelectionTarget
-import com.cout970.modeler.api.model.selection.SelectionType
+import com.cout970.modeler.api.model.mesh.IMesh
+import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.core.model.Object
 import com.cout970.modeler.core.model.ObjectCube
+import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.getSelectedObjectRefs
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.selection.FaceRef
 import com.cout970.modeler.core.model.selection.ObjectRef
+import com.cout970.modeler.util.toAxisRotations
+import com.cout970.modeler.util.toJOML
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
+import com.cout970.vector.extensions.Vector3
+import com.cout970.vector.extensions.plus
+import com.cout970.vector.extensions.times
+import com.cout970.vector.extensions.vec3Of
+import org.joml.Vector4d
 
 /**
  * Created by cout970 on 2017/02/11.
@@ -23,16 +29,93 @@ object EditTool {
     //
     // TRANSFORM
     //
-    fun translate(source: IModel, ref: List<IObjectRef>, translation: IVector3): IModel {
-        return source.modifyObjects(ref) { _, it -> it.transformer.translate(it, translation) }
+    fun translate(source: IModel, sel: ISelection, translation: IVector3): IModel = when (sel.selectionType) {
+        SelectionType.OBJECT -> source.modifyObjects({ sel.isSelected(it) }) { _, it ->
+            it.transformer.translate(it, translation)
+        }
+        SelectionType.FACE -> transformFaces(source, sel, TRSTransformation(translation))
+        SelectionType.EDGE -> transformEdges(source, sel, TRSTransformation(translation))
+        SelectionType.VERTEX -> transformVertex(source, sel, TRSTransformation(translation))
     }
 
-    fun rotate(source: IModel, ref: List<IObjectRef>, pivot: IVector3, rotation: IQuaternion): IModel {
-        return source.modifyObjects(ref) { _, it -> it.transformer.rotate(it, pivot, rotation) }
+
+    fun rotate(source: IModel, sel: ISelection, pivot: IVector3, rotation: IQuaternion): IModel {
+        val transform = TRSTransformation.fromRotationPivot(pivot, rotation.toAxisRotations())
+        return when (sel.selectionType) {
+            SelectionType.OBJECT -> source.modifyObjects({ sel.isSelected(it) }) { _, it ->
+                it.transformer.rotate(it, pivot, rotation)
+            }
+            SelectionType.FACE -> transformFaces(source, sel, transform)
+            SelectionType.EDGE -> transformEdges(source, sel, transform)
+            SelectionType.VERTEX -> transformVertex(source, sel, transform)
+        }
     }
 
-    fun scale(source: IModel, ref: List<IObjectRef>, center: IVector3, axis: IVector3, offset: Float): IModel {
-        return source.modifyObjects(ref) { _, it -> it.transformer.scale(it, center, axis, offset) }
+    fun scale(source: IModel, sel: ISelection, center: IVector3, axis: IVector3, offset: Float): IModel {
+        val transform = TRSTransformation(scale = Vector3.ONE + axis * offset)
+        return when (sel.selectionType) {
+            SelectionType.OBJECT -> source.modifyObjects({ sel.isSelected(it) }) { _, it ->
+                it.transformer.scale(it, center, axis, offset)
+            }
+            SelectionType.FACE -> transformFaces(source, sel, transform)
+            SelectionType.EDGE -> transformEdges(source, sel, transform)
+            SelectionType.VERTEX -> transformVertex(source, sel, transform)
+        }
+    }
+
+    fun transformFaces(source: IModel, sel: ISelection, transform: TRSTransformation): IModel {
+        val objRefs = sel.refs.filterIsInstance<IFaceRef>().map { ObjectRef(it.objectIndex) }.distinct()
+        return source.modifyObjects(objRefs) { ref, obj ->
+            val indices: Set<Int> = sel.refs
+                    .filterIsInstance<IFaceRef>()
+                    .filter { it.objectIndex == ref.objectIndex }
+                    .map { obj.mesh.faces[it.faceIndex] }
+                    .flatMap { it.pos }
+                    .toSet()
+
+            val newMesh = transformMesh(obj, indices, transform)
+            obj.withMesh(newMesh)
+        }
+    }
+
+    fun transformEdges(source: IModel, sel: ISelection, transform: TRSTransformation): IModel {
+        val objRefs = sel.refs.filterIsInstance<IEdgeRef>().map { ObjectRef(it.objectIndex) }.distinct()
+        return source.modifyObjects(objRefs) { ref, obj ->
+            val indices: Set<Int> = sel.refs
+                    .filterIsInstance<IEdgeRef>()
+                    .filter { it.objectIndex == ref.objectIndex }
+                    .flatMap { listOf(it.firstIndex, it.secondIndex) }
+                    .toSet()
+
+            val newMesh = transformMesh(obj, indices, transform)
+            obj.withMesh(newMesh)
+        }
+    }
+
+    fun transformVertex(source: IModel, sel: ISelection, transform: TRSTransformation): IModel {
+        val objRefs = sel.refs.filterIsInstance<IPosRef>().map { ObjectRef(it.objectIndex) }.distinct()
+        return source.modifyObjects(objRefs) { ref, obj ->
+            val indices: Set<Int> = sel.refs
+                    .filterIsInstance<IPosRef>()
+                    .filter { it.objectIndex == ref.objectIndex }
+                    .map { it.posIndex }
+                    .toSet()
+
+            val newMesh = transformMesh(obj, indices, transform)
+            obj.withMesh(newMesh)
+        }
+    }
+
+    fun transformMesh(obj: IObject, indices: Set<Int>, transform: TRSTransformation): IMesh {
+        val matrix = transform.matrix.toJOML()
+
+        val newPos: List<IVector3> = obj.mesh.pos.mapIndexed { index, it ->
+            if (index in indices) {
+                val vec4 = matrix.transform(Vector4d(it.xd, it.yd, it.zd, 1.0))
+                vec3Of(vec4.x, vec4.y, vec4.z)
+            } else it
+        }
+        return Mesh(pos = newPos, tex = obj.mesh.tex, faces = obj.mesh.faces)
     }
 
     //
@@ -74,7 +157,7 @@ object EditTool {
                         }
 
                         if (modifyMesh.faces.isNotEmpty()) {
-                            edited += ObjectRef(objIndex) to obj.transformer.withMesh(obj, modifyMesh)
+                            edited += ObjectRef(objIndex) to obj.withMesh(modifyMesh)
                         } else {
                             toRemove += ObjectRef(objIndex)
                         }

@@ -15,7 +15,7 @@ class SelectionHandler(val target: SelectionTarget) {
     lateinit var typeGetter: () -> SelectionType
     val type: SelectionType get() = typeGetter()
 
-    private var refs = emptySet<IRef>()
+    private var internalSelection: Nullable<ISelection> = Nullable.castNull()
         set(value) {
             val old = getSelection()
             field = value
@@ -31,24 +31,17 @@ class SelectionHandler(val target: SelectionTarget) {
         listeners += func
     }
 
-    fun getSelection(): Nullable<ISelection> {
-        return refs.asNullable()
-                .filter { it.isNotEmpty() }
-                .map { Selection(target, type, it) }
-    }
+    fun getSelection(): Nullable<ISelection> = internalSelection
 
     fun clear() {
-        refs = emptySet()
+        internalSelection = Nullable.castNull()
     }
 
     fun setSelection(selection: Nullable<ISelection>) {
-        selection.filter { it.selectionTarget == target }
-                .filterIsInstance<Selection>()
-                .getOrNull()
-                ?.let { refs = it.refs.toSet() } ?: run { refs = emptySet() }
+        internalSelection = selection.filter { it.selectionTarget == target }
     }
 
-    fun isEmpty() = refs.isEmpty()
+    fun isEmpty() = !internalSelection.eval { true }
 
     fun updateSelection(selection: Nullable<ISelection>, multiSelection: Boolean, ref: IRef?): Nullable<ISelection> {
 

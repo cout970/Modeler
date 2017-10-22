@@ -3,10 +3,11 @@ package com.cout970.modeler.gui.canvas
 import com.cout970.glutilities.event.EnumKeyState
 import com.cout970.glutilities.event.EventMouseClick
 import com.cout970.modeler.api.model.IModel
-import com.cout970.modeler.api.model.selection.ISelection
+import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.controller.ITaskProcessor
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.getSelectedObjects
+import com.cout970.modeler.core.model.selection.ObjectRef
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.canvas.cursor.Cursor
 import com.cout970.modeler.gui.canvas.input.DragTick
@@ -91,12 +92,32 @@ class CanvasManager {
         selection.ifNotNull {
             val model = gui.state.tmpModel ?: gui.modelAccessor.model
 
-            val newCenter = model.getSelectedObjects(it)
-                    .map { it.getCenter() }
-                    .middle()
+            val newCenter = when (it.selectionType) {
+                SelectionType.OBJECT -> model.getSelectedObjects(it)
+                        .map { it.getCenter() }
+                        .middle()
 
-            realCursor = Cursor(newCenter)
-            tmpCursor = null
+                SelectionType.FACE -> it.refs
+                        .filterIsInstance<IFaceRef>()
+                        .map { model.getObject(ObjectRef(it.objectIndex)) to it.faceIndex }
+                        .map { (obj, index) -> obj.mesh.faces[index].pos.map { obj.mesh.pos[it] }.middle() }
+                        .middle()
+
+                SelectionType.EDGE -> it.refs
+                        .filterIsInstance<IEdgeRef>()
+                        .map { model.getObject(ObjectRef(it.objectIndex)) to it }
+                        .flatMap { (obj, ref) -> listOf(obj.mesh.pos[ref.firstIndex], obj.mesh.pos[ref.secondIndex]) }
+                        .middle()
+
+                SelectionType.VERTEX -> it.refs
+                        .filterIsInstance<IPosRef>()
+                        .map { model.getObject(ObjectRef(it.objectIndex)).mesh.pos[it.posIndex] }
+                        .middle()
+            }
+            if (!newCenter.hasNaN()) {
+                realCursor = Cursor(newCenter)
+                tmpCursor = null
+            }
         }
     }
 

@@ -43,7 +43,7 @@ class ApplyMaterial : IUseCase {
 
     fun makeTask(selection: ISelection, ref: IMaterialRef): ITask {
         val newModel = model.modifyObjects(model.getSelectedObjectRefs(selection)) { _, obj ->
-            obj.transformer.withMaterial(obj, ref)
+            obj.withMaterial(ref)
         }
         return TaskUpdateModel(oldModel = model, newModel = newModel)
     }

@@ -17,9 +17,8 @@ import com.cout970.vector.extensions.Vector3
 class Cursor(val center: IVector3 = Vector3.ORIGIN) {
 
 
-    fun getCursorParameters(camera: Camera, viewport: IVector2): CursorParameters {
-        return CursorParameters.create(camera.zoom, viewport)
-    }
+    fun getCursorParameters(camera: Camera, viewport: IVector2): CursorParameters =
+            CursorParameters.create(camera.zoom, viewport)
 
     fun getSelectableParts(gui: Gui, canvas: Canvas): List<ISelectable> {
         val camera = canvas.cameraHandler.camera
