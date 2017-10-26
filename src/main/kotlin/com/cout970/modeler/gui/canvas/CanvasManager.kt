@@ -100,7 +100,7 @@ class CanvasManager {
                 SelectionType.FACE -> it.refs
                         .filterIsInstance<IFaceRef>()
                         .map { model.getObject(ObjectRef(it.objectIndex)) to it.faceIndex }
-                        .map { (obj, index) -> obj.mesh.faces[index].pos.map { obj.mesh.pos[it] }.middle() }
+                        .map { (obj, index) -> obj.mesh.faces[index].pos.map { obj.mesh.pos[it] }.middle() } // TODO fix java.lang.IndexOutOfBoundsException: Index: 32, Size: 32
                         .middle()
 
                 SelectionType.EDGE -> it.refs

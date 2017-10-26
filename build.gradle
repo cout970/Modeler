@@ -1,5 +1,5 @@
 group 'com.cout970'
-version '1.4.1-SNAPSHOT'
+version '1.4.2-SNAPSHOT'
 
 import org.gradle.internal.os.OperatingSystem
 

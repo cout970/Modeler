@@ -11,14 +11,13 @@ import com.cout970.modeler.core.model.getSelectedObjectRefs
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.selection.FaceRef
 import com.cout970.modeler.core.model.selection.ObjectRef
+import com.cout970.modeler.util.scale
 import com.cout970.modeler.util.toAxisRotations
 import com.cout970.modeler.util.toJOML
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.Vector3
-import com.cout970.vector.extensions.plus
-import com.cout970.vector.extensions.times
 import com.cout970.vector.extensions.vec3Of
+import org.joml.Matrix4d
 import org.joml.Vector4d
 
 /**
@@ -29,18 +28,22 @@ object EditTool {
     //
     // TRANSFORM
     //
-    fun translate(source: IModel, sel: ISelection, translation: IVector3): IModel = when (sel.selectionType) {
-        SelectionType.OBJECT -> source.modifyObjects({ sel.isSelected(it) }) { _, it ->
-            it.transformer.translate(it, translation)
+    fun translate(source: IModel, sel: ISelection, translation: IVector3): IModel {
+        val matrix = TRSTransformation(translation).matrix.toJOML()
+        val transform = { it: IVector3 -> matrix.transformVertex(it) }
+        return when (sel.selectionType) {
+            SelectionType.OBJECT -> source.modifyObjects({ sel.isSelected(it) }) { _, it ->
+                it.transformer.translate(it, translation)
+            }
+            SelectionType.FACE -> transformFaces(source, sel, transform)
+            SelectionType.EDGE -> transformEdges(source, sel, transform)
+            SelectionType.VERTEX -> transformVertex(source, sel, transform)
         }
-        SelectionType.FACE -> transformFaces(source, sel, TRSTransformation(translation))
-        SelectionType.EDGE -> transformEdges(source, sel, TRSTransformation(translation))
-        SelectionType.VERTEX -> transformVertex(source, sel, TRSTransformation(translation))
     }
 
-
     fun rotate(source: IModel, sel: ISelection, pivot: IVector3, rotation: IQuaternion): IModel {
-        val transform = TRSTransformation.fromRotationPivot(pivot, rotation.toAxisRotations())
+        val matrix = TRSTransformation.fromRotationPivot(pivot, rotation.toAxisRotations()).matrix.toJOML()
+        val transform = { it: IVector3 -> matrix.transformVertex(it) }
         return when (sel.selectionType) {
             SelectionType.OBJECT -> source.modifyObjects({ sel.isSelected(it) }) { _, it ->
                 it.transformer.rotate(it, pivot, rotation)
@@ -52,7 +55,7 @@ object EditTool {
     }
 
     fun scale(source: IModel, sel: ISelection, center: IVector3, axis: IVector3, offset: Float): IModel {
-        val transform = TRSTransformation(scale = Vector3.ONE + axis * offset)
+        val transform = { it: IVector3 -> it.scale(center, axis, offset) }
         return when (sel.selectionType) {
             SelectionType.OBJECT -> source.modifyObjects({ sel.isSelected(it) }) { _, it ->
                 it.transformer.scale(it, center, axis, offset)
@@ -63,7 +66,7 @@ object EditTool {
         }
     }
 
-    fun transformFaces(source: IModel, sel: ISelection, transform: TRSTransformation): IModel {
+    fun transformFaces(source: IModel, sel: ISelection, transform: (IVector3) -> IVector3): IModel {
         val objRefs = sel.refs.filterIsInstance<IFaceRef>().map { ObjectRef(it.objectIndex) }.distinct()
         return source.modifyObjects(objRefs) { ref, obj ->
             val indices: Set<Int> = sel.refs
@@ -78,7 +81,7 @@ object EditTool {
         }
     }
 
-    fun transformEdges(source: IModel, sel: ISelection, transform: TRSTransformation): IModel {
+    fun transformEdges(source: IModel, sel: ISelection, transform: (IVector3) -> IVector3): IModel {
         val objRefs = sel.refs.filterIsInstance<IEdgeRef>().map { ObjectRef(it.objectIndex) }.distinct()
         return source.modifyObjects(objRefs) { ref, obj ->
             val indices: Set<Int> = sel.refs
@@ -92,7 +95,7 @@ object EditTool {
         }
     }
 
-    fun transformVertex(source: IModel, sel: ISelection, transform: TRSTransformation): IModel {
+    fun transformVertex(source: IModel, sel: ISelection, transform: (IVector3) -> IVector3): IModel {
         val objRefs = sel.refs.filterIsInstance<IPosRef>().map { ObjectRef(it.objectIndex) }.distinct()
         return source.modifyObjects(objRefs) { ref, obj ->
             val indices: Set<Int> = sel.refs
@@ -106,16 +109,17 @@ object EditTool {
         }
     }
 
-    fun transformMesh(obj: IObject, indices: Set<Int>, transform: TRSTransformation): IMesh {
-        val matrix = transform.matrix.toJOML()
+    fun transformMesh(obj: IObject, indices: Set<Int>, transform: (IVector3) -> IVector3): IMesh {
 
         val newPos: List<IVector3> = obj.mesh.pos.mapIndexed { index, it ->
-            if (index in indices) {
-                val vec4 = matrix.transform(Vector4d(it.xd, it.yd, it.zd, 1.0))
-                vec3Of(vec4.x, vec4.y, vec4.z)
-            } else it
+            if (index in indices) transform(it) else it
         }
         return Mesh(pos = newPos, tex = obj.mesh.tex, faces = obj.mesh.faces)
+    }
+
+    fun Matrix4d.transformVertex(it: IVector3): IVector3 {
+        val vec4 = transform(Vector4d(it.xd, it.yd, it.zd, 1.0))
+        return vec3Of(vec4.x, vec4.y, vec4.z)
     }
 
     //
