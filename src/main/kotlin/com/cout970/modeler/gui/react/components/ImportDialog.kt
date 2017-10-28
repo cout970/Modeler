@@ -52,23 +52,23 @@ class ImportDialog : RComponent<ImportDialog.Props, ImportDialog.State>() {
 
 
             // first line
-            +FixedLabel("Import Model", 0f, 8f, 460f, 24f).apply {
+            add(FixedLabel("Import Model", 0f, 8f, 460f, 24f).apply {
                 textState.fontSize = 22f
-            }
+            })
 
             //second line
-            +FixedLabel("Path", 25f, 50f, 400f, 24f).apply {
+            add(FixedLabel("Path", 25f, 50f, 400f, 24f).apply {
                 textState.fontSize = 20f
                 textState.horizontalAlign = HorizontalAlign.LEFT
-            }
+            })
 
-            +TextInput(state.text, 90f, 50f, 250f, 24f).apply {
+            add(TextInput(state.text, 90f, 50f, 250f, 24f).apply {
                 listenerMap.addListener(TextInputContentChangeEvent::class.java) {
                     replaceState(state.copy(text = it.newValue))
                 }
-            }
+            })
 
-            +TextButton("", "Select", 360f, 50f, 80f, 24f).apply {
+            add(TextButton("", "Select", 360f, 50f, 80f, 24f).apply {
                 listenerMap.addListener(MouseClickEvent::class.java) {
                     if (it.action == MouseClickEvent.MouseClickAction.RELEASE) {
                         val file = TinyFileDialogs.tinyfd_openFileDialog(
@@ -91,15 +91,15 @@ class ImportDialog : RComponent<ImportDialog.Props, ImportDialog.State>() {
                         }
                     }
                 }
-            }
+            })
 
             //third line
-            +FixedLabel("Format", 25f, 100f, 400f, 24f).apply {
+            add(FixedLabel("Format", 25f, 100f, 400f, 24f).apply {
                 textState.fontSize = 20f
                 textState.horizontalAlign = HorizontalAlign.LEFT
-            }
+            })
 
-            +DropDown("", 90f, 100f, 350f, 24f).apply {
+            add(DropDown("", 90f, 100f, 350f, 24f).apply {
                 elementHeight = 22f
                 buttonWidth = 22f
                 visibleCount = 5
@@ -109,10 +109,10 @@ class ImportDialog : RComponent<ImportDialog.Props, ImportDialog.State>() {
                 listenerMap.addListener(SelectBoxChangeSelectionEvent::class.java) {
                     replaceState(state.copy(option = options.indexOf(it.newValue)))
                 }
-            }
+            })
 
             //fourth line
-            +CheckBox("Flip UV", 360f, 150f, 80f, 24f).apply {
+            add(CheckBox("Flip UV", 360f, 150f, 80f, 24f).apply {
 
                 backgroundColor = Config.colorPalette.buttonColor.toColor()
                 textState.fontSize = 18f
@@ -133,10 +133,10 @@ class ImportDialog : RComponent<ImportDialog.Props, ImportDialog.State>() {
                 listenerMap.addListener(CheckBoxChangeValueEvent::class.java) {
                     replaceState(state.copy(flipUV = it.isNewValue))
                 }
-            }
+            })
 
             //fifth line
-            +TextButton("", "Import", 270f, 200f, 80f, 24f).apply {
+            add(TextButton("", "Import", 270f, 200f, 80f, 24f).apply {
                 listenerMap.addListener(MouseClickEvent::class.java) {
                     props.popup.returnFunc(ImportProperties(
                             path = state.text,
@@ -144,13 +144,13 @@ class ImportDialog : RComponent<ImportDialog.Props, ImportDialog.State>() {
                             flipUV = state.flipUV
                     ))
                 }
-            }
+            })
 
-            +TextButton("", "Cancel", 360f, 200f, 80f, 24f).apply {
+            add(TextButton("", "Cancel", 360f, 200f, 80f, 24f).apply {
                 listenerMap.addListener(MouseClickEvent::class.java) {
                     props.popup.returnFunc(null)
                 }
-            }
+            })
         }
     }
 

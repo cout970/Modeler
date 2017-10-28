@@ -49,7 +49,7 @@ class CenterPanel : RComponent<CenterPanel.Props, Unit>() {
         props.canvasContainer.layout.updateCanvas()
 
         // add canvas to root
-        +canvas
+        add(canvas)
 
         panel {
             if (canvas.isEnabled) {
@@ -64,47 +64,47 @@ class CenterPanel : RComponent<CenterPanel.Props, Unit>() {
             val y = size.y / 2 - 50f
 
             // first level
-            +FixedLabel("Open new view:", x, y + 0f, 100f,
-                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+            add(FixedLabel("Open new view:", x, y + 0f, 100f,
+                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f })
 
-            +FixedLabel("Close view:", x, y + 25f, 100f,
-                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+            add(FixedLabel("Close view:", x, y + 25f, 100f,
+                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f })
 
-            +FixedLabel("Resize view:", x, y + 50f, 100f,
-                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+            add(FixedLabel("Resize view:", x, y + 50f, 100f,
+                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f })
 
-            +FixedLabel("Change mode:", x, y + 75f, 100f,
-                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+            add(FixedLabel("Change mode:", x, y + 75f, 100f,
+                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f })
 
-            +FixedLabel("Hide left:", x, y + 100f, 100f,
-                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+            add(FixedLabel("Hide left:", x, y + 100f, 100f,
+                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f })
 
-            +FixedLabel("Hide right:", x, y + 125f, 100f,
-                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+            add(FixedLabel("Hide right:", x, y + 125f, 100f,
+                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f })
 
             // second level
 
-            +FixedLabel("Alt + N", 150f + x, y + 0f, 100f,
-                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+            add(FixedLabel("Alt + N", 150f + x, y + 0f, 100f,
+                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f })
 
-            +FixedLabel("Alt + D", 150f + x, y + 25f, 100f,
-                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+            add(FixedLabel("Alt + D", 150f + x, y + 25f, 100f,
+                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f })
 
-            +FixedLabel("Alt + J/K", 150f + x, y + 50f, 100f,
-                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+            add(FixedLabel("Alt + J/K", 150f + x, y + 50f, 100f,
+                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f })
 
-            +FixedLabel("Alt + M", 150f + x, y + 75f, 100f,
-                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+            add(FixedLabel("Alt + M", 150f + x, y + 75f, 100f,
+                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f })
 
-            +FixedLabel("Alt + L", 150f + x, y + 100f, 100f,
-                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+            add(FixedLabel("Alt + L", 150f + x, y + 100f, 100f,
+                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f })
 
-            +FixedLabel("Alt + R", 150f + x, y + 125f, 100f,
-                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+            add(FixedLabel("Alt + R", 150f + x, y + 125f, 100f,
+                    24f).apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f })
 
         }
 
-        +ProfilerDiagram()
+        add(ProfilerDiagram())
     }
 
     class Props(val leftPanelHidden: Boolean, val rightPanelHidden: Boolean, val canvasContainer: CanvasContainer)

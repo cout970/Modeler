@@ -95,7 +95,7 @@ fun Quaterniond.toIQuaternion(): IQuaternion = quatOf(x,
 
 fun IVector2.isInside(pos: IVector2, size: IVector2): Boolean {
     return xd > pos.xd && xd < pos.xd + size.xd &&
-           yd > pos.yd && yd < pos.yd + size.yd
+            yd > pos.yd && yd < pos.yd + size.yd
 }
 
 private fun IVector3.scale(center: IVector3, scale: IVector3): IVector3 {

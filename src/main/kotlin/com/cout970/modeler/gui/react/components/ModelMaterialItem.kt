@@ -31,24 +31,24 @@ class ModelMaterialItem : RComponent<ModelMaterialItem.Props, Boolean>() {
         position.y = props.index * 24f
         setBorderless()
 
-        +TextButton("material.view.select", props.name, 0f, 0f, 120f, 24f).also {
+        add(TextButton("material.view.select", props.name, 0f, 0f, 120f, 24f).also {
             it.textState.horizontalAlign = HorizontalAlign.LEFT
             it.textState.padding.x = 10f
             it.setTransparent()
             it.metadata += "ref" to props.ref
-        }
+        })
         if (props.ref.materialIndex != -1) {
-            +IconButton("material.view.load", "loadMaterial", 120f, 0f, 24f, 24f).also {
+            add(IconButton("material.view.load", "loadMaterial", 120f, 0f, 24f, 24f).also {
                 it.setTransparent()
                 it.border.isEnabled = false
                 it.metadata += "ref" to props.ref
-            }
+            })
         }
-        +IconButton("material.view.apply", "applyMaterial", 150f, 0f, 24f, 24f).also {
+        add(IconButton("material.view.apply", "applyMaterial", 150f, 0f, 24f, 24f).also {
             it.setTransparent()
             it.border.isEnabled = false
             it.metadata += "ref" to props.ref
-        }
+        })
     }
 
     data class Props(val ref: IMaterialRef, val name: String, val index: Int, val color: Vector4f)

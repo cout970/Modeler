@@ -13,7 +13,7 @@ import org.liquidengine.legui.component.ScrollablePanel
  */
 class VerticalPanel(
         x: Float = 0f, y: Float = 0f, width: Float = 10f, height: Float = 10f
-) : ScrollablePanel<Component>(Vector2f(x, y), Vector2f(width, height)) {
+) : ScrollablePanel(Vector2f(x, y), Vector2f(width, height)) {
 
     init {
         setTransparent()

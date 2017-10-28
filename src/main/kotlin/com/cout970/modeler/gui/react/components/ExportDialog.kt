@@ -50,34 +50,34 @@ class ExportDialog : RComponent<ExportDialog.Props, Unit>() {
             val dropdown = DropDown("", 90f, 50f, 350f, 24f)
 
             // first line
-            +FixedLabel("Export Model", 0f, 8f, 460f, 24f).apply {
+            add(FixedLabel("Export Model", 0f, 8f, 460f, 24f).apply {
                 textState.fontSize = 22f
-            }
+            })
 
             //second line
-            +FixedLabel("Format", 25f, 50f, 400f, 24f).apply {
+            add(FixedLabel("Format", 25f, 50f, 400f, 24f).apply {
                 textState.fontSize = 20f
                 textState.horizontalAlign = HorizontalAlign.LEFT
-            }
+            })
 
-            +dropdown.apply {
+            add(dropdown.apply {
                 elementHeight = 22f
                 buttonWidth = 22f
                 visibleCount = 2
                 addElement("Obj (*.obj)")
                 addElement("MCX (*.mcx)")
                 setSelected(0, true)
-            }
+            })
 
             //third line
-            +FixedLabel("Path", 25f, 100f, 400f, 24f).apply {
+            add(FixedLabel("Path", 25f, 100f, 400f, 24f).apply {
                 textState.fontSize = 20f
                 textState.horizontalAlign = HorizontalAlign.LEFT
-            }
+            })
 
-            +path
+            add(path)
 
-            +TextButton("", "Select", 360f, 100f, 80f, 24f).apply {
+            add(TextButton("", "Select", 360f, 100f, 80f, 24f).apply {
                 listenerMap.addListener(MouseClickEvent::class.java) {
                     if (it.action == MouseClickEvent.MouseClickAction.RELEASE) {
                         val file = TinyFileDialogs.tinyfd_saveFileDialog(
@@ -91,12 +91,12 @@ class ExportDialog : RComponent<ExportDialog.Props, Unit>() {
                         }
                     }
                 }
-            }
+            })
 
             //fourth line
 
             //fifth line
-            +TextButton("", "Export", 270f, 200f, 80f, 24f).apply {
+            add(TextButton("", "Export", 270f, 200f, 80f, 24f).apply {
                 listenerMap.addListener(MouseClickEvent::class.java) {
                     props.popup.returnFunc(ExportProperties(
                             path = path.text,
@@ -105,13 +105,13 @@ class ExportDialog : RComponent<ExportDialog.Props, Unit>() {
                             materialLib = "materials"
                     ))
                 }
-            }
+            })
 
-            +TextButton("", "Cancel", 360f, 200f, 80f, 24f).apply {
+            add(TextButton("", "Cancel", 360f, 200f, 80f, 24f).apply {
                 listenerMap.addListener(MouseClickEvent::class.java) {
                     props.popup.returnFunc(null)
                 }
-            }
+            })
 
             //TODO fix state
         }

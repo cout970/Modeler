@@ -33,29 +33,29 @@ class ModelObjectItem : RComponent<ModelObjectProps, Boolean>() {
         posY = props.index * 24f
         setBorderless()
 
-        +CButton(props.name, 0f, 0f, 120f, 24f, "tree.view.select").also {
+        add(CButton(props.name, 0f, 0f, 120f, 24f, "tree.view.select").also {
             it.textState.horizontalAlign = HorizontalAlign.LEFT
             it.textState.padding.x = 10f
             it.setTransparent()
             it.metadata += "ref" to props.ref
-        }
-        +IconButton("tree.view.show.item", "showIcon", 120f, 0f, 24f, 24f).also {
+        })
+        add(IconButton("tree.view.show.item", "showIcon", 120f, 0f, 24f, 24f).also {
             it.setTransparent()
             it.setBorderless()
             it.metadata += "ref" to props.ref
             if (props.visible) it.hide() else it.show()
-        }
-        +IconButton("tree.view.hide.item", "hideIcon", 120f, 0f, 24f, 24f).also {
+        })
+        add(IconButton("tree.view.hide.item", "hideIcon", 120f, 0f, 24f, 24f).also {
             it.setTransparent()
             it.setBorderless()
             it.metadata += "ref" to props.ref
             if (!props.visible) it.hide() else it.show()
-        }
-        +IconButton("tree.view.delete.item", "deleteIcon", 150f, 0f, 24f, 24f).also {
+        })
+        add(IconButton("tree.view.delete.item", "deleteIcon", 150f, 0f, 24f, 24f).also {
             it.setTransparent()
             it.setBorderless()
             it.metadata += "ref" to props.ref
-        }
+        })
     }
 
     companion object : RComponentSpec<ModelObjectItem, ModelObjectProps, Boolean>

@@ -6,7 +6,6 @@ import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.toColor
 import org.joml.Vector2f
 import org.liquidengine.legui.border.SimpleLineBorder
-import org.liquidengine.legui.component.Panel
 import org.liquidengine.legui.component.ScrollablePanel
 import org.liquidengine.legui.event.ScrollEvent
 
@@ -15,7 +14,7 @@ import org.liquidengine.legui.event.ScrollEvent
  */
 open class CVerticalPanel(
         x: Float = 0f, y: Float = 0f, width: Float = 10f, height: Float = 10f
-) : ScrollablePanel<Panel<*>>(Vector2f(x, y), Vector2f(width, height)) {
+) : ScrollablePanel(Vector2f(x, y), Vector2f(width, height)) {
 
     val id = lastID++
 

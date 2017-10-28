@@ -45,7 +45,7 @@ object StackOverflowSnippets {
                 if (file.endsWith(".class")) {
                     try {
                         classes.add(Class.forName(pckgname + '.'
-                                                  + file.substring(0, file.length - 6)))
+                                + file.substring(0, file.length - 6)))
                     } catch (e: NoClassDefFoundError) {
                         // do nothing. this class hasn't been found by the
                         // loader, and we don't care.
@@ -122,7 +122,7 @@ object StackOverflowSnippets {
 
         try {
             val cld = Thread.currentThread().contextClassLoader
-                      ?: throw ClassNotFoundException("Can't get class loader.")
+                    ?: throw ClassNotFoundException("Can't get class loader.")
 
             val resources = cld.getResources(pckgname.replace('.', '/'))
             var connection: URLConnection

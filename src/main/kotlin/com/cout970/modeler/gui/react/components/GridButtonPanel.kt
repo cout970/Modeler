@@ -27,32 +27,32 @@ class GridButtonPanel : RComponent<Unit, Unit>() {
         FixedYFillX(28f).updateScale(this, ctx.parentSize)
         setBorderless()
 
-        +ToggleButton("drawModelGridLines", "model_grid", true, 5f, 2f, 24f, 24f)
+        add(ToggleButton("drawModelGridLines", "model_grid", true, 5f, 2f, 24f, 24f)
                 .setBorderless()
-                .apply { cornerRadius = 0f }
+                .apply { cornerRadius = 0f })
 
-        +ToggleButton("drawTextureGridLines", "grid", true, 35f, 2f, 24f, 24f)
+        add(ToggleButton("drawTextureGridLines", "grid", true, 35f, 2f, 24f, 24f)
                 .setBorderless()
-                .apply { cornerRadius = 0f }
+                .apply { cornerRadius = 0f })
 
-        +ToggleButton("renderLights", "focus", false, 65f, 2f, 24f, 24f)
+        add(ToggleButton("renderLights", "focus", false, 65f, 2f, 24f, 24f)
                 .setBorderless()
-                .apply { cornerRadius = 0f }
+                .apply { cornerRadius = 0f })
 
-        +ToggleButton("useTexture", "texture", true, 95f, 2f, 24f, 24f)
+        add(ToggleButton("useTexture", "texture", true, 95f, 2f, 24f, 24f)
                 .setBorderless()
-                .apply { cornerRadius = 0f }
+                .apply { cornerRadius = 0f })
 
-        +ToggleButton("useColor", "color", false, 125f, 2f, 24f, 24f)
+        add(ToggleButton("useColor", "color", false, 125f, 2f, 24f, 24f)
                 .setBorderless()
-                .apply { cornerRadius = 0f }
+                .apply { cornerRadius = 0f })
 
-        +ToggleButton("useLight", "light", true, 155f, 2f, 24f, 24f)
+        add(ToggleButton("useLight", "light", true, 155f, 2f, 24f, 24f)
                 .setBorderless()
-                .apply { cornerRadius = 0f }
+                .apply { cornerRadius = 0f })
 
-        +ToggleButton("showInvisible", "invisible", true, 185f, 2f, 24f, 24f)
+        add(ToggleButton("showInvisible", "invisible", true, 185f, 2f, 24f, 24f)
                 .setBorderless()
-                .apply { cornerRadius = 0f }
+                .apply { cornerRadius = 0f })
     }
 }

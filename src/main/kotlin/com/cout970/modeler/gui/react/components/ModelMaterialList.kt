@@ -74,10 +74,10 @@ class ModelMaterialList : RComponent<ModelMaterialList.Props, ModelMaterialList.
             }
 
             val position = index - start
-            +ModelMaterialItem { ModelMaterialItem.Props(ref, name, position, color) }
+            add(ModelMaterialItem { ModelMaterialItem.Props(ref, name, position, color) })
         }
 
-        +ScrollBar(180f, 0f, 10f, size.y).apply {
+        add(ScrollBar(180f, 0f, 10f, size.y).apply {
             minValue = 0f
             maxValue = maxScroll
             scrollStep = 0.1f
@@ -105,7 +105,7 @@ class ModelMaterialList : RComponent<ModelMaterialList.Props, ModelMaterialList.
                     replaceState(state.copy(scrolling = isScrolling))
                 }
             }
-        }
+        })
 
         listenerMap.addListener(ScrollEvent::class.java) {
             val newValue = (state.scroll - it.yoffset.toFloat()).coerceIn(0f, maxScroll)

@@ -19,7 +19,7 @@ import com.cout970.modeler.util.toJoml2f
 import com.cout970.vector.api.IVector2
 import org.liquidengine.legui.component.Button
 import org.liquidengine.legui.component.Component
-import org.liquidengine.legui.component.Container
+
 import org.liquidengine.legui.component.TextInput
 import org.liquidengine.legui.component.misc.listener.textinput.TextInputMouseClickEventListener
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
@@ -54,7 +54,7 @@ class ValueInput : RComponent<ValueInput.Props, Unit>() {
             backgroundColor = Config.colorPalette.greyColor.toColor()
         }
 
-        +input.apply {
+        add(input.apply {
             listenerMap.addListener(ScrollEvent::class.java) {
                 dispatch(it.yoffset.toFloat(), input.text)
             }
@@ -76,23 +76,23 @@ class ValueInput : RComponent<ValueInput.Props, Unit>() {
                     dispatch(0f, input.text)
                 }
             }
-        }
+        })
 
-        +IconButton("", "button_up", 0f, 0f, 75f, 16f).apply {
+        add(IconButton("", "button_up", 0f, 0f, 75f, 16f).apply {
             backgroundColor = Config.colorPalette.lightDarkColor.toColor()
             listenerMap.addListener(MouseClickEvent::class.java) {
                 if (it.action == MouseClickEvent.MouseClickAction.RELEASE)
                     dispatch(1f, input.text)
             }
-        }
+        })
 
-        +IconButton("", "button_down", 0f, 56f, 75f, 16f).apply {
+        add(IconButton("", "button_down", 0f, 56f, 75f, 16f).apply {
             backgroundColor = Config.colorPalette.lightDarkColor.toColor()
             listenerMap.addListener(MouseClickEvent::class.java) {
                 if (it.action == MouseClickEvent.MouseClickAction.RELEASE)
                     dispatch(-1f, input.text)
             }
-        }
+        })
 
         if (props.ref.objectIndex == -1) {
             disableInput()
@@ -101,14 +101,16 @@ class ValueInput : RComponent<ValueInput.Props, Unit>() {
 
     @Suppress("UNCHECKED_CAST")
     fun Component.disableInput() {
-        when (this) {
-            is Container<*> -> (this as Container<Component>).childs.forEach { it.disableInput() }
-            is Button -> this.isEnabled = false
-            is TextInput -> {
-                this.isEnabled = false
-                this.isEditable = false
+        if (isEmpty)
+            when (this) {
+                is Button -> this.isEnabled = false
+                is TextInput -> {
+                    this.isEnabled = false
+                    this.isEditable = false
+                }
             }
-        }
+        else
+            childs.forEach { it.disableInput() }
     }
 
     fun dispatch(offset: Float, content: String) {

@@ -39,10 +39,6 @@ class CButton(
         }
     }
 
-    override fun setTooltip(tooltip: String) {
-        this.setTooltipComponent(CTooltip(tooltip))
-    }
-
     fun setImage(img: ImageIcon) {
         backgroundIcon = img
         focusedBackgroundIcon = img

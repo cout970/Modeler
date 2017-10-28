@@ -3,6 +3,7 @@ package com.cout970.modeler.gui.react.components
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.IModelAccessor
+import com.cout970.modeler.gui.comp.CTooltip
 import com.cout970.modeler.gui.comp.setBorderless
 import com.cout970.modeler.gui.comp.setTransparent
 import com.cout970.modeler.gui.react.core.RBuildContext
@@ -38,7 +39,7 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
             hide()
         }
 
-        +ModelStatistics { ModelStatistics.Props(props.modelAccessor) }
+        add(ModelStatistics { ModelStatistics.Props(props.modelAccessor) })
 
         panel {
             setBorderless()
@@ -47,15 +48,15 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
             height = (ctx.parentSize.yf - topSize) * 0.5f
             posY = topSize
 
-            +FixedLabel("Model parts", 5f, 5f, 180f, 24f)
-            +IconButton("cube.template.new", "addTemplateCubeIcon", 5f, 30f, 32f, 32f).also {
-                it.setTooltip("Create Template Cube")
-            }
-            +IconButton("cube.mesh.new", "addMeshCubeIcon", 40f, 30f, 32f, 32f).also {
-                it.setTooltip("Create Cube Mesh")
-            }
+            add(FixedLabel("Model parts", 5f, 5f, 180f, 24f))
+            add(IconButton("cube.template.new", "addTemplateCubeIcon", 5f, 30f, 32f, 32f).also {
+                it.tooltip = CTooltip("Create Template Cube")
+            })
+            add(IconButton("cube.mesh.new", "addMeshCubeIcon", 40f, 30f, 32f, 32f).also {
+                it.tooltip = CTooltip("Create Cube Mesh")
+            })
 
-            +ModelObjectList { ModelObjectList.Props(props.modelAccessor, vec2Of(0f, 70f), vec2Of(190f, height - 72f)) }
+            add(ModelObjectList { ModelObjectList.Props(props.modelAccessor, vec2Of(0f, 70f), vec2Of(190f, height - 72f)) })
         }
         panel {
             setBorderless()
@@ -65,17 +66,17 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
             height = (ctx.parentSize.yf - topSize) * 0.5f
             posY = topSize + (ctx.parentSize.yf - topSize) * 0.5f
 
-            +FixedLabel("Materials", 5f, 5f, 180f, 24f)
-            +IconButton("material.view.import", "addMaterialIcon", 5f, 30f, 32f, 32f)
-            +IconButton("material.view.remove", "removeMaterialIcon", 45f, 30f, 32f, 32f)
-            +ModelMaterialList {
+            add(FixedLabel("Materials", 5f, 5f, 180f, 24f))
+            add(IconButton("material.view.import", "addMaterialIcon", 5f, 30f, 32f, 32f))
+            add(IconButton("material.view.remove", "removeMaterialIcon", 45f, 30f, 32f, 32f))
+            add(ModelMaterialList {
                 ModelMaterialList.Props(
                         modelAccessor = props.modelAccessor,
                         selectedMaterial = props.selectedMaterial,
                         pos = vec2Of(0f, 70f),
                         size = vec2Of(190f, height - 64f)
                 )
-            }
+            })
         }
     }
 

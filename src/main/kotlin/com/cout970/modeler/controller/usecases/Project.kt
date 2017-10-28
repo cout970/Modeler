@@ -39,7 +39,7 @@ class NewProject : IUseCase {
             val res = JOptionPane.showConfirmDialog(
                     null,
                     "Do you want to create a new project? \n" +
-                    "All unsaved changes will be lost!"
+                            "All unsaved changes will be lost!"
             )
             if (res != JOptionPane.OK_OPTION) return TaskNone
         }

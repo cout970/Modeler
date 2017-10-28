@@ -35,9 +35,9 @@ class LeftPanel : RComponent<LeftPanel.Props, Unit>() {
             hide()
         }
 
-        +GridButtonPanel {}
-        +SelectionTypeButtons { SelectionTypeButtons.Props(props.guiState) }
-        +EditCubePanel { EditCubePanel.Props(props.access, props.dispatcher) }
+        add(GridButtonPanel {})
+        add(SelectionTypeButtons { SelectionTypeButtons.Props(props.guiState) })
+        add(EditCubePanel { EditCubePanel.Props(props.access, props.dispatcher) })
     }
 
     class Props(val access: IModelAccessor, val dispatcher: Dispatcher, val hide: Boolean, val guiState: GuiState)

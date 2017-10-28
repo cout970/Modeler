@@ -2,7 +2,6 @@ package com.cout970.modeler.gui.react.leguicomp
 
 import com.cout970.modeler.gui.GuiResources
 import com.cout970.modeler.gui.IResourceReloadable
-import com.cout970.modeler.gui.comp.CTooltip
 import com.cout970.modeler.gui.comp.setBorderless
 import com.cout970.modeler.gui.comp.setTransparent
 import org.liquidengine.legui.component.Button
@@ -29,10 +28,6 @@ class IconButton(
         resources.getIcon(icon)?.let {
             setImage(ImageIcon(it))
         }
-    }
-
-    override fun setTooltip(tooltip: String) {
-        this.setTooltipComponent(CTooltip(tooltip))
     }
 
     fun setImage(img: ImageIcon) {

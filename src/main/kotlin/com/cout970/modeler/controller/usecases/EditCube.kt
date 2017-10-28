@@ -89,10 +89,10 @@ class UpdateTemplateCube : IUseCase {
         //@formatter:on
         }
         if (cube.size == obj.size &&
-            cube.pos == obj.pos &&
-            cube.transformation == obj.transformation &&
-            cube.textureOffset == obj.textureOffset &&
-            cube.textureSize == obj.textureSize) {
+                cube.pos == obj.pos &&
+                cube.transformation == obj.transformation &&
+                cube.textureOffset == obj.textureOffset &&
+                cube.textureSize == obj.textureSize) {
 
             return null
         }

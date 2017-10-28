@@ -31,38 +31,38 @@ class SelectionTypeButtons : RComponent<SelectionTypeButtons.Props, Unit>() {
         val thirdButton = props.guiState.selectionType == SelectionType.EDGE
         val fourthButton = props.guiState.selectionType == SelectionType.VERTEX
 
-        +ToggleButton("", "selection_mode_object", firstButton, 0f, 0f, 32f, 32f).apply {
+        add(ToggleButton("", "selection_mode_object", firstButton, 0f, 0f, 32f, 32f).apply {
             setBorderless()
 
             listenerMap.addListener(MouseClickEvent::class.java) {
                 props.guiState.selectionType = SelectionType.OBJECT
                 replaceState(Unit)
             }
-        }
-        +ToggleButton("", "selection_mode_face", secondButton, 32f + 5f, 0f, 32f, 32f).apply {
+        })
+        add(ToggleButton("", "selection_mode_face", secondButton, 32f + 5f, 0f, 32f, 32f).apply {
             setBorderless()
 
             listenerMap.addListener(MouseClickEvent::class.java) {
                 props.guiState.selectionType = SelectionType.FACE
                 replaceState(Unit)
             }
-        }
-        +ToggleButton("", "selection_mode_edge", thirdButton, 64f + 10f, 0f, 32f, 32f).apply {
+        })
+        add(ToggleButton("", "selection_mode_edge", thirdButton, 64f + 10f, 0f, 32f, 32f).apply {
             setBorderless()
 
             listenerMap.addListener(MouseClickEvent::class.java) {
                 props.guiState.selectionType = SelectionType.EDGE
                 replaceState(Unit)
             }
-        }
-        +ToggleButton("", "selection_mode_vertex", fourthButton, 96f + 15f, 0f, 32f, 32f).apply {
+        })
+        add(ToggleButton("", "selection_mode_vertex", fourthButton, 96f + 15f, 0f, 32f, 32f).apply {
             setBorderless()
 
             listenerMap.addListener(MouseClickEvent::class.java) {
                 props.guiState.selectionType = SelectionType.VERTEX
                 replaceState(Unit)
             }
-        }
+        })
     }
 
     class Props(val guiState: GuiState)
