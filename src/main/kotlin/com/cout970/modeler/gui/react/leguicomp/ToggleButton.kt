@@ -3,8 +3,8 @@ package com.cout970.modeler.gui.react.leguicomp
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.GuiResources
 import com.cout970.modeler.gui.IResourceReloadable
-import com.cout970.modeler.gui.comp.setTransparent
 import com.cout970.modeler.util.IPropertyBind
+import com.cout970.modeler.util.setTransparent
 import com.cout970.modeler.util.toColor
 import org.liquidengine.legui.border.SimpleLineBorder
 import org.liquidengine.legui.icon.Icon

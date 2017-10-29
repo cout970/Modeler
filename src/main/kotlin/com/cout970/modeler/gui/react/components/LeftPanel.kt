@@ -4,13 +4,13 @@ import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.GuiState
 import com.cout970.modeler.gui.IModelAccessor
-import com.cout970.modeler.gui.comp.setBorderless
 import com.cout970.modeler.gui.react.core.RBuildContext
 import com.cout970.modeler.gui.react.core.RComponent
 import com.cout970.modeler.gui.react.core.RComponentSpec
 import com.cout970.modeler.gui.react.core.invoke
 import com.cout970.modeler.gui.react.panel
 import com.cout970.modeler.util.hide
+import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.toColor
 import com.cout970.modeler.util.toJoml2f
 import com.cout970.vector.extensions.vec2Of

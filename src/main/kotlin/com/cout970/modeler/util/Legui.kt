@@ -2,6 +2,7 @@ package com.cout970.modeler.util
 
 import com.cout970.vector.api.IVector2
 import org.joml.Vector2f
+import org.liquidengine.legui.color.ColorConstants
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Container
 import org.liquidengine.legui.component.Frame
@@ -92,4 +93,14 @@ fun Component.forEachComponent(func: (Component) -> Unit) {
         }
         else -> func(this)
     }
+}
+
+fun Component.setBorderless(): Component {
+    border.isEnabled = false
+    return this
+}
+
+fun Component.setTransparent(): Component {
+    backgroundColor = ColorConstants.transparent()
+    return this
 }

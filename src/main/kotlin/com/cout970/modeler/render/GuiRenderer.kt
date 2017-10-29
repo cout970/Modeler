@@ -1,7 +1,7 @@
 package com.cout970.modeler.render
 
 import com.cout970.modeler.core.log.Profiler
-import com.cout970.modeler.gui.comp.PixelBorder
+import com.cout970.modeler.gui.react.leguicomp.PixelBorder
 import com.cout970.modeler.gui.react.leguicomp.ProfilerDiagram
 import com.cout970.modeler.input.event.CustomCallbackKeeper
 import org.liquidengine.legui.component.Frame
@@ -34,7 +34,8 @@ class GuiRenderer(val rootFrame: Frame, window: Long) {
         renderer.initialize()
 
         (RendererProvider.getInstance() as? NvgRendererProvider)?.let {
-            it.putBorderRenderer(PixelBorder::class.java, PixelBorder.PixelBorderRenderer)
+            it.putBorderRenderer(
+                    PixelBorder::class.java, PixelBorder.PixelBorderRenderer)
             it.putComponentRenderer(ProfilerDiagram::class.java, ProfilerDiagram.ProfilerDiagramRenderer)
         }
     }

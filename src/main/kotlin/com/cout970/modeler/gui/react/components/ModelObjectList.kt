@@ -2,7 +2,6 @@ package com.cout970.modeler.gui.react.components
 
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.IModelAccessor
-import com.cout970.modeler.gui.comp.setTransparent
 import com.cout970.modeler.gui.react.core.RBuildContext
 import com.cout970.modeler.gui.react.core.RComponent
 import com.cout970.modeler.gui.react.core.RComponentSpec
@@ -11,6 +10,7 @@ import com.cout970.modeler.gui.react.event.EventModelUpdate
 import com.cout970.modeler.gui.react.event.EventSelectionUpdate
 import com.cout970.modeler.gui.react.panel
 import com.cout970.modeler.util.focus
+import com.cout970.modeler.util.setTransparent
 import com.cout970.modeler.util.toColor
 import com.cout970.modeler.util.toJoml2f
 import com.cout970.vector.api.IVector2

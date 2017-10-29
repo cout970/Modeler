@@ -1,4 +1,4 @@
-package com.cout970.modeler.gui.comp
+package com.cout970.modeler.gui.react.leguicomp
 
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.util.toColor

@@ -3,13 +3,13 @@ package com.cout970.modeler.gui.react.components
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.GuiState
-import com.cout970.modeler.gui.comp.setBorderless
 import com.cout970.modeler.gui.react.core.RBuildContext
 import com.cout970.modeler.gui.react.core.RComponent
 import com.cout970.modeler.gui.react.core.RComponentSpec
 import com.cout970.modeler.gui.react.leguicomp.ToggleButton
 import com.cout970.modeler.gui.react.marginX
 import com.cout970.modeler.gui.react.panel
+import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.toColor
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.event.MouseClickEvent

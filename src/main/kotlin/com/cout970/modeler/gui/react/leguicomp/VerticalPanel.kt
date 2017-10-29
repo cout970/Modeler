@@ -1,8 +1,8 @@
 package com.cout970.modeler.gui.react.leguicomp
 
 import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.gui.comp.setTransparent
 import com.cout970.modeler.util.hide
+import com.cout970.modeler.util.setTransparent
 import com.cout970.modeler.util.toColor
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Component

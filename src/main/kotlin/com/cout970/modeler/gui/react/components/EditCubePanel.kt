@@ -9,8 +9,6 @@ import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.model.*
 import com.cout970.modeler.core.model.selection.ObjectRef
 import com.cout970.modeler.gui.IModelAccessor
-import com.cout970.modeler.gui.comp.setBorderless
-import com.cout970.modeler.gui.comp.setTransparent
 import com.cout970.modeler.gui.react.core.RBuildContext
 import com.cout970.modeler.gui.react.core.RComponent
 import com.cout970.modeler.gui.react.core.RComponentSpec
@@ -20,6 +18,8 @@ import com.cout970.modeler.gui.react.event.EventSelectionUpdate
 import com.cout970.modeler.gui.react.leguicomp.FixedLabel
 import com.cout970.modeler.gui.react.panel
 import com.cout970.modeler.util.asNullable
+import com.cout970.modeler.util.setBorderless
+import com.cout970.modeler.util.setTransparent
 import com.cout970.modeler.util.toNullable
 import com.cout970.vector.extensions.Vector2
 import com.cout970.vector.extensions.Vector3

@@ -3,7 +3,6 @@ package com.cout970.modeler.controller.binders
 import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
-import com.cout970.modeler.gui.comp.CButton
 import com.cout970.modeler.gui.react.leguicomp.IconButton
 import com.cout970.modeler.gui.react.leguicomp.TextButton
 import org.liquidengine.legui.component.Component
@@ -23,10 +22,6 @@ class ButtonBinder(val dispatcher: Dispatcher) {
     fun bindButtons(panel: Container<*>) {
         panel.childs.forEach {
             when (it) {
-                is CButton -> {
-                    log(Level.FINEST) { "Binding button: ${it.command}" }
-                    it.listenerMap.setButtonListener { onButtonPress(it.command, it) }
-                }
                 is IconButton -> {
                     if (it.command != "") {
                         log(Level.FINEST) { "Binding button: ${it.command} in $it" }

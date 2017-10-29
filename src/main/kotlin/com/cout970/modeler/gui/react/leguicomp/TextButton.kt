@@ -1,8 +1,7 @@
 package com.cout970.modeler.gui.react.leguicomp
 
 import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.gui.comp.CTooltip
-import com.cout970.modeler.gui.comp.setBorderless
+import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.toColor
 import org.liquidengine.legui.component.Button
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
@@ -28,7 +27,7 @@ class TextButton(
     }
 
     override fun setTooltip(tooltip: String) {
-        this.setTooltipComponent(CTooltip(tooltip))
+        this.setTooltipComponent(InstantTooltip(tooltip))
     }
 
     fun setImage(img: ImageIcon) {
