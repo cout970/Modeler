@@ -21,8 +21,8 @@ class SelectionTypeButtons : RComponent<SelectionTypeButtons.Props, Unit>() {
 
     override fun build(ctx: RBuildContext): Component = panel {
         backgroundColor = Config.colorPalette.darkestColor.toColor()
-        posY = 28f
         marginX(ctx, 5f)
+        posY = 30f
         height = 48f
         setBorderless()
 

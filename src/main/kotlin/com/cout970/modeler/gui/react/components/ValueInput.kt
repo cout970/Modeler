@@ -50,6 +50,8 @@ class ValueInput : RComponent<ValueInput.Props, Unit>() {
         }
 
         +input.apply {
+            listenerMap.addListener(MouseClickEvent::class.java, ValueInput.MouseClickEventListener())
+
             listenerMap.addListener(ScrollEvent::class.java) {
                 dispatch(it.yoffset.toFloat(), input.text)
             }

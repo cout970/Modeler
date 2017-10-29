@@ -6,6 +6,8 @@ import com.cout970.modeler.gui.react.core.RBuildContext
 import com.cout970.modeler.gui.react.core.RComponentWrapper
 import com.cout970.modeler.gui.react.event.EventSelectionUpdate
 import com.cout970.modeler.gui.react.leguicomp.Panel
+import com.cout970.modeler.gui.react.leguicomp.PixelBorder
+import org.joml.Vector4f
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Container
 
@@ -76,4 +78,12 @@ fun Component.centerX(ctx: RBuildContext) {
 
 fun Component.centerY(ctx: RBuildContext) {
     position.y = (ctx.parentSize.yf - size.y) * 0.5f
+}
+
+fun debugPixelBorder() = PixelBorder().apply {
+    enableBottom = true
+    enableTop = true
+    enableLeft = true
+    enableRight = true
+    color = Vector4f(1f, 0f, 0f, 1f)
 }

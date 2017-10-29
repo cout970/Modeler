@@ -120,6 +120,8 @@ data class ObjectCube(
 
     override fun withMaterial(materialRef: IMaterialRef): IObject = copy(material = materialRef)
 
+    override fun withName(name: String): IObject = copy(name = name)
+
     override val transformer: IObjectTransformer = object : IObjectTransformer {
 
         override fun translate(obj: IObject, translation: IVector3): IObject {

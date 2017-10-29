@@ -22,7 +22,10 @@ object ObjectNone : IObject {
     override val material: IMaterialRef = MaterialRef(-1)
 
     override fun withMesh(newMesh: IMesh): IObject = this
+
     override fun withMaterial(materialRef: IMaterialRef): IObject = this
+
+    override fun withName(name: String): IObject = this
 
     override val transformer: IObjectTransformer = object : IObjectTransformer {
         override fun translate(obj: IObject, translation: IVector3): IObject = this@ObjectNone
@@ -52,7 +55,10 @@ object ObjectCubeNone : IObjectCube {
     override fun withTextureSize(size: IVector2): IObjectCube = this
 
     override fun withMesh(newMesh: IMesh): IObject = this
+
     override fun withMaterial(materialRef: IMaterialRef): IObject = this
+
+    override fun withName(name: String): IObject = this
 
     override val transformer: IObjectTransformer = object : IObjectTransformer {
         override fun translate(obj: IObject, translation: IVector3): IObject = this@ObjectCubeNone

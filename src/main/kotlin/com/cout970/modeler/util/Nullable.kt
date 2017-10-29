@@ -64,6 +64,14 @@ sealed class Nullable<T> {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
+    fun <R> zip(other: Nullable<R>): Nullable<Pair<T, R>> {
+        if (this is NonNull<*> && other is NonNull<*>) {
+            return (this.value as T to other.value as R).asNullable()
+        }
+        return castNull()
+    }
+
     inline fun eval(func: (T) -> Boolean): Boolean = when (this) {
         is Null -> false
         is NonNull -> func(value)

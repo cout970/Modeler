@@ -35,6 +35,15 @@ class PixelBorder : Border() {
                         Vector2f(comp.size.x, 1f),
                         border.color)
             }
+            if (border.enableLeft) {
+                NvgShapes.drawRect(nanovg, comp.absolutePosition, Vector2f(1f, comp.size.y), border.color)
+            }
+            if (border.enableRight) {
+                NvgShapes.drawRect(nanovg,
+                        Vector2f(comp.absolutePosition.x + comp.size.x - 1, comp.absolutePosition.y),
+                        Vector2f(1f, comp.size.y),
+                        border.color)
+            }
         }
     }
 }

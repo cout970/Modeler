@@ -37,6 +37,7 @@ class LeftPanel : RComponent<LeftPanel.Props, Unit>() {
 
         +GridButtonPanel {}
         +SelectionTypeButtons { SelectionTypeButtons.Props(props.guiState) }
+        +EditObjectName { EditObjectName.Props(props.access, props.dispatcher) }
         +EditCubePanel { EditCubePanel.Props(props.access, props.dispatcher) }
     }
 
