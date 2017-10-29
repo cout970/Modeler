@@ -25,8 +25,8 @@ class RContext(val root: Component, val gui: Gui, val virtualTree: () -> Compone
             if (it is RComponentWrapper<*, *, *>) {
                 if (it.component == child) return it
             }
-            if (it is Component) {
-                findParent(child, it as Component)?.let { return it }
+            if (!it.isEmpty) {
+                findParent(child, it)?.let { return it }
             }
         }
         return null

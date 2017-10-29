@@ -64,8 +64,8 @@ class AABB(a: IVector3, b: IVector3) {
                 }
                 val i = list.last()
                 writer.print("$vectorClass(${f.format(i.min.x)}, ${f.format(i.min.y)}, ${f.format(i.min.z)}" +
-                        ") * PIXEL ${"to $vectorClass(" + f.format(i.max.x) + ", " + f.format(
-                                i.max.y) + ", " + f.format(i.max.z) + ") * PIXEL\n"}")
+                             ") * PIXEL ${"to $vectorClass(" + f.format(i.max.x) + ", " + f.format(
+                                     i.max.y) + ", " + f.format(i.max.z) + ") * PIXEL\n"}")
 
                 writer.print(")\n")
                 writer.flush()

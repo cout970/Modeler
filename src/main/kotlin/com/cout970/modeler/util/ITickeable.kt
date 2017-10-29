@@ -5,9 +5,9 @@ package com.cout970.modeler.util
  */
 interface ITickeable {
 
-    fun preTick() {}
+    fun preTick(){}
 
     fun tick()
 
-    fun postTick() {}
+    fun postTick(){}
 }

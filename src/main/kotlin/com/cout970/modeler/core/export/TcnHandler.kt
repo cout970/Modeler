@@ -67,8 +67,8 @@ class TcnImporter {
         for (i in 0..shapes.length - 1) {
             val shape = shapes.item(i)
             val shapeAttributes = shape.attributes ?:
-                    throw IllegalStateException(
-                            "Shape #" + (i + 1) + " has no attributes")
+                                  throw IllegalStateException(
+                                          "Shape #" + (i + 1) + " has no attributes")
 
             var shapeType: String? = null
             val type = shapeAttributes.getNamedItem("type")

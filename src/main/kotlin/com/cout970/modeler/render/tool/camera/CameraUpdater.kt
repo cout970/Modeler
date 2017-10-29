@@ -36,7 +36,7 @@ class CameraUpdater(
 
     private fun updateSelectedCanvas() {
         if (Config.keyBindings.moveCamera.check(input) ||
-                Config.keyBindings.rotateCamera.check(input)) {
+            Config.keyBindings.rotateCamera.check(input)) {
 
             if (selectedCanvas == null) {
                 val mousePos = input.mouse.getMousePos()
@@ -53,7 +53,7 @@ class CameraUpdater(
     private fun moveCamera(selectedScene: Canvas) {
 
         val move = Config.keyBindings.moveCamera.check(input) ||
-                (input.keyboard.isKeyPressed(Keyboard.KEY_SPACE) && input.mouse.isButtonPressed(1))
+                   (input.keyboard.isKeyPressed(Keyboard.KEY_SPACE) && input.mouse.isButtonPressed(1))
 
         val rotate = Config.keyBindings.rotateCamera.check(input)
 

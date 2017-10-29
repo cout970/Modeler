@@ -3,7 +3,6 @@ package com.cout970.modeler.util
 import com.cout970.vector.api.IVector2
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Component
-
 import org.liquidengine.legui.component.Frame
 import org.liquidengine.legui.component.TextInput
 import org.liquidengine.legui.event.Event
@@ -33,14 +32,14 @@ fun Component.show() {
 
 fun Component.disable() {
     isEnabled = false
-    if (this is Component) {
+    if (!this.isEmpty) {
         this.childs.forEach(Component::disable)
     }
 }
 
 fun Component.enable() {
     isEnabled = true
-    if (this is Component) {
+    if (!this.isEmpty) {
         this.childs.forEach(Component::enable)
     }
 }
@@ -77,19 +76,17 @@ inline fun <reified T : Event<Component>> Component.getListeners(): List<Pair<Co
 
 @Suppress("UNCHECKED_CAST")
 fun Component.forEachChild(func: (Component) -> Unit) {
-    when (this) {
-        is Component -> (this as Component).childs.forEach { it.forEachChild(func) }
-        else -> func(this)
+    if (!this.isEmpty) {
+        this.childs.forEach { it.forEachChild(func) }
+    } else {
+        func(this)
     }
 }
 
 @Suppress("UNCHECKED_CAST")
 fun Component.forEachComponent(func: (Component) -> Unit) {
-    when (this) {
-        is Component -> {
-            func(this)
-            (this as Component).childs.forEach { it.forEachComponent(func) }
-        }
-        else -> func(this)
+    func(this)
+    if (!this.isEmpty) {
+        this.childs.forEach { it.forEachComponent(func) }
     }
 }

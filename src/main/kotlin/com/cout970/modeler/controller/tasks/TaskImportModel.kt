@@ -26,7 +26,7 @@ class TaskImportModel(
                 val newModel = import()
                 newModel.materials.forEach { it.loadTexture(state.resourceLoader) }
                 modelCache = newModel
-            } catch (e: Exception) {
+            } catch(e: Exception) {
                 e.print()
                 JOptionPane.showMessageDialog(null, "Error importing model: \n$e")
             }

@@ -48,10 +48,10 @@ class ExportManager(val resourceLoader: ResourceLoader) {
         val zip = ZipFile(path)
 
         val properties = zip.load<ProjectProperties>("project.json", gson) ?:
-                throw IllegalStateException("Missing file 'project.json' inside '$path'")
+                         throw IllegalStateException("Missing file 'project.json' inside '$path'")
 
         val model = zip.load<IModel>("model.json", gson) ?:
-                throw IllegalStateException("Missing file 'model.json' inside '$path'")
+                    throw IllegalStateException("Missing file 'model.json' inside '$path'")
 
         return model to properties
     }
@@ -63,7 +63,7 @@ class ExportManager(val resourceLoader: ResourceLoader) {
     }
 
     fun saveProject(path: String, model: IModel, properties: ProjectProperties) {
-        File(path).parentFile.let { if (!it.exists()) it.mkdir() }
+        File(path).parentFile.let { if(!it.exists()) it.mkdir() }
 
         val zip = ZipOutputStream(File(path).outputStream())
         zip.let {

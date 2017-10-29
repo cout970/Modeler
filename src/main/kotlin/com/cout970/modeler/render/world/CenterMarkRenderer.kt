@@ -19,7 +19,7 @@ class CenterMarkRenderer {
 
     fun renderCursor(ctx: RenderContext) {
         if (Config.keyBindings.moveCamera.check(ctx.gui.input) ||
-                Config.keyBindings.rotateCamera.check(ctx.gui.input)) {
+            Config.keyBindings.rotateCamera.check(ctx.gui.input)) {
 
             val vao = centerMark.getOrCreate(ctx) {
                 ctx.buffer.build(GL11.GL_QUADS) {
