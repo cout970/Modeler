@@ -3,14 +3,14 @@ package com.cout970.modeler.gui.react.core
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.util.toIVector
 import org.liquidengine.legui.component.Component
-import org.liquidengine.legui.component.Container
+
 
 /**
  * Created by cout970 on 2017/09/23.
  */
 object RComponentRenderer {
 
-    fun render(root: Container<Component>, gui: Gui, virtualTree: () -> Component) {
+    fun render(root: Component, gui: Gui, virtualTree: () -> Component) {
         buildAll(RContext(root, gui, virtualTree))
     }
 
@@ -78,7 +78,7 @@ object RComponentRenderer {
                 newC.componentDidMount()
             }
 
-            val oldTree = if (old is Container<*>) old.childs?.firstOrNull() else null
+            val oldTree = if (old is Component) old.childs?.firstOrNull() else null
             val newTree = new.buildSubTree(buildCtx)
 
             val expandedTree = expandSubTree(oldTree, newTree, buildCtx, ctx)
@@ -91,11 +91,11 @@ object RComponentRenderer {
             return new
         }
 
-        if (new !is Container<*>) return new
-        val newContainer = new as Container<Component>
+        if (new !is Component) return new
+        val newContainer = new as Component
 
-        if (old is Container<*>) {
-            val oldContainer = old as Container<Component>
+        if (old is Component) {
+            val oldContainer = old as Component
 
             if (oldContainer.count() == newContainer.count()) {
                 val childs = newContainer.childs.zip(oldContainer.childs).map { (newChild, oldChild) ->
@@ -121,7 +121,7 @@ object RComponentRenderer {
         if (new is RComponentWrapper<*, *, *>) {
             return new
         }
-        if (old is Container<*> && new is Container<*>) {
+        if (old is Component && new is Component) {
             return if (old.count() != new.count()) {
                 // I don't know how to handle this situation, so I will use the Ostrich algorithm,
                 // hide my head in the ground until the problem goes away
@@ -130,7 +130,7 @@ object RComponentRenderer {
                 val childs = old.childs.zip(new.childs).map { (oldC, newC) ->
                     mergeTrees(oldC, newC)
                 }
-                (new as Container<Component>).apply { clearChilds(); addAll(childs) }
+                (new as Component).apply { clearChilds(); addAll(childs) }
             }
         }
         return new

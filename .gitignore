@@ -54,3 +54,4 @@ saves/**
 
 *.psd
 classes
+/config.json

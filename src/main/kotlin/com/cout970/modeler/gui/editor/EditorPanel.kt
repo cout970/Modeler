@@ -7,7 +7,7 @@ import com.cout970.modeler.gui.comp.setTransparent
 import com.cout970.modeler.gui.react.components.*
 import com.cout970.modeler.gui.react.core.RComponentRenderer.render
 import com.cout970.modeler.gui.react.core.invoke
-import com.cout970.modeler.gui.react.panel
+import com.cout970.modeler.gui.react.leguicomp.Panel
 import com.cout970.modeler.util.toJoml2f
 import com.cout970.vector.api.IVector2
 import org.joml.Vector2f
@@ -19,7 +19,7 @@ class EditorPanel : MutablePanel() {
 
     lateinit var gui: Gui
 
-    val reactBase = panel {
+    val reactBase = com.cout970.modeler.gui.react.panel {
         setTransparent()
         setBorderless()
     }
@@ -40,11 +40,11 @@ class EditorPanel : MutablePanel() {
 
         reactBase.size = newSize.toJoml2f()
         render(reactBase, gui) {
-            panel {
+            com.cout970.modeler.gui.react.panel {
                 size = newSize.toJoml2f()
                 setTransparent()
                 setBorderless()
-
+                +TopButtonPanel { }
                 +TopButtonPanel { }
                 +RightPanel {
                     RightPanel.Props(
@@ -76,6 +76,8 @@ class EditorPanel : MutablePanel() {
                         }
                         "export" -> {
                             +ExportDialog { ExportDialog.Props(it) }
+                        }
+                        else -> {
                         }
                     }
                 }

@@ -7,7 +7,7 @@ import com.cout970.modeler.gui.comp.CButton
 import com.cout970.modeler.gui.react.leguicomp.IconButton
 import com.cout970.modeler.gui.react.leguicomp.TextButton
 import org.liquidengine.legui.component.Component
-import org.liquidengine.legui.component.Container
+
 import org.liquidengine.legui.event.MouseClickEvent
 import org.liquidengine.legui.listener.ListenerMap
 
@@ -20,7 +20,7 @@ class ButtonBinder(val dispatcher: Dispatcher) {
         dispatcher.onEvent(str, comp)
     }
 
-    fun bindButtons(panel: Container<*>) {
+    fun bindButtons(panel: Component) {
         panel.childs.forEach {
             when (it) {
                 is CButton -> {
@@ -39,7 +39,7 @@ class ButtonBinder(val dispatcher: Dispatcher) {
                         it.listenerMap.setButtonListener { onButtonPress(it.command, it) }
                     }
                 }
-                is Container<*> -> bindButtons(it)
+                is Component -> bindButtons(it)
             }
         }
     }

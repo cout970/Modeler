@@ -1,6 +1,7 @@
 package com.cout970.modeler.gui.react.components
 
 import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.gui.comp.CTooltip
 import com.cout970.modeler.gui.comp.setBorderless
 import com.cout970.modeler.gui.comp.setTransparent
 import com.cout970.modeler.gui.react.core.RBuildContext
@@ -32,19 +33,19 @@ class TopButtonPanel : RComponent<Unit, Unit>() {
             height = 48f
 
             +IconButton("project.new", "newProjectIcon", 0f, 0f, 48f, 48f).also {
-                it.setTooltip("New Project")
+                it.tooltip = CTooltip("New Project")
             }
             +IconButton("project.load", "loadProjectCubeIcon", 48f, 0f, 48f, 48f).also {
-                it.setTooltip("Load Project")
+                it.tooltip = CTooltip("Load Project")
             }
             +IconButton("project.save", "saveProjectIcon", 96f, 0f, 48f, 48f).also {
-                it.setTooltip("Save Project")
+                it.tooltip = CTooltip("Save Project")
             }
             +IconButton("project.save.as", "saveAsProjectIcon", 144f, 0f, 48f, 48f).also {
-                it.setTooltip("Save Project As")
+                it.tooltip = CTooltip("Save Project As")
             }
             +IconButton("project.edit", "editProjectIcon", 192f, 0f, 48f, 48f).also {
-                it.setTooltip("Edit Project")
+                it.tooltip = CTooltip("Edit Project")
             }
         }
         panel {
@@ -54,16 +55,16 @@ class TopButtonPanel : RComponent<Unit, Unit>() {
             position.x = 240f
 
             +IconButton("model.import", "importModelIcon", 0f, 0f, 48f, 48f).also {
-                it.setTooltip("Import Model")
+                it.tooltip = CTooltip("Import Model")
             }
             +IconButton("model.export", "exportModelIcon", 48f, 0f, 48f, 48f).also {
-                it.setTooltip("Export Model")
+                it.tooltip = CTooltip("Export Model")
             }
             +IconButton("texture.export", "exportTextureIcon", 96f, 0f, 48f, 48f).also {
-                it.setTooltip("Export Texture Template")
+                it.tooltip = CTooltip("Export Texture Template")
             }
             +IconButton("model.export.hitboxes", "exportHitboxIcon", 144f, 0f, 48f, 48f).also {
-                it.setTooltip("Export Hitbox Map")
+                it.tooltip = CTooltip("Export Hitbox Map")
             }
         }
     }

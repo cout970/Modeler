@@ -3,6 +3,7 @@ package com.cout970.modeler.gui.react.components
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.IModelAccessor
+import com.cout970.modeler.gui.comp.CTooltip
 import com.cout970.modeler.gui.comp.setBorderless
 import com.cout970.modeler.gui.comp.setTransparent
 import com.cout970.modeler.gui.react.core.RBuildContext
@@ -49,10 +50,10 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
 
             +FixedLabel("Model parts", 5f, 5f, 180f, 24f)
             +IconButton("cube.template.new", "addTemplateCubeIcon", 5f, 30f, 32f, 32f).also {
-                it.setTooltip("Create Template Cube")
+                it.tooltip = CTooltip("Create Template Cube")
             }
             +IconButton("cube.mesh.new", "addMeshCubeIcon", 40f, 30f, 32f, 32f).also {
-                it.setTooltip("Create Cube Mesh")
+                it.tooltip = CTooltip("Create Cube Mesh")
             }
 
             +ModelObjectList { ModelObjectList.Props(props.modelAccessor, vec2Of(0f, 70f), vec2Of(190f, height - 72f)) }
