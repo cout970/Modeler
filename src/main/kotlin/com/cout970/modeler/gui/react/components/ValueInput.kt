@@ -54,7 +54,7 @@ class ValueInput : RComponent<ValueInput.Props, Unit>() {
             backgroundColor = Config.colorPalette.greyColor.toColor()
         }
 
-        add(input.apply {
+        +input.apply {
             listenerMap.addListener(ScrollEvent::class.java) {
                 dispatch(it.yoffset.toFloat(), input.text)
             }
@@ -76,23 +76,23 @@ class ValueInput : RComponent<ValueInput.Props, Unit>() {
                     dispatch(0f, input.text)
                 }
             }
-        })
+        }
 
-        add(IconButton("", "button_up", 0f, 0f, 75f, 16f).apply {
+        +IconButton("", "button_up", 0f, 0f, 75f, 16f).apply {
             backgroundColor = Config.colorPalette.lightDarkColor.toColor()
             listenerMap.addListener(MouseClickEvent::class.java) {
                 if (it.action == MouseClickEvent.MouseClickAction.RELEASE)
                     dispatch(1f, input.text)
             }
-        })
+        }
 
-        add(IconButton("", "button_down", 0f, 56f, 75f, 16f).apply {
+        +IconButton("", "button_down", 0f, 56f, 75f, 16f).apply {
             backgroundColor = Config.colorPalette.lightDarkColor.toColor()
             listenerMap.addListener(MouseClickEvent::class.java) {
                 if (it.action == MouseClickEvent.MouseClickAction.RELEASE)
                     dispatch(-1f, input.text)
             }
-        })
+        }
 
         if (props.ref.objectIndex == -1) {
             disableInput()

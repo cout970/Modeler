@@ -7,6 +7,7 @@ import com.cout970.modeler.gui.comp.setTransparent
 import com.cout970.modeler.gui.react.components.*
 import com.cout970.modeler.gui.react.core.RComponentRenderer.render
 import com.cout970.modeler.gui.react.core.invoke
+import com.cout970.modeler.gui.react.leguicomp.Panel
 import com.cout970.modeler.util.toJoml2f
 import com.cout970.vector.api.IVector2
 import org.joml.Vector2f
@@ -43,38 +44,38 @@ class EditorPanel : MutablePanel() {
                 size = newSize.toJoml2f()
                 setTransparent()
                 setBorderless()
-                add(TopButtonPanel { })
-                add(TopButtonPanel { })
-                add(RightPanel {
+                +TopButtonPanel { }
+                +TopButtonPanel { }
+                +RightPanel {
                     RightPanel.Props(
                             modelAccessor = gui.modelAccessor,
                             selectedMaterial = { gui.state.selectedMaterial },
                             hide = !gui.state.showRightPanel
                     )
-                })
-                add(LeftPanel {
+                }
+                +LeftPanel {
                     LeftPanel.Props(
                             access = gui.modelAccessor,
                             dispatcher = gui.dispatcher,
                             hide = !gui.state.showLeftPanel,
                             guiState = gui.state
                     )
-                })
-                add(CenterPanel {
+                }
+                +CenterPanel {
                     CenterPanel.Props(
                             leftPanelHidden = !gui.state.showLeftPanel,
                             rightPanelHidden = !gui.state.showRightPanel,
                             canvasContainer = gui.canvasContainer
                     )
-                })
+                }
 
                 gui.state.popup?.let {
                     when (it.name) {
                         "import" -> {
-                            add(ImportDialog { ImportDialog.Props(it) })
+                            +ImportDialog { ImportDialog.Props(it) }
                         }
                         "export" -> {
-                            add(ExportDialog { ExportDialog.Props(it) })
+                            +ExportDialog { ExportDialog.Props(it) }
                         }
                         else -> {
                         }

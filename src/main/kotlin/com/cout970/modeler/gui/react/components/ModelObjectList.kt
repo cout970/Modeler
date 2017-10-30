@@ -59,10 +59,10 @@ class ModelObjectList : RComponent<ModelObjectList.Props, ModelObjectList.State>
             }
 
             val position = index - start
-            add(ModelObjectItem { ModelObjectProps(ref, name, model.isVisible(ref), color, position.toFloat()) })
+            +ModelObjectItem { ModelObjectProps(ref, name, model.isVisible(ref), color, position.toFloat()) }
         }
 
-        add(ScrollBar(180f, 0f, 10f, size.y).apply {
+        +ScrollBar(180f, 0f, 10f, size.y).apply {
             minValue = 0f
             maxValue = maxScroll
             scrollStep = 0.1f
@@ -90,7 +90,7 @@ class ModelObjectList : RComponent<ModelObjectList.Props, ModelObjectList.State>
                     replaceState(state.copy(scrolling = isScrolling))
                 }
             }
-        })
+        }
 
         listenerMap.addListener(ScrollEvent::class.java) {
             val newValue = (state.scroll - it.yoffset.toFloat()).coerceIn(0f, maxScroll)

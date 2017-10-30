@@ -32,21 +32,21 @@ class TopButtonPanel : RComponent<Unit, Unit>() {
             width = 240f
             height = 48f
 
-            add(IconButton("project.new", "newProjectIcon", 0f, 0f, 48f, 48f).also {
+            +IconButton("project.new", "newProjectIcon", 0f, 0f, 48f, 48f).also {
                 it.tooltip = CTooltip("New Project")
-            })
-            add(IconButton("project.load", "loadProjectCubeIcon", 48f, 0f, 48f, 48f).also {
+            }
+            +IconButton("project.load", "loadProjectCubeIcon", 48f, 0f, 48f, 48f).also {
                 it.tooltip = CTooltip("Load Project")
-            })
-            add(IconButton("project.save", "saveProjectIcon", 96f, 0f, 48f, 48f).also {
+            }
+            +IconButton("project.save", "saveProjectIcon", 96f, 0f, 48f, 48f).also {
                 it.tooltip = CTooltip("Save Project")
-            })
-            add(IconButton("project.save.as", "saveAsProjectIcon", 144f, 0f, 48f, 48f).also {
+            }
+            +IconButton("project.save.as", "saveAsProjectIcon", 144f, 0f, 48f, 48f).also {
                 it.tooltip = CTooltip("Save Project As")
-            })
-            add(IconButton("project.edit", "editProjectIcon", 192f, 0f, 48f, 48f).also {
+            }
+            +IconButton("project.edit", "editProjectIcon", 192f, 0f, 48f, 48f).also {
                 it.tooltip = CTooltip("Edit Project")
-            })
+            }
         }
         panel {
             setTransparent()
@@ -54,18 +54,18 @@ class TopButtonPanel : RComponent<Unit, Unit>() {
             height = 48f
             position.x = 240f
 
-            add(IconButton("model.import", "importModelIcon", 0f, 0f, 48f, 48f).also {
+            +IconButton("model.import", "importModelIcon", 0f, 0f, 48f, 48f).also {
                 it.tooltip = CTooltip("Import Model")
-            })
-            add(IconButton("model.export", "exportModelIcon", 48f, 0f, 48f, 48f).also {
+            }
+            +IconButton("model.export", "exportModelIcon", 48f, 0f, 48f, 48f).also {
                 it.tooltip = CTooltip("Export Model")
-            })
-            add(IconButton("texture.export", "exportTextureIcon", 96f, 0f, 48f, 48f).also {
+            }
+            +IconButton("texture.export", "exportTextureIcon", 96f, 0f, 48f, 48f).also {
                 it.tooltip = CTooltip("Export Texture Template")
-            })
-            add(IconButton("model.export.hitboxes", "exportHitboxIcon", 144f, 0f, 48f, 48f).also {
+            }
+            +IconButton("model.export.hitboxes", "exportHitboxIcon", 144f, 0f, 48f, 48f).also {
                 it.tooltip = CTooltip("Export Hitbox Map")
-            })
+            }
         }
     }
 

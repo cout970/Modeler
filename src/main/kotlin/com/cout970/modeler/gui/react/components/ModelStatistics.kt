@@ -40,18 +40,18 @@ class ModelStatistics : RComponent<ModelStatistics.Props, Unit>() {
             backgroundColor = Config.colorPalette.lightDarkColor.toColor()
         }
 
-        add(FixedLabel("Objs: $objs", 5f, 5f, 180f, 16f).apply {
+        +FixedLabel("Objs: $objs", 5f, 5f, 180f, 16f).apply {
             config(this)
-        })
-        add(FixedLabel("Quads: $quads", 5f, 25f, 180f, 16f).apply {
+        }
+        +FixedLabel("Quads: $quads", 5f, 25f, 180f, 16f).apply {
             config(this)
-        })
-        add(FixedLabel("Pos vertex: $posVertex", 5f, 45f, 180f, 16f).apply {
+        }
+        +FixedLabel("Pos vertex: $posVertex", 5f, 45f, 180f, 16f).apply {
             config(this)
-        })
-        add(FixedLabel("Tex vertex: $texVertex", 5f, 65f, 180f, 16f).apply {
+        }
+        +FixedLabel("Tex vertex: $texVertex", 5f, 65f, 180f, 16f).apply {
             config(this)
-        })
+        }
 
         listenerMap.addListener(EventModelUpdate::class.java) {
             replaceState(state)

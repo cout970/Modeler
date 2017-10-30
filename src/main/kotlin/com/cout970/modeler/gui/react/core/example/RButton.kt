@@ -32,10 +32,10 @@ class RButton : RComponent<RButton.Props, RButton.State>() {
 
             if (state.on) {
                 backgroundColor = ColorConstants.green()
-                add(Label("On"))
+                +Label("On")
             } else {
                 backgroundColor = ColorConstants.red()
-                add(Label("Off"))
+                +Label("Off")
             }
         }
     }

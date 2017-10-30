@@ -39,7 +39,7 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
             hide()
         }
 
-        add(ModelStatistics { ModelStatistics.Props(props.modelAccessor) })
+        +ModelStatistics { ModelStatistics.Props(props.modelAccessor) }
 
         panel {
             setBorderless()
@@ -48,15 +48,15 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
             height = (ctx.parentSize.yf - topSize) * 0.5f
             posY = topSize
 
-            add(FixedLabel("Model parts", 5f, 5f, 180f, 24f))
-            add(IconButton("cube.template.new", "addTemplateCubeIcon", 5f, 30f, 32f, 32f).also {
+            +FixedLabel("Model parts", 5f, 5f, 180f, 24f)
+            +IconButton("cube.template.new", "addTemplateCubeIcon", 5f, 30f, 32f, 32f).also {
                 it.tooltip = CTooltip("Create Template Cube")
-            })
-            add(IconButton("cube.mesh.new", "addMeshCubeIcon", 40f, 30f, 32f, 32f).also {
+            }
+            +IconButton("cube.mesh.new", "addMeshCubeIcon", 40f, 30f, 32f, 32f).also {
                 it.tooltip = CTooltip("Create Cube Mesh")
-            })
+            }
 
-            add(ModelObjectList { ModelObjectList.Props(props.modelAccessor, vec2Of(0f, 70f), vec2Of(190f, height - 72f)) })
+            +ModelObjectList { ModelObjectList.Props(props.modelAccessor, vec2Of(0f, 70f), vec2Of(190f, height - 72f)) }
         }
         panel {
             setBorderless()
@@ -66,17 +66,17 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
             height = (ctx.parentSize.yf - topSize) * 0.5f
             posY = topSize + (ctx.parentSize.yf - topSize) * 0.5f
 
-            add(FixedLabel("Materials", 5f, 5f, 180f, 24f))
-            add(IconButton("material.view.import", "addMaterialIcon", 5f, 30f, 32f, 32f))
-            add(IconButton("material.view.remove", "removeMaterialIcon", 45f, 30f, 32f, 32f))
-            add(ModelMaterialList {
+            +FixedLabel("Materials", 5f, 5f, 180f, 24f)
+            +IconButton("material.view.import", "addMaterialIcon", 5f, 30f, 32f, 32f)
+            +IconButton("material.view.remove", "removeMaterialIcon", 45f, 30f, 32f, 32f)
+            +ModelMaterialList {
                 ModelMaterialList.Props(
                         modelAccessor = props.modelAccessor,
                         selectedMaterial = props.selectedMaterial,
                         pos = vec2Of(0f, 70f),
                         size = vec2Of(190f, height - 64f)
                 )
-            })
+            }
         }
     }
 

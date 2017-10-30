@@ -77,10 +77,10 @@ class EditCubePanel : RComponent<EditCubePanel.Props, Unit>() {
             setBorderless()
             setTransparent()
 
-            add(FixedLabel("Size", 0f, 0f, 280f, 18f).apply { textState.fontSize = 22f })
-            add(ValueInput { ValueInput.Props(disp, { size().xf }, "cube.size.x", cubeRef, vec2Of(14f, 20f)) })
-            add(ValueInput { ValueInput.Props(disp, { size().yf }, "cube.size.y", cubeRef, vec2Of(103f, 20f)) })
-            add(ValueInput { ValueInput.Props(disp, { size().zf }, "cube.size.z", cubeRef, vec2Of(192f, 20f)) })
+            +FixedLabel("Size", 0f, 0f, 280f, 18f).apply { textState.fontSize = 22f }
+            +ValueInput { ValueInput.Props(disp, { size().xf }, "cube.size.x", cubeRef, vec2Of(14f, 20f)) }
+            +ValueInput { ValueInput.Props(disp, { size().yf }, "cube.size.y", cubeRef, vec2Of(103f, 20f)) }
+            +ValueInput { ValueInput.Props(disp, { size().zf }, "cube.size.z", cubeRef, vec2Of(192f, 20f)) }
         }
 
         panel {
@@ -92,10 +92,10 @@ class EditCubePanel : RComponent<EditCubePanel.Props, Unit>() {
             setBorderless()
             setTransparent()
 
-            add(FixedLabel("Position", 0f, 0f, 280f, 18f).apply { textState.fontSize = 22f })
-            add(ValueInput { ValueInput.Props(disp, { pos().xf }, "cube.pos.x", cubeRef, vec2Of(14f, 20f)) })
-            add(ValueInput { ValueInput.Props(disp, { pos().yf }, "cube.pos.y", cubeRef, vec2Of(103f, 20f)) })
-            add(ValueInput { ValueInput.Props(disp, { pos().zf }, "cube.pos.z", cubeRef, vec2Of(192f, 20f)) })
+            +FixedLabel("Position", 0f, 0f, 280f, 18f).apply { textState.fontSize = 22f }
+            +ValueInput { ValueInput.Props(disp, { pos().xf }, "cube.pos.x", cubeRef, vec2Of(14f, 20f)) }
+            +ValueInput { ValueInput.Props(disp, { pos().yf }, "cube.pos.y", cubeRef, vec2Of(103f, 20f)) }
+            +ValueInput { ValueInput.Props(disp, { pos().zf }, "cube.pos.z", cubeRef, vec2Of(192f, 20f)) }
         }
 
         panel {
@@ -107,10 +107,10 @@ class EditCubePanel : RComponent<EditCubePanel.Props, Unit>() {
             setBorderless()
             setTransparent()
 
-            add(FixedLabel("Rotation", 0f, 0f, 280f, 18f).apply { textState.fontSize = 22f })
-            add(ValueInput { ValueInput.Props(disp, { rotation().xf }, "cube.rot.x", cubeRef, vec2Of(14f, 20f)) })
-            add(ValueInput { ValueInput.Props(disp, { rotation().yf }, "cube.rot.y", cubeRef, vec2Of(103f, 20f)) })
-            add(ValueInput { ValueInput.Props(disp, { rotation().zf }, "cube.rot.z", cubeRef, vec2Of(192f, 20f)) })
+            +FixedLabel("Rotation", 0f, 0f, 280f, 18f).apply { textState.fontSize = 22f }
+            +ValueInput { ValueInput.Props(disp, { rotation().xf }, "cube.rot.x", cubeRef, vec2Of(14f, 20f)) }
+            +ValueInput { ValueInput.Props(disp, { rotation().yf }, "cube.rot.y", cubeRef, vec2Of(103f, 20f)) }
+            +ValueInput { ValueInput.Props(disp, { rotation().zf }, "cube.rot.z", cubeRef, vec2Of(192f, 20f)) }
         }
 
         panel {
@@ -122,10 +122,10 @@ class EditCubePanel : RComponent<EditCubePanel.Props, Unit>() {
             setBorderless()
             setTransparent()
 
-            add(FixedLabel("Texture", 0f, 0f, 280f, 18f).apply { textState.fontSize = 22f })
-            add(ValueInput { ValueInput.Props(disp, { tex().xf }, "cube.tex.x", cubeRef, vec2Of(14f, 20f)) })
-            add(ValueInput { ValueInput.Props(disp, { tex().yf }, "cube.tex.y", cubeRef, vec2Of(103f, 20f)) })
-            add(ValueInput { ValueInput.Props(disp, { scale().xf }, "cube.tex.scale", cubeRef, vec2Of(192f, 20f)) })
+            +FixedLabel("Texture", 0f, 0f, 280f, 18f).apply { textState.fontSize = 22f }
+            +ValueInput { ValueInput.Props(disp, { tex().xf }, "cube.tex.x", cubeRef, vec2Of(14f, 20f)) }
+            +ValueInput { ValueInput.Props(disp, { tex().yf }, "cube.tex.y", cubeRef, vec2Of(103f, 20f)) }
+            +ValueInput { ValueInput.Props(disp, { scale().xf }, "cube.tex.scale", cubeRef, vec2Of(192f, 20f)) }
         }
     }
 
