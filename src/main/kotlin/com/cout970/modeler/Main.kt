@@ -18,19 +18,11 @@ fun main(args: Array<String>) {
     log(Level.NORMAL) { "Program arguments: '${args.joinToString()}'" }
 
     try {
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
-        JOptionPane.getRootFrame().isAlwaysOnTop = true
-        log(Level.NORMAL) { "Using default system look and feel" }
-    } catch (e: Exception) {
-        e.print()
-    }
-
-    try {
         val init = Initializer()
         val state = init.init(args.toList())
         init.start(state)
         state.apply {
-            exportManager.saveProject("./saves/last.pff", projectManager.model, projectManager.projectProperties)
+            exportManager.saveProject("./data/saves/last.pff", projectManager.model, projectManager.projectProperties)
         }
     } catch (e: kotlin.Throwable) {
         e.print()

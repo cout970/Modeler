@@ -16,7 +16,7 @@ switch (OperatingSystem.current()) {
 }
 
 buildscript {
-    ext.kotlin_version = '1.1.50'
+    ext.kotlin_version = '1.1.51'
 
     repositories {
         mavenCentral()

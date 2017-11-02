@@ -14,8 +14,10 @@ import java.io.File
  */
 object ConfigManager {
 
+    val configPath = "data/config.json"
+
     fun loadConfig() {
-        val file = File("config.json")
+        val file = File(configPath )
         if (file.exists() && !Debugger.DEBUG) {
             val gson = GsonBuilder().setLenient().registerTypeAdapter(IVector3::class.java,
                     ColorSerializer()).setPrettyPrinting().create()
@@ -34,7 +36,7 @@ object ConfigManager {
     }
 
     fun saveConfig() {
-        val file = File("config.json")
+        val file = File(configPath )
         val gson = GsonBuilder().setLenient().registerTypeAdapter(IVector3::class.java,
                 ColorSerializer()).setPrettyPrinting().create()
         val clazz = JsonObject()

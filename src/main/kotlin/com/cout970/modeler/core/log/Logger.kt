@@ -13,7 +13,7 @@ import java.util.*
 object Logger {
 
     val level get() = Config.logLevel
-    val logs = File("logs").apply { if (!Debugger.DEBUG && !exists()) mkdir() }
+    val logs = File("./data/logs").apply { if (!Debugger.DEBUG && !exists()) mkdirs() }
     val stream = (if (Debugger.DEBUG) System.out else object : PrintStream(File(logs, getFileName())) {
         override fun println() {
             super.println()
@@ -41,8 +41,8 @@ object Logger {
 
         val name = "log_${year}_${month + 1}_${day}_$hour-$minute.log"
         var tryNum = 0
-        if (File(name).exists()) {
-            while (File("log_${year}_${month + 1}_${day}_$hour-${minute}_$tryNum.log").exists()) {
+        if (File(logs, name).exists()) {
+            while (File(logs, "log_${year}_${month + 1}_${day}_$hour-${minute}_$tryNum.log").exists()) {
                 tryNum++
             }
             return "log_${year}_${month + 1}_${day}_$hour-${minute}_$tryNum.log"
