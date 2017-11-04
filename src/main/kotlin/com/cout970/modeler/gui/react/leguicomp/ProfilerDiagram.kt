@@ -2,6 +2,7 @@ package com.cout970.modeler.gui.react.leguicomp
 
 import com.cout970.modeler.Debugger
 import com.cout970.modeler.core.log.Profiler
+import com.cout970.modeler.gui.react.spaces
 import com.cout970.modeler.util.absolutePositionV
 import com.cout970.modeler.util.toColor
 import com.cout970.vector.extensions.plus
@@ -80,6 +81,11 @@ class ProfilerDiagram : Panel() {
             }
 
             pairs.sortedBy { it.first }.forEachIndexed { index, (name, time) ->
+                val parts = name.split(".")
+                val lastName = parts.last()
+                val level = parts.size
+
+
                 NvgText.drawTextLineToRect(
                         nanovg,
                         Vector4f(textBase.xf, textBase.yf + index * 16f, 200f, 24f),
@@ -88,7 +94,7 @@ class ProfilerDiagram : Panel() {
                         VerticalAlign.MIDDLE,
                         16f,
                         FontRegistry.DEFAULT,
-                        "$name (%.2fms)".format(time * 1000),
+                        "(%06.2f ms) ".format(time * 1000) + spaces(level * 5) + lastName,
                         col[name]!!.toColor()
                 )
             }

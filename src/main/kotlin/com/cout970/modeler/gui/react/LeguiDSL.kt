@@ -38,7 +38,7 @@ fun Component.printTree(prefix: String = "") {
     }
 }
 
-private fun spaces(amount: Int): String = buildString {
+fun spaces(amount: Int): String = buildString {
     (0 until amount).forEach { append(' ') }
 }
 

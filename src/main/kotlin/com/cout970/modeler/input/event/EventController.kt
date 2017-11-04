@@ -6,7 +6,6 @@ import com.cout970.glutilities.event.*
 import com.cout970.glutilities.window.GLFWWindow
 import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.util.ITickeable
-import java.util.*
 
 /**
  * Created by cout970 on 2016/11/29.
@@ -14,8 +13,7 @@ import java.util.*
 class EventController : ITickeable, IEventController, IInput {
 
     private val listeners = mutableMapOf<Class<Event>, MutableList<IEventListener<Event>>>()
-    private val lock = Any()
-    private val eventQueue = Collections.synchronizedList(mutableListOf<() -> Unit>())
+    private val eventQueue = mutableListOf<() -> Unit>()
     lateinit override var keyboard: Keyboard
     lateinit override var mouse: Mouse
 
@@ -41,8 +39,7 @@ class EventController : ITickeable, IEventController, IInput {
     override fun tick() {
         Profiler.startSection("pollEvents")
         EventManager.pollEvents()
-        eventQueue.toList().forEach { it() }
-        eventQueue.clear()
+        eventQueue.onEach { it() }.clear()
         mouse.update()
         Profiler.endSection()
     }
