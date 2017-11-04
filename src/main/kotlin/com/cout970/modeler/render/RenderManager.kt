@@ -39,7 +39,9 @@ class RenderManager : ITickeable {
     }
 
     override fun preTick() {
+        Profiler.startSection("leguiEvents")
         guiRenderer.updateEvents()
+        Profiler.endSection()
     }
 
     override fun tick() {

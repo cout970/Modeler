@@ -1,7 +1,6 @@
 use "jvisualvm.exe -J-Dorg.netbeans.profiler.separateConsole=true"
 
 config menu
-add program version to the saves to detect incompatible formats
 export hitbox dialog
 texture editing
 

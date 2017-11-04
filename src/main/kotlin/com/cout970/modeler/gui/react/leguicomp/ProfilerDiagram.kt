@@ -5,6 +5,7 @@ import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.gui.react.spaces
 import com.cout970.modeler.util.absolutePositionV
 import com.cout970.modeler.util.toColor
+import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.plus
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.vec3Of
@@ -26,10 +27,14 @@ class ProfilerDiagram : Panel() {
 
     object ProfilerDiagramRenderer : NvgComponentRenderer<ProfilerDiagram>() {
 
-        val colors = (1..40).map {
-            val c = Color.getHSBColor(it.toFloat() / 40f, 0.5f, 1.0f)
-            vec3Of(c.blue / 255f, c.green / 255f, c.red / 255f)
-        }.sortedBy { Math.random() }
+        var colors = generateColors()
+
+        fun generateColors(): List<IVector3> {
+            return (1..40).map {
+                val c = Color.getHSBColor(it.toFloat() / 40f, 0.5f, 1.0f)
+                vec3Of(c.blue / 255f, c.green / 255f, c.red / 255f)
+            }.sortedBy { Math.random() }
+        }
 
         override fun renderComponent(component: ProfilerDiagram, context: Context, nanovg: Long) {
 

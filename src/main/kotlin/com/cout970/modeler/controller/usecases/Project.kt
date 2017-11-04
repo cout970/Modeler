@@ -72,15 +72,15 @@ class LoadProject : IUseCase {
         if (file != null) {
             lastSaveFile = file
             try {
-                val (model, properties) = exportManager.loadProject(file)
-                projectManager.loadProjectProperties(properties)
-                projectManager.updateModel(model)
+                val save = exportManager.loadProject(file)
+                projectManager.loadProjectProperties(save.projectProperties)
+                projectManager.updateModel(save.model)
 
                 return TaskUpdateProject(
                         oldProjectProperties = projectManager.projectProperties,
-                        newProjectProperties = properties,
+                        newProjectProperties = save.projectProperties,
                         oldModel = projectManager.model,
-                        newModel = model
+                        newModel = save.model
                 )
             } catch (e: Exception) {
                 e.print()

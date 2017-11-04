@@ -3,6 +3,7 @@ package com.cout970.modeler.controller.tasks
 import com.cout970.modeler.Program
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.core.export.ExportManager
+import com.cout970.modeler.core.export.ProgramSave
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
@@ -21,7 +22,7 @@ class TaskSaveProject(
     override fun run(state: Program) {
         try {
             log(Level.FINE) { "Saving project..." }
-            exportManager.saveProject(path, model, properties)
+            exportManager.saveProject(path, ProgramSave(ExportManager.CURRENT_SAVE_VERSION, properties, model))
             log(Level.FINE) { "Saving done" }
         } catch (e: Exception) {
             log(Level.ERROR) { "Unable to save project" }

@@ -4,8 +4,10 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.animation.Animation
+import com.cout970.modeler.core.animation.Joint
 import com.cout970.modeler.core.animation.KeyFrame
 import com.cout970.modeler.core.model.Model
+import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.selection.ClipboardNone
 import com.cout970.modeler.core.model.selection.IClipboard
 
@@ -27,7 +29,7 @@ class ProjectManager {
     var animation = Animation(listOf(
             KeyFrame(0f, mapOf()),
             KeyFrame(10f, mapOf())
-    ))
+    ), Joint(0, "root", listOf(), TRSTransformation.IDENTITY))
 
     val modelChangeListeners: MutableList<(old: IModel, new: IModel) -> Unit> = mutableListOf()
     val materialChangeListeners: MutableList<(old: IMaterial?, new: IMaterial?) -> Unit> = mutableListOf()

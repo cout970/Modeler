@@ -22,7 +22,7 @@ fun main(args: Array<String>) {
         val state = init.init(args.toList())
         init.start(state)
         state.apply {
-            exportManager.saveProject("./data/saves/last.pff", projectManager.model, projectManager.projectProperties)
+            exportManager.saveProject("./data/saves/last.pff", projectManager)
         }
     } catch (e: kotlin.Throwable) {
         e.print()
