@@ -1,6 +1,7 @@
 package com.cout970.modeler.input.window
 
 import com.cout970.glutilities.structure.Timer
+import com.cout970.glutilities.texture.TextureLoader
 import com.cout970.glutilities.window.GLFWWindow
 import com.cout970.glutilities.window.WindowBuilder
 import com.cout970.modeler.core.log.Profiler
@@ -9,9 +10,12 @@ import com.cout970.modeler.util.ITickeable
 import com.cout970.modeler.util.VSyncTimer
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.vec2Of
+import org.lwjgl.glfw.GLFW.glfwSetWindowIcon
 import org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose
+import org.lwjgl.glfw.GLFWImage
 import org.lwjgl.opengl.GL11
 import java.util.*
+
 
 /**
  * Created by cout970 on 2016/11/29.
@@ -48,14 +52,26 @@ class WindowHandler(private val timer: Timer) : ITickeable {
     }
 
     fun loadIcon(rl: ResourceLoader) {
-//        val texture = TextureLoader.loadTexture(rl.readResource("assets/textures/icon.png"))
-//        val buffer = GLFWImage.create(1)
-//        val image = GLFWImage.malloc()
-//        image.set(texture.size.xi, texture.size.yi, texture.bitMap)
-//        buffer.put(image)
-//        GLFW.glfwSetWindowIcon(window.id, buffer)
-//        image.free()
-//        buffer.free()
+        val tex16 = TextureLoader.loadTexture(rl.readResource("assets/textures/icon16.png"))
+        val tex32 = TextureLoader.loadTexture(rl.readResource("assets/textures/icon32.png"))
+        val tex48 = TextureLoader.loadTexture(rl.readResource("assets/textures/icon48.png"))
+        val icons = GLFWImage.malloc(3)
+        icons.position(0)
+                .width(tex16.size.xi)
+                .height(tex16.size.yi)
+                .pixels(tex16.bitMap)
+        icons.position(1)
+                .width(tex32.size.xi)
+                .height(tex32.size.yi)
+                .pixels(tex32.bitMap)
+        icons.position(2)
+                .width(tex48.size.xi)
+                .height(tex48.size.yi)
+                .pixels(tex48.bitMap)
+
+        icons.position(0)
+        glfwSetWindowIcon(window.id, icons)
+        icons.free()
     }
 
     fun close() {
