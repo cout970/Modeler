@@ -1,17 +1,23 @@
 package com.cout970.modeler.controller.usecases
 
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.controller.injection.Inject
 import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.model.getSelectedObjectRefs
+import com.cout970.modeler.core.model.material.MaterialNone
+import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.resource.toResourcePath
+import com.cout970.modeler.gui.GuiState
+import com.cout970.modeler.gui.UI
 import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.asNullable
 import com.cout970.modeler.util.toNullable
+import kotlinx.coroutines.experimental.launch
 import org.liquidengine.legui.component.Component
 import org.lwjgl.util.tinyfd.TinyFileDialogs
 import java.io.File
@@ -102,6 +108,57 @@ class ImportMaterial : IUseCase {
             return TaskImportMaterial(material)
         }
         return TaskNone
+    }
+}
+
+class RemoveMaterial : IUseCase {
+
+    override val key: String = "material.view.remove"
+
+    @Inject lateinit var projectManager: ProjectManager
+    @Inject lateinit var guiState: GuiState
+
+
+    override fun createTask(): ITask {
+
+        val matRef = guiState.selectedMaterial
+        val model = projectManager.model
+        val material = model.getMaterial(matRef)
+
+        if (material is MaterialNone) return TaskNone
+
+        val used = model.objects.any { it.material == matRef }
+
+        if (used) {
+            //ask
+            return TaskCallback {
+                launch(UI){
+                    val result = TinyFileDialogs.tinyfd_messageBox(
+                            "Remove material",
+                            "Are you sure you want to remove this material?",
+                            "yesno",
+                            "warning",
+                            false
+                    )
+                    if(result){
+                        it.invoke(removeMaterialTask(model, matRef, material))
+                    }
+                }
+
+            }
+        }
+
+        return removeMaterialTask(model, matRef, material)
+    }
+
+    fun removeMaterialTask(model: IModel, ref: IMaterialRef, material: IMaterial): ITask {
+        val newModel = model.modifyObjects({ true }) { _, obj ->
+            if (obj.material == ref) obj.withMaterial(MaterialRefNone) else obj
+        }
+        return TaskChain(listOf(
+                TaskUpdateModel(oldModel = model, newModel = newModel),
+                TaskRemoveMaterial(material)
+        ))
     }
 }
 

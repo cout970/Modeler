@@ -3,7 +3,7 @@ package com.cout970.modeler.gui.react.components
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.getSelectedObjectRefs
-import com.cout970.modeler.core.model.material.MaterialRef
+import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.gui.IModelAccessor
 import com.cout970.modeler.gui.react.core.RBuildContext
 import com.cout970.modeler.gui.react.core.RComponent
@@ -44,7 +44,7 @@ class ModelMaterialList : RComponent<ModelMaterialList.Props, ModelMaterialList.
 
         val start = Math.floor(state.scroll.toDouble()).toInt()
         val end = Math.ceil(start + scrollSize).toInt()
-        val materialRefs = (model.materialRefs + listOf(MaterialRef(-1)))
+        val materialRefs = (model.materialRefs + listOf(MaterialRefNone))
         val selectedMaterial = props.selectedMaterial()
 
         val materialOfSelectedObjects = selection
@@ -60,6 +60,7 @@ class ModelMaterialList : RComponent<ModelMaterialList.Props, ModelMaterialList.
 
             val ref = materialRefs[index]
             val name = model.getMaterial(ref).name
+
 
             val color = when (ref) {
                 in materialOfSelectedObjects -> {

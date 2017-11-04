@@ -7,6 +7,7 @@ import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.MaterialRef
+import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.selection.ObjectRef
 
 /**
@@ -103,10 +104,10 @@ data class Model(
 
     override fun removeMaterial(materialRef: IMaterialRef): IModel {
         return copy(
-                materials = materials.filterIndexed { index, _ -> index == materialRef.materialIndex },
+                materials = materials.filterIndexed { index, _ -> index != materialRef.materialIndex },
                 objects = objects.map {
                     when {
-                        it.material == materialRef -> it.withMaterial(MaterialRef(-1))
+                        it.material == materialRef -> it.withMaterial(MaterialRefNone)
                         it.material > materialRef -> it.withMaterial(MaterialRef(it.material.materialIndex - 1))
                         else -> it
                     }
