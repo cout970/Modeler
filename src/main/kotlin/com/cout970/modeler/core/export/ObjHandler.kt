@@ -252,6 +252,7 @@ class ObjImporter {
                 }
             } else if (!line.startsWith(sComment) && !line.isEmpty()) {
                 // Ignoring line
+                log(Level.ERROR) { "Invalid line parsing OBJ ($path): '$line'" }
             }
         }
         if (noGroup.quads.isNotEmpty()) {

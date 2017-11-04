@@ -4,8 +4,6 @@ import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.Logger
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
-import javax.swing.JOptionPane
-import javax.swing.UIManager
 
 /**
  * Created by cout970 on 2016/11/29.

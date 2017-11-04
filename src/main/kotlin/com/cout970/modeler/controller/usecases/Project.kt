@@ -12,7 +12,6 @@ import com.cout970.modeler.core.project.ProjectProperties
 import com.cout970.modeler.util.toPointerBuffer
 import org.lwjgl.PointerBuffer
 import org.lwjgl.util.tinyfd.TinyFileDialogs
-import javax.swing.JOptionPane
 
 /**
  * Created by cout970 on 2017/07/17.
@@ -35,12 +34,13 @@ class NewProject : IUseCase {
         return TaskAsync {
             var accepts = true
             if (model.objects.isNotEmpty()) {
-                val res = JOptionPane.showConfirmDialog(
-                        null,
-                        "Do you want to create a new project? \n" +
-                        "All unsaved changes will be lost!"
+                accepts = TinyFileDialogs.tinyfd_messageBox(
+                        "New Project",
+                        "Do you want to create a new project? \nAll unsaved changes will be lost!",
+                        "okcancel",
+                        "warning",
+                        false
                 )
-                accepts = res == JOptionPane.OK_OPTION
             }
             if (accepts) {
                 val newProject = ProjectProperties(properties.owner, properties.name)
@@ -59,35 +59,50 @@ class LoadProject : IUseCase {
     @Inject lateinit var exportManager: ExportManager
 
     override fun createTask(): ITask {
-        if (projectManager.model.objects.isNotEmpty()) {
-            val res = JOptionPane.showConfirmDialog(
-                    null,
-                    "Do you want to load a new project? \nAll unsaved changes will be lost!"
-            )
-            if (res != JOptionPane.OK_OPTION) return TaskNone
-        }
-
-        val file = TinyFileDialogs.tinyfd_openFileDialog("Load", "", saveFileExtension, "Project File Format (*.pff)",
-                false)
-        if (file != null) {
-            lastSaveFile = file
-            try {
-                val save = exportManager.loadProject(file)
-                projectManager.loadProjectProperties(save.projectProperties)
-                projectManager.updateModel(save.model)
-
-                return TaskUpdateProject(
-                        oldProjectProperties = projectManager.projectProperties,
-                        newProjectProperties = save.projectProperties,
-                        oldModel = projectManager.model,
-                        newModel = save.model
-                )
-            } catch (e: Exception) {
-                e.print()
+        return TaskAsync { ret ->
+            if (projectManager.model.objects.isNotEmpty()) {
+                if (userAllow()) {
+                    getFile()?.let { getUpdateTask(it, ret) }
+                }
+            } else {
+                getFile()?.let { getUpdateTask(it, ret) }
             }
         }
-        return TaskNone
     }
+
+    fun getUpdateTask(file: String, ret: (ITask) -> Unit) {
+        lastSaveFile = file
+        try {
+            val save = exportManager.loadProject(file)
+            projectManager.loadProjectProperties(save.projectProperties)
+            projectManager.updateModel(save.model)
+
+            ret.invoke(TaskUpdateProject(
+                    oldProjectProperties = projectManager.projectProperties,
+                    newProjectProperties = save.projectProperties,
+                    oldModel = projectManager.model,
+                    newModel = save.model
+            ))
+        } catch (e: Exception) {
+            e.print()
+        }
+    }
+
+    fun userAllow() = TinyFileDialogs.tinyfd_messageBox(
+            "Load Project",
+            "Do you want to load a new project? \nAll unsaved changes will be lost!",
+            "okcancel",
+            "warning",
+            false)
+
+    fun getFile() = TinyFileDialogs.tinyfd_openFileDialog(
+            "Load",
+            "",
+            saveFileExtension,
+            "Project File Format (*.pff)",
+            false)
+
+
 }
 
 class SaveProject : IUseCase {

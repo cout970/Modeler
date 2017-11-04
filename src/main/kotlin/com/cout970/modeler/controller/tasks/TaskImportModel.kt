@@ -7,8 +7,8 @@ import com.cout970.modeler.core.export.ImportProperties
 import com.cout970.modeler.core.export.ModelImporters
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.resource.toResourcePath
+import org.lwjgl.util.tinyfd.TinyFileDialogs
 import java.io.File
-import javax.swing.JOptionPane
 
 /**
  * Created by cout970 on 2017/07/19.
@@ -28,7 +28,13 @@ class TaskImportModel(
                 modelCache = newModel
             } catch (e: Exception) {
                 e.print()
-                JOptionPane.showMessageDialog(null, "Error importing model: \n$e")
+                TinyFileDialogs.tinyfd_messageBox(
+                        "Error",
+                        "Error importing model at (${properties.path}): \n$e",
+                        "ok",
+                        "error",
+                        true
+                )
             }
         }
         modelCache?.let {

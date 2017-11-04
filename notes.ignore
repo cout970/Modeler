@@ -3,6 +3,7 @@ use "jvisualvm.exe -J-Dorg.netbeans.profiler.separateConsole=true"
 config menu
 export hitbox dialog
 texture editing
+add event messages
 
 detect duplicated shapes
 join shapes
