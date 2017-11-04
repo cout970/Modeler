@@ -10,6 +10,7 @@ import com.cout970.modeler.gui.react.core.RComponentSpec
 import com.cout970.modeler.gui.react.leguicomp.IconButton
 import com.cout970.modeler.gui.react.leguicomp.Panel
 import com.cout970.modeler.gui.react.panel
+import com.cout970.modeler.input.window.Loop
 import com.cout970.modeler.util.*
 import com.cout970.vector.api.IVector2
 import org.liquidengine.legui.component.Component
@@ -94,7 +95,13 @@ class ValueInput : RComponent<ValueInput.Props, Unit>() {
         }
     }
 
+    var lastTick = 0L
+
     fun dispatch(offset: Float, content: String) {
+        // this avoid generating a million task doing the same thing
+        if(lastTick == Loop.currentTick) return
+        lastTick = Loop.currentTick
+
         val data = Panel().apply {
             metadata += "cube_ref" to props.ref
             metadata += "offset" to offset

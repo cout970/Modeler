@@ -4,6 +4,7 @@ import com.cout970.modeler.Program
 import com.cout970.modeler.controller.injection.DependencyInjector
 import com.cout970.modeler.controller.usecases.IUseCase
 import com.cout970.modeler.core.log.Level
+import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import org.liquidengine.legui.component.Component
@@ -31,6 +32,7 @@ class Dispatcher {
     }
 
     fun onEvent(key: String, comp: Component?) {
+        Profiler.startSection("Dispatcher")
         log(Level.FINEST) { "[Dispatcher] Executing: $key" }
         val useCase = useCasesMap[key] ?: return
 
@@ -42,5 +44,6 @@ class Dispatcher {
             log(Level.ERROR) { "Usable to run usecase: ${useCase::class.simpleName}" }
             e.print()
         }
+        Profiler.endSection()
     }
 }

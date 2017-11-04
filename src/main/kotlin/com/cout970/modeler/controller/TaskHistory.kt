@@ -22,21 +22,21 @@ class TaskHistory(val delegate: IFutureExecutor) : ITaskProcessor {
             taskStack += task
             redoStack.clear()
         }
-        delegate.addToQueue(task::run)
+        delegate.doTask(task)
     }
 
     fun undo() {
         if (taskStack.isEmpty()) return
         val task = taskStack.pop()
         redoStack += task
-        delegate.addToQueue(task::undo)
+        delegate.undoTask(task)
     }
 
     fun redo() {
         if (redoStack.isEmpty()) return
         val task = redoStack.pop()
         taskStack += task
-        delegate.addToQueue(task::run)
+        delegate.doTask(task)
     }
 }
 

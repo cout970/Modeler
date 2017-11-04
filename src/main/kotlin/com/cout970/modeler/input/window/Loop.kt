@@ -9,11 +9,15 @@ import com.cout970.modeler.util.ITickeable
  */
 class Loop(val tickeables: List<ITickeable>, val timer: Timer, val shouldClose: () -> Boolean) {
 
+    companion object {
+        var currentTick = 0L
+    }
     fun run() {
         GameLoop(this::tick).start()
     }
 
     private fun tick(loop: GameLoop) {
+        currentTick++
         timer.tick()
         tickeables.forEach(ITickeable::preTick)
         tickeables.forEach(ITickeable::tick)

@@ -1,6 +1,8 @@
 package com.cout970.modeler.controller
 
 import com.cout970.modeler.Program
+import com.cout970.modeler.controller.tasks.ITask
+import com.cout970.modeler.controller.tasks.IUndoableTask
 import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.util.ITickeable
 import java.util.*
@@ -10,24 +12,35 @@ import java.util.*
  */
 
 interface IFutureExecutor {
-    fun addToQueue(function: (Program) -> Unit)
+    fun doTask(task: ITask)
+    fun undoTask(task: IUndoableTask)
 }
 
 class FutureExecutor : ITickeable, IFutureExecutor {
 
     lateinit var programState: Program
-    private val queue = LinkedList<(Program) -> Unit>()
+    private val queue = LinkedList<Pair<ITask, (Program) -> Unit>>()
 
-    override fun addToQueue(function: (Program) -> Unit) {
-        queue.add(function)
+    override fun doTask(task: ITask) {
+        queue.add(task to task::run)
+    }
+
+    override fun undoTask(task: IUndoableTask) {
+        queue.add(task to task::undo)
     }
 
     override fun tick() = Unit
 
     override fun postTick() {
         Profiler.startSection("runTasks")
-        while (queue.isNotEmpty()) {
-            queue.poll().invoke(programState)
+        if (queue.isNotEmpty()) {
+            var index = 0
+            while (queue.isNotEmpty()) {
+                val (task, func) = queue.poll()
+                Profiler.startSection("""${task.javaClass.simpleName}${index++}""")
+                func.invoke(programState)
+                Profiler.endSection()
+            }
         }
         Profiler.endSection()
     }

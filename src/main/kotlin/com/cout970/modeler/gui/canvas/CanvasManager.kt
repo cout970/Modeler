@@ -6,6 +6,7 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.controller.ITaskProcessor
 import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.core.model.getSelectedObjects
 import com.cout970.modeler.core.model.selection.ObjectRef
 import com.cout970.modeler.gui.Gui
@@ -39,6 +40,7 @@ class CanvasManager {
     val cursor get() = tmpCursor ?: realCursor
 
     fun update() {
+        Profiler.startSection("canvasManager")
         val canvas = gui.canvasContainer.selectedCanvas
         canvas?.let {
 
@@ -68,6 +70,7 @@ class CanvasManager {
         if (last.drag.dragStart == null) {
             updateSelectedCanvas()
         }
+        Profiler.endSection()
     }
 
     fun onModelUpdate(old: IModel, new: IModel) {
