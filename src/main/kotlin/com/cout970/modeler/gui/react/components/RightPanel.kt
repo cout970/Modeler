@@ -40,7 +40,7 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
 
         +ModelStatistics { ModelStatistics.Props(props.modelAccessor) }
 
-        panel {
+        +panel {
             setBorderless()
             setTransparent()
             width = 190f
@@ -57,7 +57,7 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
 
             +ModelObjectList { ModelObjectList.Props(props.modelAccessor, vec2Of(0f, 70f), vec2Of(190f, height - 72f)) }
         }
-        panel {
+        +panel {
             setBorderless()
             setTransparent()
 

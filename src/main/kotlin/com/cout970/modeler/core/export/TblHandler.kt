@@ -91,18 +91,18 @@ class TblImporter {
     ) {
         override fun toString(): String {
             return "TblModel(\n" +
-                    "    modelName='$modelName',\n" +
-                    "    authorName='$authorName',\n" +
-                    "    projVersion=$projVersion,\n" +
-                    "    metadata=$metadata,\n" +
-                    "    textureWidth=$textureWidth,\n" +
-                    "    textureHeight=$textureHeight,\n" +
-                    "    scale=$scale,\n" +
-                    "    cubeGroups=[... size:${cubeGroups.size}],\n" +
-                    "    cubes=[... size:${cubes.size}],\n" +
-                    "    anims=$anims,\n" +
-                    "    cubeCount=$cubeCount\n" +
-                    ")"
+                   "    modelName='$modelName',\n" +
+                   "    authorName='$authorName',\n" +
+                   "    projVersion=$projVersion,\n" +
+                   "    metadata=$metadata,\n" +
+                   "    textureWidth=$textureWidth,\n" +
+                   "    textureHeight=$textureHeight,\n" +
+                   "    scale=$scale,\n" +
+                   "    cubeGroups=[... size:${cubeGroups.size}],\n" +
+                   "    cubes=[... size:${cubes.size}],\n" +
+                   "    anims=$anims,\n" +
+                   "    cubeCount=$cubeCount\n" +
+                   ")"
         }
     }
 

@@ -5,8 +5,8 @@ import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.gui.react.leguicomp.IconButton
 import com.cout970.modeler.gui.react.leguicomp.TextButton
+import com.cout970.modeler.util.isNotEmpty
 import org.liquidengine.legui.component.Component
-import org.liquidengine.legui.component.Container
 import org.liquidengine.legui.event.MouseClickEvent
 import org.liquidengine.legui.listener.ListenerMap
 
@@ -19,7 +19,7 @@ class ButtonBinder(val dispatcher: Dispatcher) {
         dispatcher.onEvent(str, comp)
     }
 
-    fun bindButtons(panel: Container<*>) {
+    fun bindButtons(panel: Component) {
         panel.childs.forEach {
             when (it) {
                 is IconButton -> {
@@ -34,7 +34,7 @@ class ButtonBinder(val dispatcher: Dispatcher) {
                         it.listenerMap.setButtonListener { onButtonPress(it.command, it) }
                     }
                 }
-                is Container<*> -> bindButtons(it)
+                else -> if (it.isNotEmpty) bindButtons(it)
             }
         }
     }

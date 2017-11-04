@@ -51,7 +51,7 @@ class CenterPanel : RComponent<CenterPanel.Props, Unit>() {
         // add canvas to root
         +canvas
 
-        panel {
+        +panel {
             if (canvas.isEnabled) {
                 hide()
             }

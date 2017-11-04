@@ -3,10 +3,7 @@ package com.cout970.modeler.controller.usecases
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.controller.injection.Inject
 import com.cout970.modeler.controller.injection.InjectFromGui
-import com.cout970.modeler.controller.tasks.ITask
-import com.cout970.modeler.controller.tasks.TaskNone
-import com.cout970.modeler.controller.tasks.TaskSaveProject
-import com.cout970.modeler.controller.tasks.TaskUpdateProject
+import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.export.ExportManager
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.Model
@@ -35,16 +32,21 @@ class NewProject : IUseCase {
     var projectName: String = "Unnamed"
 
     override fun createTask(): ITask {
-        if (model.objects.isNotEmpty()) {
-            val res = JOptionPane.showConfirmDialog(
-                    null,
-                    "Do you want to create a new project? \n" +
-                    "All unsaved changes will be lost!"
-            )
-            if (res != JOptionPane.OK_OPTION) return TaskNone
+        return TaskAsync {
+            var accepts = true
+            if (model.objects.isNotEmpty()) {
+                val res = JOptionPane.showConfirmDialog(
+                        null,
+                        "Do you want to create a new project? \n" +
+                        "All unsaved changes will be lost!"
+                )
+                accepts = res == JOptionPane.OK_OPTION
+            }
+            if (accepts) {
+                val newProject = ProjectProperties(properties.owner, properties.name)
+                it.invoke(TaskUpdateProject(properties, newProject, model, Model.empty()))
+            }
         }
-        val newProject = ProjectProperties(properties.owner, properties.name)
-        return TaskUpdateProject(properties, newProject, model, Model.empty())
     }
 }
 

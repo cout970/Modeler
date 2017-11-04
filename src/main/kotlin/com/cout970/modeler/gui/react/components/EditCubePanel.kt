@@ -69,7 +69,7 @@ class EditCubePanel : RComponent<EditCubePanel.Props, Unit>() {
         val disp = props.dispatcher
         var p = 5f
 
-        panel {
+        +panel {
             // size
             width = this@root.width
             height = 110f
@@ -87,7 +87,7 @@ class EditCubePanel : RComponent<EditCubePanel.Props, Unit>() {
             +ValueInput { ValueInput.Props(disp, { size().zf }, "cube.size.z", cubeRef, vec2Of(185f, 20f)) }
         }
 
-        panel {
+        +panel {
             // pos
             width = this@root.width
             height = 110f
@@ -105,7 +105,7 @@ class EditCubePanel : RComponent<EditCubePanel.Props, Unit>() {
             +ValueInput { ValueInput.Props(disp, { pos().zf }, "cube.pos.z", cubeRef, vec2Of(185f, 20f)) }
         }
 
-        panel {
+        +panel {
             // rotation
             width = this@root.width
             height = 110f
@@ -123,7 +123,7 @@ class EditCubePanel : RComponent<EditCubePanel.Props, Unit>() {
             +ValueInput { ValueInput.Props(disp, { rotation().zf }, "cube.rot.z", cubeRef, vec2Of(185f, 20f)) }
         }
 
-        panel {
+        +panel {
             // texture
             width = this@root.width
             height = 110f

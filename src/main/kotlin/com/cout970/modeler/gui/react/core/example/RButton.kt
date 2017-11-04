@@ -20,23 +20,21 @@ class RButton : RComponent<RButton.Props, RButton.State>() {
         state = State(false)
     }
 
-    override fun build(ctx: RBuildContext): Component {
-        return panel {
-            size = props.size
-            position = Vector2f()
+    override fun build(ctx: RBuildContext): Component = panel {
+        size = props.size
+        position = Vector2f()
 
-            listenerMap.addListener(MouseClickEvent::class.java) {
-                if (it.action == MouseClickEvent.MouseClickAction.RELEASE)
-                    replaceState(State(!state.on))
-            }
+        listenerMap.addListener(MouseClickEvent::class.java) {
+            if (it.action == MouseClickEvent.MouseClickAction.RELEASE)
+                replaceState(State(!state.on))
+        }
 
-            if (state.on) {
-                backgroundColor = ColorConstants.green()
-                +Label("On")
-            } else {
-                backgroundColor = ColorConstants.red()
-                +Label("Off")
-            }
+        if (state.on) {
+            backgroundColor = ColorConstants.green()
+            +Label("On")
+        } else {
+            backgroundColor = ColorConstants.red()
+            +Label("Off")
         }
     }
 

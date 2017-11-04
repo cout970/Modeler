@@ -14,16 +14,16 @@ import org.liquidengine.legui.component.Panel
 class RComponentWrapper<out C : RComponent<P, S>, P : Any, S : Any>(
         val props: P,
         val spec: () -> C
-) : Panel<Component>() {
+) : Component() {
 
     var initialized = false
     lateinit var component: RComponent<P, S>
 
     val subTree: Component
         get() = try {
-            childs.firstOrNull() ?: Panel<Component>()
+            childs.firstOrNull() ?: Panel()
         } catch (e: Exception) {
-            Panel<Component>()
+            Panel()
         }
 
     fun init(ctx: RContext) {

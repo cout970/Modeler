@@ -13,11 +13,9 @@ import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.resource.toResourcePath
 import com.cout970.modeler.gui.GuiState
-import com.cout970.modeler.gui.UI
 import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.asNullable
 import com.cout970.modeler.util.toNullable
-import kotlinx.coroutines.experimental.launch
 import org.liquidengine.legui.component.Component
 import org.lwjgl.util.tinyfd.TinyFileDialogs
 import java.io.File
@@ -131,20 +129,17 @@ class RemoveMaterial : IUseCase {
 
         if (used) {
             //ask
-            return TaskCallback {
-                launch(UI){
-                    val result = TinyFileDialogs.tinyfd_messageBox(
-                            "Remove material",
-                            "Are you sure you want to remove this material?",
-                            "yesno",
-                            "warning",
-                            false
-                    )
-                    if(result){
-                        it.invoke(removeMaterialTask(model, matRef, material))
-                    }
+            return TaskAsync {
+                val result = TinyFileDialogs.tinyfd_messageBox(
+                        "Remove material",
+                        "Are you sure you want to remove this material?",
+                        "yesno",
+                        "warning",
+                        false
+                )
+                if (result) {
+                    it.invoke(removeMaterialTask(model, matRef, material))
                 }
-
             }
         }
 

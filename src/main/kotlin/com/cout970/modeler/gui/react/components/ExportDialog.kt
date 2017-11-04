@@ -38,7 +38,7 @@ class ExportDialog : RComponent<ExportDialog.Props, Unit>() {
         size = ctx.parentSize.toJoml2f()
         backgroundColor = Vector4f(1f, 1f, 1f, 0.05f)
 
-        panel {
+        +panel {
             backgroundColor = Config.colorPalette.darkestColor.toColor()
             border = SimpleLineBorder(Config.colorPalette.greyColor.toColor(), 2f)
             width = 460f

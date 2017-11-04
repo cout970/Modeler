@@ -3,8 +3,8 @@ package com.cout970.modeler.util
 import com.cout970.vector.api.IVector2
 import org.joml.Vector2f
 import org.liquidengine.legui.color.ColorConstants
+import org.liquidengine.legui.component.Button
 import org.liquidengine.legui.component.Component
-import org.liquidengine.legui.component.Container
 import org.liquidengine.legui.component.Frame
 import org.liquidengine.legui.component.TextInput
 import org.liquidengine.legui.event.Event
@@ -34,14 +34,14 @@ fun Component.show() {
 
 fun Component.disable() {
     isEnabled = false
-    if (this is Container<*>) {
+    if (this.isNotEmpty) {
         this.childs.forEach(Component::disable)
     }
 }
 
 fun Component.enable() {
     isEnabled = true
-    if (this is Container<*>) {
+    if (this.isNotEmpty) {
         this.childs.forEach(Component::enable)
     }
 }
@@ -78,18 +78,18 @@ inline fun <reified T : Event<Component>> Component.getListeners(): List<Pair<Co
 
 @Suppress("UNCHECKED_CAST")
 fun Component.forEachChild(func: (Component) -> Unit) {
-    when (this) {
-        is Container<*> -> (this as Container<Component>).childs.forEach { it.forEachChild(func) }
+    when {
+        this.isNotEmpty -> childs.forEach { it.forEachChild(func) }
         else -> func(this)
     }
 }
 
 @Suppress("UNCHECKED_CAST")
 fun Component.forEachComponent(func: (Component) -> Unit) {
-    when (this) {
-        is Container<*> -> {
+    when {
+        this.isNotEmpty -> {
             func(this)
-            (this as Container<Component>).childs.forEach { it.forEachComponent(func) }
+            childs.forEach { it.forEachComponent(func) }
         }
         else -> func(this)
     }
@@ -103,4 +103,18 @@ fun Component.setBorderless(): Component {
 fun Component.setTransparent(): Component {
     backgroundColor = ColorConstants.transparent()
     return this
+}
+
+val Component.isNotEmpty get() = !isEmpty
+
+@Suppress("UNCHECKED_CAST")
+fun Component.disableInput() {
+    when {
+        this is Button -> this.isEnabled = false
+        this is TextInput -> {
+            this.isEnabled = false
+            this.isEditable = false
+        }
+        isNotEmpty -> childs.forEach { it.disableInput() }
+    }
 }

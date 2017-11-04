@@ -7,7 +7,7 @@ import org.liquidengine.legui.component.Panel as LeguiPanel
  * Created by cout970 on 2017/09/07.
  */
 
-open class Panel : LeguiPanel<LeguiComponent>() {
+open class Panel : LeguiComponent() {
 
     var width: Float
         get() = size.x
@@ -34,7 +34,7 @@ open class Panel : LeguiPanel<LeguiComponent>() {
         }
 
     operator fun LeguiComponent.unaryPlus() {
-        add(this)
+        this@Panel.add(this)
     }
 
     override fun toString(): String {

@@ -26,8 +26,8 @@ class TextButton(
         setBorderless()
     }
 
-    override fun setTooltip(tooltip: String) {
-        this.setTooltipComponent(InstantTooltip(tooltip))
+    fun setTooltip(tooltip: String) {
+        this.tooltip = InstantTooltip(tooltip)
     }
 
     fun setImage(img: ImageIcon) {

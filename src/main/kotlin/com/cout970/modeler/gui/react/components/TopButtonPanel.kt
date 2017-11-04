@@ -26,7 +26,7 @@ class TopButtonPanel : RComponent<Unit, Unit>() {
         FixedYFillX(48f).updateScale(this, ctx.parentSize)
         setBorderless()
 
-        panel {
+        +panel {
             setTransparent()
             width = 240f
             height = 48f
@@ -47,7 +47,7 @@ class TopButtonPanel : RComponent<Unit, Unit>() {
                 it.setTooltip("Edit Project")
             }
         }
-        panel {
+        +panel {
             setTransparent()
             width = 192f
             height = 48f

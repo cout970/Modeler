@@ -63,7 +63,7 @@ class ExportManager(val resourceLoader: ResourceLoader) {
     }
 
     fun saveProject(path: String, model: IModel, properties: ProjectProperties) {
-        File(path).parentFile.let { if(!it.exists()) it.mkdir() }
+        File(path).parentFile.let { if (!it.exists()) it.mkdir() }
 
         val zip = ZipOutputStream(File(path).outputStream())
         zip.let {

@@ -42,7 +42,7 @@ class ImportDialog : RComponent<ImportDialog.Props, ImportDialog.State>() {
         backgroundColor = Vector4f(1f, 1f, 1f, 0.05f)
 
         // Centered panel
-        panel {
+        +panel {
             backgroundColor = Config.colorPalette.darkestColor.toColor()
             border = SimpleLineBorder(Config.colorPalette.greyColor.toColor(), 2f)
             width = 460f
