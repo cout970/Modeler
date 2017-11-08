@@ -1,5 +1,9 @@
 package com.cout970.modeler.core.animation
 
+import com.cout970.modeler.api.animation.IAnimation
+import com.cout970.modeler.api.animation.IJoint
+import com.cout970.modeler.api.animation.IJointRef
+import com.cout970.modeler.api.animation.IKeyFrame
 import com.cout970.modeler.api.model.ITransformation
 
 /**
@@ -7,13 +11,23 @@ import com.cout970.modeler.api.model.ITransformation
  */
 
 
-data class Joint(val id: Int, val name: String, val children: List<Joint>, val offsetFromParent: ITransformation)
+data class Joint(
+        override val id: Int,
+        override val name: String,
+        override val children: List<IJoint>,
+        override val offsetFromParent: ITransformation
+): IJoint
 
-data class JointRef(val id: Int)
+data class JointRef(override val id: Int) : IJointRef
 
-data class Animation(val keyFrames: List<KeyFrame>, val rootJoint: Joint)
+data class Animation(
+        override val keyFrames: List<IKeyFrame>,
+        override val rootJoint: IJoint
+) : IAnimation
 
-data class KeyFrame(val timeStamp: Float, val transforms: Map<JointRef, ITransformation>)
+data class KeyFrame(
+        override val timeStamp: Float,
+        override val transforms: Map<IJointRef, ITransformation>
+): IKeyFrame
 
-class Animator(val animation: Animation, var currentTime: Float)
 
