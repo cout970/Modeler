@@ -6,6 +6,7 @@ import com.cout970.glutilities.event.*
 import com.cout970.glutilities.window.GLFWWindow
 import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.util.ITickeable
+import java.util.*
 
 /**
  * Created by cout970 on 2016/11/29.
@@ -13,7 +14,7 @@ import com.cout970.modeler.util.ITickeable
 class EventController : ITickeable, IEventController, IInput {
 
     private val listeners = mutableMapOf<Class<Event>, MutableList<IEventListener<Event>>>()
-    private val eventQueue = mutableListOf<() -> Unit>()
+    private val eventQueue = Collections.synchronizedCollection(mutableListOf<() -> Unit>())
     lateinit override var keyboard: Keyboard
     lateinit override var mouse: Mouse
 

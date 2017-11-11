@@ -11,7 +11,6 @@ import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.gui.reactive.RBuildContext
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
-import com.cout970.modeler.util.text
 import com.cout970.modeler.util.toColor
 import com.cout970.modeler.util.toJoml2f
 import com.cout970.modeler.util.toPointerBuffer
@@ -19,19 +18,20 @@ import org.joml.Vector4f
 import org.liquidengine.legui.border.SimpleLineBorder
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.TextInput
+import org.liquidengine.legui.component.event.selectbox.SelectBoxChangeSelectionEvent
+import org.liquidengine.legui.component.event.textinput.TextInputContentChangeEvent
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.event.MouseClickEvent
 import org.lwjgl.PointerBuffer
 import org.lwjgl.util.tinyfd.TinyFileDialogs
-import java.util.*
 
 /**
  * Created by cout970 on 2017/09/30.
  */
-class ExportDialog : RComponent<ExportDialog.Props, Unit>() {
+class ExportDialog : RComponent<ExportDialog.Props, ExportDialog.State>() {
 
     init {
-        state = Unit
+        state = State("", 0)
     }
 
     override fun build(ctx: RBuildContext): Component = panel {
@@ -46,8 +46,6 @@ class ExportDialog : RComponent<ExportDialog.Props, Unit>() {
             posX = (ctx.parentSize.xf - width) / 2f
             posY = (ctx.parentSize.yf - height) / 2f
 
-            val path = TextInput("", 90f, 100f, 250f, 24f)
-            val dropdown = DropDown("", 90f, 50f, 350f, 24f)
 
             // first line
             +FixedLabel("Export Model", 0f, 8f, 460f, 24f).apply {
@@ -60,13 +58,16 @@ class ExportDialog : RComponent<ExportDialog.Props, Unit>() {
                 textState.horizontalAlign = HorizontalAlign.LEFT
             }
 
-            +dropdown.apply {
+            +DropDown("", 90f, 50f, 350f, 24f).apply {
                 elementHeight = 22f
                 buttonWidth = 22f
                 visibleCount = 2
-                addElement("Obj (*.obj)")
-                addElement("MCX (*.mcx)")
-                setSelected(0, true)
+                options.forEach { addElement(it) }
+                setSelected(state.selection, true)
+
+                listenerMap.addListener(SelectBoxChangeSelectionEvent::class.java) {
+                    replaceState(state.copy(selection = options.indexOf(it.newValue)))
+                }
             }
 
             //third line
@@ -75,19 +76,24 @@ class ExportDialog : RComponent<ExportDialog.Props, Unit>() {
                 textState.horizontalAlign = HorizontalAlign.LEFT
             }
 
-            +path
+            +TextInput(state.text, 90f, 100f, 250f, 24f).apply {
+                listenerMap.addListener(TextInputContentChangeEvent::class.java) {
+                    replaceState(state.copy(text = it.newValue))
+                }
+            }
 
             +TextButton("", "Select", 360f, 100f, 80f, 24f).apply {
                 listenerMap.addListener(MouseClickEvent::class.java) {
                     if (it.action == MouseClickEvent.MouseClickAction.RELEASE) {
                         val file = TinyFileDialogs.tinyfd_saveFileDialog(
                                 "Export",
-                                "model." + ExportFormat.values()[dropdown.selectedIndex].name.toLowerCase(),
-                                getExportFileExtensions(ExportFormat.values()[dropdown.selectedIndex]),
-                                dropdown.selection)
+                                "model." + ExportFormat.values()[state.selection].name.toLowerCase(),
+                                getExportFileExtensions(ExportFormat.values()[state.selection]),
+                                options[state.selection]
+                        )
 
                         if (file != null) {
-                            path.text = file
+                            replaceState(state.copy(text = file))
                         }
                     }
                 }
@@ -99,8 +105,8 @@ class ExportDialog : RComponent<ExportDialog.Props, Unit>() {
             +TextButton("", "Export", 270f, 200f, 80f, 24f).apply {
                 listenerMap.addListener(MouseClickEvent::class.java) {
                     props.popup.returnFunc(ExportProperties(
-                            path = path.text,
-                            format = ExportFormat.values()[dropdown.selectedIndex],
+                            path = state.text,
+                            format = ExportFormat.values()[state.selection],
                             domain = "domain",
                             materialLib = "materials"
                     ))
@@ -112,16 +118,19 @@ class ExportDialog : RComponent<ExportDialog.Props, Unit>() {
                     props.popup.returnFunc(null)
                 }
             }
-
-            //TODO fix state
         }
     }
 
 
     class Props(val popup: Popup)
+    data class State(val text: String, val selection: Int)
 
-    companion object : RComponentSpec<ExportDialog, Props, Unit> {
-        private val extensions = Arrays.asList("*.obj", "*.tcn", "*.json", "*.tbl", "*.mcx").toPointerBuffer()
+    override fun shouldComponentUpdate(nextProps: Props, nextState: State): Boolean {
+        return state.selection != nextState.selection
+    }
+
+    companion object : RComponentSpec<ExportDialog, Props, State> {
+        private val options = listOf("Obj (*.obj)", "MCX (*.mcx)")
         private val exportExtensionsObj = listOf("*.obj").toPointerBuffer()
         private val exportExtensionsMcx = listOf("*.mcx").toPointerBuffer()
 
