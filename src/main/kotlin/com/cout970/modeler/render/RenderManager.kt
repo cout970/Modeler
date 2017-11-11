@@ -10,7 +10,7 @@ import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.render.tool.shader.UniversalShader
 import com.cout970.modeler.util.ITickeable
-import java.awt.Color
+import com.cout970.vector.extensions.toVector4
 
 /**
  * Created by cout970 on 2016/11/29.
@@ -25,7 +25,6 @@ class RenderManager : ITickeable {
     lateinit var canvasRenderer: CanvasRenderer
 
     fun initOpenGl(resourceLoader: ResourceLoader, gui: Gui) {
-
         this.gui = gui
         log(Level.FINE) { "[RenderManager] Creating GuiRenderer" }
         guiRenderer = GuiRenderer(gui.root, gui.windowHandler.window.id)
@@ -34,8 +33,7 @@ class RenderManager : ITickeable {
         shader = UniversalShader(resourceLoader)
         log(Level.FINE) { "[RenderManager] Creating CanvasRenderer" }
         canvasRenderer = CanvasRenderer(this)
-        val c = Config.colorPalette.modelBackgroundColor
-        GLStateMachine.clearColor = Color(c.xf, c.yf, c.zf)
+        GLStateMachine.clearColor = Config.colorPalette.modelBackgroundColor.toVector4(1.0f)
     }
 
     override fun preTick() {

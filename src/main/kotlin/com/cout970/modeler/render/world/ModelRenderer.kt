@@ -1,5 +1,7 @@
 package com.cout970.modeler.render.world
 
+import com.cout970.glutilities.tessellator.BufferPTNC
+import com.cout970.glutilities.tessellator.DrawMode
 import com.cout970.glutilities.tessellator.VAO
 import com.cout970.matrix.extensions.Matrix4
 import com.cout970.modeler.api.model.IModel
@@ -8,7 +10,6 @@ import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.mesh.MeshFactory
 import com.cout970.modeler.core.model.selection.ObjectRef
 import com.cout970.modeler.render.tool.*
-import com.cout970.modeler.render.tool.shader.UniversalShader
 import com.cout970.modeler.util.getColor
 import com.cout970.vector.extensions.Vector2
 import com.cout970.vector.extensions.Vector3
@@ -80,7 +81,7 @@ class ModelRenderer {
         }
     }
 
-    private fun buildCache(list: List<VAO>, buffer: UniversalShader.Buffer, model: IModel): List<VAO> {
+    private fun buildCache(list: List<VAO>, buffer: BufferPTNC, model: IModel): List<VAO> {
         list.forEach { it.close() }
         return model.objects
                 .map { it.mesh }
@@ -89,13 +90,13 @@ class ModelRenderer {
 
     private fun buildSelection(ctx: RenderContext, modelToRender: IModel,
                                selection: ISelection): VAO = when (selection.selectionType) {
-        SelectionType.OBJECT -> ctx.buffer.build(GL11.GL_LINES) { appendObjectSelection(modelToRender, selection) }
-        SelectionType.FACE -> ctx.buffer.build(GL11.GL_LINES) { appendFaceSelection(modelToRender, selection) }
-        SelectionType.EDGE -> ctx.buffer.build(GL11.GL_LINES) { appendEdgeSelection(modelToRender, selection) }
-        SelectionType.VERTEX -> ctx.buffer.build(GL11.GL_QUADS) { appendVertexSelection(modelToRender, selection) }
+        SelectionType.OBJECT -> ctx.buffer.build(DrawMode.LINES) { appendObjectSelection(modelToRender, selection) }
+        SelectionType.FACE -> ctx.buffer.build(DrawMode.LINES) { appendFaceSelection(modelToRender, selection) }
+        SelectionType.EDGE -> ctx.buffer.build(DrawMode.LINES) { appendEdgeSelection(modelToRender, selection) }
+        SelectionType.VERTEX -> ctx.buffer.build(DrawMode.QUADS) { appendVertexSelection(modelToRender, selection) }
     }
 
-    private fun UniversalShader.Buffer.appendObjectSelection(modelToRender: IModel,
+    private fun BufferPTNC.appendObjectSelection(modelToRender: IModel,
                                                              selection: ISelection) {
 
         val objSel = modelToRender.objects.filterIndexed { index, _ ->
@@ -109,7 +110,7 @@ class ModelRenderer {
         }
     }
 
-    private fun UniversalShader.Buffer.appendFaceSelection(modelToRender: IModel,
+    private fun BufferPTNC.appendFaceSelection(modelToRender: IModel,
                                                            selection: ISelection) {
 
         val pairs = selection.refs
@@ -128,7 +129,7 @@ class ModelRenderer {
         }
     }
 
-    private fun UniversalShader.Buffer.appendEdgeSelection(modelToRender: IModel,
+    private fun BufferPTNC.appendEdgeSelection(modelToRender: IModel,
                                                            selection: ISelection) {
 
         val pairs = selection.refs
@@ -142,7 +143,7 @@ class ModelRenderer {
     }
 
 
-    private fun UniversalShader.Buffer.appendVertexSelection(modelToRender: IModel,
+    private fun BufferPTNC.appendVertexSelection(modelToRender: IModel,
                                                              selection: ISelection) {
 
         val pairs = selection.refs

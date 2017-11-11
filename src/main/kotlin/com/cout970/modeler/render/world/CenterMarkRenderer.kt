@@ -1,6 +1,7 @@
 package com.cout970.modeler.render.world
 
 import com.cout970.glutilities.structure.GLStateMachine
+import com.cout970.glutilities.tessellator.DrawMode
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.render.tool.AutoCache
@@ -8,7 +9,6 @@ import com.cout970.modeler.render.tool.RenderContext
 import com.cout970.modeler.util.toIMatrix
 import com.cout970.vector.extensions.*
 import org.joml.Matrix4d
-import org.lwjgl.opengl.GL11
 
 /**
  * Created by cout970 on 2017/07/21.
@@ -22,7 +22,7 @@ class CenterMarkRenderer {
             Config.keyBindings.rotateCamera.check(ctx.gui.input)) {
 
             val vao = centerMark.getOrCreate(ctx) {
-                ctx.buffer.build(GL11.GL_QUADS) {
+                ctx.buffer.build(DrawMode.QUADS) {
                     val size = vec2Of(60, 60) / 2
                     val z = 0.5
                     add(vec3Of(-size.xd, -size.yd, z), vec2Of(0, 0), Vector3.ORIGIN, Vector3.ORIGIN)

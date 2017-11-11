@@ -1,12 +1,12 @@
 package com.cout970.modeler.render
 
+import com.cout970.glutilities.tessellator.BufferPTNC
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.render.texture.MaterialRenderer
 import com.cout970.modeler.render.tool.Light
 import com.cout970.modeler.render.tool.RenderContext
-import com.cout970.modeler.render.tool.shader.UniversalShader
 import com.cout970.modeler.render.world.CenterMarkRenderer
 import com.cout970.modeler.render.world.WorldRenderer
 import com.cout970.modeler.util.absolutePositionV
@@ -24,7 +24,7 @@ class CanvasRenderer(val renderManager: RenderManager) {
     val materialRenderer = MaterialRenderer()
     val centerMarkRenderer = CenterMarkRenderer()
 
-    val buffer = UniversalShader.Buffer()
+    val buffer = BufferPTNC()
     val lights: List<Light> = listOf(
             Light(vec3Of(250, 500, 400), Vector3.ONE),
             Light(vec3Of(-250, -500, -400), Vector3.ONE)

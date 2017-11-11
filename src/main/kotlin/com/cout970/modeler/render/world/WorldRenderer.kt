@@ -1,5 +1,6 @@
 package com.cout970.modeler.render.world
 
+import com.cout970.glutilities.tessellator.DrawMode
 import com.cout970.matrix.extensions.Matrix4
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.core.config.Config
@@ -76,7 +77,7 @@ class WorldRenderer {
 
     fun renderGridLines(ctx: RenderContext) {
         val vao = gridLines.getOrCreate(ctx) {
-            ctx.buffer.build(GL11.GL_LINES) {
+            ctx.buffer.build(DrawMode.LINES) {
                 val size = 16 * 4
                 val min = -size
                 val max = size + 16

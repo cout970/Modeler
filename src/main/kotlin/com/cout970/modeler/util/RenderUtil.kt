@@ -1,11 +1,11 @@
 package com.cout970.modeler.util
 
+import com.cout970.glutilities.tessellator.BufferPTNC
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.core.model.AABB
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.mesh.MeshFactory
 import com.cout970.modeler.render.tool.append
-import com.cout970.modeler.render.tool.shader.UniversalShader
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
 import org.joml.Matrix4d
@@ -19,7 +19,7 @@ import org.joml.Vector4d
  */
 object RenderUtil {
 
-    fun appendBar(buffer: UniversalShader.Buffer, startPoint: IVector3, endPoint: IVector3,
+    fun appendBar(buffer: BufferPTNC, startPoint: IVector3, endPoint: IVector3,
                   size: Double = 0.1, color: IVector3 = vec3Of(1, 1, 0)) {
 
         createBarMesh(startPoint, endPoint, size).append(buffer, color)
@@ -79,7 +79,7 @@ object RenderUtil {
         return if (meshes.isEmpty()) Mesh() else meshes.reduce { acc, mesh -> acc.merge(mesh) }
     }
 
-    fun appendAABB(buffer: UniversalShader.Buffer, box: AABB, color: IVector3 = vec3Of(1, 1, 1)) {
+    fun appendAABB(buffer: BufferPTNC, box: AABB, color: IVector3 = vec3Of(1, 1, 1)) {
 
         buffer.apply {
             add(vec3Of(box.minX, box.minY, box.minZ), Vector2.ORIGIN, Vector3.ORIGIN, color)

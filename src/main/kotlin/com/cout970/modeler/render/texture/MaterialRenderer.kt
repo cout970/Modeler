@@ -1,6 +1,7 @@
 package com.cout970.modeler.render.texture
 
 import com.cout970.glutilities.structure.GLStateMachine
+import com.cout970.glutilities.tessellator.DrawMode
 import com.cout970.matrix.extensions.Matrix4
 import com.cout970.matrix.extensions.times
 import com.cout970.modeler.api.model.material.IMaterial
@@ -53,7 +54,7 @@ class MaterialRenderer {
                     .map { model.getObject(it) }
                     .filter { it.material == ref }
 
-            ctx.buffer.build(GL11.GL_QUADS) {
+            ctx.buffer.build(DrawMode.QUADS) {
                 objs.forEach { obj ->
                     val mesh = obj.mesh
 
@@ -93,7 +94,7 @@ class MaterialRenderer {
 
             val color = Config.colorPalette.textureSelectionColor
 
-            ctx.buffer.build(GL11.GL_LINES) {
+            ctx.buffer.build(DrawMode.LINES) {
                 objs.forEach { obj ->
                     val mesh = obj.mesh
 
@@ -128,7 +129,7 @@ class MaterialRenderer {
 
     fun renderMaterial(ctx: RenderContext, material: IMaterial) {
         val vao = materialCache.getOrCreate(ctx) {
-            ctx.buffer.build(GL11.GL_QUADS) {
+            ctx.buffer.build(DrawMode.QUADS) {
                 val maxX = material.size.xi
                 val maxY = material.size.yi
                 add(vec3Of(0, 0, 0), vec2Of(0, 1), Vector3.ORIGIN, Vector3.ORIGIN)
@@ -150,7 +151,7 @@ class MaterialRenderer {
 
     fun renderGridLines(ctx: RenderContext, material: IMaterial) {
         val vao = gridLines.getOrCreate(ctx) {
-            ctx.buffer.build(GL11.GL_LINES) {
+            ctx.buffer.build(DrawMode.LINES) {
                 val min = 0
                 val maxX = material.size.xi
                 val maxY = material.size.yi

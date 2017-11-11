@@ -1,5 +1,6 @@
 package com.cout970.modeler.render.world
 
+import com.cout970.glutilities.tessellator.DrawMode
 import com.cout970.matrix.extensions.Matrix4
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.gui.canvas.IRotable
@@ -13,7 +14,6 @@ import com.cout970.modeler.util.rotationTo
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.vec3Of
-import org.lwjgl.opengl.GL11
 
 /**
  * Created by cout970 on 2017/06/15.
@@ -93,7 +93,7 @@ class CursorRenderer {
     fun renderDebugHitbox(ctx: RenderContext) {
         val vao = run {
             val cursor = ctx.gui.canvasManager.cursor
-            ctx.buffer.build(GL11.GL_LINES, false) {
+            ctx.buffer.build(DrawMode.LINES, false) {
                 cursor.getSelectableParts(ctx.gui, ctx.camera, ctx.viewport).mapNotNull { part ->
                     (part as? CursorPartRotate)?.mesh
                 }.reduce { acc, iMesh -> acc.merge(iMesh) }.createVao(this)
