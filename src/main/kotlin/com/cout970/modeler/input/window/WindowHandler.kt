@@ -41,11 +41,10 @@ class WindowHandler(private val timer: Timer) : ITickeable {
         window = WindowBuilder.build {
             title = WINDOW_TITLE
             size = vec2Of(800, 600)
-            vSync = true
+            vSync = false
 //            properties.put(GLFW_DECORATED, GLFW_FALSE)
 //            properties.put(GLFW_MAXIMIZED, GLFW_TRUE)
         }
-        window.setVSync(true)
         window.center()
         window.show()
         resetViewport()

@@ -8,7 +8,7 @@ import com.cout970.glutilities.structure.Timer
 
 class VSyncTimer {
 
-    var enabled = true
+    var enabled = false
     var fps = 60
 
     private var lastTime = Timer.secTime * 1000
