@@ -6,5 +6,5 @@ package com.cout970.modeler.core.project
 data class Author(
         var name: String = "Anonymous",
         var email: String = "",
-        var web: String? = null
+        var web: String = ""
 )

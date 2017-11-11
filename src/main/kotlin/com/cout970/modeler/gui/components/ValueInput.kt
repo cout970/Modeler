@@ -1,24 +1,20 @@
 package com.cout970.modeler.gui.components
 
-import com.cout970.glutilities.device.Keyboard
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.gui.leguicomp.IconButton
+import com.cout970.modeler.gui.leguicomp.Panel
+import com.cout970.modeler.gui.leguicomp.StringInput
+import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.gui.reactive.RBuildContext
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
-import com.cout970.modeler.gui.leguicomp.IconButton
-import com.cout970.modeler.gui.leguicomp.Panel
-import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.input.window.Loop
 import com.cout970.modeler.util.*
 import com.cout970.vector.api.IVector2
 import org.liquidengine.legui.component.Component
-import org.liquidengine.legui.component.TextInput
-import org.liquidengine.legui.component.misc.listener.textinput.TextInputMouseClickEventListener
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
-import org.liquidengine.legui.event.FocusEvent
-import org.liquidengine.legui.event.KeyEvent
 import org.liquidengine.legui.event.MouseClickEvent
 import org.liquidengine.legui.event.ScrollEvent
 import java.text.DecimalFormat
@@ -41,7 +37,7 @@ class ValueInput : RComponent<ValueInput.Props, Unit>() {
         setTransparent()
         setBorderless()
 
-        val input = TextInput(formatter.format(props.value()), 0f, 16f, 75f, 40f).apply {
+        val input = StringInput(formatter.format(props.value()), 0f, 16f, 75f, 40f).apply {
             textState.textColor = Config.colorPalette.textColor.toColor()
             textState.horizontalAlign = HorizontalAlign.CENTER
             textState.fontSize = 24f
@@ -49,28 +45,15 @@ class ValueInput : RComponent<ValueInput.Props, Unit>() {
         }
 
         +input.apply {
-            listenerMap.addListener(MouseClickEvent::class.java, MouseClickEventListener())
 
             listenerMap.addListener(ScrollEvent::class.java) {
                 dispatch(it.yoffset.toFloat(), input.text)
             }
-
-            listenerMap.addListener(FocusEvent::class.java) {
-                if (it.isFocused) {
-                    if (input.text.isNotEmpty()) {
-                        input.startSelectionIndex = 0
-                        input.endSelectionIndex = input.text.length
-                        onGainFocus(input)
-                    }
-                } else {
-                    dispatch(0f, input.text)
-                }
+            onLoseFocus = {
+                dispatch(0f, input.text)
             }
-
-            listenerMap.addListener(KeyEvent::class.java) {
-                if (it.key == Keyboard.KEY_ENTER) {
-                    dispatch(0f, input.text)
-                }
+            onEnterPress = {
+                dispatch(0f, input.text)
             }
         }
 
@@ -118,27 +101,6 @@ class ValueInput : RComponent<ValueInput.Props, Unit>() {
             val ref: IObjectRef,
             val pos: IVector2
     )
-
-    fun onGainFocus(input: TextInput) {
-        input.listenerMap.getListeners(MouseClickEvent::class.java)
-                .firstOrNull()
-                .asNullable()
-                .flatMap { it as? MouseClickEventListener }
-                .map { it.ignoreNextEvent = true }
-    }
-
-    class MouseClickEventListener : TextInputMouseClickEventListener() {
-        var ignoreNextEvent = false
-
-        override fun process(event: MouseClickEvent<*>) {
-            if (event.action != MouseClickEvent.MouseClickAction.PRESS) return
-            if (ignoreNextEvent) {
-                ignoreNextEvent = false
-                return
-            }
-            super.process(event)
-        }
-    }
 
     companion object : RComponentSpec<ValueInput, ValueInput.Props, Unit> {
         val formatter = DecimalFormat("#.###", DecimalFormatSymbols.getInstance(Locale.ENGLISH))
