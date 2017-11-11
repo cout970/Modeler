@@ -67,6 +67,8 @@ class GuiResources {
         iconMap.put("active_invisible", BufferedImage("assets/textures/active_invisible.png"))
         iconMap.put("button_up", BufferedImage("assets/textures/up.png"))
         iconMap.put("button_down", BufferedImage("assets/textures/down.png"))
+        iconMap.put("button_left", BufferedImage("assets/textures/left.png"))
+        iconMap.put("button_right", BufferedImage("assets/textures/right.png"))
         iconMap.put("active_selection_mode_object", BufferedImage("assets/textures/selection_mode_object.png"))
         iconMap.put("active_selection_mode_face", BufferedImage("assets/textures/selection_mode_face.png"))
         iconMap.put("active_selection_mode_edge", BufferedImage("assets/textures/selection_mode_edge.png"))

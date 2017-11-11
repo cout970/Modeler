@@ -1,13 +1,22 @@
 package com.cout970.modeler.gui.leguicomp
 
+import com.cout970.modeler.core.config.ColorPalette
+import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.gui.event.EventSelectionUpdate
 import com.cout970.modeler.gui.reactive.RBuildContext
 import com.cout970.modeler.gui.reactive.RComponentWrapper
 import com.cout970.modeler.util.isNotEmpty
+import com.cout970.modeler.util.toColor
+import com.cout970.vector.api.IVector3
 import org.joml.Vector4f
+import org.liquidengine.legui.border.SimpleLineBorder
+import org.liquidengine.legui.component.Button
 import org.liquidengine.legui.component.Component
+import org.liquidengine.legui.component.TextInput
+import org.liquidengine.legui.event.MouseClickEvent
+import org.liquidengine.legui.event.ScrollEvent
 
 /**
  * Created by cout970 on 2017/09/07.
@@ -40,6 +49,11 @@ fun spaces(amount: Int): String = buildString {
     (0 until amount).forEach { append(' ') }
 }
 
+fun Component.fill(ctx: RBuildContext) {
+    size.x = ctx.parentSize.xf
+    size.y = ctx.parentSize.yf
+}
+
 fun Component.fillX(ctx: RBuildContext) {
     size.x = ctx.parentSize.xf
 }
@@ -58,6 +72,11 @@ fun Component.marginY(ctx: RBuildContext, margin: Float) {
     position.y = margin
 }
 
+fun Component.center(ctx: RBuildContext) {
+    position.x = (ctx.parentSize.xf - size.x) * 0.5f
+    position.y = (ctx.parentSize.yf - size.y) * 0.5f
+}
+
 fun Component.centerX(ctx: RBuildContext) {
     position.x = (ctx.parentSize.xf - size.x) * 0.5f
 }
@@ -65,6 +84,45 @@ fun Component.centerX(ctx: RBuildContext) {
 fun Component.centerY(ctx: RBuildContext) {
     position.y = (ctx.parentSize.yf - size.y) * 0.5f
 }
+
+inline fun Component.background(f: ColorPalette.() -> IVector3) {
+    backgroundColor = Config.colorPalette.f().toColor()
+}
+
+inline fun Component.border(size: Float = 1f, f: ColorPalette.() -> IVector3) {
+    border = SimpleLineBorder(Config.colorPalette.f().toColor(), size)
+}
+
+fun Button.onClick(func: (MouseClickEvent<*>) -> Unit) {
+    listenerMap.addListener(MouseClickEvent::class.java){
+        if(it.action == MouseClickEvent.MouseClickAction.CLICK){
+            func(it)
+        }
+    }
+}
+
+fun TextInput.defaultTextColor() {
+    textState.textColor = Config.colorPalette.textColor.toColor()
+}
+
+
+inline fun TextInput.textColor(f: ColorPalette.()-> IVector3){
+    textState.textColor = Config.colorPalette.f().toColor()
+}
+
+inline fun TextInput.highlightColor(f: ColorPalette.()-> IVector3){
+    textState.highlightColor = Config.colorPalette.f().toColor()
+}
+
+inline fun TextInput.focusedStrokeColor(f: ColorPalette.()-> IVector3){
+    focusedStrokeColor = Config.colorPalette.f().toColor()
+}
+
+var Component.onScroll: ((ScrollEvent<*>)->Unit)?
+    get() = null
+    set(value){
+        listenerMap.addListener(ScrollEvent::class.java, value)
+    }
 
 fun debugPixelBorder() = PixelBorder().apply {
     enableBottom = true

@@ -28,7 +28,7 @@ class ImportModel : IUseCase {
     @Inject lateinit var gui: Gui
 
     override fun createTask(): ITask {
-        val callback = { returnCallback: (ITask) -> Unit ->
+        return TaskAsync { returnCallback: (ITask) -> Unit ->
             gui.state.popup = Popup("import") { prop ->
                 gui.state.popup = null
                 gui.root.reRender()
@@ -38,7 +38,6 @@ class ImportModel : IUseCase {
             }
             gui.root.reRender()
         }
-        return TaskCallback(callback)
     }
 }
 
@@ -50,7 +49,7 @@ class ExportModel : IUseCase {
     @Inject lateinit var gui: Gui
 
     override fun createTask(): ITask {
-        val callback = { returnCallback: (ITask) -> Unit ->
+        return TaskAsync { returnCallback: (ITask) -> Unit ->
             gui.state.popup = Popup("export") { prop ->
                 gui.state.popup = null
                 gui.root.reRender()
@@ -60,7 +59,6 @@ class ExportModel : IUseCase {
             }
             gui.root.reRender()
         }
-        return TaskCallback(callback)
     }
 }
 

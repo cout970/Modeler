@@ -1,7 +1,7 @@
 package com.cout970.modeler.gui.components
 
-import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.leguicomp.IconButton
+import com.cout970.modeler.gui.leguicomp.background
 import com.cout970.modeler.gui.leguicomp.fillX
 import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.gui.reactive.RBuildContext
@@ -9,7 +9,6 @@ import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.setTransparent
-import com.cout970.modeler.util.toColor
 import org.liquidengine.legui.component.Component
 
 /**
@@ -22,13 +21,14 @@ class TopButtonPanel : RComponent<Unit, Unit>() {
     }
 
     override fun build(ctx: RBuildContext): Component = panel {
-        backgroundColor = Config.colorPalette.darkestColor.toColor()
+        background { darkestColor }
         height = 48f
         fillX(ctx)
         setBorderless()
 
         +panel {
             setTransparent()
+            setBorderless()
             width = 240f
             height = 48f
 
@@ -50,6 +50,7 @@ class TopButtonPanel : RComponent<Unit, Unit>() {
         }
         +panel {
             setTransparent()
+            setBorderless()
             width = 192f
             height = 48f
             position.x = 240f

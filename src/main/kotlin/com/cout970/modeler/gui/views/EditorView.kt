@@ -13,7 +13,7 @@ import com.cout970.vector.api.IVector2
 /**
  * Created by cout970 on 2017/06/09.
  */
-class EditorView : IView{
+class EditorView : IView {
 
     override lateinit var gui: Gui
 
@@ -24,7 +24,7 @@ class EditorView : IView{
 
     override fun reBuild(newSize: IVector2) {
 
-        base.position.set(0f,0f)
+        base.position.set(0f, 0f)
         base.size = newSize.toJoml2f()
 
         render(base, gui) {
@@ -64,6 +64,9 @@ class EditorView : IView{
                         }
                         "export" -> {
                             +ExportDialog { ExportDialog.Props(it) }
+                        }
+                        "config" -> {
+                            +ConfigMenu { ConfigMenu.Props(it) }
                         }
                     }
                 }

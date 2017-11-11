@@ -126,6 +126,8 @@ class CanvasManager {
 
     fun onMouseClick(e: EventMouseClick): Boolean {
 
+        if (gui.state.popup != null) return false
+
         if (e.keyState == EnumKeyState.PRESS) {
             when {
                 Config.keyBindings.selectModelControls.check(e) -> return selectPart()

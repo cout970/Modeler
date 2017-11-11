@@ -10,18 +10,28 @@ object Config {
 
     var keyBindings = KeyBindings()
     var user: Author = Author()
-    var colorPalette = ColorPalette.defaultPalette
-    var mouseTranslateSpeedX: Float = 5f
-    var mouseTranslateSpeedY: Float = 5f
-    var mouseRotationSpeedX: Float = 0.5f
-    var mouseRotationSpeedY: Float = 0.5f
-    var cameraScrollSpeed: Float = 10f
     var logLevel: Level = Level.FINE
+    var colorPalette = ColorPalette.defaultPalette
+    @ConfigComment("Speed moving the camera in the X axis")
+    var mouseTranslateSpeedX: Float = 5f
+    @ConfigComment("Speed moving the camera in the Y axis")
+    var mouseTranslateSpeedY: Float = 5f
+    @ConfigComment("Speed rotating the camera when the mouse moves in the X axis")
+    var mouseRotationSpeedX: Float = 0.5f
+    @ConfigComment("Speed rotating the camera when the mouse moves in the Y axis")
+    var mouseRotationSpeedY: Float = 0.5f
+    @ConfigComment("Speed changing the zoom with the mouse scroll")
+    var cameraScrollSpeed: Float = 10f
+    @ConfigComment("Distance from the cursor center to the end")
     var cursorArrowsDispersion: Float = 2f
+    @ConfigComment("Total size of the cursor arrows")
     var cursorArrowsScale: Float = 0.75f
+    @ConfigComment("Speed moving things using the cursor arrows")
     var cursorArrowsSpeed: Float = 900f
+    @ConfigComment("Speed rotating things using the cursor arrows")
     var cursorRotationSpeed: Float = 1f
+    @ConfigComment("Thickness in pixels of the selection mark")
     var selectionThickness: Float = 0.2f
+    @ConfigComment("Field of view")
     var perspectiveFov: Float = 45f
-    var enableHelperGrid: Boolean = true
 }

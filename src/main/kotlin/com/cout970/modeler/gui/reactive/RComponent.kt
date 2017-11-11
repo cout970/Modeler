@@ -28,6 +28,10 @@ abstract class RComponent<P : Any, S : Any>() {
 
     abstract fun build(ctx: RBuildContext): Component
 
+    fun rebuild(){
+        replaceState(state)
+    }
+
     fun replaceState(newState: S) {
         if (shouldComponentUpdate(props, newState)) {
             stateField = newState

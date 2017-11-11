@@ -8,8 +8,13 @@ class TaskAsync(val callback: suspend ((ITask) -> Unit) -> Unit) : ITask {
 
     override fun run(state: Program) {
         launch(UI) {
-            callback {
-                state.taskHistory.processTask(it)
+            try {
+
+                callback {
+                    state.taskHistory.processTask(it)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
