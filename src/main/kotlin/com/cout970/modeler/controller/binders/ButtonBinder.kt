@@ -3,8 +3,8 @@ package com.cout970.modeler.controller.binders
 import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
-import com.cout970.modeler.gui.react.leguicomp.IconButton
-import com.cout970.modeler.gui.react.leguicomp.TextButton
+import com.cout970.modeler.gui.leguicomp.IconButton
+import com.cout970.modeler.gui.leguicomp.TextButton
 import com.cout970.modeler.util.isNotEmpty
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.event.MouseClickEvent

@@ -13,13 +13,14 @@ import com.cout970.modeler.core.export.ExportManager
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.model.selection.IClipboard
+import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.project.ProjectProperties
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.gui.*
 import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.gui.canvas.CanvasManager
-import com.cout970.modeler.gui.editor.EditorPanel
+import com.cout970.modeler.gui.views.EditorView
 import com.cout970.modeler.input.event.EventController
 import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.input.window.Loop
@@ -85,7 +86,7 @@ class DependencyInjector {
                     WindowHandler::class.java -> gui.windowHandler
                     Timer::class.java -> gui.timer
                     IInput::class.java -> gui.input
-                    EditorPanel::class.java -> gui.editorPanel
+                    EditorView::class.java -> gui.editorView
                     ProjectManager::class.java -> projectManager
                     CanvasManager::class.java -> gui.canvasManager
                     GuiResources::class.java -> gui.resources

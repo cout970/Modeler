@@ -13,7 +13,7 @@ class ShowLeftPanel : IUseCase {
     override fun createTask(): ITask {
         return ModifyGui { gui ->
             gui.state.showLeftPanel = !gui.state.showLeftPanel
-            gui.editorPanel.reRender()
+            gui.root.reRender()
         }
     }
 }
@@ -24,7 +24,7 @@ class ShowRightPanel : IUseCase {
     override fun createTask(): ITask {
         return ModifyGui { gui ->
             gui.state.showRightPanel = !gui.state.showRightPanel
-            gui.editorPanel.reRender()
+            gui.root.reRender()
         }
     }
 }

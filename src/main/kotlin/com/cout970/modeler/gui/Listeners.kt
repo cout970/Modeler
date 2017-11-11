@@ -7,12 +7,13 @@ import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.project.ProjectManager
-import com.cout970.modeler.gui.react.event.EventMaterialUpdate
-import com.cout970.modeler.gui.react.event.EventModelUpdate
-import com.cout970.modeler.gui.react.event.EventSelectionUpdate
+import com.cout970.modeler.gui.event.EventMaterialUpdate
+import com.cout970.modeler.gui.event.EventModelUpdate
+import com.cout970.modeler.gui.event.EventSelectionUpdate
 import com.cout970.modeler.input.event.EventController
 import com.cout970.modeler.render.tool.camera.CameraUpdater
 import com.cout970.modeler.util.*
+import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.vec2Of
 import org.liquidengine.legui.component.TextInput
 
@@ -26,52 +27,61 @@ class Listeners : ITickeable {
 
     fun initListeners(eventController: EventController, projectManager: ProjectManager, gui: Gui) {
         this.gui = gui
-        eventController.addListener(EventKeyUpdate::class.java, this::onKeyPress)
-        eventController.addListener(EventFrameBufferSize::class.java, this::onFramebufferSizeUpdated)
-        eventController.addListener(EventMouseScroll::class.java, this::onMouseScroll)
-        cameraUpdater = CameraUpdater(gui.canvasContainer, eventController, gui.timer)
-        gui.root.updateSizes(gui.windowHandler.window.size)
-        projectManager.modelChangeListeners += this::onModelChange
-        eventController.addListener(EventMouseClick::class.java, gui.canvasManager::onMouseClick)
+        eventController.let {
+            it.addListener(EventKeyUpdate::class.java, this::onKeyPress)
+            it.addListener(EventFrameBufferSize::class.java, this::onFramebufferSizeUpdated)
+            it.addListener(EventMouseScroll::class.java, this::onMouseScroll)
+            it.addListener(EventMouseClick::class.java, gui.canvasManager::onMouseClick)
 
-        projectManager.modelChangeListeners.add { _, new ->
-            gui.state.modelHash = new.hashCode()
-            gui.state.visibilityHash = new.visibilities.hashCode()
-        }
-        gui.modelAccessor.modelSelectionHandler.addChangeListener { _, _ ->
-            gui.state.modelSelectionHash = (gui.modelAccessor.modelSelectionHandler.lastModified and 0xFFFFFFFF).toInt()
-            gui.state.textureSelectionHash = (gui.modelAccessor.modelSelectionHandler.lastModified and 0xFFFFFFFF).toInt()
-        }
-        projectManager.materialChangeListeners.add { _, _ ->
-            gui.state.materialsHash = (System.currentTimeMillis() and 0xFFFFFFFF).toInt()
+            cameraUpdater = CameraUpdater(gui.canvasContainer, it, gui.timer)
         }
 
-        projectManager.modelChangeListeners.add(gui.canvasManager::onModelUpdate)
-        projectManager.materialChangeListeners.add(this::onMaterialUpdate)
-        gui.modelAccessor.modelSelectionHandler.addChangeListener(this::onSelectionUpdate)
-        gui.modelAccessor.modelSelectionHandler.addChangeListener(gui.canvasManager::onSelectionUpdate)
+        projectManager.let {
+            it.modelChangeListeners += this::onModelChange
+            it.modelChangeListeners.add { _, new ->
+                gui.state.modelHash = new.hashCode()
+                gui.state.visibilityHash = new.visibilities.hashCode()
+            }
+
+            it.modelSelectionHandler.addChangeListener { _, _ ->
+                gui.state.modelSelectionHash = (gui.modelAccessor.modelSelectionHandler.lastModified and 0xFFFFFFFF).toInt()
+                gui.state.textureSelectionHash = (gui.modelAccessor.modelSelectionHandler.lastModified and 0xFFFFFFFF).toInt()
+            }
+
+            it.materialChangeListeners.add { _, _ ->
+                gui.state.materialsHash = (System.currentTimeMillis() and 0xFFFFFFFF).toInt()
+            }
+
+            it.modelChangeListeners.add(gui.canvasManager::onModelUpdate)
+            it.materialChangeListeners.add(this::onMaterialUpdate)
+
+            it.modelSelectionHandler.addChangeListener(this::onSelectionUpdate)
+            it.modelSelectionHandler.addChangeListener(gui.canvasManager::onSelectionUpdate)
+        }
     }
+
+    private var sizeUpdate: IVector2? = null
 
     fun onFramebufferSizeUpdated(event: EventFrameBufferSize): Boolean {
         if (event.height == 0 || event.width == 0) return false
-        gui.root.updateSizes(vec2Of(event.width, event.height))
+        sizeUpdate = vec2Of(event.width, event.height)
         return false
     }
 
     fun onModelChange(old: IModel, new: IModel) {
-        gui.editorPanel.reactBase.getListeners<EventModelUpdate>().forEach { (comp, listener) ->
+        gui.editorView.base.getListeners<EventModelUpdate>().forEach { (comp, listener) ->
             listener.process(EventModelUpdate(comp, gui.root.context, gui.root, new, old))
         }
     }
 
     fun onSelectionUpdate(old: Nullable<ISelection>, new: Nullable<ISelection>) {
-        gui.editorPanel.reactBase.getListeners<EventSelectionUpdate>().forEach { (comp, listener) ->
+        gui.editorView.base.getListeners<EventSelectionUpdate>().forEach { (comp, listener) ->
             listener.process(EventSelectionUpdate(comp, gui.root.context, gui.root, new, old))
         }
     }
 
     fun onMaterialUpdate(old: IMaterial?, new: IMaterial?) {
-        gui.editorPanel.reactBase.getListeners<EventMaterialUpdate>().forEach { (comp, listener) ->
+        gui.editorView.base.getListeners<EventMaterialUpdate>().forEach { (comp, listener) ->
             listener.process(EventMaterialUpdate(comp, gui.root.context, gui.root, new.asNullable(), old.asNullable()))
         }
     }
@@ -103,5 +113,11 @@ class Listeners : ITickeable {
     override fun tick() {
         cameraUpdater.updateCameras()
         gui.canvasManager.update()
+        sizeUpdate?.let {
+            gui.root.updateSizes(it)
+            gui.root.context.updateGlfwWindow()
+            gui.windowHandler.resetViewport()
+            sizeUpdate = null
+        }
     }
 }

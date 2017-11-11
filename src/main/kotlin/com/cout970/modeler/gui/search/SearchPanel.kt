@@ -1,6 +1,6 @@
 package com.cout970.modeler.gui.search
 
-import com.cout970.modeler.gui.react.leguicomp.Panel
+import com.cout970.modeler.gui.leguicomp.Panel
 
 /**
  * Created by cout970 on 2017/04/12.

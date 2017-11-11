@@ -25,7 +25,5 @@ data class Program(
         val mainLoop: Loop,
         val exportManager: ExportManager,
         val futureExecutor: FutureExecutor,
-        val taskHistory: TaskHistory,
-        val modelSelectionHandler: SelectionHandler,
-        val textureSelectionHandler: SelectionHandler
+        val taskHistory: TaskHistory
 )

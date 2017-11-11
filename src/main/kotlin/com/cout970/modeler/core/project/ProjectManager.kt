@@ -10,12 +10,13 @@ import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.selection.ClipboardNone
 import com.cout970.modeler.core.model.selection.IClipboard
+import com.cout970.modeler.core.model.selection.SelectionHandler
 
 /**
  * Created by cout970 on 2017/07/08.
  */
 
-class ProjectManager {
+class ProjectManager(val modelSelectionHandler: SelectionHandler, val textureSelectionHandler: SelectionHandler) {
 
     var projectProperties: ProjectProperties = ProjectProperties(Author("anonymous"), "unnamed")
 

@@ -13,10 +13,10 @@ import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.selection.SelectionHandler
+import com.cout970.modeler.core.project.ModelAccessor
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.gui.GuiInitializer
-import com.cout970.modeler.gui.ModelAccessor
 import com.cout970.modeler.input.event.EventController
 import com.cout970.modeler.input.window.Loop
 import com.cout970.modeler.input.window.WindowHandler
@@ -42,8 +42,12 @@ class Initializer {
         val windowHandler = WindowHandler(timer)
         log(Level.FINE) { "Creating EventController" }
         val eventController = EventController()
-        log(Level.FINE) { "Creating ProjectController" }
-        val projectManager = ProjectManager()
+        log(Level.FINE) { "Creating ModelSelectionHandler" }
+        val modelSelectionHandler = SelectionHandler(SelectionTarget.MODEL)
+        log(Level.FINE) { "Creating ModelSelectionHandler" }
+        val textureSelectionHandler = SelectionHandler(SelectionTarget.TEXTURE)
+        log(Level.FINE) { "Creating ProjectManager" }
+        val projectManager = ProjectManager(modelSelectionHandler, textureSelectionHandler)
         log(Level.FINE) { "Creating FutureExecutor" }
         val futureExecutor = FutureExecutor()
         log(Level.FINE) { "Creating TaskHistory" }
@@ -52,10 +56,6 @@ class Initializer {
         val exportManager = ExportManager(resourceLoader)
         log(Level.FINE) { "Creating RenderManager" }
         val renderManager = RenderManager()
-        log(Level.FINE) { "Creating ModelSelectionHandler" }
-        val modelSelectionHandler = SelectionHandler(SelectionTarget.MODEL)
-        log(Level.FINE) { "Creating ModelSelectionHandler" }
-        val textureSelectionHandler = SelectionHandler(SelectionTarget.TEXTURE)
         log(Level.FINE) { "Creating AutoRunner" }
         val autoRunner = AutoRunner(resourceLoader, projectManager, taskHistory)
 
@@ -66,12 +66,12 @@ class Initializer {
                 renderManager,
                 resourceLoader,
                 timer,
-                ModelAccessor(projectManager, modelSelectionHandler, textureSelectionHandler)
+                ModelAccessor(projectManager)
         ).init()
 
         log(Level.FINE) { "Creating Loop" }
         val mainLoop = Loop(
-                listOf(renderManager, gui.listeners, eventController, windowHandler, futureExecutor, autoRunner,
+                listOf(eventController, gui.listeners, renderManager, windowHandler, futureExecutor, autoRunner,
                         Profiler),
                 timer, windowHandler::shouldClose)
 
@@ -87,9 +87,7 @@ class Initializer {
                 gui = gui,
                 projectManager = projectManager,
                 futureExecutor = futureExecutor,
-                taskHistory = taskHistory,
-                modelSelectionHandler = modelSelectionHandler,
-                textureSelectionHandler = textureSelectionHandler
+                taskHistory = taskHistory
         )
 
         Debugger.setInit(state)
@@ -118,7 +116,7 @@ class Initializer {
         gui.dispatcher.state = state
         futureExecutor.programState = state
 
-        gui.buttonBinder.bindButtons(gui.root.mainPanel!!)
+        gui.root.bindButtons(gui.buttonBinder)
         gui.root.updateSizes(windowHandler.window.getFrameBufferSize())
 
         log(Level.FINE) { "Searching for last project" }

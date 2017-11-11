@@ -1,7 +1,7 @@
 package com.cout970.modeler.gui.canvas
 
 import com.cout970.modeler.api.model.selection.SelectionTarget
-import com.cout970.modeler.gui.react.leguicomp.Panel
+import com.cout970.modeler.gui.leguicomp.Panel
 import com.cout970.modeler.render.tool.camera.CameraHandler
 import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.setTransparent

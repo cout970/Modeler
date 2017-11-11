@@ -10,7 +10,7 @@ import com.cout970.modeler.controller.tasks.TaskUpdateModel
 import com.cout970.modeler.core.model.ObjectCubeNone
 import com.cout970.modeler.core.model.pos
 import com.cout970.modeler.core.model.size
-import com.cout970.modeler.gui.editor.EditorPanel
+import com.cout970.modeler.gui.views.EditorView
 import com.cout970.modeler.util.asNullable
 import com.cout970.modeler.util.quatOfAngles
 import com.cout970.modeler.util.toAxisRotations
@@ -33,7 +33,7 @@ class UpdateTemplateCube : IUseCase {
 
     @Inject lateinit var component: Component
     @Inject lateinit var model: IModel
-    @Inject lateinit var editorPanel: EditorPanel
+    @Inject lateinit var editorView: EditorView
 
     data class PipeArgs(
             val ref: IObjectRef,

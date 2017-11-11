@@ -4,7 +4,7 @@ import com.cout970.modeler.Debugger
 import com.cout970.modeler.Program
 import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.tasks.TaskNone
-import com.cout970.modeler.gui.react.leguicomp.ProfilerDiagram
+import com.cout970.modeler.gui.leguicomp.ProfilerDiagram
 
 /**
  * Created by cout970 on 2017/07/20.
@@ -20,7 +20,7 @@ class Debug : IUseCase {
 
             //            //reload gui
 
-            gui.editorPanel.reRender()
+            gui.root.reRender()
             gui.resources.reload(resourceLoader)
             gui.root.loadResources(gui.resources)
 //

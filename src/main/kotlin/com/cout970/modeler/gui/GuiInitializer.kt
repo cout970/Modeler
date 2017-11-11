@@ -6,11 +6,12 @@ import com.cout970.modeler.controller.binders.ButtonBinder
 import com.cout970.modeler.controller.binders.KeyboardBinder
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
+import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.gui.canvas.CanvasManager
-import com.cout970.modeler.gui.editor.EditorPanel
-import com.cout970.modeler.gui.react.leguicomp.Panel
+import com.cout970.modeler.gui.leguicomp.Panel
+import com.cout970.modeler.gui.views.EditorView
 import com.cout970.modeler.input.event.EventController
 import com.cout970.modeler.input.window.WindowHandler
 import com.cout970.modeler.render.RenderManager
@@ -31,11 +32,10 @@ class GuiInitializer(
         log(Level.FINE) { "[GuiInitializer] Initializing GUI" }
         log(Level.FINE) { "[GuiInitializer] Creating gui resources" }
         val guiResources = GuiResources()
-        log(Level.FINE) { "[GuiInitializer] Creating Root Frame" }
-        val root = Root()
         log(Level.FINE) { "[GuiInitializer] Creating Editor Panel" }
-        val editorPanel = EditorPanel()
-        root.mainPanel = editorPanel
+        val editorPanel = EditorView()
+        log(Level.FINE) { "[GuiInitializer] Creating Root Frame" }
+        val root = Root(editorPanel)
         log(Level.FINE) { "[GuiInitializer] Creating CanvasContainer" }
         val canvasContainer = CanvasContainer(Panel())
         log(Level.FINE) { "[GuiInitializer] Creating CanvasManager" }
@@ -61,7 +61,7 @@ class GuiInitializer(
                 windowHandler = windowHandler,
                 timer = timer,
                 input = eventController,
-                editorPanel = editorPanel,
+                editorView = editorPanel,
                 resources = guiResources,
                 state = guiState,
                 dispatcher = dispatcher,

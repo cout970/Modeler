@@ -10,7 +10,7 @@ import com.cout970.modeler.controller.tasks.TaskUpdateModelSelection
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.getSelectedObjectRefs
 import com.cout970.modeler.core.model.selection.Selection
-import com.cout970.modeler.gui.IModelAccessor
+import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.asNullable

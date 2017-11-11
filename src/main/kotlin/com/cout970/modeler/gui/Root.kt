@@ -1,11 +1,10 @@
 package com.cout970.modeler.gui
 
 import com.cout970.modeler.controller.binders.ButtonBinder
-import com.cout970.modeler.gui.react.leguicomp.ToggleButton
-import com.cout970.modeler.util.IPropertyBind
-import com.cout970.modeler.util.isNotEmpty
-import com.cout970.modeler.util.size
-import com.cout970.modeler.util.toJoml2f
+import com.cout970.modeler.gui.leguicomp.IResourceReloadable
+import com.cout970.modeler.gui.leguicomp.ToggleButton
+import com.cout970.modeler.gui.views.IView
+import com.cout970.modeler.util.*
 import com.cout970.vector.api.IVector2
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Frame
@@ -15,25 +14,28 @@ import org.liquidengine.legui.system.context.Context
  * Created by cout970 on 2017/05/14.
  */
 
-class Root : Frame(1f, 1f) {
+class Root(val mainView: IView) : Frame(1f, 1f) {
 
     //@Inject
     lateinit var context: Context
 
-    var mainPanel: MutablePanel? = null
-        set(value) {
-            field = value
-            container.clearChilds()
-            container.add(value)
-        }
+    private fun updateView() {
+        componentLayer.clearChilds()
+        componentLayer.add(mainView.base)
+    }
 
     fun updateSizes(newSize: IVector2) {
+        updateView()
         size = newSize.toJoml2f()
-        mainPanel?.updateSizes(newSize)
+        mainView.reBuild(newSize)
+    }
+
+    fun reRender() {
+        updateSizes(size.toIVector())
     }
 
     fun loadResources(res: GuiResources) {
-        mainPanel?.let { recursiveLoadResources(it, res) }
+        recursiveLoadResources(mainView.base, res)
     }
 
     private fun recursiveLoadResources(it: Component, res: GuiResources) {
@@ -43,7 +45,7 @@ class Root : Frame(1f, 1f) {
 
     fun bindProperties(state: GuiState) {
         val properties = state.getBooleanProperties()
-        recursiveBindProperties(mainPanel!!, properties)
+        recursiveBindProperties(mainView.base, properties)
     }
 
     private fun recursiveBindProperties(it: Component, properties: Map<String, IPropertyBind<Boolean>>) {
@@ -54,6 +56,6 @@ class Root : Frame(1f, 1f) {
     }
 
     fun bindButtons(buttonBinder: ButtonBinder) {
-        buttonBinder.bindButtons(mainPanel!!)
+        buttonBinder.bindButtons(mainView.base)
     }
 }

@@ -1,7 +1,7 @@
 package com.cout970.modeler.gui.canvas
 
 import com.cout970.modeler.gui.canvas.layout.*
-import com.cout970.modeler.gui.react.leguicomp.Panel
+import com.cout970.modeler.gui.leguicomp.Panel
 
 /**
  * Created by cout970 on 2017/05/03.

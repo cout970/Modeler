@@ -29,6 +29,7 @@ class WindowHandler(private val timer: Timer) : ITickeable {
             GL11.glViewport(value.first.xi, value.first.yi, value.second.xi, value.second.yi)
             field = value
         }
+
     private val viewportStack = Stack<Pair<IVector2, IVector2>>()
     private val vsync = VSyncTimer()
 
@@ -86,7 +87,6 @@ class WindowHandler(private val timer: Timer) : ITickeable {
         Profiler.nextSection("vsyncWait")
         vsync.waitIfNecessary()
         Profiler.endSection()
-        GL11.glViewport(0, 0, window.size.xi, window.size.yi)
         window.setTitle("$WINDOW_TITLE [${timer.fps} FPS]")
         Profiler.endSection()
     }
@@ -96,14 +96,14 @@ class WindowHandler(private val timer: Timer) : ITickeable {
     }
 
     fun saveViewport(pos: IVector2, size: IVector2, funk: () -> Unit) {
-        pushViewport()
-        viewport = pos to size
+        pushViewport(pos to size)
         funk()
         popViewport()
     }
 
-    fun pushViewport() {
+    fun pushViewport(vp: Pair<IVector2, IVector2>) {
         viewportStack.push(viewport)
+        viewport = vp
     }
 
     fun popViewport() {

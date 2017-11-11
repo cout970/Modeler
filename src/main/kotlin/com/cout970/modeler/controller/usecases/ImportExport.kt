@@ -31,12 +31,12 @@ class ImportModel : IUseCase {
         val callback = { returnCallback: (ITask) -> Unit ->
             gui.state.popup = Popup("import") { prop ->
                 gui.state.popup = null
-                gui.editorPanel.reRender()
+                gui.root.reRender()
                 if (prop != null) {
                     returnCallback(TaskImportModel(model, prop as ImportProperties))
                 }
             }
-            gui.editorPanel.reRender()
+            gui.root.reRender()
         }
         return TaskCallback(callback)
     }
@@ -53,12 +53,12 @@ class ExportModel : IUseCase {
         val callback = { returnCallback: (ITask) -> Unit ->
             gui.state.popup = Popup("export") { prop ->
                 gui.state.popup = null
-                gui.editorPanel.reRender()
+                gui.root.reRender()
                 if (prop != null) {
                     returnCallback(TaskExportModel(model, prop as ExportProperties))
                 }
             }
-            gui.editorPanel.reRender()
+            gui.root.reRender()
         }
         return TaskCallback(callback)
     }

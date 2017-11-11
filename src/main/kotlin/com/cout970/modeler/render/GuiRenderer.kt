@@ -1,8 +1,8 @@
 package com.cout970.modeler.render
 
 import com.cout970.modeler.core.log.Profiler
-import com.cout970.modeler.gui.react.leguicomp.PixelBorder
-import com.cout970.modeler.gui.react.leguicomp.ProfilerDiagram
+import com.cout970.modeler.gui.leguicomp.PixelBorder
+import com.cout970.modeler.gui.leguicomp.ProfilerDiagram
 import com.cout970.modeler.input.event.CustomCallbackKeeper
 import org.liquidengine.legui.component.Frame
 import org.liquidengine.legui.listener.processor.EventProcessor
