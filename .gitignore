@@ -74,7 +74,6 @@ fabric.properties
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.ear
 *.zip
@@ -169,4 +168,3 @@ gradle-app.setting
 logs/
 /config.json
 run
-
