@@ -4,7 +4,7 @@ import com.cout970.modeler.gui.leguicomp.IconButton
 import com.cout970.modeler.gui.leguicomp.background
 import com.cout970.modeler.gui.leguicomp.fillX
 import com.cout970.modeler.gui.leguicomp.panel
-import com.cout970.modeler.gui.reactive.RBuildContext
+import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.util.setBorderless
@@ -20,7 +20,7 @@ class TopButtonPanel : RComponent<Unit, Unit>() {
         state = Unit
     }
 
-    override fun build(ctx: RBuildContext): Component = panel {
+    override fun build(ctx: RBuilder): Component = panel {
         background { darkestColor }
         height = 48f
         fillX(ctx)

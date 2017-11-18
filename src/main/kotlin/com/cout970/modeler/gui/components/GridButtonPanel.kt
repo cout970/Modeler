@@ -4,7 +4,7 @@ import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.leguicomp.ToggleButton
 import com.cout970.modeler.gui.leguicomp.fillX
 import com.cout970.modeler.gui.leguicomp.panel
-import com.cout970.modeler.gui.reactive.RBuildContext
+import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.util.setBorderless
@@ -22,7 +22,7 @@ class GridButtonPanel : RComponent<Unit, Unit>() {
         state = Unit
     }
 
-    override fun build(ctx: RBuildContext): Component = panel {
+    override fun build(ctx: RBuilder): Component = panel {
         backgroundColor = Config.colorPalette.darkestColor.toColor()
         height = 28f
         fillX(ctx)

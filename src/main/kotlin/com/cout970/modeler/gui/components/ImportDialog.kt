@@ -4,7 +4,7 @@ import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.export.ImportFormat
 import com.cout970.modeler.core.export.ImportProperties
 import com.cout970.modeler.gui.Popup
-import com.cout970.modeler.gui.reactive.RBuildContext
+import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.gui.leguicomp.DropDown
@@ -37,7 +37,7 @@ class ImportDialog : RComponent<ImportDialog.Props, ImportDialog.State>() {
         state = State("", 0, false, false)
     }
 
-    override fun build(ctx: RBuildContext): Component = panel {
+    override fun build(ctx: RBuilder): Component = panel {
         size = ctx.parentSize.toJoml2f()
         backgroundColor = Vector4f(1f, 1f, 1f, 0.05f)
 

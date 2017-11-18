@@ -5,7 +5,7 @@ import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.gui.event.EventSelectionUpdate
-import com.cout970.modeler.gui.reactive.RBuildContext
+import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponentWrapper
 import com.cout970.modeler.util.isNotEmpty
 import com.cout970.modeler.util.toColor
@@ -49,39 +49,39 @@ fun spaces(amount: Int): String = buildString {
     (0 until amount).forEach { append(' ') }
 }
 
-fun Component.fill(ctx: RBuildContext) {
+fun Component.fill(ctx: RBuilder) {
     size.x = ctx.parentSize.xf
     size.y = ctx.parentSize.yf
 }
 
-fun Component.fillX(ctx: RBuildContext) {
+fun Component.fillX(ctx: RBuilder) {
     size.x = ctx.parentSize.xf
 }
 
-fun Component.fillY(ctx: RBuildContext) {
+fun Component.fillY(ctx: RBuilder) {
     size.y = ctx.parentSize.yf
 }
 
-fun Component.marginX(ctx: RBuildContext, margin: Float) {
+fun Component.marginX(ctx: RBuilder, margin: Float) {
     size.x = ctx.parentSize.xf - margin * 2
     position.x = margin
 }
 
-fun Component.marginY(ctx: RBuildContext, margin: Float) {
+fun Component.marginY(ctx: RBuilder, margin: Float) {
     size.y = ctx.parentSize.yf - margin * 2
     position.y = margin
 }
 
-fun Component.center(ctx: RBuildContext) {
+fun Component.center(ctx: RBuilder) {
     position.x = (ctx.parentSize.xf - size.x) * 0.5f
     position.y = (ctx.parentSize.yf - size.y) * 0.5f
 }
 
-fun Component.centerX(ctx: RBuildContext) {
+fun Component.centerX(ctx: RBuilder) {
     position.x = (ctx.parentSize.xf - size.x) * 0.5f
 }
 
-fun Component.centerY(ctx: RBuildContext) {
+fun Component.centerY(ctx: RBuilder) {
     position.y = (ctx.parentSize.yf - size.y) * 0.5f
 }
 

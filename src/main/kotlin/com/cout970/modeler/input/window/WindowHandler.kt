@@ -43,8 +43,10 @@ class WindowHandler(private val timer: Timer) : ITickeable {
             title = WINDOW_TITLE
             size = vec2Of(800, 600)
             vSync = false
-//            properties.put(GLFW_DECORATED, GLFW_FALSE)
-//            properties.put(GLFW_MAXIMIZED, GLFW_TRUE)
+//            properties.put(GLFW_CONTEXT_VERSION_MAJOR, 3)
+//            properties.put(GLFW_CONTEXT_VERSION_MINOR, 2)
+//            properties.put(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE)
+//            properties.put(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE)
         }
         window.center()
         window.show()
@@ -56,6 +58,7 @@ class WindowHandler(private val timer: Timer) : ITickeable {
         val tex32 = TextureLoader.loadTexture(rl.readResource("assets/textures/icon32.png"))
         val tex48 = TextureLoader.loadTexture(rl.readResource("assets/textures/icon48.png"))
         val icons = GLFWImage.malloc(3)
+
         icons.position(0)
                 .width(tex16.size.xi)
                 .height(tex16.size.yi)

@@ -1,5 +1,6 @@
 package com.cout970.modeler.gui.reactive
 
+import com.cout970.modeler.gui.leguicomp.panel
 import org.liquidengine.legui.component.Component
 
 /**
@@ -26,7 +27,9 @@ abstract class RComponent<P : Any, S : Any>() {
             stateField = value
         }
 
-    abstract fun build(ctx: RBuildContext): Component
+    open fun build(ctx: RBuilder): Component = panel{}
+
+    open fun RBuilder.render(): Component = build(this)
 
     fun rebuild(){
         replaceState(state)

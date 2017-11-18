@@ -7,7 +7,7 @@ import com.cout970.modeler.gui.leguicomp.FixedLabel
 import com.cout970.modeler.gui.leguicomp.IconButton
 import com.cout970.modeler.gui.leguicomp.fillY
 import com.cout970.modeler.gui.leguicomp.panel
-import com.cout970.modeler.gui.reactive.RBuildContext
+import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.gui.reactive.invoke
@@ -27,7 +27,7 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
         state = Unit
     }
 
-    override fun build(ctx: RBuildContext): Component = panel {
+    override fun build(ctx: RBuilder): Component = panel {
         backgroundColor = Config.colorPalette.darkestColor.toColor()
         posX = ctx.parentSize.xf - 190f
         width = 190f

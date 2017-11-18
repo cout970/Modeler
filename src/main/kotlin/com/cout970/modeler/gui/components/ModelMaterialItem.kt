@@ -1,7 +1,7 @@
 package com.cout970.modeler.gui.components
 
 import com.cout970.modeler.api.model.material.IMaterialRef
-import com.cout970.modeler.gui.reactive.RBuildContext
+import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.gui.leguicomp.IconButton
@@ -23,7 +23,7 @@ class ModelMaterialItem : RComponent<ModelMaterialItem.Props, Boolean>() {
         state = false
     }
 
-    override fun build(ctx: RBuildContext): Component = panel {
+    override fun build(ctx: RBuilder): Component = panel {
         backgroundColor = props.color
         cornerRadius = 0f
         width = 182f

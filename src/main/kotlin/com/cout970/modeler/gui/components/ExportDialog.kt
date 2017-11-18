@@ -8,7 +8,7 @@ import com.cout970.modeler.gui.leguicomp.DropDown
 import com.cout970.modeler.gui.leguicomp.FixedLabel
 import com.cout970.modeler.gui.leguicomp.TextButton
 import com.cout970.modeler.gui.leguicomp.panel
-import com.cout970.modeler.gui.reactive.RBuildContext
+import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.util.toColor
@@ -34,7 +34,7 @@ class ExportDialog : RComponent<ExportDialog.Props, ExportDialog.State>() {
         state = State("", 0)
     }
 
-    override fun build(ctx: RBuildContext): Component = panel {
+    override fun build(ctx: RBuilder): Component = panel {
         size = ctx.parentSize.toJoml2f()
         backgroundColor = Vector4f(1f, 1f, 1f, 0.05f)
 

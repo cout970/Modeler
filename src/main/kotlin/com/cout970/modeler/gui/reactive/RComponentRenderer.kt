@@ -16,7 +16,7 @@ object RComponentRenderer {
 
     fun buildAll(ctx: RContext) {
 
-        val buildContext = RBuildContext(ctx.root.size.toIVector(), ctx.gui.root.context)
+        val buildContext = RBuilder(ctx.root.size.toIVector(), ctx.gui.root.context)
         val root = expandSubTree(null, ctx.virtualTree(), buildContext, ctx)
 
         ctx.root.also {
@@ -31,7 +31,7 @@ object RComponentRenderer {
     }
 
     fun buildComponent(wrapper: RComponentWrapper<*, *, *>) {
-        val buildCtx = RBuildContext(
+        val buildCtx = RBuilder(
                 parentSize = wrapper.getParent()?.size?.toIVector() ?: wrapper.getSize().toIVector(),
                 leguiCtx = wrapper.component.context.gui.root.context
         )
@@ -45,7 +45,7 @@ object RComponentRenderer {
         }
     }
 
-    private fun buildComponentHelper(wrapper: RComponentWrapper<*, *, *>, buildCtx: RBuildContext, ctx: RContext) {
+    private fun buildComponentHelper(wrapper: RComponentWrapper<*, *, *>, buildCtx: RBuilder, ctx: RContext) {
         val oldTree = wrapper.getChilds().firstOrNull()
         val newTree = wrapper.buildSubTree(buildCtx)
 
@@ -59,7 +59,7 @@ object RComponentRenderer {
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun expandSubTree(old: Component?, new: Component, buildCtx: RBuildContext, ctx: RContext): Component {
+    private fun expandSubTree(old: Component?, new: Component, buildCtx: RBuilder, ctx: RContext): Component {
 
         // generates next level nad moves props and state if needed
         if (new is RComponentWrapper<*, *, *>) {
@@ -110,7 +110,7 @@ object RComponentRenderer {
         return new.apply { clearChilds(); addAll(children) }
     }
 
-    private fun updateBuildContext(old: RBuildContext, parent: Component): RBuildContext =
+    private fun updateBuildContext(old: RBuilder, parent: Component): RBuilder =
             old.copy(parentSize = parent.size.toIVector())
 
     @Suppress("UNCHECKED_CAST")

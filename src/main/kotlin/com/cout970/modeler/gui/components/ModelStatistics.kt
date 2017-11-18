@@ -2,7 +2,7 @@ package com.cout970.modeler.gui.components
 
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.project.IModelAccessor
-import com.cout970.modeler.gui.reactive.RBuildContext
+import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.gui.event.EventModelUpdate
@@ -21,7 +21,7 @@ class ModelStatistics : RComponent<ModelStatistics.Props, Unit>() {
         state = Unit
     }
 
-    override fun build(ctx: RBuildContext): Component = panel {
+    override fun build(ctx: RBuilder): Component = panel {
         //        border = SimpleLineBorder(Vector4f(1f, 1f, 1f, 1f), 1f)
         backgroundColor = Config.colorPalette.darkestColor.toColor()
         cornerRadius = 0f

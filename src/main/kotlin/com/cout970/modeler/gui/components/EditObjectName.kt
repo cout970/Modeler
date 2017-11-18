@@ -10,7 +10,7 @@ import com.cout970.modeler.gui.leguicomp.FixedLabel
 import com.cout970.modeler.gui.leguicomp.StringInput
 import com.cout970.modeler.gui.leguicomp.marginX
 import com.cout970.modeler.gui.leguicomp.panel
-import com.cout970.modeler.gui.reactive.RBuildContext
+import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.util.disable
@@ -28,7 +28,7 @@ class EditObjectName : RComponent<EditObjectName.Props, Unit>() {
         state = Unit
     }
 
-    override fun build(ctx: RBuildContext): Component = panel {
+    override fun build(ctx: RBuilder): Component = panel {
 
         marginX(ctx, 5f)
         posY = 70f

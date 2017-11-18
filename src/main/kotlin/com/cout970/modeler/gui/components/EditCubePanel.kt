@@ -9,7 +9,7 @@ import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.model.*
 import com.cout970.modeler.core.model.selection.ObjectRef
 import com.cout970.modeler.core.project.IModelAccessor
-import com.cout970.modeler.gui.reactive.RBuildContext
+import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.gui.reactive.invoke
@@ -36,7 +36,7 @@ class EditCubePanel : RComponent<EditCubePanel.Props, Unit>() {
         state = Unit
     }
 
-    override fun build(ctx: RBuildContext): Component = panel root@ {
+    override fun build(ctx: RBuilder): Component = panel root@ {
         marginX(ctx, 5f)
         posY = 132f
         height = 460f

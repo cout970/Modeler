@@ -7,7 +7,7 @@ import com.cout970.modeler.gui.leguicomp.IconButton
 import com.cout970.modeler.gui.leguicomp.Panel
 import com.cout970.modeler.gui.leguicomp.StringInput
 import com.cout970.modeler.gui.leguicomp.panel
-import com.cout970.modeler.gui.reactive.RBuildContext
+import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.input.window.Loop
@@ -30,7 +30,7 @@ class ValueInput : RComponent<ValueInput.Props, Unit>() {
         state = Unit
     }
 
-    override fun build(ctx: RBuildContext): Component = panel {
+    override fun build(ctx: RBuilder): Component = panel {
         position = props.pos.toJoml2f()
         width = 75f
         height = 70f

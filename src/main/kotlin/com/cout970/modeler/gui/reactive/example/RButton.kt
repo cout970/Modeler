@@ -1,6 +1,6 @@
 package com.cout970.modeler.gui.reactive.example
 
-import com.cout970.modeler.gui.reactive.RBuildContext
+import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.gui.leguicomp.panel
@@ -20,7 +20,7 @@ class RButton : RComponent<RButton.Props, RButton.State>() {
         state = State(false)
     }
 
-    override fun build(ctx: RBuildContext): Component = panel {
+    override fun build(ctx: RBuilder): Component = panel {
         size = props.size
         position = Vector2f()
 

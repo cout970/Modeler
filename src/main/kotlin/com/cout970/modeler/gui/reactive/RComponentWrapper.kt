@@ -34,7 +34,7 @@ class RComponentWrapper<out C : RComponent<P, S>, P : Any, S : Any>(
         initialized = true
     }
 
-    fun buildSubTree(ctx: RBuildContext): Component {
+    fun buildSubTree(ctx: RBuilder): Component {
         return component.build(ctx)
     }
 

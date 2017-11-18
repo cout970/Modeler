@@ -2,7 +2,7 @@ package com.cout970.modeler.gui.components
 
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.project.IModelAccessor
-import com.cout970.modeler.gui.reactive.RBuildContext
+import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.gui.reactive.invoke
@@ -28,7 +28,7 @@ class ModelObjectList : RComponent<ModelObjectList.Props, ModelObjectList.State>
         state = State(0f, false)
     }
 
-    override fun build(ctx: RBuildContext) = panel {
+    override fun build(ctx: RBuilder) = panel {
 
         position = props.pos.toJoml2f()
         size = props.size.toJoml2f()

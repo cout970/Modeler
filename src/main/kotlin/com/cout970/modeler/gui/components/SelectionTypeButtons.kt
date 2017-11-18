@@ -3,7 +3,7 @@ package com.cout970.modeler.gui.components
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.GuiState
-import com.cout970.modeler.gui.reactive.RBuildContext
+import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.gui.leguicomp.ToggleButton
@@ -19,7 +19,7 @@ import org.liquidengine.legui.event.MouseClickEvent
  */
 class SelectionTypeButtons : RComponent<SelectionTypeButtons.Props, Unit>() {
 
-    override fun build(ctx: RBuildContext): Component = panel {
+    override fun build(ctx: RBuilder): Component = panel {
         backgroundColor = Config.colorPalette.darkestColor.toColor()
         marginX(ctx, 5f)
         posY = 30f

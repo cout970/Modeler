@@ -4,7 +4,7 @@ import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.config.ConfigComment
 import com.cout970.modeler.gui.Popup
 import com.cout970.modeler.gui.leguicomp.*
-import com.cout970.modeler.gui.reactive.RBuildContext
+import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.gui.reactive.invoke
@@ -25,7 +25,7 @@ class ConfigMenu : RComponent<ConfigMenu.Props, Config>() {
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun build(ctx: RBuildContext): Component = panel {
+    override fun build(ctx: RBuilder): Component = panel {
         backgroundColor = Vector4f(1f, 1f, 1f, 0.05f)
         fill(ctx)
 

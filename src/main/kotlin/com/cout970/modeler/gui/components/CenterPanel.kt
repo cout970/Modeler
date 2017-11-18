@@ -2,13 +2,13 @@ package com.cout970.modeler.gui.components
 
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.canvas.CanvasContainer
-import com.cout970.modeler.gui.reactive.RBuildContext
-import com.cout970.modeler.gui.reactive.RComponent
-import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.gui.leguicomp.FixedLabel
 import com.cout970.modeler.gui.leguicomp.Panel
 import com.cout970.modeler.gui.leguicomp.ProfilerDiagram
 import com.cout970.modeler.gui.leguicomp.panel
+import com.cout970.modeler.gui.reactive.RBuilder
+import com.cout970.modeler.gui.reactive.RComponent
+import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.setTransparent
@@ -26,7 +26,7 @@ class CenterPanel : RComponent<CenterPanel.Props, Unit>() {
         state = Unit
     }
 
-    override fun build(ctx: RBuildContext): Component = panel root@ {
+    override fun build(ctx: RBuilder): Component = panel root@ {
         width = ctx.parentSize.xf - (if (props.leftPanelHidden) 0f else 280f) - (if (props.rightPanelHidden) 0f else 190f)
         height = ctx.parentSize.yf - 48f
         posX = (if (props.leftPanelHidden) 0f else 280f)

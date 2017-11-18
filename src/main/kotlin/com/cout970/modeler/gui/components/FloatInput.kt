@@ -2,7 +2,7 @@ package com.cout970.modeler.gui.components
 
 import com.cout970.modeler.controller.usecases.UpdateTemplateCube
 import com.cout970.modeler.gui.leguicomp.*
-import com.cout970.modeler.gui.reactive.RBuildContext
+import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.util.setBorderless
@@ -18,7 +18,7 @@ class FloatInput : RComponent<FloatInput.Props, Unit>() {
         state = Unit
     }
 
-    override fun build(ctx: RBuildContext): Component = panel {
+    override fun build(ctx: RBuilder): Component = panel {
         background { darkestColor }
         setBorderless()
         cornerRadius = 0f
