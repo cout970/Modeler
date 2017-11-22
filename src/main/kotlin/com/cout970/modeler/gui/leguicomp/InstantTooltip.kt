@@ -13,8 +13,10 @@ class InstantTooltip(str: String) : Tooltip(str) {
         size = Vector2f(str.length * textState.fontSize * 0.5f, textState.fontSize)
     }
 
-    override fun setComponent(component: Component) {
+    override fun setComponent(component: Component?) {
         super.setComponent(component)
-        position = Vector2f(component.size.x * 0.5f - size.x / 2, component.size.y)
+        component?.let { comp ->
+            position = Vector2f(comp.size.x * 0.5f - size.x / 2, comp.size.y)
+        }
     }
 }

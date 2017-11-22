@@ -5,7 +5,7 @@ import com.cout970.glutilities.tessellator.VAO
 /**
  * Created by cout970 on 2017/07/24.
  */
-class AutoCache(vararg val flags: CacheFrags) {
+class AutoCache(vararg val flags: CacheFlags) {
 
     var vao: VAO? = null
     var storedHash: Int = -1
@@ -22,22 +22,22 @@ class AutoCache(vararg val flags: CacheFrags) {
 
     fun getHash(ctx: RenderContext): Int {
         var hash = -1
-        if (CacheFrags.MODEL in flags) {
+        if (CacheFlags.MODEL in flags) {
             hash = (hash shl 1) xor ctx.gui.state.modelHash
         }
-        if (CacheFrags.SELECTION_MODEL in flags) {
+        if (CacheFlags.SELECTION_MODEL in flags) {
             hash = (hash shl 1) xor ctx.gui.state.modelSelectionHash
         }
-        if (CacheFrags.SELECTION_TEXTURE in flags) {
+        if (CacheFlags.SELECTION_TEXTURE in flags) {
             hash = (hash shl 1) xor ctx.gui.state.textureSelectionHash
         }
-        if (CacheFrags.MATERIAL in flags) {
+        if (CacheFlags.MATERIAL in flags) {
             hash = (hash shl 1) xor ctx.gui.state.materialsHash
         }
-        if (CacheFrags.VISIBILITY in flags) {
+        if (CacheFlags.VISIBILITY in flags) {
             hash = (hash shl 1) xor ctx.gui.state.visibilityHash
         }
-        if (CacheFrags.CURSOR in flags) {
+        if (CacheFlags.CURSOR in flags) {
             hash = (hash shl 1) xor ctx.gui.canvasManager.cursor.hashCode()
         }
         return hash
@@ -54,7 +54,7 @@ class AutoCache(vararg val flags: CacheFrags) {
     }
 }
 
-enum class CacheFrags {
+enum class CacheFlags {
     MODEL,
     SELECTION_MODEL,
     SELECTION_TEXTURE,

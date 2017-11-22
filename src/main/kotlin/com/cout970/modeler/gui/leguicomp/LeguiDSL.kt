@@ -131,3 +131,8 @@ fun debugPixelBorder() = PixelBorder().apply {
     enableRight = true
     color = Vector4f(1f, 0f, 0f, 1f)
 }
+
+fun Component.forEachRecursive(func: (Component)-> Unit){
+    func(this)
+    childs.forEach { it.forEachRecursive(func) }
+}

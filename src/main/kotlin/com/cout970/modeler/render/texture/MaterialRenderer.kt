@@ -9,7 +9,7 @@ import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.render.tool.AutoCache
-import com.cout970.modeler.render.tool.CacheFrags
+import com.cout970.modeler.render.tool.CacheFlags
 import com.cout970.modeler.render.tool.RenderContext
 import com.cout970.modeler.render.tool.useBlend
 import com.cout970.modeler.util.MatrixUtils
@@ -22,11 +22,11 @@ import java.awt.Color
  */
 class MaterialRenderer {
 
-    var areasCache = AutoCache(CacheFrags.MODEL, CacheFrags.MATERIAL, CacheFrags.VISIBILITY,
-            CacheFrags.SELECTION_TEXTURE)
-    val gridLines = AutoCache(CacheFrags.MATERIAL)
-    val materialCache = AutoCache(CacheFrags.MATERIAL)
-    val selectionCache = AutoCache(CacheFrags.MODEL, CacheFrags.SELECTION_TEXTURE, CacheFrags.MATERIAL)
+    var areasCache = AutoCache(CacheFlags.MODEL, CacheFlags.MATERIAL, CacheFlags.VISIBILITY,
+            CacheFlags.SELECTION_TEXTURE)
+    val gridLines = AutoCache(CacheFlags.MATERIAL)
+    val materialCache = AutoCache(CacheFlags.MATERIAL)
+    val selectionCache = AutoCache(CacheFlags.MODEL, CacheFlags.SELECTION_TEXTURE, CacheFlags.MATERIAL)
 
     fun renderWorld(ctx: RenderContext, ref: IMaterialRef, material: IMaterial) {
         setCamera(ctx)

@@ -6,7 +6,7 @@ import org.liquidengine.legui.component.Component
 /**
  * Created by cout970 on 2017/09/23.
  */
-abstract class RComponent<P : Any, S : Any>() {
+abstract class RComponent<P : Any, S : Any> {
 
     lateinit var context: RContext
 
@@ -28,8 +28,6 @@ abstract class RComponent<P : Any, S : Any>() {
         }
 
     open fun build(ctx: RBuilder): Component = panel{}
-
-    open fun RBuilder.render(): Component = build(this)
 
     fun rebuild(){
         replaceState(state)
