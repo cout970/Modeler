@@ -11,6 +11,7 @@ import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.gui.reactive.invoke
+import com.cout970.modeler.gui.views.VisibleElements
 import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.setTransparent
@@ -35,7 +36,7 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
         setBorderless()
         val topSize = 85f
 
-        if (props.hide) {
+        if (!props.visibleElements.right) {
             hide()
         }
 
@@ -80,7 +81,7 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
         }
     }
 
-    class Props(val modelAccessor: IModelAccessor, val selectedMaterial: () -> IMaterialRef, val hide: Boolean)
+    class Props(val modelAccessor: IModelAccessor, val selectedMaterial: () -> IMaterialRef, val visibleElements: VisibleElements)
 
     companion object : RComponentSpec<RightPanel, Props, Unit>
 }

@@ -30,6 +30,7 @@ class GuiState {
 
     var showLeftPanel = true
     var showRightPanel = true
+    var showBottomPanel = true
 
     var hoveredObject: ISelectable? = null
     var tmpModel: IModel? = null
@@ -54,6 +55,7 @@ class GuiState {
             "useLight" to BooleanPropertyWrapper(this::useLight),
             "showInvisible" to BooleanPropertyWrapper(this::showHiddenFaces),
             "showLeftPanel" to BooleanPropertyWrapper(this::showLeftPanel),
-            "showRightPanel" to BooleanPropertyWrapper(this::showRightPanel)
+            "showRightPanel" to BooleanPropertyWrapper(this::showRightPanel),
+            "showBottomPanel" to BooleanPropertyWrapper(this::showBottomPanel)
     )
 }

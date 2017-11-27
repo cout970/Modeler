@@ -9,6 +9,7 @@ import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
+import com.cout970.modeler.gui.views.VisibleElements
 import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.setTransparent
@@ -27,9 +28,11 @@ class CenterPanel : RComponent<CenterPanel.Props, Unit>() {
     }
 
     override fun build(ctx: RBuilder): Component = panel root@ {
-        width = ctx.parentSize.xf - (if (props.leftPanelHidden) 0f else 280f) - (if (props.rightPanelHidden) 0f else 190f)
-        height = ctx.parentSize.yf - 48f
-        posX = (if (props.leftPanelHidden) 0f else 280f)
+        val left = if (props.visibleElements.left) 280f else 0f
+        val right = if (props.visibleElements.right) 190f else 0f
+        width = ctx.parentSize.xf - left - right
+        height = ctx.parentSize.yf - 48f - 200f
+        posX = left
         posY = 48f
         setTransparent()
         setBorderless()
@@ -107,7 +110,7 @@ class CenterPanel : RComponent<CenterPanel.Props, Unit>() {
         +ProfilerDiagram()
     }
 
-    class Props(val leftPanelHidden: Boolean, val rightPanelHidden: Boolean, val canvasContainer: CanvasContainer)
+    class Props(val visibleElements: VisibleElements, val canvasContainer: CanvasContainer)
 
     companion object : RComponentSpec<CenterPanel, CenterPanel.Props, Unit>
 }

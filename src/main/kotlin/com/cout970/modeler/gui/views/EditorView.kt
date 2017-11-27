@@ -27,6 +27,12 @@ class EditorView : IView {
         base.position.set(0f, 0f)
         base.size = newSize.toJoml2f()
 
+        val visible = VisibleElements(
+                left = gui.state.showLeftPanel,
+                bottom = gui.state.showBottomPanel,
+                right = gui.state.showRightPanel
+        )
+
         render(base, gui) {
             panel {
                 size = newSize.toJoml2f()
@@ -38,22 +44,27 @@ class EditorView : IView {
                     RightPanel.Props(
                             modelAccessor = gui.modelAccessor,
                             selectedMaterial = { gui.state.selectedMaterial },
-                            hide = !gui.state.showRightPanel
+                            visibleElements = visible
                     )
                 }
                 +LeftPanel {
                     LeftPanel.Props(
                             access = gui.modelAccessor,
                             dispatcher = gui.dispatcher,
-                            hide = !gui.state.showLeftPanel,
+                            visibleElements = visible,
                             guiState = gui.state
                     )
                 }
                 +CenterPanel {
                     CenterPanel.Props(
-                            leftPanelHidden = !gui.state.showLeftPanel,
-                            rightPanelHidden = !gui.state.showRightPanel,
+                            visibleElements = visible,
                             canvasContainer = gui.canvasContainer
+                    )
+                }
+
+                +BottomPanel {
+                    BottomPanel.Props(
+                            visibleElements = visible
                     )
                 }
 
@@ -74,3 +85,5 @@ class EditorView : IView {
         }
     }
 }
+
+data class VisibleElements(val left: Boolean, val bottom: Boolean, val right: Boolean)

@@ -9,6 +9,7 @@ import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.gui.reactive.invoke
 import com.cout970.modeler.gui.leguicomp.panel
+import com.cout970.modeler.gui.views.VisibleElements
 import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.toColor
@@ -31,7 +32,7 @@ class LeftPanel : RComponent<LeftPanel.Props, Unit>() {
         size = vec2Of(280f, ctx.parentSize.yf - 48f).toJoml2f()
         setBorderless()
 
-        if (props.hide) {
+        if (!props.visibleElements.left) {
             hide()
         }
 
@@ -41,7 +42,7 @@ class LeftPanel : RComponent<LeftPanel.Props, Unit>() {
         +EditCubePanel { EditCubePanel.Props(props.access, props.dispatcher) }
     }
 
-    class Props(val access: IModelAccessor, val dispatcher: Dispatcher, val hide: Boolean, val guiState: GuiState)
+    class Props(val access: IModelAccessor, val dispatcher: Dispatcher, val visibleElements: VisibleElements, val guiState: GuiState)
 
     companion object : RComponentSpec<LeftPanel, Props, Unit>
 }
