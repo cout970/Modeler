@@ -54,10 +54,12 @@ class CanvasManager {
                 tmpCursor = Cursor(realCursor.center + it.translationAxis * offset)
             }
 
-            last.tmpModel.let {
-                gui.state.tmpModel = it
-                gui.state.modelHash = it?.hashCode() ?: 0
-                gui.state.visibilityHash = it?.visibilities?.hashCode() ?: 0
+            last.tmpModel.let { newModel ->
+                gui.state.tmpModel = newModel
+                newModel?.let {
+                    gui.state.modelHash = it.hashCode()
+                    gui.state.visibilityHash = it.visibilities.hashCode()
+                }
             }
 
             last.task?.let {

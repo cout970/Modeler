@@ -1,6 +1,7 @@
 package com.cout970.modeler.render.tool.camera
 
 import com.cout970.glutilities.device.Keyboard
+import com.cout970.glutilities.event.EventMouseScroll
 import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.core.config.Config
@@ -104,5 +105,15 @@ class CameraUpdater(
         val b = (-diff.yd * Config.mouseTranslateSpeedY * speed * Math.sqrt(camera.zoom) * 0.25)
 
         selectedScene.cameraHandler.translate(vec3Of(a, b, 0))
+    }
+
+    fun updateZoom(canvas: Canvas, e: EventMouseScroll) {
+        canvas.run {
+            val camera = cameraHandler.camera
+            val scroll = -e.offsetY * Config.cameraScrollSpeed
+            if (camera.zoom > 0.5 || scroll > 0) {
+                cameraHandler.setZoom(cameraHandler.desiredZoom + scroll * (cameraHandler.desiredZoom / 50f))
+            }
+        }
     }
 }

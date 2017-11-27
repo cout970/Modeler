@@ -19,8 +19,8 @@ class GuiState {
     var useTexture: Boolean = true
     var useColor: Boolean = false
     var useLight: Boolean = true
-    var showHiddenFaces: Boolean = true
-
+    var showHiddenFaces: Boolean = false
+    var drawTextureProjection: Boolean = true
     var drawTextureGridLines: Boolean = true
     var drawModelGridLines: Boolean = true
 
@@ -47,6 +47,7 @@ class GuiState {
     fun getBooleanProperties() = mapOf(
             "drawTextureGridLines" to BooleanPropertyWrapper(this::drawTextureGridLines),
             "drawModelGridLines" to BooleanPropertyWrapper(this::drawModelGridLines),
+            "drawTextureProjection" to BooleanPropertyWrapper(this::drawTextureProjection),
             "renderLights" to BooleanPropertyWrapper(this::renderLights),
             "useTexture" to BooleanPropertyWrapper(this::useTexture),
             "useColor" to BooleanPropertyWrapper(this::useColor),

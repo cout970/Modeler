@@ -22,8 +22,7 @@ import java.awt.Color
  */
 class MaterialRenderer {
 
-    var areasCache = AutoCache(CacheFlags.MODEL, CacheFlags.MATERIAL, CacheFlags.VISIBILITY,
-            CacheFlags.SELECTION_TEXTURE)
+    var areasCache = AutoCache(CacheFlags.MODEL, CacheFlags.MATERIAL, CacheFlags.VISIBILITY, CacheFlags.SELECTION_TEXTURE)
     val gridLines = AutoCache(CacheFlags.MATERIAL)
     val materialCache = AutoCache(CacheFlags.MATERIAL)
     val selectionCache = AutoCache(CacheFlags.MODEL, CacheFlags.SELECTION_TEXTURE, CacheFlags.MATERIAL)
@@ -36,8 +35,11 @@ class MaterialRenderer {
             renderGridLines(ctx, material)
         }
         renderMaterial(ctx, material)
-        GLStateMachine.useBlend(0.5f) {
-            renderMappedAreas(ctx, ref, material)
+
+        if(ctx.gui.state.drawTextureProjection){
+            GLStateMachine.useBlend(0.5f) {
+                renderMappedAreas(ctx, ref, material)
+            }
         }
 
         ctx.gui.modelAccessor.modelSelectionHandler.getSelection().ifNotNull {

@@ -88,7 +88,7 @@ class ExportManager(val resourceLoader: ResourceLoader) {
             it.write(gson.toJson(save.projectProperties).toByteArray())
             it.closeEntry()
             it.putNextEntry(ZipEntry("model.json"))
-            it.write(gson.toJson(model).toByteArray())
+            it.write(gson.toJson(save.model).toByteArray())
             it.closeEntry()
         }
         zip.close()
