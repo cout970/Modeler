@@ -27,20 +27,21 @@ data class Camera(
     }
 
     fun getMatrix(viewport: IVector2): IMatrix4 {
-        val projection: IMatrix4
-        val view: IMatrix4
-
-        if (perspective) {
-            projection = Matrix4d()
-                    .setPerspective(Config.perspectiveFov.toRads(), viewport.xd / viewport.yd, 0.1, 1000.0)
-                    .toIMatrix()
-
-            view = matrixForPerspective
-        } else {
-            projection = MatrixUtils.createOrthoMatrix(viewport)
-            view = matrixForOrtho
-        }
+        val projection = getProjectionMatrix(viewport)
+        val view = getViewMatrix()
         return projection * view
+    }
+
+    fun getViewMatrix(): IMatrix4 = if (perspective) matrixForPerspective else matrixForOrtho
+
+    fun getProjectionMatrix(viewport: IVector2): IMatrix4 {
+        return if (perspective) {
+            Matrix4d()
+                    .setPerspective(Config.perspectiveFov.toRads(), viewport.xd / viewport.yd, 0.1, 10000.0)
+                    .toIMatrix()
+        } else {
+            MatrixUtils.createOrthoMatrix(viewport)
+        }
     }
 
     val matrixForPerspective by lazy {

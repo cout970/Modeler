@@ -25,12 +25,14 @@ class GuiState {
     var drawModelGridLines: Boolean = true
 
     var renderLights: Boolean = false
+    var renderSkybox: Boolean = true
+    var renderBaseBlock: Boolean = true
 
     var popup: Popup? = null
 
     var showLeftPanel = true
     var showRightPanel = true
-    var showBottomPanel = true
+    var showBottomPanel = false
 
     var hoveredObject: ISelectable? = null
     var tmpModel: IModel? = null

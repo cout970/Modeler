@@ -20,12 +20,13 @@ class GuiResources {
     lateinit var translationArrow: IMesh
     lateinit var rotationRing: IMesh
     lateinit var scaleArrow: IMesh
+    lateinit var skybox: IMesh
 
     lateinit var baseCubeTexture: Texture
     lateinit var centerMarkTexture: Texture
+    lateinit var skyboxTexture: Texture
 
     val iconMap = mutableMapOf<String, BufferedImage>()
-
 
     fun reload(loader: ResourceLoader) {
         log(Level.FINE) { "[GuiResources] Loading gui resources" }
@@ -35,9 +36,11 @@ class GuiResources {
                 true)
         rotationRing = ModelImporters.objImporter.importAsMesh("assets/models/rotation_x.obj".fromClasspath(), true)
         scaleArrow = ModelImporters.objImporter.importAsMesh("assets/models/scale_x.obj".fromClasspath(), true)
+        skybox = ModelImporters.objImporter.importAsMesh("assets/models/skybox.obj".fromClasspath(), false)
 
         baseCubeTexture = loader.getTexture("assets/textures/models/cube.png").apply { magFilter = Texture.PIXELATED }
         centerMarkTexture = loader.getTexture("assets/textures/models/center_mark.png")
+        skyboxTexture = loader.getTexture("assets/textures/models/skybox.png").apply { magFilter = Texture.PIXELATED }
 
         iconMap.put("deleteIcon", BufferedImage("assets/textures/delete.png"))
         iconMap.put("showIcon", BufferedImage("assets/textures/show.png"))

@@ -4,6 +4,7 @@ import com.cout970.glutilities.shader.ShaderBuilder
 import com.cout970.glutilities.shader.ShaderProgram
 import com.cout970.glutilities.shader.UniformVariable
 import com.cout970.glutilities.tessellator.VAO
+import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.Matrix4
 import com.cout970.modeler.Debugger
 import com.cout970.modeler.core.resource.ResourceLoader
@@ -83,6 +84,14 @@ class UniversalShader(resourceLoader: ResourceLoader) : Consumer<VAO> {
         program.stop()
     }
 
+    fun render(vao: VAO, transform: IMatrix4, vararg flags: ShaderFlag) {
+        useColor.setBoolean(ShaderFlag.COLOR in flags)
+        useLight.setBoolean(ShaderFlag.LIGHT in flags)
+        useTexture.setBoolean(ShaderFlag.TEXTURE in flags)
+        matrixM.setMatrix4(transform)
+        accept(vao)
+    }
+
     override fun accept(it: VAO) {
         it.bind()
         it.bindAttrib()
@@ -94,3 +103,5 @@ class UniversalShader(resourceLoader: ResourceLoader) : Consumer<VAO> {
         VAO.unbind()
     }
 }
+
+enum class ShaderFlag { COLOR, LIGHT, TEXTURE }

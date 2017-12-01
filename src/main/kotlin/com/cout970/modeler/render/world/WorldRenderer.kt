@@ -2,12 +2,15 @@ package com.cout970.modeler.render.world
 
 import com.cout970.glutilities.tessellator.DrawMode
 import com.cout970.matrix.extensions.Matrix4
+import com.cout970.matrix.extensions.times
+import com.cout970.matrix.extensions.toMutable
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.render.tool.AutoCache
 import com.cout970.modeler.render.tool.RenderContext
 import com.cout970.modeler.render.tool.createVao
+import com.cout970.modeler.render.tool.shader.ShaderFlag
 import com.cout970.vector.extensions.Vector2
 import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.times
@@ -22,18 +25,27 @@ class WorldRenderer {
 
     val modelRenderer = ModelRenderer()
     val cursorRenderer = CursorRenderer()
+
     var baseCubeCache = AutoCache()
     var gridLines = AutoCache()
     var lights = AutoCache()
+    var skybox = AutoCache()
 
     fun renderWorld(ctx: RenderContext, model: IModel) {
-        renderBaseBlock(ctx)
+
+        if (ctx.gui.state.renderBaseBlock) {
+            renderBaseBlock(ctx)
+        }
         if (ctx.gui.state.drawModelGridLines) {
             renderGridLines(ctx)
         }
         if (ctx.gui.state.renderLights) {
             renderLights(ctx)
         }
+        if (ctx.gui.state.renderSkybox) {
+            renderSkybox(ctx)
+        }
+
         modelRenderer.renderModels(ctx, model)
 
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
@@ -42,19 +54,11 @@ class WorldRenderer {
 
     fun renderLights(ctx: RenderContext) {
         val vao = lights.getOrCreate(ctx) {
-            ctx.gui.resources.lightMesh.createVao(ctx.buffer, vec3Of(1, 1, 0))
+            ctx.gui.resources.lightMesh.createVao(ctx.buffer, vec3Of(1, 1, 0.1))
         }
-        ctx.shader.apply {
-            useColor.setInt(1)
-            useLight.setInt(0)
-            useTexture.setInt(0)
-            ctx.lights.forEach { light ->
-                matrixM.setMatrix4(TRSTransformation(
-                        translation = light.pos,
-                        scale = Vector3.ONE * 8
-                ).matrix)
-                accept(vao)
-            }
+        ctx.lights.forEach { light ->
+            val transform = TRSTransformation(translation = light.pos, scale = Vector3.ONE * 8)
+            ctx.shader.render(vao, transform.matrix, ShaderFlag.LIGHT, ShaderFlag.COLOR)
         }
     }
 
@@ -62,17 +66,9 @@ class WorldRenderer {
         val vao = baseCubeCache.getOrCreate(ctx) {
             ctx.gui.resources.baseCubeMesh.createVao(ctx.buffer)
         }
-        ctx.shader.apply {
-            useColor.setInt(0)
-            useLight.setInt(1)
-            useTexture.setInt(1)
-            matrixM.setMatrix4(TRSTransformation(
-                    translation = vec3Of(8, -8, 8),
-                    scale = Vector3.ONE).matrix
-            )
-            ctx.gui.resources.baseCubeTexture.bind()
-            accept(vao)
-        }
+        val transform = TRSTransformation(translation = vec3Of(8, -8, 8), scale = Vector3.ONE)
+        ctx.gui.resources.baseCubeTexture.bind()
+        ctx.shader.render(vao, transform.matrix, ShaderFlag.LIGHT, ShaderFlag.TEXTURE)
     }
 
     fun renderGridLines(ctx: RenderContext) {
@@ -94,12 +90,32 @@ class WorldRenderer {
                 }
             }
         }
+        ctx.shader.render(vao, Matrix4.IDENTITY, ShaderFlag.COLOR)
+    }
+
+    fun renderSkybox(ctx: RenderContext) {
+        val vao = skybox.getOrCreate(ctx) {
+            ctx.gui.resources.skybox.createVao(ctx.buffer)
+        }
+        val size = 1000
+        val transform = TRSTransformation(translation = vec3Of(-4 * size), scale = Vector3.ONE * size)
+        val projection = ctx.camera.getProjectionMatrix(ctx.viewport)
+        val view = ctx.camera.getViewMatrix().toMutable()
+
+        view.m30d = 0.0
+        view.m31d = 0.0
+        view.m32d = 0.0
+
+        ctx.gui.resources.skyboxTexture.bind()
         ctx.shader.apply {
-            useColor.setInt(1)
-            useLight.setInt(0)
-            useTexture.setInt(0)
-            matrixM.setMatrix4(Matrix4.IDENTITY)
-            accept(vao)
+
+            showHiddenFaces.setBoolean(false)
+            matrixVP.setMatrix4(projection * view)
+
+            render(vao, transform.matrix, ShaderFlag.TEXTURE)
+
+            showHiddenFaces.setBoolean(ctx.gui.state.showHiddenFaces)
+            matrixVP.setMatrix4(ctx.camera.getMatrix(ctx.viewport))
         }
     }
 }

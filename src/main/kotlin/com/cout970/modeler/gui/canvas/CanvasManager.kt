@@ -139,7 +139,7 @@ class CanvasManager {
         return false
     }
 
-    private fun getCanvasUnderTheMouse(): Nullable<Canvas> {
+    fun getCanvasUnderTheMouse(): Nullable<Canvas> {
         val pos = gui.input.mouse.getMousePos()
         val canvas = gui.canvasContainer.canvas
         val affectedCanvas = canvas.filter { pos.isInside(it.absolutePositionV, it.size.toIVector()) }

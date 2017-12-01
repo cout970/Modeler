@@ -11,7 +11,6 @@ import com.cout970.modeler.render.world.CenterMarkRenderer
 import com.cout970.modeler.render.world.WorldRenderer
 import com.cout970.modeler.util.absolutePositionV
 import com.cout970.modeler.util.toIVector
-import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.vec3Of
 
@@ -26,8 +25,8 @@ class CanvasRenderer(val renderManager: RenderManager) {
 
     val buffer = BufferPTNC()
     val lights: List<Light> = listOf(
-            Light(vec3Of(250, 500, 400), Vector3.ONE),
-            Light(vec3Of(-250, -500, -400), Vector3.ONE)
+            Light(vec3Of(250, 500, 400), vec3Of(1, 1, 0.95)),
+            Light(vec3Of(-250, -500, -400), vec3Of(0.9, 0.9, 1.0))
     )
 
     fun render(gui: Gui) {

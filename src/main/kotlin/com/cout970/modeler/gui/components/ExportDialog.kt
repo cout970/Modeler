@@ -78,7 +78,7 @@ class ExportDialog : RComponent<ExportDialog.Props, ExportDialog.State>() {
 
             +TextInput(state.text, 90f, 100f, 250f, 24f).apply {
                 listenerMap.addListener(TextInputContentChangeEvent::class.java) {
-                    replaceState(state.copy(text = it.newValue))
+                    replaceState(state.copy(text = it.newValue, forceUpdate = false))
                 }
             }
 
@@ -93,7 +93,7 @@ class ExportDialog : RComponent<ExportDialog.Props, ExportDialog.State>() {
                         )
 
                         if (file != null) {
-                            replaceState(state.copy(text = file))
+                            replaceState(state.copy(text = file, forceUpdate = true))
                         }
                     }
                 }
@@ -123,10 +123,10 @@ class ExportDialog : RComponent<ExportDialog.Props, ExportDialog.State>() {
 
 
     class Props(val popup: Popup)
-    data class State(val text: String, val selection: Int)
+    data class State(val text: String, val selection: Int, var forceUpdate: Boolean = false)
 
     override fun shouldComponentUpdate(nextProps: Props, nextState: State): Boolean {
-        return state.selection != nextState.selection
+        return state.selection != nextState.selection || nextState.forceUpdate
     }
 
     companion object : RComponentSpec<ExportDialog, Props, State> {
