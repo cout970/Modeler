@@ -55,5 +55,13 @@ class GridButtonPanel : RComponent<Unit, Unit>() {
         +ToggleButton("showInvisible", "invisible", true, 185f, 2f, 24f, 24f)
                 .setBorderless()
                 .apply { cornerRadius = 0f }
+
+        +ToggleButton("renderBase", "invisible", true, 215f, 2f, 24f, 24f)
+                .setBorderless()
+                .apply { cornerRadius = 0f }
+
+        +ToggleButton("drawTextureProjection", "invisible", true, 245f, 2f, 24f, 24f)
+                .setBorderless()
+                .apply { cornerRadius = 0f }
     }
 }

@@ -6,6 +6,7 @@ import com.cout970.modeler.controller.tasks.TaskNone
 import com.cout970.modeler.controller.tasks.TaskUpdateCursorMode
 import com.cout970.modeler.gui.canvas.CanvasManager
 import com.cout970.modeler.gui.canvas.TransformationMode
+import com.cout970.vector.extensions.unaryMinus
 
 /**
  * Created by cout970 on 2017/08/20.
@@ -45,7 +46,7 @@ class MoveCameraToCursor : IUseCase {
 
     override fun createTask(): ITask {
         canvasManager.getCanvasUnderTheMouse().ifNotNull {
-            it.cameraHandler.setPosition(canvasManager.cursor.center)
+            it.cameraHandler.setPosition(-canvasManager.cursor.center)
         }
         return TaskNone
     }

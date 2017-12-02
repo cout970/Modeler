@@ -25,8 +25,10 @@ class CanvasRenderer(val renderManager: RenderManager) {
 
     val buffer = BufferPTNC()
     val lights: List<Light> = listOf(
-            Light(vec3Of(250, 500, 400), vec3Of(1, 1, 0.95)),
-            Light(vec3Of(-250, -500, -400), vec3Of(0.9, 0.9, 1.0))
+            Light(vec3Of(0, -432, 0), vec3Of(1.0, 1.0, 1.0)),
+            Light(vec3Of(500, 432, 0), vec3Of(1.0, 1.0, 1.0)),
+            Light(vec3Of(-432, 432, -432), vec3Of(1.0, 1.0, 1.0)),
+            Light(vec3Of(-432, 432, 432), vec3Of(1.0, 1.0, 1.0))
     )
 
     fun render(gui: Gui) {

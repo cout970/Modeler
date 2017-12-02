@@ -40,7 +40,8 @@ class GuiResources {
 
         baseCubeTexture = loader.getTexture("assets/textures/models/cube.png").apply { magFilter = Texture.PIXELATED }
         centerMarkTexture = loader.getTexture("assets/textures/models/center_mark.png")
-        skyboxTexture = loader.getTexture("assets/textures/models/skybox.png").apply { magFilter = Texture.PIXELATED }
+        skyboxTexture = loader.getTexture("assets/textures/models/skybox3.png")
+                .apply { magFilter = Texture.PIXELATED }
 
         iconMap.put("deleteIcon", BufferedImage("assets/textures/delete.png"))
         iconMap.put("showIcon", BufferedImage("assets/textures/show.png"))

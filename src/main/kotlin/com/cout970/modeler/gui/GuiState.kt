@@ -52,6 +52,7 @@ class GuiState {
             "drawModelGridLines" to BooleanPropertyWrapper(this::drawModelGridLines),
             "drawTextureProjection" to BooleanPropertyWrapper(this::drawTextureProjection),
             "renderLights" to BooleanPropertyWrapper(this::renderLights),
+            "renderBase" to BooleanPropertyWrapper(this::renderBaseBlock),
             "useTexture" to BooleanPropertyWrapper(this::useTexture),
             "useColor" to BooleanPropertyWrapper(this::useColor),
             "useLight" to BooleanPropertyWrapper(this::useLight),
