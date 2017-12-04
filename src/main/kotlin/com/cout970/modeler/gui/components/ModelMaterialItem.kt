@@ -1,12 +1,12 @@
 package com.cout970.modeler.gui.components
 
 import com.cout970.modeler.api.model.material.IMaterialRef
-import com.cout970.modeler.gui.reactive.RBuilder
-import com.cout970.modeler.gui.reactive.RComponent
-import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.gui.leguicomp.IconButton
 import com.cout970.modeler.gui.leguicomp.TextButton
 import com.cout970.modeler.gui.leguicomp.panel
+import com.cout970.modeler.gui.reactive.RBuilder
+import com.cout970.modeler.gui.reactive.RComponent
+import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.setTransparent
 import org.joml.Vector4f
@@ -42,12 +42,14 @@ class ModelMaterialItem : RComponent<ModelMaterialItem.Props, Boolean>() {
                 it.setTransparent()
                 it.border.isEnabled = false
                 it.metadata += "ref" to props.ref
+                it.setTooltip("Load material")
             }
         }
         +IconButton("material.view.apply", "applyMaterial", 150f, 0f, 24f, 24f).also {
             it.setTransparent()
             it.border.isEnabled = false
             it.metadata += "ref" to props.ref
+            it.setTooltip("Apply material")
         }
     }
 

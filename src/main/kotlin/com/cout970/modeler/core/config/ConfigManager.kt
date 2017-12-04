@@ -36,6 +36,7 @@ object ConfigManager {
     }
 
     fun saveConfig() {
+        File("data").let { if(!it.exists()) it.mkdir() }
         val file = File(configPath)
         val gson = GsonBuilder().setLenient().registerTypeAdapter(IVector3::class.java,
                 ColorSerializer()).setPrettyPrinting().create()

@@ -24,11 +24,11 @@ class DeleteSelected : IUseCase {
         val newModel = EditTool.delete(model, sel)
 
         return TaskChain(listOf(
-                TaskUpdateModel(oldModel = model, newModel = newModel),
                 TaskUpdateModelSelection(
-                        sel.asNullable(),
-                        Nullable.castNull()
-                )
+                        oldSelection = sel.asNullable(),
+                        newSelection = Nullable.castNull()
+                ),
+                TaskUpdateModel(oldModel = model, newModel = newModel)
         ))
     }
 }

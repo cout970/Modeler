@@ -167,3 +167,24 @@ object StackOverflowSnippets {
         return classes
     }
 }
+
+/** https://github.com/gazolla/Kotlin-Algorithm/blob/master/Shuffle/Shuffle.kt
+ *
+ */
+fun <T:Comparable<T>>shuffle(items:MutableList<T>):List<T>{
+    val rg = Random()
+    for (i in 0 until items.size) {
+        val randomPosition = rg.nextInt(items.size)
+        val tmp : T = items[i]
+        items[i] = items[randomPosition]
+        items[randomPosition] = tmp
+    }
+    return items
+}
+
+/* extension version */
+fun <T> Iterable<T>.shuffle(): List<T> {
+    val list = this.toMutableList().apply {  }
+    Collections.shuffle(list)
+    return list
+}

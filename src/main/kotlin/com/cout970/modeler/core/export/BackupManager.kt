@@ -33,10 +33,10 @@ object BackupManager {
         }
     }
 
-    private fun getBackupName(): String = "Backup_${Instant.now().toEpochMilli()}.pff"
+    private fun getBackupName(projectName: String): String = "Backup_${projectName}_${Instant.now().toEpochMilli()}.pff"
 
     private fun makeBackup(path: String, exportManager: ExportManager, projectManager: ProjectManager){
         File(path).let { if(!it.exists()) it.mkdirs() }
-        exportManager.saveProject("$path/${getBackupName()}", projectManager)
+        exportManager.saveProject("$path/${getBackupName(projectManager.projectProperties.name)}", projectManager)
     }
 }

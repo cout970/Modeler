@@ -1,12 +1,12 @@
 package com.cout970.modeler.gui.components
 
 import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.modeler.gui.reactive.RBuilder
-import com.cout970.modeler.gui.reactive.RComponent
-import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.gui.leguicomp.IconButton
 import com.cout970.modeler.gui.leguicomp.TextButton
 import com.cout970.modeler.gui.leguicomp.panel
+import com.cout970.modeler.gui.reactive.RBuilder
+import com.cout970.modeler.gui.reactive.RComponent
+import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.setTransparent
@@ -44,17 +44,20 @@ class ModelObjectItem : RComponent<ModelObjectProps, Boolean>() {
             it.setBorderless()
             it.metadata += "ref" to props.ref
             if (props.visible) it.hide() else it.show()
+            it.setTooltip("Show object")
         }
         +IconButton("tree.view.hide.item", "hideIcon", 120f, 0f, 24f, 24f).also {
             it.setTransparent()
             it.setBorderless()
             it.metadata += "ref" to props.ref
             if (!props.visible) it.hide() else it.show()
+            it.setTooltip("Hide object")
         }
         +IconButton("tree.view.delete.item", "deleteIcon", 150f, 0f, 24f, 24f).also {
             it.setTransparent()
             it.setBorderless()
             it.metadata += "ref" to props.ref
+            it.setTooltip("Delete object")
         }
     }
 

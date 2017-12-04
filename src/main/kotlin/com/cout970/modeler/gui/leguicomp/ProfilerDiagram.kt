@@ -1,6 +1,7 @@
 package com.cout970.modeler.gui.leguicomp
 
 import com.cout970.modeler.Debugger
+import com.cout970.modeler.controller.shuffle
 import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.util.absolutePositionV
 import com.cout970.modeler.util.toColor
@@ -32,7 +33,7 @@ class ProfilerDiagram : Panel() {
             return (1..40).map {
                 val c = Color.getHSBColor(it.toFloat() / 40f, 0.5f, 1.0f)
                 vec3Of(c.blue / 255f, c.green / 255f, c.red / 255f)
-            }.sortedBy { Math.random() }
+            }.shuffle()
         }
 
         override fun renderComponent(component: ProfilerDiagram, context: Context, nanovg: Long) {

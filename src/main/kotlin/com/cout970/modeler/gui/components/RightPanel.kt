@@ -68,8 +68,12 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
             posY = topSize + (ctx.parentSize.yf - topSize) * 0.5f
 
             +FixedLabel("Materials", 5f, 5f, 180f, 24f)
-            +IconButton("material.view.import", "addMaterialIcon", 5f, 30f, 32f, 32f)
-            +IconButton("material.view.remove", "removeMaterialIcon", 45f, 30f, 32f, 32f)
+            +IconButton("material.view.import", "addMaterialIcon", 5f, 30f, 32f, 32f).also {
+                it.setTooltip("Import material")
+            }
+            +IconButton("material.view.remove", "removeMaterialIcon", 45f, 30f, 32f, 32f).also {
+                it.setTooltip("Delete material")
+            }
             +ModelMaterialList {
                 ModelMaterialList.Props(
                         modelAccessor = props.modelAccessor,
