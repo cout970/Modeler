@@ -1,7 +1,10 @@
 package com.cout970.modeler.controller
 
 import com.cout970.modeler.controller.tasks.TaskExportModel
+import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.core.export.BackupManager
 import com.cout970.modeler.core.export.ExportFormat
+import com.cout970.modeler.core.export.ExportManager
 import com.cout970.modeler.core.export.ExportProperties
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.Profiler
@@ -16,17 +19,23 @@ import com.cout970.modeler.util.ITickeable
 class AutoRunner(
         val resourceLoader: ResourceLoader,
         val projectManager: ProjectManager,
+        val exportManager: ExportManager,
         val processor: ITaskProcessor
 ) : ITickeable {
 
     var enableAutoExport = false
     var enableAutoImport = true
+    var enableBackups = true
 
     private var lastHash = -1
 
     private val path = "./run/test.mcx"
 
     override fun tick() {
+
+        if(enableBackups){
+            BackupManager.update(Config.backupPath, exportManager, projectManager)
+        }
         if (enableAutoExport) {
             Profiler.startSection("autoExport")
             if (projectManager.model.hashCode() != lastHash) {

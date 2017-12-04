@@ -57,7 +57,7 @@ class Initializer {
         log(Level.FINE) { "Creating RenderManager" }
         val renderManager = RenderManager()
         log(Level.FINE) { "Creating AutoRunner" }
-        val autoRunner = AutoRunner(resourceLoader, projectManager, taskHistory)
+        val autoRunner = AutoRunner(resourceLoader, projectManager, exportManager, taskHistory)
 
         log(Level.FINE) { "Creating GuiInitializer" }
         val gui = GuiInitializer(

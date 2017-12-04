@@ -2,7 +2,6 @@ package com.cout970.modeler
 
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
-import java.io.File
 
 /**
  * Created by cout970 on 2017/01/20.
@@ -11,7 +10,7 @@ object Debugger {
 
     private lateinit var state: Program
 
-    val DEBUG: Boolean by lazy { File("debug.txt").exists() }
+    val DEBUG: Boolean by lazy { System.getProperty("user.name") == "cout970" }
 
     var drawVboCount = 0
     var drawRegionsCount = 0

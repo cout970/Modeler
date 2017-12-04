@@ -95,7 +95,7 @@ class ExportManager(val resourceLoader: ResourceLoader) {
     }
 
     fun loadLastProjectIfExists(projectManager: ProjectManager) {
-        val path = File("./saves/last.pff")
+        val path = File("data/backups/last.pff")
         if (path.exists()) {
             try {
                 log(Level.FINE) { "Found last project, loading..." }
