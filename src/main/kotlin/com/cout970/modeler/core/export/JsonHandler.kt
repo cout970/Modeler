@@ -241,8 +241,8 @@ class JsonImporter {
                     val rot = element["rotation"].asJsonObject
                     val axis = when (rot["axis"].asString) {
                         "x" -> vec3Of(1, 0, 0)
-                        "y" -> vec3Of(1, 0, 0)
-                        "z" -> vec3Of(1, 0, 0)
+                        "y" -> vec3Of(0, 1, 0)
+                        "z" -> vec3Of(0, 0, 1)
                         else -> throw IllegalStateException(
                                 "Invalid rotation axis (${rot["axis"].asString}) in file: $path")
                     }
