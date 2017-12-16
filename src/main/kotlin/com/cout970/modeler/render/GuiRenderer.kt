@@ -6,14 +6,18 @@ import com.cout970.modeler.gui.leguicomp.PixelBorder
 import com.cout970.modeler.gui.leguicomp.ProfilerDiagram
 import com.cout970.modeler.gui.reactive.RComponentWrapper
 import com.cout970.modeler.input.event.CustomCallbackKeeper
+import com.cout970.modeler.render.gui.LeguiComponentRenderer
 import com.cout970.modeler.render.gui.RComponentRenderer
 import org.liquidengine.legui.component.Frame
+import org.liquidengine.legui.component.LayerContainer
+import org.liquidengine.legui.component.Panel
 import org.liquidengine.legui.listener.processor.EventProcessor
 import org.liquidengine.legui.system.context.CallbackKeeper
 import org.liquidengine.legui.system.context.Context
 import org.liquidengine.legui.system.handler.processor.SystemEventProcessor
 import org.liquidengine.legui.system.renderer.Renderer
 import org.liquidengine.legui.system.renderer.RendererProvider
+import org.liquidengine.legui.system.renderer.nvg.NvgComponentRenderer
 import org.liquidengine.legui.system.renderer.nvg.NvgRenderer
 import org.liquidengine.legui.system.renderer.nvg.NvgRendererProvider
 
@@ -41,19 +45,9 @@ class GuiRenderer(val rootFrame: Frame, window: Long) {
             it.putBorderRenderer(PixelBorder::class.java, PixelBorder.PixelBorderRenderer)
             it.putComponentRenderer(ProfilerDiagram::class.java, ProfilerDiagram.ProfilerDiagramRenderer)
             it.putComponentRenderer(RComponentWrapper::class.java, RComponentRenderer)
-
-//            it.putBorderRenderer(SimpleLineBorder::class.java, BorderRenderer as NvgBorderRenderer<SimpleLineBorder>)
-//            it.putComponentRenderer(Panel::class.java, LeguiComponentRenderer as NvgComponentRenderer<Panel>)
-//            it.putComponentRenderer(com.cout970.modeler.gui.leguicomp.Panel::class.java,
-//                    LeguiComponentRenderer as NvgComponentRenderer<com.cout970.modeler.gui.leguicomp.Panel>)
-//            it.putComponentRenderer(Button::class.java, LeguiComponentRenderer as NvgComponentRenderer<Button>)
-//            it.putComponentRenderer(ToggleButton::class.java,
-//                    LeguiComponentRenderer as NvgComponentRenderer<ToggleButton>)
-//            it.putComponentRenderer(LayerContainer::class.java,
-//                    LeguiComponentRenderer as NvgComponentRenderer<LayerContainer>)
-//            it.putComponentRenderer(FixedLabel::class.java, LeguiComponentRenderer as NvgComponentRenderer<FixedLabel>)
-//            it.putComponentRenderer(TextInput::class.java, LeguiComponentRenderer as NvgComponentRenderer<TextInput>)
-//            it.putComponentRenderer(ScrollBar::class.java, LeguiComponentRenderer as NvgComponentRenderer<ScrollBar>)
+            it.putComponentRenderer(Panel::class.java, LeguiComponentRenderer as NvgComponentRenderer<Panel>)
+            it.putComponentRenderer(com.cout970.modeler.gui.leguicomp.Panel::class.java, LeguiComponentRenderer as NvgComponentRenderer<com.cout970.modeler.gui.leguicomp.Panel>)
+            it.putComponentRenderer(LayerContainer::class.java, LeguiComponentRenderer as NvgComponentRenderer<LayerContainer>)
         }
     }
 

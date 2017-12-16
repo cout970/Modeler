@@ -7,10 +7,19 @@ import org.liquidengine.legui.system.renderer.nvg.component.NvgDefaultComponentR
 object LeguiComponentRenderer : NvgDefaultComponentRenderer<Component>() {
 
     override fun renderSelf(component: Component, ctx: Context, nanovg: Long) {
-        // Ignore
+        if (!component.isVisible ||
+            component.backgroundColor.w < 0.01 ||
+            component.size.lengthSquared() < 0.0001) return
+
+        super.renderSelf(component, ctx, nanovg)
     }
 
-    override fun renderBorder(component: Component?, context: Context?, nanovg: Long) {
-        // Ignore
+    override fun renderBorder(component: Component, context: Context, nanovg: Long) {
+        if (!component.isVisible ||
+            component.border == null ||
+            !component.border.isEnabled ||
+            component.size.lengthSquared() < 0.0001) return
+
+        super.renderBorder(component, context, nanovg)
     }
 }
