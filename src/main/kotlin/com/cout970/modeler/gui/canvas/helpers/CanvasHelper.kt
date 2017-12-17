@@ -8,8 +8,7 @@ import com.cout970.modeler.util.toJOML
 import com.cout970.modeler.util.toJoml3d
 import com.cout970.raytrace.Ray
 import com.cout970.vector.api.IVector2
-import com.cout970.vector.extensions.minus
-import com.cout970.vector.extensions.vec3Of
+import com.cout970.vector.extensions.*
 import org.joml.Vector3d
 
 /**
@@ -39,4 +38,17 @@ object CanvasHelper {
         return SceneSpaceContext(mousePos, mouseRay, matrix)
     }
 
+    fun getMouseProjection(canvas: Canvas, absMousePos: IVector2): IVector2 {
+        val cam = canvas.textureCamera.camera
+        val aspectRatio = (canvas.size.y / canvas.size.x)
+        val camPos = vec2Of(cam.position.xd, cam.position.yd)
+
+        val center = canvas.absolutePositionV + canvas.size.toIVector() * 0.5
+        val distanceToCenter = (absMousePos - center) * 2
+
+        val relPos = distanceToCenter / canvas.size.toIVector() * vec2Of(1.0 / aspectRatio, 1)
+        val scaledPos = relPos * cam.zoom * vec2Of(1, -1)
+
+        return scaledPos - camPos
+    }
 }

@@ -13,10 +13,29 @@ import com.cout970.vector.extensions.cross
 import com.cout970.vector.extensions.minus
 import com.cout970.vector.extensions.normalize
 import org.lwjgl.opengl.GL14
+import org.lwjgl.opengl.GL15
+import org.lwjgl.opengl.GL33
 
 /**
  * Created by cout970 on 2017/05/25.
  */
+
+
+fun measureMilisGPU(func: () -> Unit): Double{
+    val queryId = GL15.glGenQueries()
+    val frameGpuTime = IntArray(1)
+
+    GL15.glBeginQuery(GL33.GL_TIME_ELAPSED, queryId)
+
+    func()
+
+    GL15.glEndQuery(GL33.GL_TIME_ELAPSED)
+    GL15.glGetQueryObjectiv(queryId, GL15.GL_QUERY_RESULT, frameGpuTime)
+
+    GL15.glDeleteQueries(queryId)
+
+    return frameGpuTime[0] / 1_000_000.0
+}
 
 fun GLStateMachine.useBlend(amount: Float, func: () -> Unit) {
     blend.enable()

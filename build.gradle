@@ -65,7 +65,8 @@ dependencies {
             "./lib/GlUtilities-1.0.3.jar",
             "./lib/MatrixLib-1.0.3.jar",
             "./lib/RaytraceLib-1.0.3.jar",
-            "./lib/VectorLib-1.0.3.jar")
+            "./lib/VectorLib-1.0.3.jar",
+            "./lib/CollisionLib-1.0.4.jar")
 
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"

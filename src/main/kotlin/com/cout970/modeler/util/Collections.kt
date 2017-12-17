@@ -3,6 +3,7 @@ package com.cout970.modeler.util
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
+import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
 import org.lwjgl.PointerBuffer
@@ -85,6 +86,14 @@ fun IMesh.middle(): IVector3 = pos.middle()
 
 fun List<IVector3>.middle(): IVector3 {
     var acum = Vector3.ORIGIN
+    forEach {
+        acum += it
+    }
+    return acum / size
+}
+
+fun List<IVector2>.middle(): IVector2 {
+    var acum = Vector2.ORIGIN
     forEach {
         acum += it
     }

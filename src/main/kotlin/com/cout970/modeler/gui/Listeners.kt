@@ -43,18 +43,24 @@ class Listeners : ITickeable {
 
             it.modelSelectionHandler.addChangeListener { _, _ ->
                 gui.state.modelSelectionHash = (gui.modelAccessor.modelSelectionHandler.lastModified and 0xFFFFFFFF).toInt()
-                gui.state.textureSelectionHash = (gui.modelAccessor.modelSelectionHandler.lastModified and 0xFFFFFFFF).toInt()
+                gui.state.textureSelectionHash = (gui.modelAccessor.textureSelectionHandler.lastModified and 0xFFFFFFFF).toInt()
+            }
+
+            it.textureSelectionHandler.addChangeListener { _, _ ->
+                gui.state.modelSelectionHash = (gui.modelAccessor.modelSelectionHandler.lastModified and 0xFFFFFFFF).toInt()
+                gui.state.textureSelectionHash = (gui.modelAccessor.textureSelectionHandler.lastModified and 0xFFFFFFFF).toInt()
             }
 
             it.materialChangeListeners.add { _, _ ->
                 gui.state.materialsHash = (System.currentTimeMillis() and 0xFFFFFFFF).toInt()
             }
 
-            it.modelChangeListeners.add(gui.canvasManager::onModelUpdate)
+            it.modelChangeListeners.add { _, _ -> gui.cursorManager.updateCursors(gui) }
             it.materialChangeListeners.add(this::onMaterialUpdate)
 
             it.modelSelectionHandler.addChangeListener(this::onSelectionUpdate)
-            it.modelSelectionHandler.addChangeListener(gui.canvasManager::onSelectionUpdate)
+            it.modelSelectionHandler.addChangeListener { _, _ -> gui.cursorManager.updateCursors(gui) }
+            it.textureSelectionHandler.addChangeListener { _, _ -> gui.cursorManager.updateCursors(gui) }
         }
     }
 

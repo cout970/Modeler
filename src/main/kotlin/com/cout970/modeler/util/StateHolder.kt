@@ -9,14 +9,14 @@ import kotlinx.coroutines.experimental.newSingleThreadContext
 class StateHolder<S, E>(initialState: S, val reducer: suspend (S, E) -> S) {
 
     companion object {
-        val context = newSingleThreadContext("StateHolderCoroutines")
+        val coroutineContext = newSingleThreadContext("StateHolderCoroutines")
     }
 
     private var state: S = initialState
     private var onChange: ((S) -> Unit)? = null
 
     fun dispatch(event: E) {
-        launch(context) {
+        launch(coroutineContext) {
             state = reducer(state, event)
             onChange?.invoke(state)
         }

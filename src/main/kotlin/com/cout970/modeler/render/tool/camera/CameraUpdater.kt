@@ -102,8 +102,8 @@ class CameraUpdater(
         val camera = selectedScene.cameraHandler.camera
         val diff = input.mouse.getMousePosDiff()
 
-        val a = (diff.xd * Config.mouseTranslateSpeedX * speed * Math.sqrt(camera.zoom) * 0.25)
-        val b = (-diff.yd * Config.mouseTranslateSpeedY * speed * Math.sqrt(camera.zoom) * 0.25)
+        val a = (diff.xd * Config.mouseTranslateSpeedX * speed * Math.sqrt(Math.sqrt(camera.zoom)) * (1 / 16.0))
+        val b = (-diff.yd * Config.mouseTranslateSpeedY * speed * Math.sqrt(Math.sqrt(camera.zoom)) * (1 / 16.0))
 
         selectedScene.cameraHandler.translate(vec3Of(a, b, 0))
     }
