@@ -15,7 +15,10 @@ import com.cout970.modeler.util.scale
 import com.cout970.modeler.util.toAxisRotations
 import com.cout970.modeler.util.toJOML
 import com.cout970.vector.api.IQuaternion
+import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
+import com.cout970.vector.extensions.toVector3
+import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.vec3Of
 import org.joml.Matrix4d
 import org.joml.Vector4d
@@ -41,6 +44,19 @@ object EditTool {
         }
     }
 
+    fun translateTexture(source: IModel, sel: ISelection, translation: IVector2): IModel {
+        val matrix = TRSTransformation(translation.toVector3(0.0)).matrix.toJOML()
+        val transform = { it: IVector2 -> matrix.transformVertex(it) }
+        return when (sel.selectionType) {
+            SelectionType.OBJECT -> source.modifyObjects({ sel.isSelected(it) }) { _, it ->
+                it.transformer.translateTexture(it, translation)
+            }
+            SelectionType.FACE -> transformTextureFaces(source, sel, transform)
+            SelectionType.EDGE -> transformTextureEdges(source, sel, transform)
+            SelectionType.VERTEX -> transformTextureVertex(source, sel, transform)
+        }
+    }
+
     fun rotate(source: IModel, sel: ISelection, pivot: IVector3, rotation: IQuaternion): IModel {
         val matrix = TRSTransformation.fromRotationPivot(pivot, rotation.toAxisRotations()).matrix.toJOML()
         val transform = { it: IVector3 -> matrix.transformVertex(it) }
@@ -54,6 +70,20 @@ object EditTool {
         }
     }
 
+    fun rotateTexture(source: IModel, sel: ISelection, pivot: IVector2, rotation: Double): IModel {
+        val matrix = TRSTransformation.fromRotationPivot(pivot.toVector3(0.0), vec3Of(0.0, 0.0, rotation))
+                .matrix.toJOML()
+        val transform = { it: IVector2 -> matrix.transformVertex(it) }
+        return when (sel.selectionType) {
+            SelectionType.OBJECT -> source.modifyObjects({ sel.isSelected(it) }) { _, it ->
+                it.transformer.rotateTexture(it, pivot, rotation)
+            }
+            SelectionType.FACE -> transformTextureFaces(source, sel, transform)
+            SelectionType.EDGE -> transformTextureEdges(source, sel, transform)
+            SelectionType.VERTEX -> transformTextureVertex(source, sel, transform)
+        }
+    }
+
     fun scale(source: IModel, sel: ISelection, center: IVector3, axis: IVector3, offset: Float): IModel {
         val transform = { it: IVector3 -> it.scale(center, axis, offset) }
         return when (sel.selectionType) {
@@ -63,6 +93,18 @@ object EditTool {
             SelectionType.FACE -> transformFaces(source, sel, transform)
             SelectionType.EDGE -> transformEdges(source, sel, transform)
             SelectionType.VERTEX -> transformVertex(source, sel, transform)
+        }
+    }
+
+    fun scaleTexture(source: IModel, sel: ISelection, center: IVector2, axis: IVector2, offset: Float): IModel {
+        val transform = { it: IVector2 -> it.scale(center, axis, offset) }
+        return when (sel.selectionType) {
+            SelectionType.OBJECT -> source.modifyObjects({ sel.isSelected(it) }) { _, it ->
+                it.transformer.scaleTexture(it, center, axis, offset)
+            }
+            SelectionType.FACE -> transformTextureFaces(source, sel, transform)
+            SelectionType.EDGE -> transformTextureEdges(source, sel, transform)
+            SelectionType.VERTEX -> transformTextureVertex(source, sel, transform)
         }
     }
 
@@ -109,6 +151,49 @@ object EditTool {
         }
     }
 
+    fun transformTextureFaces(source: IModel, sel: ISelection, transform: (IVector2) -> IVector2): IModel {
+        val objRefs = sel.refs.filterIsInstance<IFaceRef>().map { ObjectRef(it.objectIndex) }.distinct()
+        return source.modifyObjects(objRefs) { ref, obj ->
+            val indices: Set<Int> = sel.refs
+                    .filterIsInstance<IFaceRef>()
+                    .filter { it.objectIndex == ref.objectIndex }
+                    .map { obj.mesh.faces[it.faceIndex] }
+                    .flatMap { it.pos }
+                    .toSet()
+
+            val newMesh = transformMeshTexture(obj, indices, transform)
+            obj.withMesh(newMesh)
+        }
+    }
+
+    fun transformTextureEdges(source: IModel, sel: ISelection, transform: (IVector2) -> IVector2): IModel {
+        val objRefs = sel.refs.filterIsInstance<IEdgeRef>().map { ObjectRef(it.objectIndex) }.distinct()
+        return source.modifyObjects(objRefs) { ref, obj ->
+            val indices: Set<Int> = sel.refs
+                    .filterIsInstance<IEdgeRef>()
+                    .filter { it.objectIndex == ref.objectIndex }
+                    .flatMap { listOf(it.firstIndex, it.secondIndex) }
+                    .toSet()
+
+            val newMesh = transformMeshTexture(obj, indices, transform)
+            obj.withMesh(newMesh)
+        }
+    }
+
+    fun transformTextureVertex(source: IModel, sel: ISelection, transform: (IVector2) -> IVector2): IModel {
+        val objRefs = sel.refs.filterIsInstance<IPosRef>().map { ObjectRef(it.objectIndex) }.distinct()
+        return source.modifyObjects(objRefs) { ref, obj ->
+            val indices: Set<Int> = sel.refs
+                    .filterIsInstance<IPosRef>()
+                    .filter { it.objectIndex == ref.objectIndex }
+                    .map { it.posIndex }
+                    .toSet()
+
+            val newMesh = transformMeshTexture(obj, indices, transform)
+            obj.withMesh(newMesh)
+        }
+    }
+
     fun transformMesh(obj: IObject, indices: Set<Int>, transform: (IVector3) -> IVector3): IMesh {
 
         val newPos: List<IVector3> = obj.mesh.pos.mapIndexed { index, it ->
@@ -117,9 +202,22 @@ object EditTool {
         return Mesh(pos = newPos, tex = obj.mesh.tex, faces = obj.mesh.faces)
     }
 
+    fun transformMeshTexture(obj: IObject, indices: Set<Int>, transform: (IVector2) -> IVector2): IMesh {
+
+        val newTex: List<IVector2> = obj.mesh.tex.mapIndexed { index, it ->
+            if (index in indices) transform(it) else it
+        }
+        return Mesh(pos = obj.mesh.pos, tex = newTex, faces = obj.mesh.faces)
+    }
+
     fun Matrix4d.transformVertex(it: IVector3): IVector3 {
         val vec4 = transform(Vector4d(it.xd, it.yd, it.zd, 1.0))
         return vec3Of(vec4.x, vec4.y, vec4.z)
+    }
+
+    fun Matrix4d.transformVertex(it: IVector2): IVector2 {
+        val vec4 = transform(Vector4d(it.xd, it.yd, 0.0, 1.0))
+        return vec2Of(vec4.x, vec4.y)
     }
 
     //

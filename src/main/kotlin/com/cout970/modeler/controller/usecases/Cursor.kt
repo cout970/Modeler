@@ -6,6 +6,7 @@ import com.cout970.modeler.controller.tasks.TaskNone
 import com.cout970.modeler.controller.tasks.TaskUpdateCursorMode
 import com.cout970.modeler.gui.canvas.CanvasManager
 import com.cout970.modeler.gui.canvas.TransformationMode
+import com.cout970.modeler.gui.canvas.cursor.CursorManager
 import com.cout970.vector.extensions.unaryMinus
 
 /**
@@ -43,10 +44,13 @@ class MoveCameraToCursor : IUseCase {
     override val key: String = "camera.move.to.cursor"
 
     @Inject lateinit var canvasManager: CanvasManager
+    @Inject lateinit var cursorManager: CursorManager
+
 
     override fun createTask(): ITask {
         canvasManager.getCanvasUnderTheMouse().ifNotNull {
-            it.cameraHandler.setPosition(-canvasManager.cursor.center)
+            val center = cursorManager.modelCursor?.center ?: return@ifNotNull
+            it.cameraHandler.setPosition(-center)
         }
         return TaskNone
     }

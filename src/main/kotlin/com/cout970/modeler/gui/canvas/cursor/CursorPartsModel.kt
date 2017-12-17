@@ -1,6 +1,8 @@
 package com.cout970.modeler.gui.canvas.cursor
 
+import com.cout970.collision.IPolygon
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.core.tool.EditTool
 import com.cout970.modeler.gui.canvas.IRotable
@@ -21,12 +23,13 @@ import com.cout970.vector.extensions.times
  * Created by cout970 on 2017/07/22.
  */
 
-class CursorPartTranslate(
+class CursorPartTranslateModel(
         val cursor: Cursor,
         val parameters: CursorParameters,
         override val translationAxis: IVector3
 ) : ITranslatable {
 
+    override val polygons: List<IPolygon>? = null
     override val hitbox: IRayObstacle get() = AABBObstacle(this::calculateHitbox)
 
     fun calculateHitbox(): Pair<IVector3, IVector3> {
@@ -36,12 +39,12 @@ class CursorPartTranslate(
         )
     }
 
-    override fun applyTranslation(offset: Float, selection: ISelection, model: IModel): IModel =
+    override fun applyTranslation(offset: Float, selection: ISelection, model: IModel, material: IMaterial): IModel =
             EditTool.translate(model, selection, translationAxis * offset)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is CursorPartTranslate) return false
+        if (other !is CursorPartTranslateModel) return false
 
         if (translationAxis != other.translationAxis) return false
 
@@ -53,13 +56,14 @@ class CursorPartTranslate(
     }
 }
 
-class CursorPartRotate(
+class CursorPartRotateModel(
         val cursor: Cursor,
         val parameters: CursorParameters,
         override val tangent: IVector3,
         val cotangent: IVector3
 ) : IRotable {
 
+    override val polygons: List<IPolygon>? = null
     override val center: IVector3 get() = cursor.center
 
     val mesh get() = RenderUtil.createCircleMesh(center, tangent, parameters.length, parameters.width)
@@ -70,13 +74,13 @@ class CursorPartRotate(
         }
     }
 
-    override fun applyRotation(offset: Float, selection: ISelection, model: IModel): IModel {
+    override fun applyRotation(offset: Float, selection: ISelection, model: IModel, material: IMaterial): IModel {
         return EditTool.rotate(model, selection, center, quatOfAxisAngled(tangent, offset))
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is CursorPartRotate) return false
+        if (other !is CursorPartRotateModel) return false
 
         if (tangent != other.tangent) return false
         if (cotangent != other.cotangent) return false
@@ -91,12 +95,13 @@ class CursorPartRotate(
     }
 }
 
-class CursorPartScale(
+class CursorPartScaleModel(
         val cursor: Cursor,
         val parameters: CursorParameters,
         override val scaleAxis: IVector3
 ) : IScalable {
 
+    override val polygons: List<IPolygon>? = null
     override val center: IVector3 get() = cursor.center
 
     override val hitbox: IRayObstacle get() = AABBObstacle(this::calculateHitbox)
@@ -108,13 +113,13 @@ class CursorPartScale(
         )
     }
 
-    override fun applyScale(offset: Float, selection: ISelection, model: IModel): IModel {
+    override fun applyScale(offset: Float, selection: ISelection, model: IModel, material: IMaterial): IModel {
         return EditTool.scale(model, selection, center, scaleAxis, offset)
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is CursorPartScale) return false
+        if (other !is CursorPartScaleModel) return false
 
         if (scaleAxis != other.scaleAxis) return false
 

@@ -18,6 +18,8 @@ operator fun IVector2.component1() = x
 operator fun IVector2.component2() = y
 operator fun IVector3.component3() = z
 
+fun IVector3.toVector2() = vec2Of(xd, yd)
+
 fun IVector2.rotateAround(center: IVector2, angle: Double): IVector2 {
     val normalizedPos = this - center
     val rotatedPos = normalizedPos.rotate(angle)
@@ -104,10 +106,27 @@ private fun IVector3.scale(center: IVector3, scale: IVector3): IVector3 {
     return newPos + center
 }
 
+private fun IVector2.scale(center: IVector2, scale: IVector2): IVector2 {
+    val pos = this - center
+    val newPos = pos * scale
+    return newPos + center
+}
+
 fun IVector3.scale(center: IVector3, axis: IVector3, offset: Float): IVector3 {
     val distance = this.distanceInAxis(center, axis)
     if (distance == 0.0) return this
     return scale(center, Vector3.ONE + axis * offset / distance)
+}
+
+fun IVector2.scale(center: IVector2, axis: IVector2, offset: Float): IVector2 {
+    val distance = this.distanceInAxis(center, axis)
+    if (distance == 0.0) return this
+    return scale(center, Vector2.ONE + axis * offset / distance)
+}
+
+fun IVector2.distanceInAxis(point: IVector2, axis: IVector2): Double {
+    val norm = axis.normalize()
+    return Math.abs((norm dot point) - (norm dot this))
 }
 
 fun IVector3.distanceInAxis(point: IVector3, axis: IVector3): Double {

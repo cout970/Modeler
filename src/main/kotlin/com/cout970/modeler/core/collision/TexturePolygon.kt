@@ -2,6 +2,7 @@ package com.cout970.modeler.core.collision
 
 import com.cout970.collision.IPolygon
 import com.cout970.vector.api.IVector2
+import com.cout970.vector.extensions.vec2Of
 
 data class TexturePolygon(private val vertex: List<IVector2>) : IPolygon {
 
@@ -13,4 +14,18 @@ data class TexturePolygon(private val vertex: List<IVector2>) : IPolygon {
     )
 
     override fun getVertex(): List<IVector2> = vertex
+}
+
+fun Pair<IVector2, IVector2>.toTexturePolygon(): TexturePolygon {
+    val a = this.first
+    val b = this.second
+
+    val points = listOf(
+            vec2Of(a.x, a.y),
+            vec2Of(b.x, a.y),
+            vec2Of(b.x, b.y),
+            vec2Of(a.x, b.y)
+    )
+
+    return TexturePolygon(points)
 }

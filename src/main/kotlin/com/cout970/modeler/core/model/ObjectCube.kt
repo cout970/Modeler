@@ -125,7 +125,6 @@ data class ObjectCube(
     override val transformer: IObjectTransformer = object : IObjectTransformer {
 
         override fun translate(obj: IObject, translation: IVector3): IObject {
-//            val newPos = pos + quatOfAngles(-transformation.rotation.toAxisRotations()).transform(translation)
             val newPos = pos + translation
             return copy(transformation = transformation.copy(translation = newPos))
         }
@@ -138,6 +137,20 @@ data class ObjectCube(
         override fun scale(obj: IObject, center: IVector3, axis: IVector3, offset: Float): IObject {
             val newSize = size + axis * offset
             return copy(transformation = transformation.copy(scale = newSize))
+        }
+
+        override fun translateTexture(obj: IObject, translation: IVector2): IObject {
+            val newOffset = textureOffset + translation
+            return copy(textureOffset = newOffset)
+        }
+
+        override fun rotateTexture(obj: IObject, center: IVector2, angle: Double): IObject {
+            return obj.transformer.rotateTexture(obj, center, angle)
+        }
+
+        override fun scaleTexture(obj: IObject, center: IVector2, axis: IVector2, offset: Float): IObject {
+            val newSize = textureSize + axis * offset
+            return copy(textureSize = newSize)
         }
     }
 }

@@ -20,6 +20,7 @@ import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.gui.*
 import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.gui.canvas.CanvasManager
+import com.cout970.modeler.gui.canvas.cursor.CursorManager
 import com.cout970.modeler.gui.views.EditorView
 import com.cout970.modeler.input.event.EventController
 import com.cout970.modeler.input.event.IInput
@@ -89,6 +90,7 @@ class DependencyInjector {
                     EditorView::class.java -> gui.editorView
                     ProjectManager::class.java -> projectManager
                     CanvasManager::class.java -> gui.canvasManager
+                    CursorManager::class.java -> gui.cursorManager
                     GuiResources::class.java -> gui.resources
                     GuiState::class.java -> gui.state
                     Dispatcher::class.java -> gui.dispatcher

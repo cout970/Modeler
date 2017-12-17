@@ -18,9 +18,7 @@ import com.cout970.modeler.gui.canvas.helpers.CanvasHelper
 import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.util.*
 import com.cout970.raytrace.IRayObstacle
-import com.cout970.vector.extensions.div
 import com.cout970.vector.extensions.unaryMinus
-import com.cout970.vector.extensions.vec2Of
 import org.liquidengine.legui.component.Component
 
 /**
@@ -78,12 +76,12 @@ class CanvasSelectPart : IUseCase {
         val polygons = model.getTexturePolygons(state.selectionType, materialRef)
         val actualMaterial = model.getMaterial(materialRef)
 
-        val finalPos = (clickPos / actualMaterial.size).run { vec2Of(xd, 1 - yd) }
+        val finalPos = CanvasHelper.fromRenderToMaterial(clickPos, actualMaterial)
         val mouseCollisionBox = getVertexTexturePolygon(finalPos)
 
         val selected = polygons.filter { it.first.collide(mouseCollisionBox) }
         val results = selected.map { it.second }.distinct()
-        println(results.firstOrNull())
+
         return results.firstOrNull()
     }
 

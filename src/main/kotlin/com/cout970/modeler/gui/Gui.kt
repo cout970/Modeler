@@ -7,7 +7,7 @@ import com.cout970.modeler.controller.binders.KeyboardBinder
 import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.gui.canvas.CanvasManager
-import com.cout970.modeler.gui.canvas.CursorManager
+import com.cout970.modeler.gui.canvas.cursor.CursorManager
 import com.cout970.modeler.gui.views.EditorView
 import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.input.window.WindowHandler

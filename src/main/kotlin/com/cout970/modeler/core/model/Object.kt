@@ -10,7 +10,10 @@ import com.cout970.modeler.util.middle
 import com.cout970.modeler.util.scale
 import com.cout970.modeler.util.toAxisRotations
 import com.cout970.vector.api.IQuaternion
+import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
+import com.cout970.vector.extensions.toVector3
+import com.cout970.vector.extensions.vec3Of
 
 /**
  * Created by cout970 on 2017/05/07.
@@ -43,6 +46,19 @@ data class Object(
 
         override fun scale(obj: IObject, center: IVector3, axis: IVector3, offset: Float): IObject {
             return copy(mesh = Mesh(mesh.pos.map { it.scale(center, axis, offset) }, mesh.tex, mesh.faces))
+        }
+
+        override fun translateTexture(obj: IObject, translation: IVector2): IObject {
+            return copy(mesh = mesh.transformTexture(TRSTransformation(translation.toVector3(0.0))))
+        }
+
+        override fun rotateTexture(obj: IObject, center: IVector2, angle: Double): IObject {
+            val trans = TRSTransformation.fromRotationPivot(center.toVector3(0.0), vec3Of(0.0, 0.0, 1.0))
+            return copy(mesh = mesh.transformTexture(trans))
+        }
+
+        override fun scaleTexture(obj: IObject, center: IVector2, axis: IVector2, offset: Float): IObject {
+            return copy(mesh = Mesh(mesh.pos, mesh.tex.map { it.scale(center, axis, offset) }, mesh.faces))
         }
     }
 }

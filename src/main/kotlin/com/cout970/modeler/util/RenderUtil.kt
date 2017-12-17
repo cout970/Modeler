@@ -1,11 +1,14 @@
 package com.cout970.modeler.util
 
+import com.cout970.collision.IPolygon
 import com.cout970.glutilities.tessellator.BufferPTNC
 import com.cout970.modeler.api.model.mesh.IMesh
+import com.cout970.modeler.core.collision.TexturePolygon
 import com.cout970.modeler.core.model.AABB
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.mesh.MeshFactory
 import com.cout970.modeler.render.tool.append
+import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
 import org.joml.Matrix4d
@@ -50,7 +53,7 @@ object RenderUtil {
         return mesh.run {
             Mesh(
                     pos
-                            .map {matrix.transform(Vector4d(it.xd, it.yd, it.zd, 1.0))}
+                            .map { matrix.transform(Vector4d(it.xd, it.yd, it.zd, 1.0)) }
                             .map { vec3Of(it.x, it.y, it.z) },
                     tex,
                     faces)
@@ -59,6 +62,28 @@ object RenderUtil {
 
     fun test(q: Quaterniond): IVector3 {
         return q.transform(Vector3d(1.0, 0.0, 0.0)).toIVector()
+    }
+
+    fun createCirclePolygons(center: IVector2, radius: Double, size: Double = 0.05): List<IPolygon> {
+
+        val quality = 16
+        val polygons = mutableListOf<IPolygon>()
+        for (i in 0..360 / quality) {
+            val angle0 = Math.toRadians(i.toDouble() * quality)
+            val angle1 = Math.toRadians((i.toDouble() + 1) * quality)
+
+            val halfSize = size / 2
+
+            val near1 = vec2Of(Math.sin(angle0), Math.cos(angle0)) * (radius + halfSize)
+            val near2 = vec2Of(Math.sin(angle1), Math.cos(angle1)) * (radius + halfSize)
+            val far1 = vec2Of(Math.sin(angle0), Math.cos(angle0)) * (radius - halfSize)
+            val far2 = vec2Of(Math.sin(angle1), Math.cos(angle1)) * (radius - halfSize)
+
+            val points = listOf(near1, near2, far2, far1).map { it + center }
+
+            polygons.add(TexturePolygon(points))
+        }
+        return polygons
     }
 
     fun createCircleMesh(center: IVector3, axis: IVector3, radius: Double, size: Double = 0.05): IMesh {

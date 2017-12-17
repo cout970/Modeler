@@ -1,6 +1,8 @@
 package com.cout970.modeler.gui.canvas
 
+import com.cout970.collision.IPolygon
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.raytrace.IRayObstacle
 import com.cout970.raytrace.Ray
@@ -21,13 +23,14 @@ enum class TransformationMode {
 }
 
 interface ISelectable {
-    val hitbox: IRayObstacle
+    val hitbox: IRayObstacle?
+    val polygons: List<IPolygon>?
 }
 
 interface ITranslatable : ISelectable {
     val translationAxis: IVector3
 
-    fun applyTranslation(offset: Float, selection: ISelection, model: IModel): IModel
+    fun applyTranslation(offset: Float, selection: ISelection, model: IModel, material: IMaterial): IModel
 }
 
 interface IRotable : ISelectable {
@@ -35,12 +38,12 @@ interface IRotable : ISelectable {
     // normal vector of the plane where this obj will be rotated
     val tangent: IVector3
 
-    fun applyRotation(offset: Float, selection: ISelection, model: IModel): IModel
+    fun applyRotation(offset: Float, selection: ISelection, model: IModel, material: IMaterial): IModel
 }
 
 interface IScalable : ISelectable {
     val scaleAxis: IVector3
     val center: IVector3
 
-    fun applyScale(offset: Float, selection: ISelection, model: IModel): IModel
+    fun applyScale(offset: Float, selection: ISelection, model: IModel, material: IMaterial): IModel
 }

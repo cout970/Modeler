@@ -27,10 +27,12 @@ import java.awt.Color
 class MaterialRenderer {
 
     var areasCache = AutoCache(CacheFlags.MODEL, CacheFlags.MATERIAL, CacheFlags.VISIBILITY,
-            CacheFlags.SELECTION_TEXTURE)
+            CacheFlags.SELECTION_TEXTURE, CacheFlags.TEXTURE_CURSOR)
     val gridLines = AutoCache(CacheFlags.MATERIAL)
     val materialCache = AutoCache(CacheFlags.MATERIAL)
     val selectionCache = AutoCache(CacheFlags.MODEL, CacheFlags.SELECTION_TEXTURE, CacheFlags.MATERIAL)
+
+    val cursorRenderer = TextureCursorRenderer()
 
     fun renderWorld(ctx: RenderContext, ref: IMaterialRef, material: IMaterial) {
         setCamera(ctx)
@@ -53,6 +55,9 @@ class MaterialRenderer {
         }
 
         GLStateMachine.depthTest.enable()
+
+        GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
+        cursorRenderer.renderCursor(ctx)
     }
 
     fun renderMappedAreas(ctx: RenderContext, ref: IMaterialRef, material: IMaterial) {

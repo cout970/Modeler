@@ -1,5 +1,6 @@
 package com.cout970.modeler.gui.canvas.helpers
 
+import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.gui.canvas.Canvas
 import com.cout970.modeler.gui.canvas.SceneSpaceContext
 import com.cout970.modeler.util.absolutePositionV
@@ -51,4 +52,10 @@ object CanvasHelper {
 
         return scaledPos - camPos
     }
+
+    fun fromRenderToMaterial(pos: IVector2, material: IMaterial): IVector2 =
+            (pos / material.size).run { vec2Of(xd, 1 - yd) }
+
+    fun fromMaterialToRender(pos: IVector2, material: IMaterial): IVector2 =
+            (pos.run { vec2Of(xd, 1 - yd) } * material.size)
 }

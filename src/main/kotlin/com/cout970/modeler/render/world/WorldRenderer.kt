@@ -24,7 +24,7 @@ import org.lwjgl.opengl.GL11
 class WorldRenderer {
 
     val modelRenderer = ModelRenderer()
-    val cursorRenderer = CursorRenderer()
+    val cursorRenderer = ModelCursorRenderer()
 
     var baseCubeCache = AutoCache()
     var gridLines = AutoCache()

@@ -10,7 +10,7 @@ import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.gui.canvas.CanvasManager
-import com.cout970.modeler.gui.canvas.CursorManager
+import com.cout970.modeler.gui.canvas.cursor.CursorManager
 import com.cout970.modeler.gui.leguicomp.Panel
 import com.cout970.modeler.gui.views.EditorView
 import com.cout970.modeler.input.event.EventController

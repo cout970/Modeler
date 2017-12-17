@@ -31,6 +31,10 @@ object ObjectNone : IObject {
         override fun translate(obj: IObject, translation: IVector3): IObject = this@ObjectNone
         override fun rotate(obj: IObject, pivot: IVector3, rot: IQuaternion): IObject = this@ObjectNone
         override fun scale(obj: IObject, center: IVector3, axis: IVector3, offset: Float): IObject = this@ObjectNone
+
+        override fun translateTexture(obj: IObject, translation: IVector2): IObject = this@ObjectNone
+        override fun rotateTexture(obj: IObject, center: IVector2, angle: Double): IObject = this@ObjectNone
+        override fun scaleTexture(obj: IObject, center: IVector2, axis: IVector2, offset: Float): IObject = this@ObjectNone
     }
 
     override fun getCenter(): IVector3 = Vector3.ORIGIN
@@ -64,6 +68,10 @@ object ObjectCubeNone : IObjectCube {
         override fun translate(obj: IObject, translation: IVector3): IObject = this@ObjectCubeNone
         override fun rotate(obj: IObject, pivot: IVector3, rot: IQuaternion): IObject = this@ObjectCubeNone
         override fun scale(obj: IObject, center: IVector3, axis: IVector3, offset: Float): IObject = this@ObjectCubeNone
+
+        override fun translateTexture(obj: IObject, translation: IVector2): IObject = this@ObjectCubeNone
+        override fun rotateTexture(obj: IObject, center: IVector2, angle: Double): IObject = this@ObjectCubeNone
+        override fun scaleTexture(obj: IObject, center: IVector2, axis: IVector2, offset: Float): IObject = this@ObjectCubeNone
     }
 
     override fun getCenter(): IVector3 = Vector3.ORIGIN

@@ -110,7 +110,7 @@ class Listeners : ITickeable {
 
     override fun tick() {
         cameraUpdater.updateCameras()
-        gui.canvasManager.update()
+        gui.cursorManager.tick()
         sizeUpdate?.let {
             gui.root.updateSizes(it)
             gui.root.context.updateGlfwWindow()

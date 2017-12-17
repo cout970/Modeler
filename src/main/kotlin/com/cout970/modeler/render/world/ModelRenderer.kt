@@ -24,7 +24,7 @@ import org.lwjgl.opengl.GL11
 class ModelRenderer {
 
     var modelCache: List<VAO> = mutableListOf()
-    var selectionCache = AutoCache(CacheFlags.MODEL, CacheFlags.SELECTION_MODEL, CacheFlags.CURSOR)
+    var selectionCache = AutoCache(CacheFlags.MODEL, CacheFlags.SELECTION_MODEL, CacheFlags.MODEL_CURSOR)
     var modelHash = -1
 
     fun renderModels(ctx: RenderContext, model: IModel) {
