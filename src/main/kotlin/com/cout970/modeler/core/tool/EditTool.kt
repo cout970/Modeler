@@ -8,9 +8,12 @@ import com.cout970.modeler.core.model.Object
 import com.cout970.modeler.core.model.ObjectCube
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.getSelectedObjectRefs
+import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
+import com.cout970.modeler.core.model.mesh.getTextureVertex
 import com.cout970.modeler.core.model.selection.FaceRef
 import com.cout970.modeler.core.model.selection.ObjectRef
+import com.cout970.modeler.core.model.selection.PosRef
 import com.cout970.modeler.util.scale
 import com.cout970.modeler.util.toAxisRotations
 import com.cout970.modeler.util.toJOML
@@ -158,7 +161,7 @@ object EditTool {
                     .filterIsInstance<IFaceRef>()
                     .filter { it.objectIndex == ref.objectIndex }
                     .map { obj.mesh.faces[it.faceIndex] }
-                    .flatMap { it.pos }
+                    .flatMap { it.tex }
                     .toSet()
 
             val newMesh = transformMeshTexture(obj, indices, transform)
@@ -270,80 +273,63 @@ object EditTool {
             SelectionType.EDGE, SelectionType.VERTEX -> source
         }
     }
-//    fun deleteElements(source: IModel, selection: List<ObjectSelection>): IModel {
-//        return source.applyElementLeaves(selection) { path, elem -> null }
-//    }
-//
-//    fun deleteFaces(source: IModel, selection: VertexPosSelection): IModel {
-//        val handler = selection.subPathHandler
-//        if (handler is SubSelectionFace) {
-//            return source.applyElementLeaves(selection.toElementSelection()) { path, elem ->
-//                val facesToRemove = handler.paths.filter { it.elementPath == path }
-//                if (facesToRemove.isEmpty()) {
-//                    elem
-//                } else if (facesToRemove.size == elem.faces.size) {
-//                    null
-//                } else {
-//                    elem.removeFaces(facesToRemove.map { it.faceIndex })
-//                }
-//            }
-//        }
-//        return source
-//    }
-//
-//    //
-//    // PASTE
-//    //
-//    fun pasteElement(currentModel: Model, oldModel: Model, oldSelection: ElementSelection): Model {
-//        val newElements = oldSelection.paths.map { oldModel.getElement(it) }
-//        var model = currentModel
-//        for (elem in newElements) {
-//            model = insertElement(model, elem)
-//        }
-//        return model
-//    }
-//
-//    fun pasteFaces(currentModel: Model, oldModel: Model, oldSelection: VertexPosSelection): Model {
-//        val handler = oldSelection.subPathHandler
-//        if (handler is SubSelectionFace) {
-//            val newFaces = handler.paths.map { it.toQuad(oldModel) }
-//            val pos = newFaces.flatMap { it.vertex.map { it.pos } }.distinct()
-//            val tex = newFaces.flatMap { it.vertex.map { it.tex } }.distinct()
-//            val faces = newFaces.map {
-//                QuadIndex(
-//                        it.a.toIndex(pos, tex),
-//                        it.b.toIndex(pos, tex),
-//                        it.c.toIndex(pos, tex),
-//                        it.d.toIndex(pos, tex)
-//                )
-//            }
-//            val element = ElementLeaf(pos, tex, faces)
-//            return insertElement(currentModel, element)
-//        } else {
-//            return currentModel
-//        }
-//    }
-//
-//    //
-//    // INSERT
-//    //
-//    fun insertElementLeaf(source: Model, elem: ElementLeaf): Model {
-//        val newElem = elem.copy(positions = elem.positions.map { it + insertPosition })
-//        return insertElement(source, newElem)
-//    }
-//
-//    fun insertElement(source: Model, elem: IElement, path: ElementPath = insertPath): Model {
-//        return source.copy(elements = insert(source.elements, elem, path, 0))
-//    }
-//
-//    private fun insert(list: List<IElement>, elem: IElement, path: ElementPath, level: Int): List<IElement> {
-//        if (insertPath.indices.size == level) {
-//            return list + elem
-//        } else {
-//            val group = list[insertPath.indices[level]] as IElementGroup
-//            return insert(group.elements, elem, path, level + 1)
-//        }
-//    }
+
+    fun splitTextures(model: IModel, selection: ISelection): IModel {
+
+        when (selection.selectionType) {
+            SelectionType.OBJECT -> {
+                return model.modifyObjects(selection::isSelected) { _, obj ->
+                    val faces = obj.mesh.faces
+                    val pos = obj.mesh.pos
+
+                    val newTex = faces.flatMap { it.getTextureVertex(obj.mesh) }
+
+                    val newFaces = faces.mapIndexed { index, face ->
+                        val startIndex = (index * 4)
+                        val endIndex = ((index + 1) * 4)
+                        val newTexIndices = (startIndex until endIndex).toList()
+
+                        FaceIndex(face.pos, newTexIndices)
+                    }
+
+                    val newMesh = Mesh(pos, newTex, newFaces)
+                    obj.withMesh(newMesh)
+                }
+            }
+            SelectionType.FACE -> {
+                selection.refs
+                        .filterIsInstance<IFaceRef>()
+                        .groupBy { it.objectIndex }
+                        .map { entry ->
+                            val obj = model.getObject(ObjectRef(entry.key))
+                            ObjectRef(entry.key) to
+                                    entry.value.map { obj.mesh.faces[it.faceIndex] }
+                                            .flatMap { it.pos }
+                                            .distinct()
+                                            .map { PosRef(entry.key, it) }
+                        }
+            }
+            SelectionType.EDGE -> {
+                selection.refs
+                        .filterIsInstance<IEdgeRef>()
+                        .groupBy { it.objectIndex }
+                        .map { entry ->
+                            ObjectRef(entry.key) to entry.value
+                                    .flatMap { listOf(it.firstIndex, it.secondIndex) }
+                                    .map { PosRef(entry.key, it) }
+                        }
+            }
+            SelectionType.VERTEX -> {
+                selection.refs
+                        .filterIsInstance<IPosRef>()
+                        .groupBy { it.objectIndex }
+                        .map { ObjectRef(it.key) to it.value }
+            }
+        }
+
+        return model
+
+    }
 //
 //    //
 //    // SPLIT TEXTURE

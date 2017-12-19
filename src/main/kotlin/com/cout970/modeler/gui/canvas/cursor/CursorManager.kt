@@ -31,7 +31,8 @@ class CursorManager {
         Profiler.startSection("cursorManager")
         val canvas = gui.canvasContainer.selectedCanvas
         val allow = canvas?.let { processCursor(it) } ?: true
-        if(allow){
+
+        if (allow) {
             updateCanvas()
         }
 
@@ -43,6 +44,7 @@ class CursorManager {
         val targets: List<ISelectable>
 
         val textureMode = canvas.viewMode == SelectionTarget.TEXTURE
+        gui.state.hoveredObject = null
 
         if (textureMode) {
             cursor = textureCursor ?: return true
@@ -102,10 +104,10 @@ class CursorManager {
                     .map { it.key to it.value.map { it.second } }
                     .map { (obj, faces) ->
                         faces.map { obj.mesh.faces[it] }
-                                .flatMap { it.pos }
+                                .flatMap { it.tex }
                                 .mapNotNull { obj.mesh.tex.getOrNull(it) }
                                 .middle()
-                    } // TODO fix java.lang.IndexOutOfBoundsException: Index: 32, Size: 32
+                    }
                     .middle()
 
             SelectionType.EDGE -> selection.refs
@@ -141,7 +143,7 @@ class CursorManager {
                                 .pos
                                 .mapNotNull { obj.mesh.pos.getOrNull(it) }
                                 .middle()
-                    } // TODO fix java.lang.IndexOutOfBoundsException: Index: 32, Size: 32
+                    }
                     .middle()
 
             SelectionType.EDGE -> selection.refs

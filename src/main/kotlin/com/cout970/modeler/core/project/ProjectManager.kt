@@ -60,6 +60,7 @@ class ProjectManager(val modelSelectionHandler: SelectionHandler, val textureSel
     fun updateModel(model: IModel) {
         val old = this.model
         this.model = model
+
         modelChangeListeners.forEach { it.invoke(old, model) }
     }
 

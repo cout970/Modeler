@@ -37,6 +37,8 @@ class KeyboardBinder(val dispatcher: Dispatcher) {
                 toggleVisibility.check(e) -> "model.toggle.visibility"
                 selectAll.check(e) -> "model.select.all"
                 moveCameraToCursor.check(e) -> "camera.move.to.cursor"
+                splitTexture.check(e) -> "model.texture.split"
+
                 e.keycode == Keyboard.KEY_F1 -> "debug"
                 e.keycode == Keyboard.KEY_F2 -> "debug.changeColors"
                 e.keycode == Keyboard.KEY_F3 -> "debug.show.profiling"

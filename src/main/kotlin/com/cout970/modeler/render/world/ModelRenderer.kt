@@ -11,6 +11,7 @@ import com.cout970.modeler.core.model.mesh.MeshFactory
 import com.cout970.modeler.core.model.selection.ObjectRef
 import com.cout970.modeler.render.tool.*
 import com.cout970.modeler.util.getColor
+import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.Vector2
 import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.plus
@@ -24,7 +25,8 @@ import org.lwjgl.opengl.GL11
 class ModelRenderer {
 
     var modelCache: List<VAO> = mutableListOf()
-    var selectionCache = AutoCache(CacheFlags.MODEL, CacheFlags.SELECTION_MODEL, CacheFlags.MODEL_CURSOR)
+    var modelSelectionCache = AutoCache(CacheFlags.MODEL, CacheFlags.SELECTION_MODEL, CacheFlags.MODEL_CURSOR)
+    var textureSelectionCache = AutoCache(CacheFlags.MODEL, CacheFlags.SELECTION_TEXTURE, CacheFlags.TEXTURE_CURSOR)
     var modelHash = -1
 
     fun renderModels(ctx: RenderContext, model: IModel) {
@@ -32,14 +34,32 @@ class ModelRenderer {
         val modelToRender = ctx.gui.state.tmpModel ?: model
 
         renderModel(ctx, modelToRender)
-        renderSelection(ctx, modelToRender)
+        renderModelSelection(ctx, modelToRender)
+        renderTextureSelection(ctx, modelToRender)
     }
 
-    fun renderSelection(ctx: RenderContext, modelToRender: IModel) {
+    fun renderModelSelection(ctx: RenderContext, modelToRender: IModel) {
         val selectionBox = ctx.gui.modelAccessor.modelSelectionHandler.getSelection()
         val selection = selectionBox.getOrNull() ?: return
 
-        val vao = selectionCache.getOrCreate(ctx) { buildSelection(ctx, modelToRender, selection) }
+        val vao = modelSelectionCache.getOrCreate(ctx) { buildModelSelection(ctx, modelToRender, selection) }
+        ctx.shader.apply {
+            useTexture.setInt(0)
+            useColor.setInt(1)
+            useLight.setInt(0)
+            matrixM.setMatrix4(Matrix4.IDENTITY)
+            GL11.glLineWidth(Config.selectionThickness * 20f)
+            accept(vao)
+            GL11.glLineWidth(1f)
+        }
+    }
+
+    fun renderTextureSelection(ctx: RenderContext, modelToRender: IModel) {
+        val selectionBox = ctx.gui.modelAccessor.textureSelectionHandler.getSelection()
+        val selection = selectionBox.getOrNull() ?: return
+        if (selection.selectionType !in setOf(SelectionType.OBJECT, SelectionType.FACE)) return
+
+        val vao = textureSelectionCache.getOrCreate(ctx) { buildTextureSelection(ctx, modelToRender, selection) }
         ctx.shader.apply {
             useTexture.setInt(0)
             useColor.setInt(1)
@@ -87,30 +107,53 @@ class ModelRenderer {
                 .map { it.createVao(buffer, getColor(it.hashCode())) }
     }
 
-    private fun buildSelection(ctx: RenderContext, modelToRender: IModel,
-                               selection: ISelection): VAO = when (selection.selectionType) {
-        SelectionType.OBJECT -> ctx.buffer.build(DrawMode.LINES) { appendObjectSelection(modelToRender, selection) }
-        SelectionType.FACE -> ctx.buffer.build(DrawMode.LINES) { appendFaceSelection(modelToRender, selection) }
-        SelectionType.EDGE -> ctx.buffer.build(DrawMode.LINES) { appendEdgeSelection(modelToRender, selection) }
-        SelectionType.VERTEX -> ctx.buffer.build(DrawMode.QUADS) { appendVertexSelection(modelToRender, selection) }
+    private fun buildTextureSelection(ctx: RenderContext, modelToRender: IModel,
+                                      selection: ISelection): VAO {
+        val color = Config.colorPalette.textureSelectionColor
+        return when (selection.selectionType) {
+            SelectionType.OBJECT -> ctx.buffer.build(DrawMode.LINES) {
+                appendObjectSelection(modelToRender, selection, color)
+            }
+            SelectionType.FACE -> ctx.buffer.build(DrawMode.LINES) {
+                appendFaceSelection(modelToRender, selection, color)
+            }
+            else -> throw IllegalStateException("Invalid selection type: ${selection.selectionType}")
+        }
     }
 
-    private fun BufferPTNC.appendObjectSelection(modelToRender: IModel,
-                                                             selection: ISelection) {
+    private fun buildModelSelection(ctx: RenderContext, modelToRender: IModel,
+                                    selection: ISelection): VAO {
+        val color = Config.colorPalette.modelSelectionColor
+        return when (selection.selectionType) {
+            SelectionType.OBJECT -> ctx.buffer.build(DrawMode.LINES) {
+                appendObjectSelection(modelToRender, selection, color)
+            }
+            SelectionType.FACE -> ctx.buffer.build(DrawMode.LINES) {
+                appendFaceSelection(modelToRender, selection, color)
+            }
+            SelectionType.EDGE -> ctx.buffer.build(DrawMode.LINES) {
+                appendEdgeSelection(modelToRender, selection, color)
+            }
+            SelectionType.VERTEX -> ctx.buffer.build(DrawMode.QUADS) {
+                appendVertexSelection(modelToRender, selection, color)
+            }
+        }
+    }
+
+    private fun BufferPTNC.appendObjectSelection(modelToRender: IModel, selection: ISelection, color: IVector3) {
 
         val objSel = modelToRender.objects.filterIndexed { index, _ ->
             selection.isSelected(ObjectRef(index))
         }
         objSel.forEach {
             it.mesh.forEachEdge { (a, b) ->
-                add(a.pos, Vector2.ORIGIN, Vector3.ZERO, Config.colorPalette.modelSelectionColor)
-                add(b.pos, Vector2.ORIGIN, Vector3.ZERO, Config.colorPalette.modelSelectionColor)
+                add(a.pos, Vector2.ORIGIN, Vector3.ZERO, color)
+                add(b.pos, Vector2.ORIGIN, Vector3.ZERO, color)
             }
         }
     }
 
-    private fun BufferPTNC.appendFaceSelection(modelToRender: IModel,
-                                                           selection: ISelection) {
+    private fun BufferPTNC.appendFaceSelection(modelToRender: IModel, selection: ISelection, color: IVector3) {
 
         val pairs = selection.refs
                 .filterIsInstance<IFaceRef>()
@@ -121,29 +164,26 @@ class ModelRenderer {
 
             for (index in 0 until face.vertexCount) {
                 val next = (index + 1) % face.vertexCount
-                add(obj.mesh.pos[face.pos[index]], Vector2.ORIGIN, Vector3.ZERO,
-                        Config.colorPalette.modelSelectionColor)
-                add(obj.mesh.pos[face.pos[next]], Vector2.ORIGIN, Vector3.ZERO, Config.colorPalette.modelSelectionColor)
+                add(obj.mesh.pos[face.pos[index]], Vector2.ORIGIN, Vector3.ZERO, color)
+                add(obj.mesh.pos[face.pos[next]], Vector2.ORIGIN, Vector3.ZERO, color)
             }
         }
     }
 
-    private fun BufferPTNC.appendEdgeSelection(modelToRender: IModel,
-                                                           selection: ISelection) {
+    private fun BufferPTNC.appendEdgeSelection(modelToRender: IModel, selection: ISelection, color: IVector3) {
 
         val pairs = selection.refs
                 .filterIsInstance<IEdgeRef>()
                 .map { modelToRender.getObject(ObjectRef(it.objectIndex)) to it }
 
         pairs.forEach { (obj, ref) ->
-            add(obj.mesh.pos[ref.firstIndex], Vector2.ORIGIN, Vector3.ZERO, Config.colorPalette.modelSelectionColor)
-            add(obj.mesh.pos[ref.secondIndex], Vector2.ORIGIN, Vector3.ZERO, Config.colorPalette.modelSelectionColor)
+            add(obj.mesh.pos[ref.firstIndex], Vector2.ORIGIN, Vector3.ZERO, color)
+            add(obj.mesh.pos[ref.secondIndex], Vector2.ORIGIN, Vector3.ZERO, color)
         }
     }
 
 
-    private fun BufferPTNC.appendVertexSelection(modelToRender: IModel,
-                                                             selection: ISelection) {
+    private fun BufferPTNC.appendVertexSelection(modelToRender: IModel, selection: ISelection, color: IVector3) {
 
         val pairs = selection.refs
                 .filterIsInstance<IPosRef>()
@@ -152,7 +192,7 @@ class ModelRenderer {
         pairs.forEach { (obj, ref) ->
             val point = obj.mesh.pos[ref.posIndex]
             MeshFactory.createCube(vec3Of(0.5), vec3Of(-0.25) + point)
-                    .append(this, Config.colorPalette.modelSelectionColor)
+                    .append(this, color)
         }
     }
 }

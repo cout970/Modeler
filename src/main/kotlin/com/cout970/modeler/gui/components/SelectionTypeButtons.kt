@@ -1,17 +1,15 @@
 package com.cout970.modeler.gui.components
 
 import com.cout970.modeler.api.model.selection.SelectionType
-import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.GuiState
 import com.cout970.modeler.gui.leguicomp.InstantTooltip
 import com.cout970.modeler.gui.leguicomp.ToggleButton
-import com.cout970.modeler.gui.leguicomp.marginX
+import com.cout970.modeler.gui.leguicomp.background
 import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.util.setBorderless
-import com.cout970.modeler.util.toColor
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.event.MouseClickEvent
 
@@ -21,10 +19,12 @@ import org.liquidengine.legui.event.MouseClickEvent
 class SelectionTypeButtons : RComponent<SelectionTypeButtons.Props, Unit>() {
 
     override fun build(ctx: RBuilder): Component = panel {
-        backgroundColor = Config.colorPalette.darkestColor.toColor()
-        marginX(ctx, 5f)
-        posY = 30f
-        height = 48f
+        background { blackColor }
+        posX = 432f + 32f
+        posY = 5f
+        width = 143f + 8f
+        height = 40f
+        cornerRadius = 5f
         setBorderless()
 
         val firstButton = props.guiState.selectionType == SelectionType.OBJECT
@@ -32,7 +32,7 @@ class SelectionTypeButtons : RComponent<SelectionTypeButtons.Props, Unit>() {
         val thirdButton = props.guiState.selectionType == SelectionType.EDGE
         val fourthButton = props.guiState.selectionType == SelectionType.VERTEX
 
-        +ToggleButton("", "selection_mode_object", firstButton, 0f, 0f, 32f, 32f).apply {
+        +ToggleButton("", "selection_mode_object", firstButton, 4f, 4f, 32f, 32f).apply {
             setBorderless()
             tooltip = InstantTooltip("Selection mode: OBJECT")
 
@@ -41,7 +41,7 @@ class SelectionTypeButtons : RComponent<SelectionTypeButtons.Props, Unit>() {
                 replaceState(Unit)
             }
         }
-        +ToggleButton("", "selection_mode_face", secondButton, 32f + 5f, 0f, 32f, 32f).apply {
+        +ToggleButton("", "selection_mode_face", secondButton, 32f + 5f + 4f, 4f, 32f, 32f).apply {
             setBorderless()
             tooltip = InstantTooltip("Selection mode: FACE")
 
@@ -50,7 +50,7 @@ class SelectionTypeButtons : RComponent<SelectionTypeButtons.Props, Unit>() {
                 replaceState(Unit)
             }
         }
-        +ToggleButton("", "selection_mode_edge", thirdButton, 64f + 10f, 0f, 32f, 32f).apply {
+        +ToggleButton("", "selection_mode_edge", thirdButton, 64f + 10f + 4f, 4f, 32f, 32f).apply {
             setBorderless()
             tooltip = InstantTooltip("Selection mode: EDGE")
 
@@ -59,7 +59,7 @@ class SelectionTypeButtons : RComponent<SelectionTypeButtons.Props, Unit>() {
                 replaceState(Unit)
             }
         }
-        +ToggleButton("", "selection_mode_vertex", fourthButton, 96f + 15f, 0f, 32f, 32f).apply {
+        +ToggleButton("", "selection_mode_vertex", fourthButton, 96f + 15f + 4f, 4f, 32f, 32f).apply {
             setBorderless()
             tooltip = InstantTooltip("Selection mode: VERTEX")
 

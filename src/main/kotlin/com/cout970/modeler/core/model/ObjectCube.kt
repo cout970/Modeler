@@ -140,7 +140,7 @@ data class ObjectCube(
         }
 
         override fun translateTexture(obj: IObject, translation: IVector2): IObject {
-            val newOffset = textureOffset + translation
+            val newOffset = textureOffset + translation * textureSize
             return copy(textureOffset = newOffset)
         }
 

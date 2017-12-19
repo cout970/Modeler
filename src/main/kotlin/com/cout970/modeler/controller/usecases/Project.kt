@@ -74,9 +74,6 @@ class LoadProject : IUseCase {
         lastSaveFile = file
         try {
             val save = exportManager.loadProject(file)
-            projectManager.loadProjectProperties(save.projectProperties)
-            projectManager.updateModel(save.model)
-
             ret.invoke(TaskUpdateProject(
                     oldProjectProperties = projectManager.projectProperties,
                     newProjectProperties = save.projectProperties,

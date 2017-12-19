@@ -1,18 +1,16 @@
 package com.cout970.modeler.gui.components
 
 import com.cout970.modeler.controller.Dispatcher
-import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.gui.GuiState
 import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.gui.leguicomp.background
+import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.gui.reactive.invoke
-import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.gui.views.VisibleElements
 import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.setBorderless
-import com.cout970.modeler.util.toColor
 import com.cout970.modeler.util.toJoml2f
 import com.cout970.vector.extensions.vec2Of
 import org.liquidengine.legui.component.Component
@@ -27,7 +25,7 @@ class LeftPanel : RComponent<LeftPanel.Props, Unit>() {
     }
 
     override fun build(ctx: RBuilder): Component = panel {
-        backgroundColor = Config.colorPalette.darkestColor.toColor()
+        background { darkestColor }
         posY = 48f
         size = vec2Of(280f, ctx.parentSize.yf - 48f).toJoml2f()
         setBorderless()
@@ -37,12 +35,11 @@ class LeftPanel : RComponent<LeftPanel.Props, Unit>() {
         }
 
         +GridButtonPanel {}
-        +SelectionTypeButtons { SelectionTypeButtons.Props(props.guiState) }
         +EditObjectName { EditObjectName.Props(props.access, props.dispatcher) }
         +EditCubePanel { EditCubePanel.Props(props.access, props.dispatcher) }
     }
 
-    class Props(val access: IModelAccessor, val dispatcher: Dispatcher, val visibleElements: VisibleElements, val guiState: GuiState)
+    class Props(val access: IModelAccessor, val dispatcher: Dispatcher, val visibleElements: VisibleElements)
 
     companion object : RComponentSpec<LeftPanel, Props, Unit>
 }

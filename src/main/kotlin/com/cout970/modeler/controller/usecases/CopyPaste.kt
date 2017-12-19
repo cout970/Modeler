@@ -83,7 +83,11 @@ class Cut : IUseCase {
                 TaskUpdateModel(oldModel = model, newModel = newModel),
                 TaskUpdateModelSelection(
                         sel.asNullable(),
-                        Selection(SelectionTarget.MODEL, SelectionType.OBJECT, emptyList()).asNullable()
+                        Nullable.castNull()
+                ),
+                TaskUpdateTextureSelection(
+                        sel.asNullable(),
+                        Nullable.castNull()
                 )
         ))
     }

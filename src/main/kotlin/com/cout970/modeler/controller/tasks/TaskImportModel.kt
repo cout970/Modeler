@@ -6,6 +6,7 @@ import com.cout970.modeler.core.export.ImportFormat
 import com.cout970.modeler.core.export.ImportProperties
 import com.cout970.modeler.core.export.ModelImporters
 import com.cout970.modeler.core.log.print
+import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.resource.toResourcePath
 import org.lwjgl.util.tinyfd.TinyFileDialogs
 import java.io.File
@@ -38,8 +39,16 @@ class TaskImportModel(
             }
         }
         modelCache?.let {
-            state.projectManager.updateModel(it)
+            state.gui.state.tmpModel = null
+            state.gui.state.hoveredObject = null
+            state.gui.cursorManager.textureCursor = null
+            state.gui.cursorManager.modelCursor = null
+            state.projectManager.textureSelectionHandler.clear()
+            state.projectManager.modelSelectionHandler.clear()
+
+            state.gui.state.selectedMaterial = it.materialRefs.firstOrNull() ?: MaterialRefNone
             state.gui.state.materialsHash = (System.currentTimeMillis() and 0xFFFFFFFF).toInt()
+            state.projectManager.updateModel(it)
         }
     }
 

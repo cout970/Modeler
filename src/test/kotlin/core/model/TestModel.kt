@@ -1,6 +1,7 @@
 package core.model
 
 import com.cout970.modeler.core.model.Model
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Test
 
@@ -15,6 +16,16 @@ class TestModel {
         val b = a.copy()
 
         assertNotEquals(a.id, b.id)
+        assertNotEquals(a, b)
+    }
+
+    @Test
+    fun `Check model identity`() {
+        val a = Model.empty()
+        val b = Model.empty()
+
+        assertEquals(a, a)
+        assertEquals(b, b)
         assertNotEquals(a, b)
     }
 }

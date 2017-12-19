@@ -50,6 +50,7 @@ class KeyBindings {
     var showRightPanel = KeyBind(Keyboard.KEY_R, ALT)
     var showBottomPanel = KeyBind(Keyboard.KEY_B, ALT)
     var selectAll = KeyBind(Keyboard.KEY_A, CTRL)
+    var splitTexture = KeyBind(Keyboard.KEY_P, CTRL)
 
     var newProject = KeyBind(Keyboard.KEY_N, CTRL, ALT, SHIFT)
     var openProject = KeyBind(Keyboard.KEY_O, CTRL, ALT, SHIFT)

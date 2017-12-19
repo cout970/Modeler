@@ -1,11 +1,10 @@
 package core.utils
 
-import com.cout970.modeler.core.model.TRTSTransformation
-import com.cout970.modeler.util.*
+import com.cout970.modeler.util.fromPivotToOrigin
+import com.cout970.modeler.util.quatOfAngles
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.Quaternion
 import com.cout970.vector.extensions.vec3Of
-import org.joml.Quaterniond
 import org.junit.Assert
 import org.junit.Test
 
@@ -50,27 +49,6 @@ class TestUtilities {
         Assert.assertEquals(quatOfAngles(0, 90, 0), resRot)
     }
 
-
-    @Test
-    fun `Test TRTSTransformation merge with identity`() {
-
-        val trans = TRTSTransformation()
-
-        Assert.assertEquals(trans, trans.merge(trans))
-    }
-
-    @Test
-    fun temp(){
-        val pivot = vec3Of(1,1,1)
-        val rot = vec3Of(0,90,0)
-        val matrix = TRTSTransformation.fromRotationPivot(pivot, rot).matrix
-
-        val pos = vec3Of(matrix.m30d, matrix.m31d, matrix.m32d)
-        val rotation = Quaterniond().setFromUnnormalized(matrix.toJOML()).toIQuaternion().toAxisRotations()
-        println(matrix)
-        println(pos)
-        println(rotation)
-    }
 
     fun assertEquals(vec1: IVector3, vec2: IVector3) {
         val msg = "expected:<$vec1>, but was:<$vec2>"

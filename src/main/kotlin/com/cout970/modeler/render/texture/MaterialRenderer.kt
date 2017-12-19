@@ -16,6 +16,7 @@ import com.cout970.modeler.render.tool.CacheFlags
 import com.cout970.modeler.render.tool.RenderContext
 import com.cout970.modeler.render.tool.useBlend
 import com.cout970.modeler.util.MatrixUtils
+import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
 import org.lwjgl.opengl.GL11
@@ -30,7 +31,8 @@ class MaterialRenderer {
             CacheFlags.SELECTION_TEXTURE, CacheFlags.TEXTURE_CURSOR)
     val gridLines = AutoCache(CacheFlags.MATERIAL)
     val materialCache = AutoCache(CacheFlags.MATERIAL)
-    val selectionCache = AutoCache(CacheFlags.MODEL, CacheFlags.SELECTION_TEXTURE, CacheFlags.MATERIAL)
+    val textureSelectionCache = AutoCache(CacheFlags.MODEL, CacheFlags.SELECTION_TEXTURE, CacheFlags.MATERIAL)
+    val modelSelectionCache = AutoCache(CacheFlags.MODEL, CacheFlags.SELECTION_MODEL, CacheFlags.MATERIAL)
 
     val cursorRenderer = TextureCursorRenderer()
 
@@ -50,8 +52,12 @@ class MaterialRenderer {
             }
         }
 
-        ctx.gui.modelAccessor.textureSelectionHandler.getSelection().ifNotNull {
-            renderSelection(ctx, it, material)
+        ctx.gui.modelAccessor.modelSelection.ifNotNull {
+            renderModelSelection(ctx, it, material)
+        }
+
+        ctx.gui.modelAccessor.textureSelection.ifNotNull {
+            renderTextureSelection(ctx, it, material)
         }
 
         GLStateMachine.depthTest.enable()
@@ -62,7 +68,7 @@ class MaterialRenderer {
 
     fun renderMappedAreas(ctx: RenderContext, ref: IMaterialRef, material: IMaterial) {
         val vao = areasCache.getOrCreate(ctx) {
-            val model = ctx.gui.modelAccessor.model
+            val model = ctx.gui.state.tmpModel ?: ctx.gui.modelAccessor.model
             val objs = model.objectRefs
                     .filter { model.isVisible(it) }
                     .map { model.getObject(it) }
@@ -99,8 +105,8 @@ class MaterialRenderer {
         GL11.glLineWidth(1f)
     }
 
-    fun renderSelection(ctx: RenderContext, selection: ISelection, material: IMaterial) {
-        val vao = selectionCache.getOrCreate(ctx) {
+    fun renderTextureSelection(ctx: RenderContext, selection: ISelection, material: IMaterial) {
+        val vao = textureSelectionCache.getOrCreate(ctx) {
             val model = ctx.gui.state.tmpModel ?: ctx.gui.modelAccessor.model
             val color = Config.colorPalette.textureSelectionColor
 
@@ -111,6 +117,44 @@ class MaterialRenderer {
                     SelectionType.FACE -> this.renderFaceSelection(model, selection, material, color)
                     SelectionType.EDGE -> this.renderEdgeSelection(model, selection, material, color)
                     SelectionType.VERTEX -> this.renderVertexSelection(model, selection, material, color)
+                }
+            }
+        }
+
+        GL11.glLineWidth(3f)
+        ctx.shader.apply {
+            useColor.setInt(0)
+            useLight.setInt(0)
+            useTexture.setInt(0)
+            matrixM.setMatrix4(Matrix4.IDENTITY)
+            accept(vao)
+        }
+        GL11.glLineWidth(2f)
+        ctx.shader.apply {
+            useColor.setInt(1)
+            useLight.setInt(0)
+            useTexture.setInt(0)
+            matrixM.setMatrix4(Matrix4.IDENTITY)
+            accept(vao)
+        }
+        GL11.glLineWidth(1f)
+    }
+
+    fun renderModelSelection(ctx: RenderContext, selection: ISelection, material: IMaterial) {
+
+        if (selection.selectionType !in setOf(SelectionType.OBJECT, SelectionType.FACE)) return
+
+        val vao = modelSelectionCache.getOrCreate(ctx) {
+            val model = ctx.gui.state.tmpModel ?: ctx.gui.modelAccessor.model
+            val color = Config.colorPalette.modelSelectionColor
+
+            ctx.buffer.build(DrawMode.LINES) {
+
+                when (selection.selectionType) {
+                    SelectionType.OBJECT -> this.renderObjectSelection(model, selection, material, color)
+                    SelectionType.FACE -> this.renderFaceSelection(model, selection, material, color)
+                    else -> {
+                    }
                 }
             }
         }
@@ -128,7 +172,9 @@ class MaterialRenderer {
 
     private fun BufferPTNC.renderVertexSelection(model: IModel, selection: ISelection, material: IMaterial,
                                                  color: IVector3) {
+
         val refs = selection.refs.filterIsInstance<IPosRef>()
+
         refs.forEach { ref ->
             val obj = model.getObject(ObjectRef(ref.objectIndex))
 
@@ -142,10 +188,9 @@ class MaterialRenderer {
             val pos2 = pos + vec2Of(1 / 128.0, 1 / 128.0)
             val pos3 = pos + vec2Of(-1 / 128.0, 1 / 128.0)
 
-            add(vec3Of(pos0.x, pos0.y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
-            add(vec3Of(pos1.x, pos1.y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
-            add(vec3Of(pos2.x, pos2.y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
-            add(vec3Of(pos3.x, pos3.y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
+            val positions = listOf(pos0, pos1, pos2, pos3)
+
+            addPositions(positions, color)
         }
     }
 
@@ -160,10 +205,7 @@ class MaterialRenderer {
                     .map { vec2Of(it.xd, 1 - it.yd) }
                     .map { it * material.size }
 
-            val pos0 = positions[0]
-            val pos1 = positions[1]
-            add(vec3Of(pos0.x, pos0.y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
-            add(vec3Of(pos1.x, pos1.y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
+            addPositions(positions, color)
         }
     }
 
@@ -174,18 +216,12 @@ class MaterialRenderer {
             val obj = model.getObject(ObjectRef(ref.objectIndex))
             val face = obj.mesh.faces[ref.faceIndex]
 
-            val positions = face.tex
+            val positions: List<IVector2> = face.tex
                     .map { obj.mesh.tex[it] }
                     .map { vec2Of(it.xd, 1 - it.yd) }
                     .map { it * material.size }
 
-            positions.indices.forEach {
-                val next = (it + 1) % positions.size
-                val pos0 = positions[it]
-                val pos1 = positions[next]
-                add(vec3Of(pos0.x, pos0.y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
-                add(vec3Of(pos1.x, pos1.y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
-            }
+            addPositions(positions, color)
         }
     }
 
@@ -205,14 +241,18 @@ class MaterialRenderer {
                         .map { vec2Of(it.xd, 1 - it.yd) }
                         .map { it * material.size }
 
-                positions.indices.forEach {
-                    val next = (it + 1) % positions.size
-                    val pos0 = positions[it]
-                    val pos1 = positions[next]
-                    add(vec3Of(pos0.x, pos0.y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
-                    add(vec3Of(pos1.x, pos1.y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
-                }
+                addPositions(positions, color)
             }
+        }
+    }
+
+    private fun BufferPTNC.addPositions(positions: List<IVector2>, color: IVector3) {
+        positions.indices.forEach {
+            val next = (it + 1) % positions.size
+            val pos0 = positions[it]
+            val pos1 = positions[next]
+            add(vec3Of(pos0.x, pos0.y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
+            add(vec3Of(pos1.x, pos1.y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
         }
     }
 

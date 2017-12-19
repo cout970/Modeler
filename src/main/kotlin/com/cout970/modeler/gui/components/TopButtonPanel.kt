@@ -1,5 +1,6 @@
 package com.cout970.modeler.gui.components
 
+import com.cout970.modeler.gui.GuiState
 import com.cout970.modeler.gui.leguicomp.IconButton
 import com.cout970.modeler.gui.leguicomp.background
 import com.cout970.modeler.gui.leguicomp.fillX
@@ -7,6 +8,7 @@ import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
+import com.cout970.modeler.gui.reactive.invoke
 import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.setTransparent
 import org.liquidengine.legui.component.Component
@@ -14,7 +16,7 @@ import org.liquidengine.legui.component.Component
 /**
  * Created by cout970 on 2017/09/07.
  */
-class TopButtonPanel : RComponent<Unit, Unit>() {
+class TopButtonPanel : RComponent<TopButtonPanel.Props, Unit>() {
 
     init {
         state = Unit
@@ -68,7 +70,11 @@ class TopButtonPanel : RComponent<Unit, Unit>() {
                 it.setTooltip("Export Hitbox Map")
             }
         }
+
+        +SelectionTypeButtons { SelectionTypeButtons.Props(props.guiState) }
     }
 
-    companion object : RComponentSpec<TopButtonPanel, Unit, Unit>
+    data class Props(val guiState: GuiState)
+
+    companion object : RComponentSpec<TopButtonPanel, Props, Unit>
 }

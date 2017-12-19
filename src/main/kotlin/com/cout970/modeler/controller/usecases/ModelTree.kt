@@ -11,6 +11,7 @@ import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.getSelectedObjectRefs
 import com.cout970.modeler.core.model.selection.Selection
 import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.asNullable
@@ -27,6 +28,7 @@ class DeleteItem : IUseCase {
 
     @Inject lateinit var component: Component
     @Inject lateinit var model: IModel
+    @Inject lateinit var projectManager: ProjectManager
 
     override fun createTask(): ITask {
         return component.asNullable()
@@ -42,11 +44,9 @@ class DeleteItem : IUseCase {
                 SelectionType.OBJECT,
                 listOf(ref as IRef)
         )
+        val texSel = projectManager.textureSelectionHandler.getSelection()
 
-        return DeleteSelected().also {
-            it.selection = selection.asNullable()
-            it.model = model
-        }.createTask()
+        return DeleteSelected().delete(selection.asNullable(), texSel, model)
     }
 }
 

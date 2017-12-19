@@ -16,6 +16,7 @@ interface IClipboard {
 
 class ClipboardNone {
     companion object : IClipboard {
+
         override val model: IModel = Model.empty()
         override val selection: ISelection = Selection(SelectionTarget.MODEL, SelectionType.OBJECT, emptyList())
     }
