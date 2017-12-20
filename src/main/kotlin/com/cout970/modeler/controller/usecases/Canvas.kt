@@ -3,6 +3,7 @@ package com.cout970.modeler.controller.usecases
 import com.cout970.collision.IPolygon
 import com.cout970.collision.collide
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.IRef
 import com.cout970.modeler.api.model.selection.SelectionTarget
@@ -73,11 +74,11 @@ class CanvasSelectPart : IUseCase {
         val mouse = input.mouse.getMousePos()
         val clickPos = CanvasHelper.getMouseProjection(canvas, mouse)
         val materialRef = state.selectedMaterial
-        val polygons = model.getTexturePolygons(state.selectionType, materialRef)
         val actualMaterial = model.getMaterial(materialRef)
+        val polygons = model.getTexturePolygons(state.selectionType, materialRef, actualMaterial)
 
         val finalPos = CanvasHelper.fromRenderToMaterial(clickPos, actualMaterial)
-        val mouseCollisionBox = getVertexTexturePolygon(finalPos)
+        val mouseCollisionBox = getVertexTexturePolygon(finalPos, actualMaterial)
 
         val selected = polygons.filter { it.first.collide(mouseCollisionBox) }
         val results = selected.map { it.second }.distinct()
@@ -191,16 +192,16 @@ fun IModel.getModelObstacles(selectionType: SelectionType): List<Pair<IRayObstac
     }
 }
 
-fun IModel.getTexturePolygons(selectionType: SelectionType, material: IMaterialRef): List<Pair<IPolygon, IRef>> {
+fun IModel.getTexturePolygons(selectionType: SelectionType, matRef: IMaterialRef, mat: IMaterial): List<Pair<IPolygon, IRef>> {
     val objs = objectRefs
             .filter { isVisible(it) }
             .map { getObject(it) to it }
-            .filter { it.first.material == material }
+            .filter { it.first.material == matRef }
 
     return when (selectionType) {
         SelectionType.OBJECT -> objs.flatMap { (obj, ref) -> obj.getTexturePolygon(ref) }
         SelectionType.FACE -> objs.flatMap { (obj, ref) -> obj.getFaceTexturePolygons(ref) }
-        SelectionType.EDGE -> objs.flatMap { (obj, ref) -> obj.getEdgeTexturePolygons(ref) }
-        SelectionType.VERTEX -> objs.flatMap { (obj, ref) -> obj.getVertexTexturePolygons(ref) }
+        SelectionType.EDGE -> objs.flatMap { (obj, ref) -> obj.getEdgeTexturePolygons(ref, mat) }
+        SelectionType.VERTEX -> objs.flatMap { (obj, ref) -> obj.getVertexTexturePolygons(ref, mat) }
     }
 }

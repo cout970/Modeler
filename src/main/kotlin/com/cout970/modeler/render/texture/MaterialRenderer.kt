@@ -183,10 +183,12 @@ class MaterialRenderer {
                     .let { vec2Of(it.xd, 1 - it.yd) }
                     .let { it * material.size }
 
-            val pos0 = pos + vec2Of(-1 / 128.0, -1 / 128.0)
-            val pos1 = pos + vec2Of(1 / 128.0, -1 / 128.0)
-            val pos2 = pos + vec2Of(1 / 128.0, 1 / 128.0)
-            val pos3 = pos + vec2Of(-1 / 128.0, 1 / 128.0)
+            val scale = vec2Of(1 / 4.0)
+
+            val pos0 = pos + scale * vec2Of(-1, -1)
+            val pos1 = pos + scale * vec2Of(1, -1)
+            val pos2 = pos + scale * vec2Of(1, 1)
+            val pos3 = pos + scale * vec2Of(-1, 1)
 
             val positions = listOf(pos0, pos1, pos2, pos3)
 

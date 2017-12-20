@@ -13,7 +13,6 @@ import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.mesh.getTextureVertex
 import com.cout970.modeler.core.model.selection.FaceRef
 import com.cout970.modeler.core.model.selection.ObjectRef
-import com.cout970.modeler.core.model.selection.PosRef
 import com.cout970.modeler.util.scale
 import com.cout970.modeler.util.toAxisRotations
 import com.cout970.modeler.util.toJOML
@@ -276,9 +275,9 @@ object EditTool {
 
     fun splitTextures(model: IModel, selection: ISelection): IModel {
 
-        when (selection.selectionType) {
+        return when (selection.selectionType) {
             SelectionType.OBJECT -> {
-                return model.modifyObjects(selection::isSelected) { _, obj ->
+                model.modifyObjects(selection::isSelected) { _, obj ->
                     val faces = obj.mesh.faces
                     val pos = obj.mesh.pos
 
@@ -296,52 +295,7 @@ object EditTool {
                     obj.withMesh(newMesh)
                 }
             }
-            SelectionType.FACE -> {
-                selection.refs
-                        .filterIsInstance<IFaceRef>()
-                        .groupBy { it.objectIndex }
-                        .map { entry ->
-                            val obj = model.getObject(ObjectRef(entry.key))
-                            ObjectRef(entry.key) to
-                                    entry.value.map { obj.mesh.faces[it.faceIndex] }
-                                            .flatMap { it.pos }
-                                            .distinct()
-                                            .map { PosRef(entry.key, it) }
-                        }
-            }
-            SelectionType.EDGE -> {
-                selection.refs
-                        .filterIsInstance<IEdgeRef>()
-                        .groupBy { it.objectIndex }
-                        .map { entry ->
-                            ObjectRef(entry.key) to entry.value
-                                    .flatMap { listOf(it.firstIndex, it.secondIndex) }
-                                    .map { PosRef(entry.key, it) }
-                        }
-            }
-            SelectionType.VERTEX -> {
-                selection.refs
-                        .filterIsInstance<IPosRef>()
-                        .groupBy { it.objectIndex }
-                        .map { ObjectRef(it.key) to it.value }
-            }
+            else -> model
         }
-
-        return model
-
     }
-//
-//    //
-//    // SPLIT TEXTURE
-//    //
-//    fun splitTextures(editor: ModelEditor) {
-//        if (editor.selectionManager.vertexTexSelection != VertexTexSelection.EMPTY) {
-//            val newModel = editor.model.splitUV(editor.selectionManager.vertexTexSelection)
-//            editor.historyRecord.doAction(ActionModifyModelShape(editor, newModel))
-//        }
-//    }
-//
-//    fun translateTexture(model: Model, selection: VertexTexSelection, vec: IVector2): Model {
-//        return model
-//    }
 }

@@ -32,7 +32,7 @@ object Hover {
 
         val polygonsPairs = objs.map { it.polygons!! to it }
 
-        val mouseCollisionBox = getVertexTexturePolygon(clickPos)
+        val mouseCollisionBox = getVertexTexturePolygon(clickPos, material)
 
         val selected = polygonsPairs
                 .map { (polygons, select) -> polygons.filter { it.collide(mouseCollisionBox) } to select }

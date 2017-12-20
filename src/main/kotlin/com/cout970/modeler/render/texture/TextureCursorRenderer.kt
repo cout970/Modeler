@@ -2,11 +2,12 @@ package com.cout970.modeler.render.texture
 
 import com.cout970.glutilities.tessellator.DrawMode
 import com.cout970.matrix.extensions.Matrix4
+import com.cout970.modeler.controller.usecases.getTexturePolygons
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.gui.canvas.IRotable
 import com.cout970.modeler.gui.canvas.IScalable
 import com.cout970.modeler.gui.canvas.ITranslatable
-import com.cout970.modeler.gui.canvas.cursor.CursorPartRotateTexture
+import com.cout970.modeler.gui.canvas.helpers.CanvasHelper
 import com.cout970.modeler.render.tool.AutoCache
 import com.cout970.modeler.render.tool.RenderContext
 import com.cout970.modeler.render.tool.createVao
@@ -93,19 +94,33 @@ class TextureCursorRenderer {
     }
 
     fun renderDebugHitbox(ctx: RenderContext) {
-        val cursor = ctx.gui.cursorManager.textureCursor ?: return
+//        val cursor = ctx.gui.cursorManager.textureCursor ?: return
 
         val vao = run {
             ctx.buffer.build(DrawMode.LINES, false) {
-                val polygons = cursor.getSelectablePartsTexture(ctx.gui, ctx.camera, ctx.viewport)
-                        .mapNotNull { part -> (part as? CursorPartRotateTexture)?.polygons }
-                        .flatten()
+                //                val polygons = cursor.getSelectablePartsTexture(ctx.gui, ctx.camera, ctx.viewport)
+//                        .mapNotNull { part -> (part as? CursorPartRotateTexture)?.polygons }
+//                        .flatten()
 
-                polygons.flatMap { it.getEdges() }.forEach {
-                    val color = if (ctx.gui.cursorManager.cursorDrag.hovered == null) vec3Of(0.3) else vec3Of(1.0)
-                    add(it.first.toVector3(0.0), Vector2.ZERO, Vector3.ORIGIN, color)
-                    add(it.second.toVector3(0.0), Vector2.ZERO, Vector3.ORIGIN, color)
-                }
+                val type = ctx.gui.state.selectionType
+                val model = ctx.gui.state.tmpModel ?: ctx.gui.modelAccessor.model
+                val materialRef = ctx.gui.state.selectedMaterial
+                val material = model.getMaterial(materialRef)
+                val polygons = model.getTexturePolygons(type, materialRef, material)
+                        .map { it.first }
+
+
+                polygons.flatMap { it.getEdges() }
+                        .map {
+                            CanvasHelper.fromMaterialToRender(it.first, material) to
+                                    CanvasHelper.fromMaterialToRender(it.second, material)
+                        }
+                        .forEach {
+                            val color = if (ctx.gui.cursorManager.cursorDrag.hovered == null) vec3Of(0.3) else vec3Of(
+                                    1.0)
+                            add(it.first.toVector3(0.0), Vector2.ZERO, Vector3.ORIGIN, color)
+                            add(it.second.toVector3(0.0), Vector2.ZERO, Vector3.ORIGIN, color)
+                        }
             }
         }
 

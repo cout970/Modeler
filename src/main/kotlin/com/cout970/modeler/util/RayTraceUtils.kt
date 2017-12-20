@@ -3,6 +3,7 @@ package com.cout970.modeler.util
 import com.cout970.collision.IPolygon
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.`object`.IObject
+import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.api.model.selection.IObjectRef
@@ -17,10 +18,7 @@ import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
 import com.cout970.raytrace.RayTraceUtil
 import com.cout970.vector.api.IVector2
-import com.cout970.vector.extensions.minus
-import com.cout970.vector.extensions.plus
-import com.cout970.vector.extensions.vec2Of
-import com.cout970.vector.extensions.vec3Of
+import com.cout970.vector.extensions.*
 
 /**
  * Created by cout970 on 2017/07/22.
@@ -127,27 +125,40 @@ fun IObject.getFaceTexturePolygons(objRef: IObjectRef): List<Pair<IPolygon, IRef
             TexturePolygon(faceIndex.getTextureVertex(mesh)) to FaceRef(objRef.objectIndex, ref)
         }
 
-fun IObject.getVertexTexturePolygons(objRef: IObjectRef): List<Pair<IPolygon, IRef>> =
-        mesh.tex.mapIndexed { ref, coord -> getVertexTexturePolygon(coord) to PosRef(objRef.objectIndex, ref) }
-
-fun IObject.getEdgeTexturePolygons(objRef: IObjectRef): List<Pair<IPolygon, IRef>> =
+fun IObject.getEdgeTexturePolygons(objRef: IObjectRef, material: IMaterial): List<Pair<IPolygon, IRef>> =
         mesh.faces.flatMap { f ->
             (0 until f.vertexCount).map { index ->
                 val next = (index + 1) % f.vertexCount
-                val a = f.pos[index]
-                val b = f.pos[next]
+                val a = f.tex[index]
+                val b = f.tex[next]
 
-                getEdgeTexturePolygon(mesh.tex[a], mesh.tex[b]) to EdgeRef(objRef.objectIndex, a, b)
+                getEdgeTexturePolygon(mesh.tex[a], mesh.tex[b], material) to EdgeRef(objRef.objectIndex, a, b)
             }
         }
 
-private val SIZE = 1.0 / 8192.0
+fun IObject.getVertexTexturePolygons(objRef: IObjectRef, material: IMaterial): List<Pair<IPolygon, IRef>> =
+        mesh.tex.mapIndexed { ref, coord ->
+            getVertexTexturePolygon(coord, material) to PosRef(objRef.objectIndex, ref)
+        }
 
-private fun getEdgeTexturePolygon(a: IVector2, b: IVector2): IPolygon = TexturePolygon(listOf(
-        a + vec2Of(-SIZE), a + vec2Of(SIZE), b + vec2Of(SIZE), b + vec2Of(SIZE)
-))
+private fun getEdgeTexturePolygon(a: IVector2, b: IVector2, material: IMaterial): IPolygon {
+    val AB = (b - a).normalize()
+    val parallel = vec2Of(AB.yd, -AB.xd) // { y | -x }
+    val axis = parallel * material.size.transform { 0.5 / it }
 
-fun getVertexTexturePolygon(a: IVector2): IPolygon = TexturePolygon(listOf(
-        a + vec2Of(-SIZE, -SIZE), a + vec2Of(SIZE, -SIZE), a + vec2Of(SIZE, SIZE), a + vec2Of(-SIZE, SIZE)
-))
+    return TexturePolygon(listOf(
+            a - axis,
+            a + axis,
+            b + axis,
+            b - axis
+    ))
+}
+
+fun getVertexTexturePolygon(a: IVector2, material: IMaterial): IPolygon {
+    val scale = material.size.transform { 0.25 / it }
+    return TexturePolygon(listOf(
+            a + vec2Of(-scale.xd, -scale.yd), a + vec2Of(scale.xd, -scale.yd),
+            a + vec2Of(scale.xd, scale.yd), a + vec2Of(-scale.xd, scale.yd)
+    ))
+}
 
