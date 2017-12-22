@@ -8,11 +8,14 @@ import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.gui.event.EventMaterialUpdate
 import com.cout970.modeler.gui.event.EventModelUpdate
 import com.cout970.modeler.gui.event.EventSelectionUpdate
+import com.cout970.modeler.gui.reactive.RComponentWrapper
+import com.cout970.modeler.gui.reactive.RContext
 import com.cout970.modeler.input.event.EventController
 import com.cout970.modeler.render.tool.camera.CameraUpdater
 import com.cout970.modeler.util.*
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.vec2Of
+import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.TextInput
 
 /**
@@ -112,11 +115,19 @@ class Listeners : ITickeable {
     override fun tick() {
         cameraUpdater.updateCameras()
         gui.cursorManager.tick()
+
+        getRContext(gui.root.mainView.base)?.update()
+
         sizeUpdate?.let {
             gui.root.updateSizes(it)
             gui.root.context.updateGlfwWindow()
             gui.windowHandler.resetViewport()
             sizeUpdate = null
         }
+    }
+
+    private fun getRContext(base: Component): RContext? {
+        val wrapper = base.childs[0].childs[0] as? RComponentWrapper<*, *, *> ?: return null
+        return wrapper.component.context
     }
 }

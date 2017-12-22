@@ -1,5 +1,6 @@
 package com.cout970.modeler.gui.reactive
 
+import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.util.isNotEmpty
 import org.liquidengine.legui.component.Component
@@ -10,9 +11,22 @@ import org.liquidengine.legui.component.Component
 
 class RContext(val root: Component, val gui: Gui, val virtualTree: () -> Component) {
 
+    private val dirtyComponents: MutableList<RComponentWrapper<*, *, *>> = mutableListOf()
+
+    fun update() {
+        if (dirtyComponents.isNotEmpty()) {
+            Profiler.startSection("guiUpdate")
+            dirtyComponents.forEach {
+                RComponentRenderer.buildComponent(it)
+            }
+            dirtyComponents.clear()
+            Profiler.endSection()
+        }
+    }
+
     fun <P : Any, S : Any> markDirty(comp: RComponent<P, S>) {
         findParent(comp, root)?.let {
-            RComponentRenderer.buildComponent(it)
+            dirtyComponents.add(it)
         }
     }
 
