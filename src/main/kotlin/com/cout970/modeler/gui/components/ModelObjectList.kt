@@ -2,13 +2,14 @@ package com.cout970.modeler.gui.components
 
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.gui.event.EventModelUpdate
+import com.cout970.modeler.gui.event.EventSelectionUpdate
+import com.cout970.modeler.gui.leguicomp.background
+import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.gui.reactive.invoke
-import com.cout970.modeler.gui.event.EventModelUpdate
-import com.cout970.modeler.gui.event.EventSelectionUpdate
-import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.util.focus
 import com.cout970.modeler.util.setTransparent
 import com.cout970.modeler.util.toColor
@@ -29,18 +30,17 @@ class ModelObjectList : RComponent<ModelObjectList.Props, ModelObjectList.State>
     }
 
     override fun build(ctx: RBuilder) = panel {
-
         position = props.pos.toJoml2f()
         size = props.size.toJoml2f()
-        backgroundColor = Config.colorPalette.lightDarkColor.toColor()
+        background { lightDarkColor }
 
-        val scrollSize = size.y / 24.0
         val model = props.modelAccessor.model
         val selection = props.modelAccessor.modelSelection
-        val maxScroll = Math.max(0.0, model.objects.size - Math.ceil(scrollSize)).toFloat()
+        val maxItemAmount = Math.ceil(size.y / 24.0)
+        val maxScroll = Math.max(0.0, model.objects.size - maxItemAmount).toFloat()
 
-        val start = Math.floor(state.scroll.toDouble()).toInt()
-        val end = Math.ceil(start + scrollSize).toInt()
+        val start = Math.ceil(state.scroll.toDouble()).toInt()
+        val end = start + maxItemAmount.toInt() - 1
         val objectRefs = model.objectRefs
 
         for (index in start until end) {

@@ -33,15 +33,15 @@ fun Component.printTree(prefix: String = "") {
 
     if (this.isNotEmpty) {
         if (this is RComponentWrapper<*, *, *>) {
-            log(Level.DEBUG) { "$prefix${component.javaClass}($flag)" }
+            log(Level.DEBUG) { "$prefix${component.javaClass.simpleName}($flag)" }
         } else {
-            log(Level.DEBUG) { "$prefix${this.javaClass}($flag)" }
+            log(Level.DEBUG) { "$prefix${this.javaClass.simpleName}($flag)" }
         }
         this.childs.forEach {
             it.printTree(prefix + "|   ")
         }
     } else {
-        log(Level.DEBUG) { "$prefix${this.javaClass}($flag)" }
+        log(Level.DEBUG) { "$prefix${this.javaClass.simpleName}($flag)" }
     }
 }
 
@@ -94,8 +94,8 @@ inline fun Component.border(size: Float = 1f, f: ColorPalette.() -> IVector3) {
 }
 
 fun Button.onClick(func: (MouseClickEvent<*>) -> Unit) {
-    listenerMap.addListener(MouseClickEvent::class.java){
-        if(it.action == MouseClickEvent.MouseClickAction.CLICK){
+    listenerMap.addListener(MouseClickEvent::class.java) {
+        if (it.action == MouseClickEvent.MouseClickAction.CLICK) {
             func(it)
         }
     }
@@ -106,21 +106,21 @@ fun TextInput.defaultTextColor() {
 }
 
 
-inline fun TextInput.textColor(f: ColorPalette.()-> IVector3){
+inline fun TextInput.textColor(f: ColorPalette.() -> IVector3) {
     textState.textColor = Config.colorPalette.f().toColor()
 }
 
-inline fun TextInput.highlightColor(f: ColorPalette.()-> IVector3){
+inline fun TextInput.highlightColor(f: ColorPalette.() -> IVector3) {
     textState.highlightColor = Config.colorPalette.f().toColor()
 }
 
-inline fun TextInput.focusedStrokeColor(f: ColorPalette.()-> IVector3){
+inline fun TextInput.focusedStrokeColor(f: ColorPalette.() -> IVector3) {
     focusedStrokeColor = Config.colorPalette.f().toColor()
 }
 
-var Component.onScroll: ((ScrollEvent<*>)->Unit)?
+var Component.onScroll: ((ScrollEvent<*>) -> Unit)?
     get() = null
-    set(value){
+    set(value) {
         listenerMap.addListener(ScrollEvent::class.java, value)
     }
 
@@ -132,7 +132,7 @@ fun debugPixelBorder() = PixelBorder().apply {
     color = Vector4f(1f, 0f, 0f, 1f)
 }
 
-fun Component.forEachRecursive(func: (Component)-> Unit){
+fun Component.forEachRecursive(func: (Component) -> Unit) {
     func(this)
     childs.forEach { it.forEachRecursive(func) }
 }

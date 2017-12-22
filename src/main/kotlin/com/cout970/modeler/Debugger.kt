@@ -40,6 +40,18 @@ object Debugger {
         return false
     }
 
+    fun printStackTrace(){
+        val trace = Thread.currentThread().stackTrace
+        val usefulTrace = trace.takeLast(trace.size - 2)
+        val string = usefulTrace.joinToString("\n") {
+            "\tat ${it.className}.${it.methodName}(${it.fileName}:${it.lineNumber})"
+        }
+
+        println("Requested printStackTrace:")
+        println(string)
+        println()
+    }
+
     fun postTick() {
 
 //        val count = GL30.glGenVertexArrays()
@@ -57,5 +69,4 @@ object Debugger {
         drawVaoCount = 0
         buildVaoCount = 0
     }
-
 }

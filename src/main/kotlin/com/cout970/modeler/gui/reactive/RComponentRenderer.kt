@@ -22,6 +22,7 @@ object RComponentRenderer {
         ctx.root.also {
             it.clearChilds()
             it.add(root)
+            require(it.count() == 1) { "Duplicated children" }
         }
         ctx.gui.let { gui ->
             gui.root.bindButtons(gui.buttonBinder)
@@ -55,6 +56,7 @@ object RComponentRenderer {
 
         wrapper.clearChilds()
         wrapper.add(finalTree)
+        require(wrapper.count() == 1) { "Duplicated children" }
         wrapper.onUpdateChild()
     }
 
@@ -87,6 +89,7 @@ object RComponentRenderer {
 
             new.clearChilds()
             new.add(finalTree)
+            require(new.count() == 1) { "Duplicated children" }
             new.onUpdateChild()
             return new
         }
@@ -100,14 +103,14 @@ object RComponentRenderer {
                     expandSubTree(oldChild, newChild, updateBuildContext(buildCtx, new), ctx)
                 }
 
-                return new.apply { clearChilds(); addAll(children) }
+                return new.apply { clearChilds(); children.forEach { child -> add(child) } }
             }
         }
         val children = new.childs.map {
             expandSubTree(null, it, updateBuildContext(buildCtx, new), ctx)
         }
 
-        return new.apply { clearChilds(); addAll(children) }
+        return new.apply { clearChilds(); children.forEach { child -> add(child) } }
     }
 
     private fun updateBuildContext(old: RBuilder, parent: Component): RBuilder =
@@ -128,7 +131,7 @@ object RComponentRenderer {
                 val childs = old.childs.zip(new.childs).map { (oldC, newC) ->
                     mergeTrees(oldC, newC)
                 }
-                new.apply { clearChilds(); addAll(childs) }
+                new.apply { clearChilds(); childs.forEach { child -> add(child) } }
             }
         }
         return new

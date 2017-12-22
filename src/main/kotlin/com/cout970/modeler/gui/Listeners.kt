@@ -79,7 +79,8 @@ class Listeners : ITickeable {
     }
 
     fun onSelectionUpdate(old: Nullable<ISelection>, new: Nullable<ISelection>) {
-        gui.editorView.base.getListeners<EventSelectionUpdate>().forEach { (comp, listener) ->
+        val listeners = gui.editorView.base.getListeners<EventSelectionUpdate>()
+        listeners.forEach { (comp, listener) ->
             listener.process(EventSelectionUpdate(comp, gui.root.context, gui.root, new, old))
         }
     }
