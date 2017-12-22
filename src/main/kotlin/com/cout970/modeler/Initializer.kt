@@ -15,6 +15,7 @@ import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.selection.SelectionHandler
 import com.cout970.modeler.core.project.ModelAccessor
 import com.cout970.modeler.core.project.ProjectManager
+import com.cout970.modeler.core.project.ProjectPropertyHolder
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.gui.GuiInitializer
 import com.cout970.modeler.input.event.EventController
@@ -61,12 +62,12 @@ class Initializer {
 
         log(Level.FINE) { "Creating GuiInitializer" }
         val gui = GuiInitializer(
-                eventController,
-                windowHandler,
-                renderManager,
-                resourceLoader,
-                timer,
-                ModelAccessor(projectManager)
+                eventController = eventController,
+                windowHandler = windowHandler,
+                resourceLoader = resourceLoader,
+                timer = timer,
+                modelAccessor = ModelAccessor(projectManager),
+                propertyHolder = ProjectPropertyHolder(projectManager)
         ).init()
 
         log(Level.FINE) { "Creating Loop" }

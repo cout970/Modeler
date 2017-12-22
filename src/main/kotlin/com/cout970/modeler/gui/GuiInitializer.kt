@@ -7,6 +7,7 @@ import com.cout970.modeler.controller.binders.KeyboardBinder
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.core.project.IProjectPropertiesHolder
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.gui.canvas.CanvasManager
@@ -15,7 +16,6 @@ import com.cout970.modeler.gui.leguicomp.Panel
 import com.cout970.modeler.gui.views.EditorView
 import com.cout970.modeler.input.event.EventController
 import com.cout970.modeler.input.window.WindowHandler
-import com.cout970.modeler.render.RenderManager
 
 /**
  * Created by cout970 on 2017/04/08.
@@ -23,10 +23,10 @@ import com.cout970.modeler.render.RenderManager
 class GuiInitializer(
         val eventController: EventController,
         val windowHandler: WindowHandler,
-        val renderManager: RenderManager,
         val resourceLoader: ResourceLoader,
         val timer: Timer,
-        val modelAccessor: IModelAccessor
+        val modelAccessor: IModelAccessor,
+        val propertyHolder: IProjectPropertiesHolder
 ) {
 
     fun init(): Gui {
@@ -72,7 +72,8 @@ class GuiInitializer(
                 keyboardBinder = keyboardBinder,
                 canvasManager = canvasManager,
                 modelAccessor = modelAccessor,
-                cursorManager = cursorManager
+                cursorManager = cursorManager,
+                propertyHolder = propertyHolder
         )
     }
 }

@@ -1,12 +1,8 @@
 package com.cout970.modeler.gui.components
 
 import com.cout970.modeler.api.model.material.IMaterialRef
-import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.project.IModelAccessor
-import com.cout970.modeler.gui.leguicomp.FixedLabel
-import com.cout970.modeler.gui.leguicomp.IconButton
-import com.cout970.modeler.gui.leguicomp.fillY
-import com.cout970.modeler.gui.leguicomp.panel
+import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
@@ -15,7 +11,6 @@ import com.cout970.modeler.gui.views.VisibleElements
 import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.setTransparent
-import com.cout970.modeler.util.toColor
 import com.cout970.vector.extensions.vec2Of
 import org.liquidengine.legui.component.Component
 
@@ -29,7 +24,7 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
     }
 
     override fun build(ctx: RBuilder): Component = panel {
-        backgroundColor = Config.colorPalette.darkestColor.toColor()
+        background { darkestColor }
         posX = ctx.parentSize.xf - 190f
         width = 190f
         fillY(ctx)

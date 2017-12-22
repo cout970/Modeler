@@ -9,29 +9,9 @@ import org.liquidengine.legui.component.Panel as LeguiPanel
 
 open class Panel : LeguiComponent() {
 
-    var width: Float
-        get() = size.x
-        set(x) {
-            size.x = x
-        }
-
-    var height: Float
-        get() = size.y
-        set(y) {
-            size.y = y
-        }
-
-    var posX: Float
-        get() = position.x
-        set(x) {
-            position.x = x
-        }
-
-    var posY: Float
-        get() = position.y
-        set(y) {
-            position.y = y
-        }
+    init {
+        cornerRadius = 0.0f
+    }
 
     operator fun LeguiComponent.unaryPlus() {
         this@Panel.add(this)

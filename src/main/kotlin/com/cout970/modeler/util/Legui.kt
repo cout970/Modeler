@@ -3,10 +3,7 @@ package com.cout970.modeler.util
 import com.cout970.vector.api.IVector2
 import org.joml.Vector2f
 import org.liquidengine.legui.color.ColorConstants
-import org.liquidengine.legui.component.Button
-import org.liquidengine.legui.component.Component
-import org.liquidengine.legui.component.Frame
-import org.liquidengine.legui.component.TextInput
+import org.liquidengine.legui.component.*
 import org.liquidengine.legui.event.Event
 import org.liquidengine.legui.listener.EventListener
 import org.liquidengine.legui.system.context.Context
@@ -47,6 +44,12 @@ fun Component.enable() {
 }
 
 var TextInput.text: String
+    get() = textState.text
+    set(value) {
+        textState.text = value
+    }
+
+var TextArea.text: String
     get() = textState.text
     set(value) {
         textState.text = value

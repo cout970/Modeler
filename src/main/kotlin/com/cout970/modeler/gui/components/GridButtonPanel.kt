@@ -1,15 +1,10 @@
 package com.cout970.modeler.gui.components
 
-import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.gui.leguicomp.InstantTooltip
-import com.cout970.modeler.gui.leguicomp.ToggleButton
-import com.cout970.modeler.gui.leguicomp.fillX
-import com.cout970.modeler.gui.leguicomp.panel
+import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.util.setBorderless
-import com.cout970.modeler.util.toColor
 import org.liquidengine.legui.component.Component
 
 /**
@@ -24,7 +19,7 @@ class GridButtonPanel : RComponent<Unit, Unit>() {
     }
 
     override fun build(ctx: RBuilder): Component = panel {
-        backgroundColor = Config.colorPalette.darkestColor.toColor()
+        background { darkestColor }
         height = 28f
         fillX(ctx)
         setBorderless()

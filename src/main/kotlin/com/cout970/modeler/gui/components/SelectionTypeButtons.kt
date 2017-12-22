@@ -2,10 +2,7 @@ package com.cout970.modeler.gui.components
 
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.gui.GuiState
-import com.cout970.modeler.gui.leguicomp.InstantTooltip
-import com.cout970.modeler.gui.leguicomp.ToggleButton
-import com.cout970.modeler.gui.leguicomp.background
-import com.cout970.modeler.gui.leguicomp.panel
+import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec

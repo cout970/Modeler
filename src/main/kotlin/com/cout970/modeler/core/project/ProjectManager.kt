@@ -6,6 +6,7 @@ import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.animation.Animation
 import com.cout970.modeler.core.animation.Joint
 import com.cout970.modeler.core.animation.KeyFrame
+import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.selection.ClipboardNone
@@ -18,7 +19,7 @@ import com.cout970.modeler.core.model.selection.SelectionHandler
 
 class ProjectManager(val modelSelectionHandler: SelectionHandler, val textureSelectionHandler: SelectionHandler) {
 
-    var projectProperties: ProjectProperties = ProjectProperties(Author("anonymous"), "unnamed")
+    var projectProperties: ProjectProperties = ProjectProperties(Config.user, "unnamed")
 
     var model: IModel = Model.empty()
         private set

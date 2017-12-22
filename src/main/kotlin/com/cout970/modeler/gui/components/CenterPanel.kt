@@ -2,10 +2,7 @@ package com.cout970.modeler.gui.components
 
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.canvas.CanvasContainer
-import com.cout970.modeler.gui.leguicomp.FixedLabel
-import com.cout970.modeler.gui.leguicomp.Panel
-import com.cout970.modeler.gui.leguicomp.ProfilerDiagram
-import com.cout970.modeler.gui.leguicomp.panel
+import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec

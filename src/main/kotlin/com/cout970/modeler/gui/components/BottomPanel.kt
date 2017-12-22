@@ -1,7 +1,6 @@
 package com.cout970.modeler.gui.components
 
-import com.cout970.modeler.gui.leguicomp.background
-import com.cout970.modeler.gui.leguicomp.panel
+import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec

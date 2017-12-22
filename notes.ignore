@@ -1,11 +1,12 @@
 use "jvisualvm.exe -J-Dorg.netbeans.profiler.separateConsole=true"
 
-config menu
+fix translation speed in texture mode
+fix rotation
+
 export hitbox dialog
-texture editing
 add event messages
 
 detect duplicated shapes
 join shapes
-add cursor to mark location of pasted/new object
-add fog
+
+Add ability to load model without replacing the current one

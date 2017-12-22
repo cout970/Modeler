@@ -5,6 +5,7 @@ import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.controller.binders.ButtonBinder
 import com.cout970.modeler.controller.binders.KeyboardBinder
 import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.core.project.IProjectPropertiesHolder
 import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.gui.canvas.CanvasManager
 import com.cout970.modeler.gui.canvas.cursor.CursorManager
@@ -31,7 +32,8 @@ data class Gui(
         val buttonBinder: ButtonBinder,
         val keyboardBinder: KeyboardBinder,
         val canvasManager: CanvasManager,
-        val cursorManager: CursorManager
+        val cursorManager: CursorManager,
+        val propertyHolder: IProjectPropertiesHolder
 ) {
 
     init {

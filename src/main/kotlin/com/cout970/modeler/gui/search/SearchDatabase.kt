@@ -13,8 +13,8 @@ object SearchDatabase : ISearchEngine {
 
     // @formatter:off
     val options = listOf(
-            Entry("Set element selection mode", listOf("set", "change", "selection", "use", "element", "mode"), keys.setElementSelectionMode, "input.select.element"),
-            Entry("Set quad selection mode", listOf("set", "change", "selection", "use", "quad", "mode"), keys.setQuadSelectionMode, "input.select.quad"),
+            Entry("Set element selection mode", listOf("set", "change", "selection", "use", "element", "mode"), keys.setObjectSelectionMode, "input.select.element"),
+            Entry("Set quad selection mode", listOf("set", "change", "selection", "use", "quad", "mode"), keys.setFaceSelectionMode, "input.select.quad"),
             Entry("Set edge selection mode", listOf("set", "change", "selection", "use", "edge", "mode"), keys.setEdgeSelectionMode, "input.select.edge"),
             Entry("Set vertex selection mode", listOf("set", "change", "selection", "use", "vertex", "mode"), keys.setVertexSelectionMode, "input.select.vertex"),
 

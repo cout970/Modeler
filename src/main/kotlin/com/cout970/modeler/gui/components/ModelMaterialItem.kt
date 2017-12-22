@@ -1,9 +1,7 @@
 package com.cout970.modeler.gui.components
 
 import com.cout970.modeler.api.model.material.IMaterialRef
-import com.cout970.modeler.gui.leguicomp.IconButton
-import com.cout970.modeler.gui.leguicomp.TextButton
-import com.cout970.modeler.gui.leguicomp.panel
+import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
@@ -28,7 +26,7 @@ class ModelMaterialItem : RComponent<ModelMaterialItem.Props, Boolean>() {
         cornerRadius = 0f
         width = 182f
         height = 24f
-        position.y = props.index * 24f
+        posY = props.index * 24f
         setBorderless()
 
         +TextButton("material.view.select", props.name, 0f, 0f, 120f, 24f).also {

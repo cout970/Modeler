@@ -29,7 +29,7 @@ class CanvasManager {
 
         if (e.keyState == EnumKeyState.PRESS) {
             when {
-                Config.keyBindings.selectModelControls.check(e) -> return selectPart()
+                Config.keyBindings.selectModel.check(e) -> return selectPart()
                 Config.keyBindings.jumpCameraToCursor.check(e) -> return moveCamera()
             }
         }

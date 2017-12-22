@@ -10,6 +10,7 @@ import com.cout970.modeler.util.text
 import com.cout970.modeler.util.toJoml2f
 import com.cout970.vector.api.IVector2
 import org.liquidengine.legui.component.Component
+import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import kotlin.reflect.KMutableProperty
 
 class FloatInput : RComponent<FloatInput.Props, Unit>() {
@@ -23,7 +24,7 @@ class FloatInput : RComponent<FloatInput.Props, Unit>() {
         setBorderless()
         cornerRadius = 0f
         position = props.pos.toJoml2f()
-        width = 100f
+        width = 120f
         height = 24f
 
         val value: Float = props.property.call(props.obj)
@@ -35,8 +36,8 @@ class FloatInput : RComponent<FloatInput.Props, Unit>() {
             }
             setBorderless()
         }
-        +StringInput(value.toString(), 24f, 0f, 52f, 24f).apply {
-
+        +StringInput("%.3f".format(value), 24f, 0f, 72f, 24f).apply {
+            textState.horizontalAlign = HorizontalAlign.CENTER
             onScroll = {
                 text.toFloatValue()?.let { txt ->
                     dispatch(it.yoffset.toFloat() + txt)

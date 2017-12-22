@@ -3,10 +3,7 @@ package com.cout970.modeler.gui.components
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.gui.leguicomp.IconButton
-import com.cout970.modeler.gui.leguicomp.Panel
-import com.cout970.modeler.gui.leguicomp.StringInput
-import com.cout970.modeler.gui.leguicomp.panel
+import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec

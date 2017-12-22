@@ -19,34 +19,46 @@ object ConfigManager {
     fun loadConfig() {
         val file = File(configPath)
         if (file.exists() && !Debugger.DEBUG) {
-            val gson = GsonBuilder().setLenient().registerTypeAdapter(IVector3::class.java,
-                    ColorSerializer()).setPrettyPrinting().create()
+            val gson = GsonBuilder()
+                    .setLenient()
+                    .registerTypeAdapter(IVector3::class.java, ColorSerializer())
+                    .setPrettyPrinting()
+                    .create()
+
             val json = JsonParser().parse(file.createIfNeeded().reader()).asJsonObject
 
-            Config::class.java.declaredFields.filter { it.name != "INSTANCE" }.forEach { field ->
-                field.isAccessible = true
-                val value = json.get(field.name)
-                val jsonValue: Any? = gson.fromJson(value, field.genericType)
-                if (jsonValue != null) {
-                    field.set(null, jsonValue)
-                }
-            }
+            Config::class.java.declaredFields
+                    .filter { it.name != "INSTANCE" }
+                    .forEach { field ->
+                        field.isAccessible = true
+                        val value = json.get(field.name)
+                        val jsonValue: Any? = gson.fromJson(value, field.genericType)
+                        if (jsonValue != null) {
+                            field.set(null, jsonValue)
+                        }
+                    }
         }
         saveConfig()
     }
 
     fun saveConfig() {
-        File("data").let { if(!it.exists()) it.mkdir() }
+        File("data").let { if (!it.exists()) it.mkdir() }
         val file = File(configPath)
-        val gson = GsonBuilder().setLenient().registerTypeAdapter(IVector3::class.java,
-                ColorSerializer()).setPrettyPrinting().create()
         val clazz = JsonObject()
+        val gson = GsonBuilder()
+                .setLenient()
+                .registerTypeAdapter(IVector3::class.java, ColorSerializer())
+                .setPrettyPrinting()
+                .create()
 
-        Config::class.java.declaredFields.filter { it.name != "INSTANCE" }.forEach { field ->
-            field.isAccessible = true
-            val value = field.get(null)
-            clazz.add(field.name, gson.toJsonTree(value))
-        }
+        Config::class.java.declaredFields
+                .filter { it.name != "INSTANCE" }
+                .forEach { field ->
+                    field.isAccessible = true
+                    val value = field.get(null)
+                    clazz.add(field.name, gson.toJsonTree(value))
+                }
+
         file.writeText(gson.toJson(clazz))
     }
 }

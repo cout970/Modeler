@@ -76,7 +76,7 @@ class EditorView : IView {
                             +ExportDialog { ExportDialog.Props(it) }
                         }
                         "config" -> {
-                            +ConfigMenu { ConfigMenu.Props(it) }
+                            +ConfigMenu { ConfigMenu.Props(it, gui.propertyHolder) }
                         }
                     }
                 }

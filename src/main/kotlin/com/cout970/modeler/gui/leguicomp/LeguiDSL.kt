@@ -14,6 +14,7 @@ import org.joml.Vector4f
 import org.liquidengine.legui.border.SimpleLineBorder
 import org.liquidengine.legui.component.Button
 import org.liquidengine.legui.component.Component
+import org.liquidengine.legui.component.TextArea
 import org.liquidengine.legui.component.TextInput
 import org.liquidengine.legui.event.MouseClickEvent
 import org.liquidengine.legui.event.ScrollEvent
@@ -48,6 +49,30 @@ fun Component.printTree(prefix: String = "") {
 fun spaces(amount: Int): String = buildString {
     (0 until amount).forEach { append(' ') }
 }
+
+var Component.width: Float
+    get() = size.x
+    set(x) {
+        size.x = x
+    }
+
+var Component.height: Float
+    get() = size.y
+    set(y) {
+        size.y = y
+    }
+
+var Component.posX: Float
+    get() = position.x
+    set(x) {
+        position.x = x
+    }
+
+var Component.posY: Float
+    get() = position.y
+    set(y) {
+        position.y = y
+    }
 
 fun Component.fill(ctx: RBuilder) {
     size.x = ctx.parentSize.xf
@@ -105,7 +130,6 @@ fun TextInput.defaultTextColor() {
     textState.textColor = Config.colorPalette.textColor.toColor()
 }
 
-
 inline fun TextInput.textColor(f: ColorPalette.() -> IVector3) {
     textState.textColor = Config.colorPalette.f().toColor()
 }
@@ -115,6 +139,22 @@ inline fun TextInput.highlightColor(f: ColorPalette.() -> IVector3) {
 }
 
 inline fun TextInput.focusedStrokeColor(f: ColorPalette.() -> IVector3) {
+    focusedStrokeColor = Config.colorPalette.f().toColor()
+}
+
+fun TextArea.defaultTextColor() {
+    textState.textColor = Config.colorPalette.textColor.toColor()
+}
+
+inline fun TextArea.textColor(f: ColorPalette.() -> IVector3) {
+    textState.textColor = Config.colorPalette.f().toColor()
+}
+
+inline fun TextArea.highlightColor(f: ColorPalette.() -> IVector3) {
+    textState.highlightColor = Config.colorPalette.f().toColor()
+}
+
+inline fun TextArea.focusedStrokeColor(f: ColorPalette.() -> IVector3) {
     focusedStrokeColor = Config.colorPalette.f().toColor()
 }
 

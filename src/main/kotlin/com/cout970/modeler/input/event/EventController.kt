@@ -60,6 +60,7 @@ class EventController : ITickeable, IEventController, IInput {
         putListener(clazz as Class<Event>, listener as IEventListener<Event>)
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun <T : Event> addListener(clazz: Class<T>, listener: (T) -> Boolean) {
         putListener(clazz as Class<Event>, object : IEventListener<Event> {
             override fun onEvent(e: Event): Boolean {

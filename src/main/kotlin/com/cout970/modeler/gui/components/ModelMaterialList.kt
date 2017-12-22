@@ -5,13 +5,13 @@ import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.getSelectedObjectRefs
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.gui.event.EventMaterialUpdate
+import com.cout970.modeler.gui.event.EventSelectionUpdate
+import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.gui.reactive.invoke
-import com.cout970.modeler.gui.event.EventMaterialUpdate
-import com.cout970.modeler.gui.event.EventSelectionUpdate
-import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.util.focus
 import com.cout970.modeler.util.setTransparent
 import com.cout970.modeler.util.toColor

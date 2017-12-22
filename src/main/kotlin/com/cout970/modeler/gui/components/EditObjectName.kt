@@ -6,10 +6,7 @@ import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.gui.event.EventModelUpdate
 import com.cout970.modeler.gui.event.EventSelectionUpdate
-import com.cout970.modeler.gui.leguicomp.FixedLabel
-import com.cout970.modeler.gui.leguicomp.StringInput
-import com.cout970.modeler.gui.leguicomp.marginX
-import com.cout970.modeler.gui.leguicomp.panel
+import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
