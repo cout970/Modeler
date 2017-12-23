@@ -35,6 +35,9 @@ class Initializer {
         ConfigManager.loadConfig()
         log(Level.FINE) { "Config loaded" }
 
+
+//        LogManager.getContext().
+
         log(Level.FINE) { "Creating ResourceLoader" }
         val resourceLoader = ResourceLoader()
         log(Level.FINE) { "Creating Timer" }

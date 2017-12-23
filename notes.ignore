@@ -8,3 +8,15 @@ detect duplicated shapes
 join shapes
 
 Add ability to load model without replacing the current one
+change scale to be directional
+add groups for config bindings
+add about section
+add restore default config
+add binary switches
+mirror textures X and Y
+Game displays
+Game sync
+wireframe mode
+Flip axis in selection
+translation relative
+face view in the corner

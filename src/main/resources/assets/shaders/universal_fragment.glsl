@@ -2,6 +2,8 @@
 
 // Input pixel parameters
 
+// vertex position
+in vec3 pass_position;
 // vertex texture coordinates
 in vec2 pass_texture;
 // vertex surface normal
@@ -17,6 +19,7 @@ in vec3[4] toLightVector;
 out vec4 out_color;
 
 // Textures
+uniform samplerCube textureSamplerCubemap;
 uniform sampler2D textureSampler;
 
 // Flags
@@ -41,6 +44,7 @@ uniform float ambient = 0.1;
 
 // if hiden faces should be rendered as red
 uniform bool showHiddenFaces = true;
+uniform bool useCubeMap = false;
 
 uniform vec3 globalColor = vec3(1.0, 1.0, 1.0);
 
@@ -49,7 +53,11 @@ vec3 getLight(vec3 color, vec3 lcolor, vec3 toLight, vec3 normal, vec3 toCamera)
 void main(void){
 
     if(useTexture) {
-        out_color = texture(textureSampler, pass_texture);
+        if(!useCubeMap){
+            out_color = texture(textureSampler, pass_texture);
+        } else {
+            out_color = texture(textureSamplerCubemap, pass_position);
+        }
     } else {
         out_color = vec4(1.0,1.0,1.0,1.0);
     }
@@ -106,6 +114,6 @@ vec3 getLight(vec3 color, vec3 lcolor, vec3 toLight, vec3 normal, vec3 toCamera)
     I = normal;
     return vec3(I.x+0.5, I.y+0.5, I.z+0.5);// very cool effect
     */
-    return color * I * 2; //pow(color * I * 2, vec3(1.0/2.2));
+    return color * I * 2; //color * pow(I, vec3(1.0/2.2));
 }
 

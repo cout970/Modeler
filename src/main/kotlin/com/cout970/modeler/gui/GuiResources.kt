@@ -8,7 +8,7 @@ import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.core.resource.fromClasspath
-import org.liquidengine.legui.image.BufferedImage
+import com.cout970.modeler.gui.leguicomp.LogFreeBufferedImage as BufferedImage
 
 /**
  * Created by cout970 on 2017/06/14.
@@ -32,15 +32,21 @@ class GuiResources {
         log(Level.FINE) { "[GuiResources] Loading gui resources" }
         baseCubeMesh = ModelImporters.objImporter.importAsMesh("assets/models/cube.obj".fromClasspath(), true)
         lightMesh = ModelImporters.objImporter.importAsMesh("assets/models/light.obj".fromClasspath(), true)
-        translationArrow = ModelImporters.objImporter.importAsMesh("assets/models/translation_x.obj".fromClasspath(), true)
+        translationArrow = ModelImporters.objImporter.importAsMesh("assets/models/translation_x.obj".fromClasspath(),
+                true)
         rotationRing = ModelImporters.objImporter.importAsMesh("assets/models/rotation_x.obj".fromClasspath(), true)
         scaleArrow = ModelImporters.objImporter.importAsMesh("assets/models/scale_x.obj".fromClasspath(), true)
         skybox = ModelImporters.objImporter.importAsMesh("assets/models/skybox.obj".fromClasspath(), false)
 
         baseCubeTexture = loader.getTexture("assets/textures/models/cube.png").apply { magFilter = Texture.PIXELATED }
         centerMarkTexture = loader.getTexture("assets/textures/models/center_mark.png")
-        skyboxTexture = loader.getTexture("assets/textures/models/skybox3.png")
-                .apply { magFilter = Texture.PIXELATED }
+        skyboxTexture = loader.getTextureCubeMap("assets/textures/models/skybox").apply {
+            magFilter = Texture.SMOOTH
+            minFilter = Texture.SMOOTH
+            wrapT = Texture.CLAMP_TO_EDGE
+            wrapS = Texture.CLAMP_TO_EDGE
+            wrapW = Texture.CLAMP_TO_EDGE
+        }
 
         iconMap.put("deleteIcon", BufferedImage("assets/textures/delete.png"))
         iconMap.put("showIcon", BufferedImage("assets/textures/show.png"))

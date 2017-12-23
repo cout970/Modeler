@@ -13,6 +13,7 @@ in vec3 in_color;
 
 // Output parameters to the next shader
 
+out vec3 pass_position;
 // vertex texture coordinates
 out vec2 pass_texture;
 // vertex surface normal
@@ -51,6 +52,7 @@ void main(void){
     gl_Position = matrixVP * worldPos;
 
     // moving values to the next shader
+    pass_position = in_position;
     pass_texture = in_texture;
     pass_color = in_color;
 

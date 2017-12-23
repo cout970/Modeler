@@ -1,5 +1,6 @@
 package com.cout970.modeler.render.world
 
+import com.cout970.glutilities.structure.GLStateMachine
 import com.cout970.glutilities.tessellator.DrawMode
 import com.cout970.matrix.extensions.Matrix4
 import com.cout970.matrix.extensions.times
@@ -33,6 +34,10 @@ class WorldRenderer {
 
     fun renderWorld(ctx: RenderContext, model: IModel) {
 
+        if (ctx.gui.state.renderSkybox) {
+            renderSkybox(ctx)
+        }
+
         if (ctx.gui.state.renderBaseBlock) {
             renderBaseBlock(ctx)
         }
@@ -41,9 +46,6 @@ class WorldRenderer {
         }
         if (ctx.gui.state.renderLights) {
             renderLights(ctx)
-        }
-        if (ctx.gui.state.renderSkybox) {
-            renderSkybox(ctx)
         }
 
         modelRenderer.renderModels(ctx, model)
@@ -94,11 +96,14 @@ class WorldRenderer {
     }
 
     fun renderSkybox(ctx: RenderContext) {
+        if (!ctx.camera.perspective)
+            return
+
         val vao = skybox.getOrCreate(ctx) {
-            ctx.gui.resources.skybox.createVao(ctx.buffer)
+            val transform = TRSTransformation(translation = vec3Of(-1), scale = vec3Of(4))
+            ctx.gui.resources.skybox.transform(transform).createVao(ctx.buffer)
         }
-        val size = 1000
-        val transform = TRSTransformation(translation = vec3Of(-4 * size), scale = Vector3.ONE * size)
+
         val projection = ctx.camera.getProjectionMatrix(ctx.viewport)
         val view = ctx.camera.getViewMatrix().toMutable()
 
@@ -106,16 +111,17 @@ class WorldRenderer {
         view.m31d = 0.0
         view.m32d = 0.0
 
-        ctx.gui.resources.skyboxTexture.bind()
+        GLStateMachine.depthTest.disable()
+        ctx.gui.resources.skyboxTexture.bind(1)
         ctx.shader.apply {
 
             showHiddenFaces.setBoolean(false)
             matrixVP.setMatrix4(projection * view)
-
-            render(vao, transform.matrix, ShaderFlag.TEXTURE)
+            render(vao, Matrix4.IDENTITY, ShaderFlag.TEXTURE, ShaderFlag.CUBEMAP)
 
             showHiddenFaces.setBoolean(ctx.gui.state.showHiddenFaces)
             matrixVP.setMatrix4(ctx.camera.getMatrix(ctx.viewport))
         }
+        GLStateMachine.depthTest.enable()
     }
 }

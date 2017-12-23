@@ -10,10 +10,10 @@ import com.cout970.modeler.util.ITickeable
 import com.cout970.modeler.util.VSyncTimer
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.vec2Of
-import org.lwjgl.glfw.GLFW.glfwSetWindowIcon
-import org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose
+import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWImage
 import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL13
 import java.util.*
 
 
@@ -27,6 +27,7 @@ class WindowHandler(private val timer: Timer) : ITickeable {
     var viewport = Pair(vec2Of(0), vec2Of(1))
         set(value) {
             GL11.glViewport(value.first.xi, value.first.yi, value.second.xi, value.second.yi)
+            GL11.glEnable(GL13.GL_MULTISAMPLE)
             field = value
         }
 
@@ -43,6 +44,8 @@ class WindowHandler(private val timer: Timer) : ITickeable {
             title = WINDOW_TITLE
             size = vec2Of(800, 600)
             vSync = false
+            properties.put(GLFW_STENCIL_BITS, 24)
+            properties.put(GLFW_SAMPLES, 8)
 //            properties.put(GLFW_CONTEXT_VERSION_MAJOR, 3)
 //            properties.put(GLFW_CONTEXT_VERSION_MINOR, 2)
 //            properties.put(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE)

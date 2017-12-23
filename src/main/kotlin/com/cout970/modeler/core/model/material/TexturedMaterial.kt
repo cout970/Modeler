@@ -24,6 +24,8 @@ class TexturedMaterial(override val name: String, val path: ResourcePath) : IMat
             texture = resourceLoader.getTexture(path.inputStream()).apply {
                 magFilter = Texture.PIXELATED
                 minFilter = Texture.PIXELATED
+                wrapT = Texture.CLAMP_TO_EDGE
+                wrapS = Texture.CLAMP_TO_EDGE
             }
             lastModified = path.lastModifiedTime()
             loadingError = false

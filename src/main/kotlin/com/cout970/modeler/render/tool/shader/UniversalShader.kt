@@ -28,14 +28,16 @@ class UniversalShader(resourceLoader: ResourceLoader) : Consumer<VAO> {
     val lightCount: UniformVariable
     val useLight: UniformVariable
     val showHiddenFaces: UniformVariable
-    val textureSampler: UniformVariable
     val useTexture: UniformVariable
     val useColor: UniformVariable
+    val useCubeMap: UniformVariable
     val lightColor: UniformVariable.UniformVariableArray
     val shineDamper: UniformVariable
     val reflectivity: UniformVariable
     val ambient: UniformVariable
     val globalColor: UniformVariable
+    val textureSampler: UniformVariable
+    val textureSamplerCubemap: UniformVariable
 
     init {
         program = ShaderBuilder.build {
@@ -55,14 +57,16 @@ class UniversalShader(resourceLoader: ResourceLoader) : Consumer<VAO> {
         lightCount = program.createUniformVariable("lightCount")
         useLight = program.createUniformVariable("useLight")
         showHiddenFaces = program.createUniformVariable("showHiddenFaces")
-        textureSampler = program.createUniformVariable("textureSampler")
         useTexture = program.createUniformVariable("useTexture")
         useColor = program.createUniformVariable("useColor")
+        useCubeMap = program.createUniformVariable("useCubeMap")
         lightColor = program.createUniformVariableArray("lightColor")
         shineDamper = program.createUniformVariable("shineDamper")
         reflectivity = program.createUniformVariable("reflectivity")
         ambient = program.createUniformVariable("ambient")
         globalColor = program.createUniformVariable("globalColor")
+        textureSampler = program.createUniformVariable("textureSampler")
+        textureSamplerCubemap = program.createUniformVariable("textureSamplerCubemap")
     }
 
     fun useShader(ctx: RenderContext, func: () -> Unit) {
@@ -70,6 +74,8 @@ class UniversalShader(resourceLoader: ResourceLoader) : Consumer<VAO> {
         matrixVP.setMatrix4(ctx.camera.getMatrix(ctx.viewport))
         matrixM.setMatrix4(Matrix4.IDENTITY)
         cameraPos.setVector3(ctx.camera.position)
+        textureSampler.setInt(0)
+        textureSamplerCubemap.setInt(1)
 
         lightCount.setInt(ctx.lights.size)
         ctx.lights.forEachIndexed { index, (pos, color) ->
@@ -88,6 +94,7 @@ class UniversalShader(resourceLoader: ResourceLoader) : Consumer<VAO> {
         useColor.setBoolean(ShaderFlag.COLOR in flags)
         useLight.setBoolean(ShaderFlag.LIGHT in flags)
         useTexture.setBoolean(ShaderFlag.TEXTURE in flags)
+        useCubeMap.setBoolean(ShaderFlag.CUBEMAP in flags)
         matrixM.setMatrix4(transform)
         accept(vao)
     }
@@ -104,4 +111,4 @@ class UniversalShader(resourceLoader: ResourceLoader) : Consumer<VAO> {
     }
 }
 
-enum class ShaderFlag { COLOR, LIGHT, TEXTURE }
+enum class ShaderFlag { COLOR, LIGHT, TEXTURE, CUBEMAP }
