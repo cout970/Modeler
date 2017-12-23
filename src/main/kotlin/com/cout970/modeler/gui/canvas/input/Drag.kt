@@ -115,7 +115,7 @@ class DraggingCursor {
                 getTranslationOffset(hovered, canvas, pos, gui.input)
             }
             hovered is IRotable && mode == TransformationMode.ROTATION -> {
-                getRotationOffset(hovered, canvas, pos, gui.input)
+                RotationHelper.getOffsetGlobal(hovered, canvas, pos, gui.input)
             }
             hovered is IScalable && mode == TransformationMode.SCALE -> {
                 getScaleOffset(hovered, canvas, pos, gui.input)
@@ -162,16 +162,6 @@ class DraggingCursor {
                                  mat: IMaterial): IModel =
             obj.applyScale(offset, part.second, part.first, mat)
 
-    private fun getRotationOffset(obj: IRotable, canvas: Canvas, pos: Pair<IVector2, IVector2>, input: IInput): Float {
-        val context = CanvasHelper.getContext(canvas, pos)
-
-        return RotationHelper.getOffset(
-                obj = obj,
-                input = input,
-                newContext = context.first,
-                oldContext = context.second
-        )
-    }
 
     private fun applyRotationOffset(obj: IRotable, part: Pair<IModel, ISelection>, offset: Float,
                                     mat: IMaterial): IModel =

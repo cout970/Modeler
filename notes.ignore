@@ -1,7 +1,5 @@
 use "jvisualvm.exe -J-Dorg.netbeans.profiler.separateConsole=true"
 
-fix translation speed in texture mode
-fix rotation
 
 export hitbox dialog
 add event messages

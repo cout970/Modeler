@@ -61,7 +61,7 @@ class Paste : IUseCase {
                     TaskUpdateModelSelection(oldSelection = selection, newSelection = newSelection.asNullable())
             ))
         }
-        SelectionType.FACE -> TODO("Implement face Paste")
+        SelectionType.FACE -> TaskNone // TODO Implement face Paste
         SelectionType.EDGE, SelectionType.VERTEX -> TaskNone
     }
 }

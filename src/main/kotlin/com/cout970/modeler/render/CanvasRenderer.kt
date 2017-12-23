@@ -37,11 +37,20 @@ class CanvasRenderer(val renderManager: RenderManager) {
         // on each canvas
         gui.canvasContainer.canvas.forEachIndexed { index, canvas ->
             Profiler.startSection("canvas_$index")
+
+            var viewport = canvas.size.toIVector()
+            if (viewport.xi % 2 != 0) {
+                viewport = vec2Of(viewport.xi - 1, viewport.yi)
+            }
+            if (viewport.yi % 2 != 0) {
+                viewport = vec2Of(viewport.xi, viewport.yi - 1)
+            }
+
             // rendering context
             val ctx = RenderContext(
                     camera = canvas.cameraHandler.camera,
                     lights = lights,
-                    viewport = canvas.size.toIVector(),
+                    viewport = viewport,
                     shader = renderManager.shader,
                     gui = gui,
                     buffer = buffer
@@ -52,7 +61,7 @@ class CanvasRenderer(val renderManager: RenderManager) {
                     gui.windowHandler.window.size.yf - (canvas.absolutePositionV.yf + canvas.size.y)
             )
             // change view port
-            gui.windowHandler.saveViewport(viewportPos, canvas.size.toIVector()) {
+            gui.windowHandler.saveViewport(viewportPos, viewport) {
                 // enable shaders
                 renderManager.shader.useShader(ctx) {
                     // if this canvas is 3D

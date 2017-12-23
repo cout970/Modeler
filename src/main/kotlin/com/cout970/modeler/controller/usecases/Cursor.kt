@@ -1,5 +1,6 @@
 package com.cout970.modeler.controller.usecases
 
+import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.controller.injection.Inject
 import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.tasks.TaskNone
@@ -49,8 +50,13 @@ class MoveCameraToCursor : IUseCase {
 
     override fun createTask(): ITask {
         canvasManager.getCanvasUnderTheMouse().ifNotNull {
-            val center = cursorManager.modelCursor?.center ?: return@ifNotNull
-            it.cameraHandler.setPosition(-center)
+            if (it.viewMode == SelectionTarget.TEXTURE) {
+                val center = cursorManager.textureCursor?.center ?: return@ifNotNull
+                it.cameraHandler.setPosition(-center)
+            } else {
+                val center = cursorManager.modelCursor?.center ?: return@ifNotNull
+                it.cameraHandler.setPosition(-center)
+            }
         }
         return TaskNone
     }
