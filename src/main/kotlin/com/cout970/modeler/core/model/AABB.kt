@@ -1,6 +1,7 @@
 package com.cout970.modeler.core.model
 
 import com.cout970.modeler.api.model.mesh.IMesh
+import com.cout970.modeler.util.createParentsIfNeeded
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
@@ -49,7 +50,7 @@ class AABB(a: IVector3, b: IVector3) {
         }
 
         fun export(list: List<AABB>, output: File) {
-            output.parentFile.let { if (!it.exists()) it.mkdir() }
+            output.createParentsIfNeeded()
             val stream = FileOutputStream(output)
             val f = DecimalFormat("0.000", DecimalFormatSymbols.getInstance(Locale.US))
 

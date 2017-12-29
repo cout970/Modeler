@@ -10,9 +10,9 @@ import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.project.ModelAccessor
 import com.cout970.modeler.core.project.ProjectManager
-import com.cout970.modeler.core.resource.toResourcePath
 import com.cout970.modeler.gui.GuiState
 import com.cout970.modeler.util.asNullable
+import com.cout970.modeler.util.toResourcePath
 import org.liquidengine.legui.component.Component
 import org.lwjgl.util.tinyfd.TinyFileDialogs
 import java.io.File

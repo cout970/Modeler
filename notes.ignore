@@ -1,46 +1,47 @@
 use "jvisualvm.exe -J-Dorg.netbeans.profiler.separateConsole=true"
 
-export hitbox dialog
+# TODO soom
 add event messages
-
-detect duplicated shapes
 join shapes
-
 Add ability to load model without replacing the current one
-change scale to be directional
-add groups for config bindings
 add about section
-add restore default config, Reset settings
 add binary switches
-mirror textures X and Y
-Game displays
-Game sync
-wireframe mode
-Flip axis in selection
-translation relative
 face view in the corner
-
 Update gui, i don't like the right panel, too weird
-Update grid size based on zoon
-Be able to change grid scale, offset, etc
-Add plugin api
-Add keys in react tree, so you can use paths
-Add render event to be able to change or add stuff to the gui, probably allowing customs props?
 better logo.
 choose a name.
 Send feedback, join discord, get invoved with the comunity
-FPS counter in a corner
+
+# TODO later
+export hitbox dialog
+detect duplicated shapes
+change scale to be directional
+add groups for config bindings
+add restore default config, Reset settings
+mirror textures X and Y
+wireframe mode
+Flip axis in selection
+translation relative
+Update grid size based on zoom
+Be able to change grid scale, offset, etc
 3d selection
-More functional code, more dependency injection
-Unit tests, more tests, test all model
-Mirror texture
-Dummy data in objecto to use cube edit controls
-Donate button, why not?
+Dummy data in object to use cube edit controls
 Background images in ortho projection
-Be able to change skybox texture
-showcase option, just keep the camera rotating around the model
-Center camera on select
 Open changelog
 Open last backup, Open backupfolder
 Search bar in config menu
 Time between backups in config
+
+# TODO maybe, and of course later
+Add plugin api
+Add keys in react tree, so you can use paths
+Add render event to be able to change or add stuff to the gui, probably allowing customs props?
+Unit tests, more tests, test all model
+Donate button, why not?
+Be able to change skybox texture
+showcase option, just keep the camera rotating around the model
+Center camera when something is selected select
+
+# TODO payme if you want me to spend months on this
+Minecraft transformations preview (hand, hat, ground, etc)
+Game sync (update in editor, change in game at the same time)

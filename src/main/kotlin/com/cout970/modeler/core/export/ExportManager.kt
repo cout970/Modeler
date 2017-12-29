@@ -1,5 +1,6 @@
 package com.cout970.modeler.core.export
 
+import com.cout970.modeler.PathConstants
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.IObject
@@ -14,6 +15,7 @@ import com.cout970.modeler.core.model.selection.ClipboardNone.Companion.model
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.project.ProjectProperties
 import com.cout970.modeler.core.resource.ResourceLoader
+import com.cout970.modeler.util.createParentsIfNeeded
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -112,7 +114,7 @@ class ExportManager(val resourceLoader: ResourceLoader) {
     }
 
     fun saveProject(path: String, save: ProgramSave) {
-        File(path).parentFile.let { if (!it.exists()) it.mkdir() }
+        File(path).createParentsIfNeeded()
 
         val zip = ZipOutputStream(File(path).outputStream())
         zip.let {
@@ -130,7 +132,7 @@ class ExportManager(val resourceLoader: ResourceLoader) {
     }
 
     fun loadLastProjectIfExists(projectManager: ProjectManager) {
-        val path = File("data/backups/last.pff")
+        val path = File(PathConstants.LAST_BACKUP_FILE_PATH)
         if (path.exists()) {
             try {
                 log(Level.FINE) { "Found last project, loading..." }

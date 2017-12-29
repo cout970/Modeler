@@ -1,8 +1,9 @@
 package com.cout970.modeler.core.config
 
 import com.cout970.modeler.Debugger
+import com.cout970.modeler.PathConstants
 import com.cout970.modeler.core.export.ColorSerializer
-import com.cout970.modeler.core.resource.createIfNeeded
+import com.cout970.modeler.util.createParentsIfNeeded
 import com.cout970.vector.api.IVector3
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
@@ -14,10 +15,8 @@ import java.io.File
  */
 object ConfigManager {
 
-    val configPath = "data/config.json"
-
     fun loadConfig() {
-        val file = File(configPath)
+        val file = File(PathConstants.CONFIG_FILE_PATH)
         if (file.exists() && !Debugger.DEBUG) {
             val gson = GsonBuilder()
                     .setLenient()
@@ -25,7 +24,7 @@ object ConfigManager {
                     .setPrettyPrinting()
                     .create()
 
-            val json = JsonParser().parse(file.createIfNeeded().reader()).asJsonObject
+            val json = JsonParser().parse(file.reader()).asJsonObject
 
             Config::class.java.declaredFields
                     .filter { it.name != "INSTANCE" }
@@ -42,8 +41,7 @@ object ConfigManager {
     }
 
     fun saveConfig() {
-        File("data").let { if (!it.exists()) it.mkdir() }
-        val file = File(configPath)
+        val file = File(PathConstants.CONFIG_FILE_PATH).apply { createParentsIfNeeded() }
         val clazz = JsonObject()
         val gson = GsonBuilder()
                 .setLenient()

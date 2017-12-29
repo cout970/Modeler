@@ -1,9 +1,9 @@
 package com.cout970.modeler.gui.reactive.example
 
+import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
-import com.cout970.modeler.gui.leguicomp.panel
 import org.joml.Vector2f
 import org.liquidengine.legui.color.ColorConstants
 import org.liquidengine.legui.component.Component

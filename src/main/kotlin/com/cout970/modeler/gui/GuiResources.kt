@@ -7,7 +7,7 @@ import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.resource.ResourceLoader
-import com.cout970.modeler.core.resource.fromClasspath
+import com.cout970.modeler.util.fromClasspath
 import com.cout970.modeler.gui.leguicomp.LogFreeBufferedImage as BufferedImage
 
 /**

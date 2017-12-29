@@ -7,7 +7,7 @@ import com.cout970.modeler.core.export.ImportProperties
 import com.cout970.modeler.core.export.ModelImporters
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.material.MaterialRefNone
-import com.cout970.modeler.core.resource.toResourcePath
+import com.cout970.modeler.util.toResourcePath
 import org.lwjgl.util.tinyfd.TinyFileDialogs
 import java.io.File
 

@@ -1,6 +1,7 @@
 package com.cout970.modeler.core.resource
 
 import com.cout970.modeler.core.log.print
+import com.cout970.modeler.util.toResourcePath
 import java.io.File
 import java.net.URI
 import java.nio.file.Path

@@ -58,7 +58,7 @@ fun showExportHitboxMenu(model: IModel): ITask {
             .map { AABB.fromMesh(it.mesh) }
 
     return TaskAsync {
-        AABB.export(aabb, File(PathConstants.AABB_SAVE_FOLDER, "aabb.txt"))
+        AABB.export(aabb, File(PathConstants.AABB_SAVE_FILE_PATH))
     }
 }
 

@@ -5,7 +5,6 @@ import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.input.window.Loop
-import java.io.File
 import java.time.Instant
 
 
@@ -36,7 +35,6 @@ object BackupManager {
     private fun getBackupName(projectName: String): String = "Backup_${projectName}_${Instant.now().toEpochMilli()}.pff"
 
     private fun makeBackup(path: String, exportManager: ExportManager, projectManager: ProjectManager){
-        File(path).let { if(!it.exists()) it.mkdirs() }
         exportManager.saveProject("$path/${getBackupName(projectManager.projectProperties.name)}", projectManager)
     }
 }
