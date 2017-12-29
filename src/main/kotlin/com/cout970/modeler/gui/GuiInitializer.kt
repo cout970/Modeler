@@ -12,6 +12,7 @@ import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.gui.canvas.CanvasManager
 import com.cout970.modeler.gui.canvas.cursor.CursorManager
+import com.cout970.modeler.gui.event.NotificationHandler
 import com.cout970.modeler.gui.leguicomp.Panel
 import com.cout970.modeler.gui.views.EditorView
 import com.cout970.modeler.input.event.EventController
@@ -53,6 +54,8 @@ class GuiInitializer(
         val buttonBinder = ButtonBinder(dispatcher)
         log(Level.FINE) { "[GuiInitializer] Creating ButtonBinder" }
         val keyboardBinder = KeyboardBinder(dispatcher)
+        log(Level.FINE) { "[GuiInitializer] Creating NotificationHandler" }
+        val notificationHandler = NotificationHandler()
         log(Level.FINE) { "[GuiInitializer] Creating initial canvas" }
         canvasContainer.newCanvas()
         log(Level.FINE) { "[GuiInitializer] GUI Initialization done" }
@@ -73,7 +76,8 @@ class GuiInitializer(
                 canvasManager = canvasManager,
                 modelAccessor = modelAccessor,
                 cursorManager = cursorManager,
-                propertyHolder = propertyHolder
+                propertyHolder = propertyHolder,
+                notificationHandler = notificationHandler
         )
     }
 }

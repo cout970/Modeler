@@ -12,7 +12,6 @@ import com.cout970.modeler.util.toColor
 import com.cout970.vector.api.IVector3
 import org.joml.Vector4f
 import org.liquidengine.legui.border.SimpleLineBorder
-import org.liquidengine.legui.component.Button
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.TextArea
 import org.liquidengine.legui.component.TextInput
@@ -118,7 +117,7 @@ inline fun Component.border(size: Float = 1f, f: ColorPalette.() -> IVector3) {
     border = SimpleLineBorder(Config.colorPalette.f().toColor(), size)
 }
 
-fun Button.onClick(func: (MouseClickEvent<*>) -> Unit) {
+fun Component.onClick(func: (MouseClickEvent<*>) -> Unit) {
     listenerMap.addListener(MouseClickEvent::class.java) {
         if (it.action == MouseClickEvent.MouseClickAction.CLICK) {
             func(it)

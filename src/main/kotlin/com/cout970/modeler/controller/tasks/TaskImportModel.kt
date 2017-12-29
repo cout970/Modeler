@@ -7,8 +7,9 @@ import com.cout970.modeler.core.export.ImportProperties
 import com.cout970.modeler.core.export.ModelImporters
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.material.MaterialRefNone
+import com.cout970.modeler.gui.event.Notification
+import com.cout970.modeler.gui.event.NotificationHandler
 import com.cout970.modeler.util.toResourcePath
-import org.lwjgl.util.tinyfd.TinyFileDialogs
 import java.io.File
 
 /**
@@ -29,13 +30,9 @@ class TaskImportModel(
                 modelCache = newModel
             } catch (e: Exception) {
                 e.print()
-                TinyFileDialogs.tinyfd_messageBox(
-                        "Error",
-                        "Error importing model at (${properties.path}): \n$e",
-                        "ok",
-                        "error",
-                        true
-                )
+                NotificationHandler.push(Notification("Error importing model",
+                        "Error importing model at '${properties.path}': \n$e"))
+
             }
         }
         modelCache?.let {
@@ -49,6 +46,8 @@ class TaskImportModel(
             state.gui.state.selectedMaterial = it.materialRefs.firstOrNull() ?: MaterialRefNone
             state.gui.state.materialsHash = (System.currentTimeMillis() and 0xFFFFFFFF).toInt()
             state.projectManager.updateModel(it)
+            NotificationHandler.push(Notification("Model imported",
+                    "Model at '${properties.path}' imported successfully"))
         }
     }
 

@@ -35,3 +35,10 @@ class EventSelectionUpdate(
         val newSelection: Nullable<ISelection>,
         val oldSelection: Nullable<ISelection>
 ) : Event<Component>(comp, ctx, frame)
+
+class EventNotificationUpdate(
+        comp: Component,
+        ctx: Context,
+        frame: Frame,
+        val notifications: List<Notification>
+) : Event<Component>(comp, ctx, frame)

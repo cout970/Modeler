@@ -1,5 +1,6 @@
 package com.cout970.modeler.gui.reactive.example
 
+import com.cout970.modeler.gui.leguicomp.onClick
 import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
@@ -24,7 +25,7 @@ class RButton : RComponent<RButton.Props, RButton.State>() {
         size = props.size
         position = Vector2f()
 
-        listenerMap.addListener(MouseClickEvent::class.java) {
+        onClick {
             if (it.action == MouseClickEvent.MouseClickAction.RELEASE)
                 replaceState(State(!state.on))
         }

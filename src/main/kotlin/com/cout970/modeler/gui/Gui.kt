@@ -9,6 +9,7 @@ import com.cout970.modeler.core.project.IProjectPropertiesHolder
 import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.gui.canvas.CanvasManager
 import com.cout970.modeler.gui.canvas.cursor.CursorManager
+import com.cout970.modeler.gui.event.NotificationHandler
 import com.cout970.modeler.gui.views.EditorView
 import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.input.window.WindowHandler
@@ -33,11 +34,13 @@ data class Gui(
         val keyboardBinder: KeyboardBinder,
         val canvasManager: CanvasManager,
         val cursorManager: CursorManager,
-        val propertyHolder: IProjectPropertiesHolder
+        val propertyHolder: IProjectPropertiesHolder,
+        val notificationHandler: NotificationHandler
 ) {
 
     init {
         canvasManager.gui = this
         editorView.gui = this
+        notificationHandler.gui = this
     }
 }

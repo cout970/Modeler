@@ -7,6 +7,7 @@ import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
+import com.cout970.modeler.gui.reactive.invoke
 import com.cout970.modeler.gui.views.VisibleElements
 import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.setBorderless
@@ -107,6 +108,8 @@ class CenterPanel : RComponent<CenterPanel.Props, Unit>() {
         }
 
         +ProfilerDiagram(props.timer)
+
+        +EventPanel {  }
     }
 
     class Props(val visibleElements: VisibleElements, val canvasContainer: CanvasContainer, val timer: Timer)

@@ -18,6 +18,8 @@ import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.project.ProjectPropertyHolder
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.gui.GuiInitializer
+import com.cout970.modeler.gui.event.Notification
+import com.cout970.modeler.gui.event.NotificationHandler
 import com.cout970.modeler.input.event.EventController
 import com.cout970.modeler.input.window.Loop
 import com.cout970.modeler.input.window.WindowHandler
@@ -79,8 +81,6 @@ class Initializer {
                         Profiler),
                 timer, windowHandler::shouldClose)
 
-        parseArgs(programArguments, exportManager, projectManager)
-
         val state = Program(
                 resourceLoader = resourceLoader,
                 windowHandler = windowHandler,
@@ -127,8 +127,11 @@ class Initializer {
         gui.root.bindButtons(gui.buttonBinder)
         gui.root.updateSizes(windowHandler.window.getFrameBufferSize())
 
+
+        parseArgs(programArguments, exportManager, projectManager)
+
         log(Level.FINE) { "Searching for last project" }
-        exportManager.loadLastProjectIfExists(projectManager)
+        exportManager.loadLastProjectIfExists(projectManager, gui)
         log(Level.FINE) { "Initialization done" }
         return state
     }
@@ -144,9 +147,15 @@ class Initializer {
                     projectManager.loadProjectProperties(save.projectProperties)
                     projectManager.updateModel(save.model)
                     log(Level.NORMAL) { "Project loaded" }
+
+                    NotificationHandler.push(Notification("Project loaded",
+                            "Loaded project successfully"))
+
                 } catch (e: Exception) {
                     log(Level.ERROR) { "Unable to load project file at '${programArguments[0]}'" }
                     e.print()
+                    NotificationHandler.push(Notification("Error loading project",
+                            "Unable to load project, path: '${programArguments[0]}': $e"))
                 }
             } else {
                 log(Level.ERROR) { "Invalid program argument: '${programArguments[0]}' is not a valid path to a save file" }
