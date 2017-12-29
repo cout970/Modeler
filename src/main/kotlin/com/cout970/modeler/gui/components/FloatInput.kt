@@ -1,6 +1,6 @@
 package com.cout970.modeler.gui.components
 
-import com.cout970.modeler.controller.usecases.UpdateTemplateCube
+import com.cout970.modeler.controller.usecases.scriptEngine
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
@@ -11,6 +11,7 @@ import com.cout970.modeler.util.toJoml2f
 import com.cout970.vector.api.IVector2
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
+import java.util.*
 import kotlin.reflect.KMutableProperty
 
 class FloatInput : RComponent<FloatInput.Props, Unit>() {
@@ -36,7 +37,7 @@ class FloatInput : RComponent<FloatInput.Props, Unit>() {
             }
             setBorderless()
         }
-        +StringInput("%.3f".format(value), 24f, 0f, 72f, 24f).apply {
+        +StringInput("%.3f".format(Locale.ENGLISH, value), 24f, 0f, 72f, 24f).apply {
             textState.horizontalAlign = HorizontalAlign.CENTER
             onScroll = {
                 text.toFloatValue()?.let { txt ->
@@ -66,7 +67,7 @@ class FloatInput : RComponent<FloatInput.Props, Unit>() {
     }
 
     fun String.toFloatValue(): Float? {
-        return (UpdateTemplateCube.scriptEngine.eval(this) as? Number)?.toFloat()
+        return (scriptEngine.eval(this) as? Number)?.toFloat()
     }
 
     class Props(val pos: IVector2, val property: KMutableProperty<Float>, val obj: Any)

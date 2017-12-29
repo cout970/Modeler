@@ -17,7 +17,7 @@ class SelectionTypeButtons : RComponent<SelectionTypeButtons.Props, Unit>() {
 
     override fun build(ctx: RBuilder): Component = panel {
         background { blackColor }
-        posX = 432f + 32f
+        posX = 432f + 10f
         posY = 5f
         width = 143f + 8f
         height = 40f

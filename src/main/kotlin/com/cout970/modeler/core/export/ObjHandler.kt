@@ -13,7 +13,6 @@ import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.resource.ResourcePath
-import com.cout970.modeler.util.join
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
@@ -157,7 +156,7 @@ class ObjImporter {
     private fun ObjGroup.toMesh(data: MeshData): IMesh {
 
         val faces = quads.map {
-            FaceIndex(it.vertexIndices join it.textureIndices)
+            FaceIndex(it.vertexIndices.toList(), it.textureIndices.toList())
         }
         var pos = data.vertices.map { it * 16 }
         var tex = data.texCoords

@@ -1,33 +1,24 @@
 package com.cout970.modeler.controller.usecases
 
 import com.cout970.modeler.api.model.IModel
-import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
-import com.cout970.modeler.controller.injection.Inject
 import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.tasks.TaskUpdateModelSelection
 import com.cout970.modeler.core.model.selection.Selection
-import com.cout970.modeler.util.Nullable
+import com.cout970.modeler.core.project.ModelAccessor
 import com.cout970.modeler.util.asNullable
 
 /**
  * Created by cout970 on 2017/10/01.
  */
 
-class SelectAll : IUseCase {
+@UseCase("model.select.all")
+fun selectAll(model: IModel, modelAccessor: ModelAccessor): ITask {
+    val newSelection = Selection(SelectionTarget.MODEL, SelectionType.OBJECT, model.objectRefs)
 
-    override val key: String = "model.select.all"
-
-    @Inject lateinit var model: IModel
-    @Inject lateinit var selection: Nullable<ISelection>
-
-    override fun createTask(): ITask {
-        val newSelection = Selection(SelectionTarget.MODEL, SelectionType.OBJECT, model.objectRefs)
-
-        return TaskUpdateModelSelection(
-                oldSelection = selection,
-                newSelection = newSelection.asNullable()
-        )
-    }
+    return TaskUpdateModelSelection(
+            oldSelection = modelAccessor.modelSelection,
+            newSelection = newSelection.asNullable()
+    )
 }

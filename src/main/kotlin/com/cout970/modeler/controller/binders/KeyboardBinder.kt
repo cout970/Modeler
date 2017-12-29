@@ -23,10 +23,16 @@ class KeyboardBinder(val dispatcher: Dispatcher) {
                 paste.check(e) -> "model.selection.paste"
                 undo.check(e) -> "model.undo"
                 redo.check(e) -> "model.redo"
+                toggleVisibility.check(e) -> "model.toggle.visibility"
 
                 showLeftPanel.check(e) -> "show.left.panel"
                 showRightPanel.check(e) -> "show.right.panel"
                 showBottomPanel.check(e) -> "show.bottom.panel"
+
+                setObjectSelectionType.check(e) -> "set.selection.type.object"
+                setFaceSelectionType.check(e) -> "set.selection.type.face"
+                setEdgeSelectionType.check(e) -> "set.selection.type.edge"
+                setVertexSelectionType.check(e) -> "set.selection.type.vertex"
 
                 switchOrthoProjection.check(e) -> "view.switch.ortho"
                 setTextureMode.check(e) -> "view.set.texture.mode"

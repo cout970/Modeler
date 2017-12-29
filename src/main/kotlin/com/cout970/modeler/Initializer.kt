@@ -43,7 +43,7 @@ class Initializer {
         log(Level.FINE) { "Creating Timer" }
         val timer = Timer()
         log(Level.FINE) { "Creating WindowHandler" }
-        val windowHandler = WindowHandler(timer)
+        val windowHandler = WindowHandler()
         log(Level.FINE) { "Creating EventController" }
         val eventController = EventController()
         log(Level.FINE) { "Creating ModelSelectionHandler" }

@@ -55,9 +55,7 @@ data class ObjectCube(
         val uvs = generateUVs(size, offset, textureSize)
         val newFaces = mesh.faces.mapIndexed { index, face ->
             val faceIndex = face as FaceIndex
-            FaceIndex(faceIndex.index.mapIndexed { vertexIndex, pair ->
-                pair.first to index * 4 + vertexIndex
-            })
+            FaceIndex(faceIndex.pos, faceIndex.tex.mapIndexed { vertexIndex, _ -> index * 4 + vertexIndex })
         }
         return Mesh(mesh.pos, uvs, newFaces)
     }

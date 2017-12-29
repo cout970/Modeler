@@ -1,5 +1,6 @@
 package com.cout970.modeler.gui.leguicomp
 
+import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.Debugger
 import com.cout970.modeler.controller.shuffle
 import com.cout970.modeler.core.log.Profiler
@@ -10,6 +11,7 @@ import com.cout970.vector.extensions.plus
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.vec3Of
 import org.joml.Vector4f
+import org.liquidengine.legui.color.ColorConstants
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.component.optional.align.VerticalAlign
 import org.liquidengine.legui.font.FontRegistry
@@ -23,7 +25,7 @@ import java.awt.Color
 /**
  * Created by cout970 on 2017/10/14.
  */
-class ProfilerDiagram : Panel() {
+class ProfilerDiagram(val timer: Timer) : Panel() {
 
     object ProfilerDiagramRenderer : NvgComponentRenderer<ProfilerDiagram>() {
 
@@ -37,6 +39,20 @@ class ProfilerDiagram : Panel() {
         }
 
         override fun renderComponent(component: ProfilerDiagram, context: Context, nanovg: Long) {
+
+            // FPS counter
+            val parent = component.parent.absolutePositionV
+            NvgText.drawTextLineToRect(
+                    nanovg,
+                    Vector4f(parent.xf + 10f, parent.yf, 60f, 24f),
+                    false,
+                    HorizontalAlign.LEFT,
+                    VerticalAlign.MIDDLE,
+                    16f,
+                    FontRegistry.DEFAULT,
+                    "${component.timer.fps} FPS",
+                    ColorConstants.white()
+            )
 
             if (!Debugger.showProfiling) return
 
@@ -93,7 +109,7 @@ class ProfilerDiagram : Panel() {
 
                 NvgText.drawTextLineToRect(
                         nanovg,
-                        Vector4f(textBase.xf, textBase.yf + index * 16f, 200f, 24f),
+                        Vector4f(textBase.xf, textBase.yf + index * 16f + 8f, 200f, 24f),
                         false,
                         HorizontalAlign.LEFT,
                         VerticalAlign.MIDDLE,

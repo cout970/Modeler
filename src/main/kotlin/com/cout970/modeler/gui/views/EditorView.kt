@@ -39,7 +39,7 @@ class EditorView : IView {
                 setTransparent()
                 setBorderless()
 
-                +TopButtonPanel { TopButtonPanel.Props(guiState = gui.state)}
+                +TopButtonPanel { TopButtonPanel.Props(guiState = gui.state) }
                 +RightPanel {
                     RightPanel.Props(
                             modelAccessor = gui.modelAccessor,
@@ -57,7 +57,8 @@ class EditorView : IView {
                 +CenterPanel {
                     CenterPanel.Props(
                             visibleElements = visible,
-                            canvasContainer = gui.canvasContainer
+                            canvasContainer = gui.canvasContainer,
+                            timer = gui.timer
                     )
                 }
 

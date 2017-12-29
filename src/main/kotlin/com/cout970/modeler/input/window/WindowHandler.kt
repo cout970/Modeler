@@ -1,6 +1,5 @@
 package com.cout970.modeler.input.window
 
-import com.cout970.glutilities.structure.Timer
 import com.cout970.glutilities.texture.TextureLoader
 import com.cout970.glutilities.window.GLFWWindow
 import com.cout970.glutilities.window.WindowBuilder
@@ -20,7 +19,7 @@ import java.util.*
 /**
  * Created by cout970 on 2016/11/29.
  */
-class WindowHandler(private val timer: Timer) : ITickeable {
+class WindowHandler : ITickeable {
 
     lateinit var window: GLFWWindow
 
@@ -36,7 +35,7 @@ class WindowHandler(private val timer: Timer) : ITickeable {
 
 
     companion object {
-        const val WINDOW_TITLE = ""
+        const val WINDOW_TITLE = "TO BE NAMED"
     }
 
     fun create() {
@@ -93,7 +92,6 @@ class WindowHandler(private val timer: Timer) : ITickeable {
         Profiler.nextSection("vsyncWait")
         vsync.waitIfNecessary()
         Profiler.endSection()
-        window.setTitle("$WINDOW_TITLE [${timer.fps} FPS]")
         Profiler.endSection()
     }
 

@@ -17,12 +17,10 @@ class TaskUpdateMaterial(
     override fun run(state: Program) {
         state.projectManager.updateMaterial(ref, newMaterial)
         state.projectManager.loadedMaterials.forEach { it.loadTexture(state.resourceLoader) }
-//        state.gui.editorPanel.rightPanelModule.presenter.updateObjectList()
     }
 
     override fun undo(state: Program) {
         state.projectManager.updateMaterial(ref, oldMaterial)
         state.projectManager.loadedMaterials.forEach { it.loadTexture(state.resourceLoader) }
-//        state.gui.editorPanel.rightPanelModule.presenter.updateObjectList()
     }
 }

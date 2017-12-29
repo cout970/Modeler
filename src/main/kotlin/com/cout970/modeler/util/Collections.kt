@@ -70,16 +70,12 @@ fun List<RayTraceResult>.getClosest(ray: Ray): RayTraceResult? {
 
 infix fun <A, B> List<A>.join(other: List<B>): List<Pair<A, B>> {
     require(size == other.size) { "Invalid list sizes: this.size = $size, other.size = ${other.size}" }
-    return this.mapIndexed { index, element ->
-        element to other[index]
-    }
+    return this zip other
 }
 
 infix fun IntArray.join(other: IntArray): List<Pair<Int, Int>> {
     require(size == other.size) { "Invalid array sizes: this.size = $size, other.size = ${other.size}" }
-    return this.mapIndexed { index, element ->
-        element to other[index]
-    }
+    return this zip other
 }
 
 fun IMesh.middle(): IVector3 = pos.middle()
@@ -109,16 +105,16 @@ fun List<String>.toPointerBuffer(): PointerBuffer {
 
 fun <T> List<T>.combine(multi: Boolean, element: T): List<T> {
     if (multi) {
-        if (element in this) {
-            return this - element
+        return if (element in this) {
+            this - element
         } else {
-            return this + element
+            this + element
         }
     } else {
-        if (this.size == 1 && element in this) {
-            return emptyList()
+        return if (this.size == 1 && element in this) {
+            emptyList()
         } else {
-            return listOf(element)
+            listOf(element)
         }
     }
 }

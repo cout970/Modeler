@@ -99,7 +99,7 @@ class JsonImporter {
                                 vec2Of(uv0.x, uv0.y),
                                 vec2Of(uv0.x, uv1.y)
                         ),
-                        faces = listOf(FaceIndex(listOf(0 to 0, 1 to 1, 2 to 2, 3 to 3)))
+                        faces = listOf(FaceIndex(listOf(0, 1, 2, 3), listOf(0, 1, 2, 3)))
                 )
             }
             JsonImporter.Side.UP -> {
@@ -117,7 +117,7 @@ class JsonImporter {
                                 vec2Of(uv0.x, uv1.y),
                                 vec2Of(uv1.x, uv1.y)
                         ),
-                        faces = listOf(FaceIndex(listOf(0 to 0, 1 to 1, 2 to 2, 3 to 3)))
+                        faces = listOf(FaceIndex(listOf(0, 1, 2, 3), listOf(0, 1, 2, 3)))
                 )
             }
             JsonImporter.Side.NORTH -> {
@@ -135,7 +135,7 @@ class JsonImporter {
                                 vec2Of(uv0.x, uv1.y),
                                 vec2Of(uv1.x, uv1.y)
                         ),
-                        faces = listOf(FaceIndex(listOf(0 to 0, 1 to 1, 2 to 2, 3 to 3)))
+                        faces = listOf(FaceIndex(listOf(0, 1, 2, 3), listOf(0, 1, 2, 3)))
                 )
             }
             JsonImporter.Side.SOUTH -> {
@@ -153,7 +153,7 @@ class JsonImporter {
                                 vec2Of(uv0.x, uv0.y),
                                 vec2Of(uv0.x, uv1.y)
                         ),
-                        faces = listOf(FaceIndex(listOf(0 to 0, 1 to 1, 2 to 2, 3 to 3)))
+                        faces = listOf(FaceIndex(listOf(0, 1, 2, 3), listOf(0, 1, 2, 3)))
                 )
             }
             JsonImporter.Side.WEST -> {
@@ -171,7 +171,7 @@ class JsonImporter {
                                 vec2Of(uv0.x, uv0.y),
                                 vec2Of(uv0.x, uv1.y)
                         ),
-                        faces = listOf(FaceIndex(listOf(0 to 0, 1 to 1, 2 to 2, 3 to 3)))
+                        faces = listOf(FaceIndex(listOf(0, 1, 2, 3), listOf(0, 1, 2, 3)))
                 )
             }
             JsonImporter.Side.EAST -> {
@@ -189,7 +189,7 @@ class JsonImporter {
                                 vec2Of(uv0.x, uv1.y),
                                 vec2Of(uv1.x, uv1.y)
                         ),
-                        faces = listOf(FaceIndex(listOf(0 to 0, 1 to 1, 2 to 2, 3 to 3)))
+                        faces = listOf(FaceIndex(listOf(0, 1, 2, 3), listOf(0, 1, 2, 3)))
                 )
             }
         }

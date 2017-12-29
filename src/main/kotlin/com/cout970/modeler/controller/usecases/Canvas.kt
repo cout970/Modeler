@@ -8,7 +8,6 @@ import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.IRef
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
-import com.cout970.modeler.controller.injection.Inject
 import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.Gui
@@ -26,158 +25,119 @@ import org.liquidengine.legui.component.Component
  * Created by cout970 on 2017/07/20.
  */
 
-class CanvasSelectPart : IUseCase {
-
-    override val key: String = "canvas.select"
-
-    @Inject lateinit var component: Component
-    @Inject lateinit var state: GuiState
-    @Inject lateinit var input: IInput
-    @Inject lateinit var model: IModel
-    @Inject lateinit var gui: Gui
-
-    override fun createTask(): ITask {
-        if (state.hoveredObject != null) return TaskNone
-
-        val canvas = component as Canvas
-        return when (canvas.viewMode) {
-            SelectionTarget.MODEL -> onModel(canvas)
-            SelectionTarget.TEXTURE -> onTexture(canvas)
-            SelectionTarget.ANIMATION -> onModel(canvas)
-        }
+@UseCase("view.switch.ortho")
+fun switchCameraProjection(canvasContainer: CanvasContainer): ITask {
+    canvasContainer.selectedCanvas?.cameraHandler?.let { handler ->
+        return ModifyGui { handler.setOrtho(handler.camera.perspective) }
     }
+    return TaskNone
+}
 
-    private fun onModel(canvas: Canvas): ITask {
-        val obj = trySelectModel(canvas)
-        val multiSelection = Config.keyBindings.multipleSelection.check(input)
-        val selection = gui.modelAccessor.modelSelectionHandler.getSelection()
-
-        return TaskUpdateModelSelection(
-                oldSelection = selection,
-                newSelection = gui.modelAccessor.modelSelectionHandler.updateSelection(
-                        selection.toNullable(),
-                        multiSelection,
-                        obj
-                )
-        )
+@UseCase("view.set.texture.mode")
+fun setCanvasModeTexture(canvasContainer: CanvasContainer): ITask {
+    canvasContainer.selectedCanvas?.let { canvas ->
+        return ModifyGui { canvas.viewMode = SelectionTarget.TEXTURE }
     }
+    return TaskNone
+}
 
-    fun trySelectModel(canvas: Canvas): IRef? {
-        val pos = input.mouse.getMousePos()
-        val context = CanvasHelper.getMouseSpaceContext(canvas, pos)
-        val obstacles = model.getModelObstacles(state.selectionType)
-        val res = obstacles.mapNotNull { (obj, ref) -> obj.rayTrace(context.mouseRay)?.let { result -> result to ref } }
-        return res.getClosest(context.mouseRay)?.second
+@UseCase("view.set.model.mode")
+fun setCanvasModeModel(canvasContainer: CanvasContainer): ITask {
+    canvasContainer.selectedCanvas?.let { canvas ->
+        return ModifyGui { canvas.viewMode = SelectionTarget.MODEL }
     }
+    return TaskNone
+}
 
-    fun trySelectTexture(canvas: Canvas): IRef? {
-        val mouse = input.mouse.getMousePos()
-        val clickPos = CanvasHelper.getMouseProjection(canvas, mouse)
-        val materialRef = state.selectedMaterial
-        val actualMaterial = model.getMaterial(materialRef)
-        val polygons = model.getTexturePolygons(state.selectionType, materialRef, actualMaterial)
-
-        val finalPos = CanvasHelper.fromRenderToMaterial(clickPos, actualMaterial)
-        val mouseCollisionBox = getVertexTexturePolygon(finalPos, actualMaterial)
-
-        val selected = polygons.filter { it.first.collide(mouseCollisionBox) }
-        val results = selected.map { it.second }.distinct()
-
-        return results.firstOrNull()
+@UseCase("view.set.animation.mode")
+fun setCanvasModeAnimation(canvasContainer: CanvasContainer): ITask {
+    canvasContainer.selectedCanvas?.let { canvas ->
+        return ModifyGui { canvas.viewMode = SelectionTarget.ANIMATION }
     }
+    return TaskNone
+}
 
-    private fun onTexture(canvas: Canvas): ITask {
-        val obj = trySelectTexture(canvas)
-        val multiSelection = Config.keyBindings.multipleSelection.check(input)
-        val selection = gui.modelAccessor.textureSelectionHandler.getSelection()
+@UseCase("canvas.jump.camera")
+fun jumpCameraToCanvas(component: Component, state: GuiState, input: IInput, model: IModel): ITask {
+    if (state.hoveredObject != null) return TaskNone
 
-        return TaskUpdateTextureSelection(
-                oldSelection = selection,
-                newSelection = gui.modelAccessor.textureSelectionHandler.updateSelection(
-                        selection.toNullable(),
-                        multiSelection,
-                        obj
-                )
-        )
+    val canvas = component as Canvas
+    val pos = input.mouse.getMousePos()
+    val context = CanvasHelper.getMouseSpaceContext(canvas, pos)
+    val obstacles = model.getModelObstacles(SelectionType.OBJECT)
+    val res = obstacles.mapNotNull { (obj, ref) -> obj.rayTrace(context.mouseRay)?.let { result -> result to ref } }
+    val obj = res.getClosest(context.mouseRay)
+
+    val point = obj?.first ?: return TaskNone
+    return ModifyGui { canvas.cameraHandler.setPosition(-point.hit) }
+}
+
+@UseCase("canvas.select")
+fun selectPartInCanvas(component: Component, input: IInput, model: IModel, gui: Gui): ITask {
+    if (gui.state.hoveredObject != null) return TaskNone
+
+    val canvas = component as Canvas
+    return when (canvas.viewMode) {
+        SelectionTarget.MODEL -> onModel(canvas, model, gui, input)
+        SelectionTarget.TEXTURE -> onTexture(canvas, model, input, gui)
+        SelectionTarget.ANIMATION -> onModel(canvas, model, gui, input)
     }
 }
 
-class CanvasJumpCamera : IUseCase {
+private fun onModel(canvas: Canvas, model: IModel, gui: Gui, input: IInput): ITask {
+    val obj = trySelectModel(canvas, model, gui.state, input)
+    val multiSelection = Config.keyBindings.multipleSelection.check(input)
+    val selection = gui.modelAccessor.modelSelectionHandler.getSelection()
 
-    override val key: String = "canvas.jump.camera"
-
-    @Inject lateinit var component: Component
-    @Inject lateinit var state: GuiState
-    @Inject lateinit var input: IInput
-    @Inject lateinit var model: IModel
-
-    override fun createTask(): ITask {
-        if (state.hoveredObject != null) return TaskNone
-
-        val canvas = component as Canvas
-        val pos = input.mouse.getMousePos()
-        val context = CanvasHelper.getMouseSpaceContext(canvas, pos)
-        val obstacles = model.getModelObstacles(SelectionType.OBJECT)
-        val res = obstacles.mapNotNull { (obj, ref) -> obj.rayTrace(context.mouseRay)?.let { result -> result to ref } }
-        val obj = res.getClosest(context.mouseRay)
-
-        val point = obj?.first ?: return TaskNone
-        return TaskUpdateCameraPosition(canvas, -point.hit)
-    }
+    return TaskUpdateModelSelection(
+            oldSelection = selection,
+            newSelection = gui.modelAccessor.modelSelectionHandler.updateSelection(
+                    selection.toNullable(),
+                    multiSelection,
+                    obj
+            )
+    )
 }
 
-class SwitchProjection : IUseCase {
+private fun onTexture(canvas: Canvas, model: IModel, input: IInput, gui: Gui): ITask {
+    val obj = trySelectTexture(canvas, model, gui.state, input)
+    val multiSelection = Config.keyBindings.multipleSelection.check(input)
+    val selection = gui.modelAccessor.textureSelectionHandler.getSelection()
 
-    override val key: String = "view.switch.ortho"
-
-    @Inject lateinit var canvasContainer: CanvasContainer
-
-    override fun createTask(): ITask {
-        canvasContainer.selectedCanvas?.cameraHandler?.let {
-            return TaskUpdateCameraProjection(handler = it, ortho = it.camera.perspective)
-        }
-        return TaskNone
-    }
+    return TaskUpdateTextureSelection(
+            oldSelection = selection,
+            newSelection = gui.modelAccessor.textureSelectionHandler.updateSelection(
+                    selection.toNullable(),
+                    multiSelection,
+                    obj
+            )
+    )
 }
 
-class SetTextureMode : IUseCase {
-    override val key: String = "view.set.texture.mode"
-
-    @Inject lateinit var canvasContainer: CanvasContainer
-
-    override fun createTask(): ITask {
-        canvasContainer.selectedCanvas?.let {
-            return TaskUpdateCanvasViewMode(it, SelectionTarget.TEXTURE)
-        }
-        return TaskNone
-    }
+private fun trySelectModel(canvas: Canvas, model: IModel, state: GuiState, input: IInput): IRef? {
+    val pos = input.mouse.getMousePos()
+    val context = CanvasHelper.getMouseSpaceContext(canvas, pos)
+    val obstacles = model.getModelObstacles(state.selectionType)
+    val res = obstacles.mapNotNull { (obj, ref) -> obj.rayTrace(context.mouseRay)?.let { result -> result to ref } }
+    return res.getClosest(context.mouseRay)?.second
 }
 
-class SetModelMode : IUseCase {
-    override val key: String = "view.set.model.mode"
+private fun trySelectTexture(canvas: Canvas, model: IModel, state: GuiState, input: IInput): IRef? {
+    val mouse = input.mouse.getMousePos()
+    val clickPos = CanvasHelper.getMouseProjection(canvas, mouse)
+    val materialRef = state.selectedMaterial
+    val actualMaterial = model.getMaterial(materialRef)
+    val polygons = model.getTexturePolygons(state.selectionType, materialRef, actualMaterial)
 
-    @Inject lateinit var canvasContainer: CanvasContainer
+    val finalPos = CanvasHelper.fromRenderToMaterial(clickPos, actualMaterial)
+    val mouseCollisionBox = getVertexTexturePolygon(finalPos, actualMaterial)
 
-    override fun createTask(): ITask {
-        canvasContainer.selectedCanvas?.let {
-            return TaskUpdateCanvasViewMode(it, SelectionTarget.MODEL)
-        }
-        return TaskNone
-    }
+    val selected = polygons.filter { it.first.collide(mouseCollisionBox) }
+    val results = selected.map { it.second }.distinct()
+
+    return results.firstOrNull()
 }
 
-class SetAnimationMode : IUseCase {
-    override val key: String = "view.set.animation.mode"
-
-    @Inject lateinit var canvasContainer: CanvasContainer
-
-    override fun createTask(): ITask {
-        canvasContainer.selectedCanvas?.let {
-            return TaskUpdateCanvasViewMode(it, SelectionTarget.ANIMATION)
-        }
-        return TaskNone
-    }
-}
 
 fun IModel.getModelObstacles(selectionType: SelectionType): List<Pair<IRayObstacle, IRef>> {
     val objs = objectRefs
@@ -192,7 +152,8 @@ fun IModel.getModelObstacles(selectionType: SelectionType): List<Pair<IRayObstac
     }
 }
 
-fun IModel.getTexturePolygons(selectionType: SelectionType, matRef: IMaterialRef, mat: IMaterial): List<Pair<IPolygon, IRef>> {
+fun IModel.getTexturePolygons(selectionType: SelectionType, matRef: IMaterialRef,
+                              mat: IMaterial): List<Pair<IPolygon, IRef>> {
     val objs = objectRefs
             .filter { isVisible(it) }
             .map { getObject(it) to it }

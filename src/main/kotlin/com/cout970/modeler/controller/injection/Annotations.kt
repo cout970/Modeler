@@ -7,8 +7,3 @@ package com.cout970.modeler.controller.injection
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Inject
-
-
-@Target(AnnotationTarget.FIELD)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class InjectFromGui(val key: String)

@@ -116,11 +116,20 @@ class McxImporter {
             listOf(storage.tex[it.at], storage.tex[it.bt], storage.tex[it.ct], storage.tex[it.dt])
         }
         val faces = quadIndices.map {
-            FaceIndex(listOf(
-                    pos.indexOf(storage.pos[it.a]) to tex.indexOf(storage.tex[it.at]),
-                    pos.indexOf(storage.pos[it.b]) to tex.indexOf(storage.tex[it.bt]),
-                    pos.indexOf(storage.pos[it.c]) to tex.indexOf(storage.tex[it.ct]),
-                    pos.indexOf(storage.pos[it.d]) to tex.indexOf(storage.tex[it.dt])))
+            FaceIndex(
+                    listOf(
+                            pos.indexOf(storage.pos[it.a]),
+                            pos.indexOf(storage.pos[it.b]),
+                            pos.indexOf(storage.pos[it.c]),
+                            pos.indexOf(storage.pos[it.d])
+                    ),
+                    listOf(
+                            tex.indexOf(storage.tex[it.at]),
+                            tex.indexOf(storage.tex[it.bt]),
+                            tex.indexOf(storage.tex[it.ct]),
+                            tex.indexOf(storage.tex[it.dt])
+                    )
+            )
         }
 
         val mesh = Mesh(pos.map { it * 16.0 }, tex, faces)

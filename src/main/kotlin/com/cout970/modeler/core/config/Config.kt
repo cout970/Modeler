@@ -15,13 +15,13 @@ object Config {
 
     var backupPath: String = "data/backups"
     @ConfigComment("Speed moving the camera in the X axis")
-    var mouseTranslateSpeedX: Float = 5.0f
+    var mouseTranslateSpeedX: Float = 3.0f
     @ConfigComment("Speed moving the camera in the Y axis")
-    var mouseTranslateSpeedY: Float = 5.0f
+    var mouseTranslateSpeedY: Float = 3.0f
     @ConfigComment("Speed rotating the camera when the mouse moves in the X axis")
-    var mouseRotationSpeedX: Float = 0.5f
+    var mouseRotationSpeedX: Float = 0.2f
     @ConfigComment("Speed rotating the camera when the mouse moves in the Y axis")
-    var mouseRotationSpeedY: Float = 0.5f
+    var mouseRotationSpeedY: Float = 0.3f
     @ConfigComment("Speed changing the zoom with the mouse scroll")
     var cameraScrollSpeed: Float = 10f
     @ConfigComment("Distance from the cursor center to the end")
@@ -36,8 +36,5 @@ object Config {
     var selectionThickness: Float = 0.2f
     @ConfigComment("Field of view")
     var perspectiveFov: Float = 45f
-    @ConfigComment("Does the camera keeps its inertia when rotating round?")
-    var cameraRotationInertia: Boolean = true
-    @ConfigComment("Friction to the camera inertia")
-    var cameraInertiaFactor: Float = 2.0f
+
 }

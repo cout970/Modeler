@@ -1,5 +1,6 @@
 package com.cout970.modeler.gui.components
 
+import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.gui.leguicomp.*
@@ -105,10 +106,10 @@ class CenterPanel : RComponent<CenterPanel.Props, Unit>() {
 
         }
 
-        +ProfilerDiagram()
+        +ProfilerDiagram(props.timer)
     }
 
-    class Props(val visibleElements: VisibleElements, val canvasContainer: CanvasContainer)
+    class Props(val visibleElements: VisibleElements, val canvasContainer: CanvasContainer, val timer: Timer)
 
     companion object : RComponentSpec<CenterPanel, CenterPanel.Props, Unit>
 }

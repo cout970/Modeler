@@ -49,6 +49,7 @@ class AABB(a: IVector3, b: IVector3) {
         }
 
         fun export(list: List<AABB>, output: File) {
+            output.parentFile.let { if (!it.exists()) it.mkdir() }
             val stream = FileOutputStream(output)
             val f = DecimalFormat("0.000", DecimalFormatSymbols.getInstance(Locale.US))
 

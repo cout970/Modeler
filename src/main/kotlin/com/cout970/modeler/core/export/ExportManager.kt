@@ -21,6 +21,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.stream.JsonReader
 import java.io.File
+import java.lang.reflect.Modifier
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
@@ -55,7 +56,7 @@ class ExportManager(val resourceLoader: ResourceLoader) {
         val version = zip.load<String>("version.json", gson) ?:
                       throw IllegalStateException("Missing file 'version.json' inside '$path'")
 
-        if(version != CURRENT_SAVE_VERSION) throw IllegalStateException("Invalid save version")
+        if (version != CURRENT_SAVE_VERSION) throw IllegalStateException("Invalid save version")
 
         val properties = zip.load<ProjectProperties>("project.json", gson) ?:
                          throw IllegalStateException("Missing file 'project.json' inside '$path'")
@@ -63,7 +64,41 @@ class ExportManager(val resourceLoader: ResourceLoader) {
         val model = zip.load<IModel>("model.json", gson) ?:
                     throw IllegalStateException("Missing file 'model.json' inside '$path'")
 
+        checkIntegrity(null, model)
         return ProgramSave(version, properties, model)
+    }
+
+    private fun checkIntegrity(parent: Any?, any: Any?, path: String = "") {
+        any ?: throw IllegalStateException("Null object found after serialize object: $path")
+
+        val fields = any.javaClass.declaredFields
+        val validFields = fields.filter {
+            !Modifier.isStatic(it.modifiers) &&
+            !it.type.isPrimitive
+        }
+
+        validFields.forEach {
+            it.isAccessible = true
+            val value = it.get(any)
+            when {
+                value == parent -> return@forEach
+
+                it.type.toString().contains("kotlin.Lazy") -> return@forEach
+
+                it.type == Array<Any>::class.java -> {
+                    value ?: throw IllegalStateException("Null object found after serialize object: $path")
+
+                    val array = value as Array<*>
+
+                    array.forEachIndexed { index, elem ->
+                        checkIntegrity(any, elem, "$path/$index")
+                    }
+                }
+                !it.type.isArray -> {
+                    checkIntegrity(any, value, "$path/${it.name}")
+                }
+            }
+        }
     }
 
     inline fun <reified T> ZipFile.load(entryName: String, gson: Gson): T? {

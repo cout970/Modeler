@@ -1,12 +1,9 @@
 package com.cout970.modeler.render.tool.camera
 
 import com.cout970.glutilities.structure.Timer
-import com.cout970.modeler.core.config.Config
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.lengthSq
 import com.cout970.vector.extensions.plus
-import com.cout970.vector.extensions.times
 import com.cout970.vector.extensions.vec2Of
 
 /**
@@ -17,20 +14,11 @@ class CameraHandler {
     var camera = Camera.Companion.DEFAULT
     var desiredZoom = camera.zoom
     var desiredRotation: IVector2 = vec2Of(camera.angleX, camera.angleY)
-    var rotationInertia: IVector2? = null
 
     fun updateAnimation(timer: Timer) {
 
         if (Math.abs(desiredZoom - camera.zoom) > 0.01) {
             camera = camera.copy(zoom = camera.zoom + (desiredZoom - camera.zoom) * Math.min(1.0, timer.delta * 5))
-        }
-
-        rotationInertia?.let {
-            if (it.lengthSq() < 0.001) {
-                rotationInertia = null; return@let
-            }
-            desiredRotation += it * (1 - Math.min(1.0, timer.delta * Config.cameraInertiaFactor))
-            rotationInertia = it * 0.75
         }
 
         if (Math.abs(desiredRotation.xd - camera.angleX) > 0.01 ||
@@ -59,10 +47,6 @@ class CameraHandler {
     }
 
     fun rotate(angleX: Double, angleY: Double) {
-
-        if (Config.cameraRotationInertia) {
-            rotationInertia = vec2Of(angleX, angleY)
-        }
         desiredRotation = vec2Of(camera.angleX + angleX, camera.angleY + angleY)
     }
 

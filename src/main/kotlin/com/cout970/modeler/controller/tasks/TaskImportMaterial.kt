@@ -14,7 +14,6 @@ class TaskImportMaterial(
     override fun run(state: Program) {
         state.projectManager.loadMaterial(material)
         state.projectManager.loadedMaterials.forEach { it.loadTexture(state.resourceLoader) }
-//        state.gui.editorPanel.rightPanelModule.presenter.updateObjectList()
     }
 
     override fun undo(state: Program) {
@@ -22,7 +21,6 @@ class TaskImportMaterial(
             val ref = state.projectManager.loadedMaterials.indexOf(material)
             state.projectManager.removeMaterial(MaterialRef(ref))
             state.projectManager.loadedMaterials.forEach { it.loadTexture(state.resourceLoader) }
-//            state.gui.editorPanel.rightPanelModule.presenter.updateObjectList()
         }
     }
 }

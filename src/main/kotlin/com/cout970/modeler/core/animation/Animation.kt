@@ -16,7 +16,7 @@ data class Joint(
         override val name: String,
         override val children: List<IJoint>,
         override val offsetFromParent: ITransformation
-): IJoint
+) : IJoint
 
 data class JointRef(override val id: Int) : IJointRef
 
@@ -28,6 +28,4 @@ data class Animation(
 data class KeyFrame(
         override val timeStamp: Float,
         override val transforms: Map<IJointRef, ITransformation>
-): IKeyFrame
-
-
+) : IKeyFrame

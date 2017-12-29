@@ -4,10 +4,11 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
-import com.cout970.modeler.controller.injection.Inject
 import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.model.getSelectedObjects
 import com.cout970.modeler.core.model.selection.*
+import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.tool.EditTool
 import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.asNullable
@@ -16,67 +17,62 @@ import com.cout970.modeler.util.asNullable
  * Created by cout970 on 2017/07/19.
  */
 
-class Copy : IUseCase {
-
-    override val key: String = "model.selection.copy"
-
-    @Inject lateinit var model: IModel
-    @Inject lateinit var selection: Nullable<ISelection>
-    @Inject lateinit var clipboard: IClipboard
-
-    override fun createTask(): ITask {
-        return selection.map { TaskUpdateClipboard(clipboard, Clipboard(model, it)) as ITask }.getOr(TaskNone)
-    }
+@UseCase("model.selection.delete")
+fun deleteSelection(model: IModel, projectManager: ProjectManager): ITask {
+    val modSel = projectManager.modelSelectionHandler.getSelection()
+    val texSel = projectManager.textureSelectionHandler.getSelection()
+    return deleteSelectionInModel(modSel, texSel, model)
 }
 
-class Paste : IUseCase {
+fun deleteSelectionInModel(modSel: Nullable<ISelection>, texSel: Nullable<ISelection>, model: IModel): ITask {
+    val modSel2 = modSel.getOrNull() ?: return TaskNone
+    val newModel = EditTool.delete(model, modSel2)
 
-    override val key: String = "model.selection.paste"
-
-    @Inject lateinit var model: IModel
-    @Inject lateinit var clipboard: IClipboard
-    @Inject lateinit var selection: Nullable<ISelection>
-
-    override fun createTask(): ITask {
-        if (clipboard != ClipboardNone) {
-            val saveSelection = clipboard.selection
-            if (saveSelection.selectionTarget == SelectionTarget.MODEL) {
-                return paste(saveSelection)
-            }
-        }
-        return TaskNone
-    }
-
-    fun paste(saveSelection: ISelection): ITask = when (saveSelection.selectionType) {
-        SelectionType.OBJECT -> {
-            val selectedObjects = clipboard.model.getSelectedObjects(saveSelection)
-            val newModel = model.addObjects(selectedObjects)
-            val selRefs = (model.objects.size until model.objects.size + selectedObjects.size)
-                    .map { ObjectRef(it) }
-
-            val newSelection = Selection(SelectionTarget.MODEL, SelectionType.OBJECT, selRefs)
-
-            TaskChain(listOf(
-                    TaskUpdateModel(oldModel = model, newModel = newModel),
-                    TaskUpdateModelSelection(oldSelection = selection, newSelection = newSelection.asNullable())
-            ))
-        }
-        SelectionType.FACE -> TaskNone // TODO Implement face Paste
-        SelectionType.EDGE, SelectionType.VERTEX -> TaskNone
-    }
+    return TaskChain(listOf(
+            TaskUpdateModelSelection(
+                    oldSelection = modSel2.asNullable(),
+                    newSelection = Nullable.castNull()
+            ),
+            TaskUpdateTextureSelection(
+                    oldSelection = texSel,
+                    newSelection = Nullable.castNull()
+            ),
+            TaskUpdateModel(oldModel = model, newModel = newModel)
+    ))
 }
 
-class Cut : IUseCase {
 
-    override val key: String = "model.selection.cut"
+@UseCase("model.selection.copy")
+fun copySelection(accessor: IModelAccessor, clipboard: IClipboard): ITask {
+    val model = accessor.model
+    val selection = accessor.modelSelection
 
-    @Inject lateinit var model: IModel
-    @Inject lateinit var selection: Nullable<ISelection>
-    @Inject lateinit var clipboard: IClipboard
+    selection.ifNotNull {
+        return TaskUpdateClipboard(clipboard, Clipboard(model, it))
+    }
+    return TaskNone
+}
 
-    override fun createTask(): ITask = selection.map(this::cut).getOr(TaskNone)
+@UseCase("model.selection.paste")
+fun pasteSelection(accessor: IModelAccessor, clipboard: IClipboard): ITask {
+    val model = accessor.model
+    val selection = accessor.modelSelection
 
-    fun cut(sel: ISelection): ITask {
+    if (clipboard != ClipboardNone) {
+        val saveSelection = clipboard.selection
+        if (saveSelection.selectionTarget == SelectionTarget.MODEL) {
+            return paste(saveSelection, selection, model, clipboard)
+        }
+    }
+    return TaskNone
+}
+
+@UseCase("model.selection.cut")
+fun cutSelection(accessor: IModelAccessor, clipboard: IClipboard): ITask {
+    val model = accessor.model
+    val selection = accessor.modelSelection
+
+    selection.ifNotNull { sel ->
         val newModel = EditTool.delete(model, sel)
         return TaskChain(listOf(
                 TaskUpdateClipboard(oldClipboard = clipboard, newClipboard = Clipboard(model, sel)),
@@ -91,4 +87,25 @@ class Cut : IUseCase {
                 )
         ))
     }
+    return TaskNone
+}
+
+private fun paste(saveSelection: ISelection, oldSelection: Nullable<ISelection>, model: IModel,
+                  clipboard: IClipboard): ITask = when (saveSelection.selectionType) {
+    SelectionType.OBJECT -> {
+
+        val selectedObjects = clipboard.model.getSelectedObjects(saveSelection)
+        val newModel = model.addObjects(selectedObjects)
+        val selRefs = (model.objects.size until model.objects.size + selectedObjects.size)
+                .map { ObjectRef(it) }
+
+        val newSelection = Selection(SelectionTarget.MODEL, SelectionType.OBJECT, selRefs)
+
+        TaskChain(listOf(
+                TaskUpdateModel(oldModel = model, newModel = newModel),
+                TaskUpdateModelSelection(oldSelection = oldSelection, newSelection = newSelection.asNullable())
+        ))
+    }
+    SelectionType.FACE -> TaskNone // TODO Implement face Paste
+    SelectionType.EDGE, SelectionType.VERTEX -> TaskNone // You can't paste vertex or edges
 }

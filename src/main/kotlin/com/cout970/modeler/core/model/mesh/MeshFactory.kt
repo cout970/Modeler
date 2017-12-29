@@ -19,7 +19,7 @@ object MeshFactory {
                         .map { it * vec3Of(size.x, 1, size.y) },
                 listOf(vec2Of(0, 0), vec2Of(1, 0), vec2Of(1, 1), vec2Of(0, 1)),
 
-                listOf(FaceIndex(listOf(Pair(0, 0), Pair(1, 1), Pair(2, 2), Pair(3, 3))))
+                listOf(FaceIndex(listOf(0, 1, 2, 3), listOf(0, 1, 2, 3)))
         )
     }
 
@@ -35,16 +35,16 @@ object MeshFactory {
                 vec3Of(n.x, p.y, p.z), //4
                 vec3Of(p.x, p.y, p.z), //5
                 vec3Of(p.x, p.y, n.z), //6
-                vec3Of(n.x, p.y, n.z) //7
+                vec3Of(n.x, p.y, n.z)  //7
         )
         val tex = listOf(vec2Of(0, 0), vec2Of(1, 0), vec2Of(1, 1), vec2Of(0, 1))
         val faces = listOf(
-                FaceIndex(listOf(Pair(0, 0), Pair(1, 1), Pair(2, 2), Pair(3, 3))),
-                FaceIndex(listOf(Pair(4, 0), Pair(5, 1), Pair(6, 2), Pair(7, 3))),
-                FaceIndex(listOf(Pair(7, 0), Pair(6, 1), Pair(0, 2), Pair(3, 3))),
-                FaceIndex(listOf(Pair(1, 0), Pair(5, 1), Pair(4, 2), Pair(2, 3))),
-                FaceIndex(listOf(Pair(2, 0), Pair(4, 1), Pair(7, 2), Pair(3, 3))),
-                FaceIndex(listOf(Pair(6, 0), Pair(5, 1), Pair(1, 2), Pair(0, 3)))
+                FaceIndex(listOf(0, 1, 2, 3), listOf(0, 1, 2, 3)),
+                FaceIndex(listOf(4, 5, 6, 7), listOf(0, 1, 2, 3)),
+                FaceIndex(listOf(7, 6, 0, 3), listOf(0, 1, 2, 3)),
+                FaceIndex(listOf(1, 5, 4, 2), listOf(0, 1, 2, 3)),
+                FaceIndex(listOf(2, 4, 7, 3), listOf(0, 1, 2, 3)),
+                FaceIndex(listOf(6, 5, 1, 0), listOf(0, 1, 2, 3))
         )
         return Mesh(pos, tex, faces)
     }
