@@ -69,7 +69,7 @@ class ExportManager(val resourceLoader: ResourceLoader) {
         val model = zip.load<IModel>("model.json", gson) ?:
                     throw IllegalStateException("Missing file 'model.json' inside '$path'")
 
-        checkIntegrity(null, model)
+        checkIntegrity(null, model.objects)
         return ProgramSave(version, properties, model)
     }
 
@@ -89,13 +89,12 @@ class ExportManager(val resourceLoader: ResourceLoader) {
                 value == parent -> return@forEach
 
                 it.type.toString().contains("kotlin.Lazy") -> return@forEach
-
-                it.type == Array<Any>::class.java -> {
+                it.type == List::class.java -> {
                     value ?: throw IllegalStateException("Null object found after serialize object: $path")
 
-                    val array = value as Array<*>
-
+                    val array = value as List<*>
                     array.forEachIndexed { index, elem ->
+
                         checkIntegrity(any, elem, "$path/$index")
                     }
                 }

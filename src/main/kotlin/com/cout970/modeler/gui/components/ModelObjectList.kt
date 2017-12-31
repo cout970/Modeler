@@ -37,10 +37,10 @@ class ModelObjectList : RComponent<ModelObjectList.Props, ModelObjectList.State>
         val model = props.modelAccessor.model
         val selection = props.modelAccessor.modelSelection
         val maxItemAmount = Math.ceil(size.y / 24.0)
-        val maxScroll = Math.max(0.0, model.objects.size - maxItemAmount).toFloat()
+        val maxScroll = Math.max(0.0, model.objects.size - maxItemAmount + 1).toFloat()
 
         val start = Math.ceil(state.scroll.toDouble()).toInt()
-        val end = start + maxItemAmount.toInt() - 1
+        val end = start + maxItemAmount.toInt() + 1
         val objectRefs = model.objectRefs
 
         for (index in start until end) {

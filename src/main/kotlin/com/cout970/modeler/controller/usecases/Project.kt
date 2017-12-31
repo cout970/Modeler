@@ -7,6 +7,8 @@ import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.project.ProjectProperties
+import com.cout970.modeler.gui.event.Notification
+import com.cout970.modeler.gui.event.NotificationHandler
 import com.cout970.modeler.util.toPointerBuffer
 import org.lwjgl.PointerBuffer
 import org.lwjgl.util.tinyfd.TinyFileDialogs
@@ -68,8 +70,10 @@ private fun loadProjectWithoutAsking(file: String, exportManager: ExportManager,
                 oldModel = projectManager.model,
                 newModel = save.model
         ))
+        NotificationHandler.push(Notification("Project loaded successfully", "Project loaded from '$file'"))
     } catch (e: Exception) {
         e.print()
+        NotificationHandler.push(Notification("Error loading project", "Unable to load project at '$file': $e"))
     }
 }
 

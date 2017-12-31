@@ -1,6 +1,7 @@
 use "jvisualvm.exe -J-Dorg.netbeans.profiler.separateConsole=true"
 
 # TODO soom
+Notification for model export
 add event messages
 join shapes
 Add ability to load model without replacing the current one
