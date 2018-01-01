@@ -122,6 +122,7 @@ class Initializer {
 
         log(Level.FINE) { "[GuiInitializer] Binding text inputs" }
         gui.dispatcher.state = state
+        gui.dispatcher.checkUseCases()
         futureExecutor.programState = state
 
         gui.root.bindButtons(gui.buttonBinder)

@@ -30,10 +30,25 @@ class Dispatcher {
         val instances = list
                 .flatMap { it.declaredMethods.toList() }
                 .filter { it.isAnnotationPresent(UseCase::class.java) }
-                .associate { method -> method.getAnnotation(UseCase::class.java).key to method.kotlinFunction!! }
+
 
         log(Level.FINE) { "[Dispatcher] Search done, found ${instances.size} functions" }
-        return instances
+
+        val map = instances.associate { method ->
+            method.getAnnotation(UseCase::class.java).key to method.kotlinFunction!!
+        }
+
+        if (map.size != instances.size) {
+            log(Level.ERROR) { "[Dispatcher] Found duplicated UseCases ids, unique ids: ${map.size}, total usecase: ${instances.size} " }
+        }
+
+        return map
+    }
+
+    fun checkUseCases() {
+        functionUseCases.forEach { _, func ->
+            dependencyInjector.checkUseCaseArguments(state, func)
+        }
     }
 
     fun onEvent(key: String, comp: Component?) {

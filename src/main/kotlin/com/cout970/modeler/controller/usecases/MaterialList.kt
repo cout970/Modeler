@@ -8,7 +8,7 @@ import com.cout970.modeler.core.model.getSelectedObjectRefs
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
-import com.cout970.modeler.core.project.ModelAccessor
+import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.gui.GuiState
 import com.cout970.modeler.util.asNullable
@@ -22,7 +22,7 @@ import java.io.File
  */
 
 @UseCase("material.view.apply")
-fun applyMaterial(component: Component, modelAccessor: ModelAccessor): ITask {
+fun applyMaterial(component: Component, modelAccessor: IModelAccessor): ITask {
     val model = modelAccessor.model
     modelAccessor.modelSelection.ifNotNull { selection ->
         component.asNullable()

@@ -43,28 +43,7 @@ import kotlin.reflect.jvm.javaType
 
 class DependencyInjector {
 
-    fun injectDependencies(state: Program, comp: Component?, obj: Any) {
-        val clazz = obj::class.java
-        val properties = clazz.declaredFields
-                .filter { it.isAnnotationPresent(Inject::class.java) }
-                .map { it.genericType to it }
-
-        val valueAndProperty = properties.map { (type, property) ->
-            state.getInstace(type, comp) to property
-        }
-
-        valueAndProperty.forEach { (value, property) ->
-            if (value == null) {
-                throw IllegalStateException(
-                        "Error finding a value for property: ${property.name}: ${property.type.simpleName} in ${clazz.simpleName}")
-            } else {
-                property.isAccessible = true
-                property.set(obj, value)
-            }
-        }
-    }
-
-    private fun Program.getInstace(type: Type, comp: Component?): Any? = when (type) {
+    private fun Program.getInstance(type: Type, comp: Component?): Any? = when (type) {
         IModel::class.java -> projectManager.model
         ProjectProperties::class.java -> projectManager.projectProperties
         IClipboard::class.java -> projectManager.clipboard
@@ -106,7 +85,7 @@ class DependencyInjector {
 
         val args: Map<KParameter, Any> = useCase.valueParameters.associate { param ->
             Pair(param,
-                    state.getInstace(param.type.javaType, comp)
+                    state.getInstance(param.type.javaType, comp)
                     ?: throw IllegalStateException("Unable to inject ${param.type.javaType}")
             )
         }
@@ -119,5 +98,14 @@ class DependencyInjector {
         }
 
         return task
+    }
+
+    fun checkUseCaseArguments(state: Program, func: KFunction<*>) {
+        func.valueParameters.forEach { param ->
+            val value = state.getInstance(param.type.javaType, null)
+            if (value == null) {
+                log(Level.CRITICAL) { "[Dispatcher] Error UseCase argument invalid: $func" }
+            }
+        }
     }
 }

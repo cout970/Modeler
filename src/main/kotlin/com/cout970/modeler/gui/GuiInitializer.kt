@@ -52,7 +52,7 @@ class GuiInitializer(
         val dispatcher = Dispatcher()
         log(Level.FINE) { "[GuiInitializer] Creating ButtonBinder" }
         val buttonBinder = ButtonBinder(dispatcher)
-        log(Level.FINE) { "[GuiInitializer] Creating ButtonBinder" }
+        log(Level.FINE) { "[GuiInitializer] Creating KeyboardBinder" }
         val keyboardBinder = KeyboardBinder(dispatcher)
         log(Level.FINE) { "[GuiInitializer] Creating NotificationHandler" }
         val notificationHandler = NotificationHandler()

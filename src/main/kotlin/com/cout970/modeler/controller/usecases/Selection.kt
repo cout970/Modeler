@@ -6,7 +6,7 @@ import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.tasks.TaskUpdateModelSelection
 import com.cout970.modeler.core.model.selection.Selection
-import com.cout970.modeler.core.project.ModelAccessor
+import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.util.asNullable
 
 /**
@@ -14,7 +14,7 @@ import com.cout970.modeler.util.asNullable
  */
 
 @UseCase("model.select.all")
-fun selectAll(model: IModel, modelAccessor: ModelAccessor): ITask {
+fun selectAll(model: IModel, modelAccessor: IModelAccessor): ITask {
     val newSelection = Selection(SelectionTarget.MODEL, SelectionType.OBJECT, model.objectRefs)
 
     return TaskUpdateModelSelection(

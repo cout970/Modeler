@@ -4,7 +4,7 @@ import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.tasks.TaskNone
 import com.cout970.modeler.controller.tasks.TaskUpdateModel
-import com.cout970.modeler.core.project.ModelAccessor
+import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.util.asNullable
 import com.cout970.modeler.util.text
 import org.liquidengine.legui.component.Component
@@ -15,7 +15,7 @@ import org.liquidengine.legui.component.TextInput
  */
 
 @UseCase("mode.obj.change.name")
-fun changeObjectName(component: Component, modelAccessor: ModelAccessor): ITask{
+fun changeObjectName(component: Component, modelAccessor: IModelAccessor): ITask{
     val model = modelAccessor.model
     val selection = modelAccessor.modelSelection
 
