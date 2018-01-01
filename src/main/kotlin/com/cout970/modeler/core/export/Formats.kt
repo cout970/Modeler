@@ -16,6 +16,16 @@ enum class ExportFormat {
     MCX
 }
 
-data class ImportProperties(val path: String, val format: ImportFormat, val flipUV: Boolean)
-data class ExportProperties(val path: String, val format: ExportFormat, val materialLib: String = "materials",
-                            val domain: String = "blacksmith")
+data class ImportProperties(
+        val path: String,
+        val format: ImportFormat,
+        val flipUV: Boolean,
+        val append: Boolean
+)
+
+data class ExportProperties(
+        val path: String,
+        val format: ExportFormat,
+        val materialLib: String = "materials",
+        val domain: String = "blacksmith"
+)

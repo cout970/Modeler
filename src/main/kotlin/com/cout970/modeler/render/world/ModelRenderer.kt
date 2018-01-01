@@ -88,6 +88,7 @@ class ModelRenderer {
             model.getMaterial(material).bind()
             list.forEach { (objIndex, _) ->
                 ctx.shader.apply {
+                    useCubeMap.setBoolean(false)
                     useTexture.setBoolean(ctx.gui.state.useTexture)
                     useColor.setBoolean(ctx.gui.state.useColor)
                     useLight.setBoolean(ctx.gui.state.useLight)

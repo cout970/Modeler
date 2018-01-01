@@ -115,6 +115,33 @@ data class Model(
         )
     }
 
+    override fun merge(other: IModel): IModel {
+
+        val otherObjects = other.objects.map {
+            val index = it.material.materialIndex
+            val newIndex = if (index != -1) index + this.materials.size else index
+            it.withMaterial(MaterialRef(newIndex))
+        }
+
+        val materials = this.materials + other.materials
+        val visibilities = this.visibilities + other.visibilities
+        val objects = this.objects + otherObjects
+
+        return Model(
+                objects = objects,
+                materials = materials,
+                visibilities = visibilities
+        )
+    }
+
+    override fun compareTo(other: IModel): Int {
+        if (this.objects != other.objects) return -1
+        if (this.visibilities != other.visibilities) return -1
+        if (this.materials != other.materials) return -1
+
+        return 0
+    }
+
     override fun equals(other: Any?): Boolean {
         return id == (other as? Model)?.id
     }

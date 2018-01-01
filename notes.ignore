@@ -1,10 +1,9 @@
 use "jvisualvm.exe -J-Dorg.netbeans.profiler.separateConsole=true"
+# Current
+Add ability to load model without replacing the current one
 
 # TODO soom
-Notification for model export
-add event messages
 join shapes
-Add ability to load model without replacing the current one
 add about section
 add binary switches
 face view in the corner
@@ -43,6 +42,6 @@ Be able to change skybox texture
 showcase option, just keep the camera rotating around the model
 Center camera when something is selected select
 
-# TODO payme if you want me to spend months on this
+# TODO pay me if you want me to spend months on this
 Minecraft transformations preview (hand, hat, ground, etc)
 Game sync (update in editor, change in game at the same time)

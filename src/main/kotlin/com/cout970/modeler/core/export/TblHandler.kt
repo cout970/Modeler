@@ -49,12 +49,12 @@ class TblImporter {
 
     fun mapCubes(list: List<Cube>, material: IMaterialRef, texSize: IVector2): List<ObjectCube> {
         return list.map { cube ->
+            val pivot = cube.position * vec3Of(1, -1, -1) + CENTER_OFFSET
+            val newRot = TRSTransformation.fromRotationPivot(pivot, cube.rotation)
+
             ObjectCube(
                     name = cube.name,
-                    transformation = TRSTransformation.fromRotationPivot(
-                            cube.position * vec3Of(1, -1, -1) + CENTER_OFFSET,
-                            cube.rotation
-                    ).merge(TRSTransformation(translation = transformPos(cube), scale = cube.dimensions)),
+                    transformation = TRSTransformation(translation = transformPos(cube), scale = cube.dimensions).merge(newRot),
                     material = material,
                     textureOffset = cube.txOffset,
                     textureSize = texSize,

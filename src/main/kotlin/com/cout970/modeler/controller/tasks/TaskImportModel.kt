@@ -2,13 +2,18 @@ package com.cout970.modeler.controller.tasks
 
 import com.cout970.modeler.Program
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.selection.SelectionTarget
+import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.core.export.ImportFormat
 import com.cout970.modeler.core.export.ImportProperties
 import com.cout970.modeler.core.export.ModelImporters
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.material.MaterialRefNone
+import com.cout970.modeler.core.model.selection.ObjectRef
+import com.cout970.modeler.core.model.selection.Selection
 import com.cout970.modeler.gui.event.Notification
 import com.cout970.modeler.gui.event.NotificationHandler
+import com.cout970.modeler.util.asNullable
 import com.cout970.modeler.util.toResourcePath
 import java.io.File
 
@@ -36,6 +41,16 @@ class TaskImportModel(
             }
         }
         modelCache?.let {
+            val oldModel = state.projectManager.model
+            val newModel = if (properties.append) oldModel.merge(it) else it
+            val newSelection = if (properties.append) {
+                val startIndex = oldModel.objects.size
+                val refs = it.objectRefs.map { ObjectRef(startIndex + it.objectIndex) }
+
+                Selection(SelectionTarget.MODEL, SelectionType.OBJECT, refs)
+            } else {
+                Selection(SelectionTarget.MODEL, SelectionType.OBJECT, it.objectRefs)
+            }
             state.gui.state.tmpModel = null
             state.gui.state.hoveredObject = null
             state.gui.cursorManager.textureCursor = null
@@ -43,9 +58,11 @@ class TaskImportModel(
             state.projectManager.textureSelectionHandler.clear()
             state.projectManager.modelSelectionHandler.clear()
 
-            state.gui.state.selectedMaterial = it.materialRefs.firstOrNull() ?: MaterialRefNone
+            state.gui.state.selectedMaterial = newModel.materialRefs.firstOrNull() ?: MaterialRefNone
             state.gui.state.materialsHash = (System.currentTimeMillis() and 0xFFFFFFFF).toInt()
-            state.projectManager.updateModel(it)
+            state.projectManager.modelSelectionHandler.setSelection(newSelection.asNullable())
+            state.projectManager.updateModel(newModel)
+
             NotificationHandler.push(Notification("Model imported",
                     "Model at '${properties.path}' imported successfully"))
         }

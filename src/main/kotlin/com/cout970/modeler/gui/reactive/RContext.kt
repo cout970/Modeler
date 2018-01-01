@@ -16,7 +16,7 @@ class RContext(val root: Component, val gui: Gui, val virtualTree: () -> Compone
     fun update() {
         if (dirtyComponents.isNotEmpty()) {
             Profiler.startSection("guiUpdate")
-            dirtyComponents.forEach {
+            dirtyComponents.toList().forEach {
                 RComponentRenderer.buildComponent(it)
             }
             dirtyComponents.clear()

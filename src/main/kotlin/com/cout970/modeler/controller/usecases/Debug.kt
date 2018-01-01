@@ -17,6 +17,15 @@ fun onDebug(): ITask {
         gui.root.reRender()
         gui.resources.reload(resourceLoader)
         gui.root.loadResources(gui.resources)
+
+        // Test import sistem
+//        val properties = ImportProperties(
+//                "path/to/file//small_steam_engine.tbl",
+//                ImportFormat.TBL,
+//                flipUV = false,
+//                append = false
+//        )
+//        taskHistory.processTask(TaskImportModel(projectManager.model, properties))
     }
     return TaskNone
 }

@@ -11,7 +11,7 @@ import com.cout970.modeler.core.model.selection.ObjectRef
 /**
  * Created by cout970 on 2017/05/07.
  */
-interface IModel {
+interface IModel : Comparable<IModel> {
     val objects: List<IObject>
     val materials: List<IMaterial>
     val visibilities: List<Boolean>
@@ -36,4 +36,6 @@ interface IModel {
     fun addMaterial(material: IMaterial): IModel
     fun modifyMaterial(ref: IMaterialRef, new: IMaterial): IModel
     fun removeMaterial(materialRef: IMaterialRef): IModel
+
+    fun merge(other: IModel): IModel
 }

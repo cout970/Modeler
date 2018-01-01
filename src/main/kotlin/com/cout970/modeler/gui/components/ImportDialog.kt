@@ -133,12 +133,24 @@ class ImportDialog : RComponent<ImportDialog.Props, ImportDialog.State>() {
             }
 
             //fifth line
-            +TextButton("", "Import", 270f, 200f, 80f, 24f).apply {
+            +TextButton("", "Replace", 180f, 200f, 80f, 24f).apply {
                 listenerMap.addListener(MouseClickEvent::class.java) {
                     props.popup.returnFunc(ImportProperties(
                             path = state.text,
                             format = ImportFormat.values()[state.option],
-                            flipUV = state.flipUV
+                            flipUV = state.flipUV,
+                            append = false
+                    ))
+                }
+            }
+
+            +TextButton("", "Append", 270f, 200f, 80f, 24f).apply {
+                listenerMap.addListener(MouseClickEvent::class.java) {
+                    props.popup.returnFunc(ImportProperties(
+                            path = state.text,
+                            format = ImportFormat.values()[state.option],
+                            flipUV = state.flipUV,
+                            append = true
                     ))
                 }
             }
