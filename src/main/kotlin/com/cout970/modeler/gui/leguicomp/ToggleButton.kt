@@ -57,8 +57,5 @@ class ToggleButton(
     fun setImage(active: Icon) {
         backgroundIcon = active
         togglededBackgroundIcon = active
-//        focusedBackgroundIcon = active
-//        hoveredBackgroundIcon = active
-//        pressedBackgroundIcon = active
     }
 }

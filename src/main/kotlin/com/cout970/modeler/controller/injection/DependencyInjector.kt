@@ -22,6 +22,7 @@ import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.gui.*
 import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.gui.canvas.CanvasManager
+import com.cout970.modeler.gui.canvas.GridLines
 import com.cout970.modeler.gui.canvas.cursor.CursorManager
 import com.cout970.modeler.gui.views.EditorView
 import com.cout970.modeler.input.event.EventController
@@ -61,6 +62,7 @@ class DependencyInjector {
         TaskHistory::class.java -> taskHistory
 
         Root::class.java -> gui.root
+        GridLines::class.java -> gui.gridLines
         CanvasContainer::class.java -> gui.canvasContainer
         Listeners::class.java -> gui.listeners
         WindowHandler::class.java -> gui.windowHandler

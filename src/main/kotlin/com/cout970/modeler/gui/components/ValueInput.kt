@@ -1,6 +1,5 @@
 package com.cout970.modeler.gui.components
 
-import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.leguicomp.*
@@ -70,9 +69,12 @@ class ValueInput : RComponent<ValueInput.Props, Unit>() {
             }
         }
 
-        if (props.ref.objectIndex == -1) {
+        if(!props.enabled) {
             disableInput()
         }
+//        if (props.ref.objectIndex == -1) {
+//            disableInput()
+//        }
     }
 
     var lastTick = 0L
@@ -83,19 +85,19 @@ class ValueInput : RComponent<ValueInput.Props, Unit>() {
         lastTick = Loop.currentTick
 
         val data = Panel().apply {
-            metadata += "cube_ref" to props.ref
+            metadata += props.metadata
             metadata += "offset" to offset
-            metadata += "command" to props.cmd
             metadata += "content" to content
         }
-        props.dispatcher.onEvent("update.template.cube", data)
+        props.dispatcher.onEvent(props.cmd, data)
     }
 
     class Props(
             val dispatcher: Dispatcher,
             val value: () -> Float,
             val cmd: String,
-            val ref: IObjectRef,
+            val metadata: Map<String, Any>,
+            val enabled: Boolean,
             val pos: IVector2
     )
 

@@ -43,10 +43,14 @@ class AutoCache(vararg val flags: CacheFlags) {
         if (CacheFlags.TEXTURE_CURSOR in flags) {
             hash = (hash shl 1) xor (ctx.gui.cursorManager.textureCursor?.hashCode() ?: -1)
         }
+        if (CacheFlags.GRID_LINES in flags) {
+            hash = (hash shl 1) xor ctx.gui.state.gridLinesHash
+        }
         return hash
     }
 
     fun reset() {
+        vao?.close()
         vao = null
     }
 
@@ -65,4 +69,5 @@ enum class CacheFlags {
     VISIBILITY,
     MODEL_CURSOR,
     TEXTURE_CURSOR,
+    GRID_LINES
 }

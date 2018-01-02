@@ -14,9 +14,16 @@ import org.joml.*
  */
 
 operator fun IVector2.component1() = x
-
 operator fun IVector2.component2() = y
+
+operator fun IVector3.component1() = x
+operator fun IVector3.component2() = y
 operator fun IVector3.component3() = z
+
+inline fun IVector3.withX(x: Number) = vec3Of(x, y, z)
+inline fun IVector3.withY(y: Number) = vec3Of(x, y, z)
+inline fun IVector3.withZ(z: Number) = vec3Of(x, y, z)
+
 
 fun IVector3.toVector2() = vec2Of(xd, yd)
 

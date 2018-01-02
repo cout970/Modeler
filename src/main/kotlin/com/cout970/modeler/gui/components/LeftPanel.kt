@@ -2,6 +2,7 @@ package com.cout970.modeler.gui.components
 
 import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.gui.canvas.GridLines
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
@@ -35,9 +36,10 @@ class LeftPanel : RComponent<LeftPanel.Props, Unit>() {
         +GridButtonPanel {}
         +EditObjectName { EditObjectName.Props(props.access, props.dispatcher) }
         +EditCubePanel { EditCubePanel.Props(props.access, props.dispatcher) }
+        +EditGrids { EditGrids.Props(props.dispatcher, props.gridLines) }
     }
 
-    class Props(val access: IModelAccessor, val dispatcher: Dispatcher, val visibleElements: VisibleElements)
+    class Props(val access: IModelAccessor, val dispatcher: Dispatcher, val visibleElements: VisibleElements, val gridLines: GridLines)
 
     companion object : RComponentSpec<LeftPanel, Props, Unit>
 }

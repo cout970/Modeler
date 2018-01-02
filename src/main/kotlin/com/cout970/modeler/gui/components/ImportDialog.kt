@@ -115,6 +115,7 @@ class ImportDialog : RComponent<ImportDialog.Props, ImportDialog.State>() {
                 textState.fontSize = 18f
                 textState.padding.x = 5f
                 isChecked = state.flipUV
+                cornerRadius = 0f
 
                 if (state.option != 0) { // disable
                     isEnabled = false

@@ -2,6 +2,7 @@ package com.cout970.modeler.gui.components
 
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.`object`.IObjectCube
+import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
@@ -20,6 +21,7 @@ import com.cout970.modeler.util.asNullable
 import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.setTransparent
 import com.cout970.modeler.util.toNullable
+import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.Vector2
 import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.vec2Of
@@ -36,9 +38,9 @@ class EditCubePanel : RComponent<EditCubePanel.Props, Unit>() {
 
     override fun build(ctx: RBuilder): Component = panel root@ {
         marginX(ctx, 5f)
-        posY = 132f
-        height = 460f
-        setBorderless()
+        posY = 105f
+        height = 465f
+        border(3f) { greyColor }
         setTransparent()
 
         listenerMap.addListener(EventModelUpdate::class.java) {
@@ -80,9 +82,9 @@ class EditCubePanel : RComponent<EditCubePanel.Props, Unit>() {
             +FixedLabel("x", 10f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
             +FixedLabel("y", 98f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
             +FixedLabel("z", 185f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
-            +ValueInput { ValueInput.Props(disp, { size().xf }, "cube.size.x", cubeRef, vec2Of(10f, 20f)) }
-            +ValueInput { ValueInput.Props(disp, { size().yf }, "cube.size.y", cubeRef, vec2Of(98f, 20f)) }
-            +ValueInput { ValueInput.Props(disp, { size().zf }, "cube.size.z", cubeRef, vec2Of(185f, 20f)) }
+            valueInput({ size().xf }, "cube.size.x", cubeRef, vec2Of(10f, 20f))
+            valueInput({ size().yf }, "cube.size.y", cubeRef, vec2Of(98f, 20f))
+            valueInput({ size().zf }, "cube.size.z", cubeRef, vec2Of(185f, 20f))
         }
 
         +panel {
@@ -98,9 +100,9 @@ class EditCubePanel : RComponent<EditCubePanel.Props, Unit>() {
             +FixedLabel("x", 10f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
             +FixedLabel("y", 98f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
             +FixedLabel("z", 185f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
-            +ValueInput { ValueInput.Props(disp, { pos().xf }, "cube.pos.x", cubeRef, vec2Of(10f, 20f)) }
-            +ValueInput { ValueInput.Props(disp, { pos().yf }, "cube.pos.y", cubeRef, vec2Of(98f, 20f)) }
-            +ValueInput { ValueInput.Props(disp, { pos().zf }, "cube.pos.z", cubeRef, vec2Of(185f, 20f)) }
+            valueInput({ pos().xf }, "cube.pos.x", cubeRef, vec2Of(10f, 20f))
+            valueInput({ pos().yf }, "cube.pos.y", cubeRef, vec2Of(98f, 20f))
+            valueInput({ pos().zf }, "cube.pos.z", cubeRef, vec2Of(185f, 20f))
         }
 
         +panel {
@@ -116,9 +118,9 @@ class EditCubePanel : RComponent<EditCubePanel.Props, Unit>() {
             +FixedLabel("x", 10f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
             +FixedLabel("y", 98f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
             +FixedLabel("z", 185f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
-            +ValueInput { ValueInput.Props(disp, { rotation().xf }, "cube.rot.x", cubeRef, vec2Of(10f, 20f)) }
-            +ValueInput { ValueInput.Props(disp, { rotation().yf }, "cube.rot.y", cubeRef, vec2Of(98f, 20f)) }
-            +ValueInput { ValueInput.Props(disp, { rotation().zf }, "cube.rot.z", cubeRef, vec2Of(185f, 20f)) }
+            valueInput({ rotation().xf }, "cube.rot.x", cubeRef, vec2Of(10f, 20f))
+            valueInput({ rotation().yf }, "cube.rot.y", cubeRef, vec2Of(98f, 20f))
+            valueInput({ rotation().zf }, "cube.rot.z", cubeRef, vec2Of(185f, 20f))
         }
 
         +panel {
@@ -134,9 +136,23 @@ class EditCubePanel : RComponent<EditCubePanel.Props, Unit>() {
             +FixedLabel("x", 10f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
             +FixedLabel("y", 98f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
             +FixedLabel("scale", 185f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
-            +ValueInput { ValueInput.Props(disp, { tex().xf }, "cube.tex.x", cubeRef, vec2Of(10f, 20f)) }
-            +ValueInput { ValueInput.Props(disp, { tex().yf }, "cube.tex.y", cubeRef, vec2Of(98f, 20f)) }
-            +ValueInput { ValueInput.Props(disp, { scale().xf }, "cube.tex.scale", cubeRef, vec2Of(185f, 20f)) }
+            valueInput({ tex().xf }, "cube.tex.x", cubeRef, vec2Of(10f, 20f))
+            valueInput({ tex().yf }, "cube.tex.y", cubeRef, vec2Of(98f, 20f))
+            valueInput({ scale().xf }, "cube.tex.scale", cubeRef, vec2Of(185f, 20f))
+        }
+    }
+
+    fun Panel.valueInput(getter: () -> Float, cmd: String, cubeRef: IObjectRef, pos: IVector2) {
+        val properties = mapOf("cube_ref" to cubeRef, "command" to cmd)
+        +ValueInput {
+            ValueInput.Props(
+                    dispatcher = props.dispatcher,
+                    value = getter,
+                    cmd = "update.template.cube",
+                    metadata = properties,
+                    enabled = cubeRef.objectIndex != -1,
+                    pos = pos
+            )
         }
     }
 

@@ -28,9 +28,10 @@ class EditObjectName : RComponent<EditObjectName.Props, Unit>() {
     override fun build(ctx: RBuilder): Component = panel {
 
         marginX(ctx, 5f)
-        posY = 70f
+        posY = 35f
         height = 64f
         setTransparent()
+        border(3f) { greyColor }
 
         listenerMap.addListener(EventModelUpdate::class.java) {
             replaceState(state)

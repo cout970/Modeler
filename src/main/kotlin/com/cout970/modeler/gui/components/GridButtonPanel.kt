@@ -24,39 +24,36 @@ class GridButtonPanel : RComponent<Unit, Unit>() {
         fillX(ctx)
         setBorderless()
 
-        +ToggleButton("drawModelGridLines", "model_grid", true, 5f, 2f, 24f, 24f)
-                .setBorderless()
-                .apply { cornerRadius = 0f; tooltip = InstantTooltip("Enable/Disable model grid lines") }
 
-        +ToggleButton("drawTextureGridLines", "grid", true, 35f, 2f, 24f, 24f)
+        +ToggleButton("drawTextureGridLines", "grid", true, 5f, 2f, 24f, 24f)
                 .setBorderless()
                 .apply { cornerRadius = 0f; tooltip = InstantTooltip("Enable/Disable texture grid lines") }
 
-        +ToggleButton("renderLights", "focus", false, 65f, 2f, 24f, 24f)
+        +ToggleButton("renderLights", "focus", false, 35f, 2f, 24f, 24f)
                 .setBorderless()
                 .apply { cornerRadius = 0f; tooltip = InstantTooltip("Enable/Disable lights rendering") }
 
-        +ToggleButton("useTexture", "texture", true, 95f, 2f, 24f, 24f)
+        +ToggleButton("useTexture", "texture", true, 65f, 2f, 24f, 24f)
                 .setBorderless()
                 .apply { cornerRadius = 0f; tooltip = InstantTooltip("Enable/Disable model texture") }
 
-        +ToggleButton("useColor", "color", false, 125f, 2f, 24f, 24f)
+        +ToggleButton("useColor", "color", false, 95f, 2f, 24f, 24f)
                 .setBorderless()
                 .apply { cornerRadius = 0f; tooltip = InstantTooltip("Enable/Disable model coloring") }
 
-        +ToggleButton("useLight", "light", true, 155f, 2f, 24f, 24f)
+        +ToggleButton("useLight", "light", true, 125f, 2f, 24f, 24f)
                 .setBorderless()
                 .apply { cornerRadius = 0f; tooltip = InstantTooltip("Enable/Disable lightning") }
 
-        +ToggleButton("showInvisible", "invisible", true, 185f, 2f, 24f, 24f)
+        +ToggleButton("showInvisible", "invisible", true, 155f, 2f, 24f, 24f)
                 .setBorderless()
                 .apply { cornerRadius = 0f; tooltip = InstantTooltip("Enable/Disable transparent sides") }
 
-        +ToggleButton("renderBase", "invisible", true, 215f, 2f, 24f, 24f)
+        +ToggleButton("renderBase", "invisible", true, 185f, 2f, 24f, 24f)
                 .setBorderless()
                 .apply { cornerRadius = 0f; tooltip = InstantTooltip("Enable/Disable base block") }
 
-        +ToggleButton("drawTextureProjection", "invisible", true, 245f, 2f, 24f, 24f)
+        +ToggleButton("drawTextureProjection", "invisible", true, 215f, 2f, 24f, 24f)
                 .setBorderless()
                 .apply { cornerRadius = 0f; tooltip = InstantTooltip("Enable/Disable texture projection") }
     }

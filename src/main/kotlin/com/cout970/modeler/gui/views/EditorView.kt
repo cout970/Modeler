@@ -51,7 +51,8 @@ class EditorView : IView {
                     LeftPanel.Props(
                             access = gui.modelAccessor,
                             dispatcher = gui.dispatcher,
-                            visibleElements = visible
+                            visibleElements = visible,
+                            gridLines = gui.gridLines
                     )
                 }
                 +CenterPanel {

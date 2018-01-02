@@ -36,5 +36,7 @@ object Config {
     var selectionThickness: Float = 0.2f
     @ConfigComment("Field of view")
     var perspectiveFov: Float = 45f
+    @ConfigComment("Zoom value before the grid changes from pixels to blocks")
+    var zoomLevelToChangeGridDetail: Float = 135f
 
 }

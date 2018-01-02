@@ -22,7 +22,6 @@ class GuiState {
     var showHiddenFaces: Boolean = false
     var drawTextureProjection: Boolean = true
     var drawTextureGridLines: Boolean = true
-    var drawModelGridLines: Boolean = true
 
     var renderLights: Boolean = false
     var renderSkybox: Boolean = true
@@ -44,12 +43,12 @@ class GuiState {
     var textureSelectionHash: Int = -1
     var materialsHash: Int = -1
     var visibilityHash: Int = -1
+    var gridLinesHash: Int = -1
 
     var playAnimation = false
 
     fun getBooleanProperties() = mapOf(
             "drawTextureGridLines" to BooleanPropertyWrapper(this::drawTextureGridLines),
-            "drawModelGridLines" to BooleanPropertyWrapper(this::drawModelGridLines),
             "drawTextureProjection" to BooleanPropertyWrapper(this::drawTextureProjection),
             "renderLights" to BooleanPropertyWrapper(this::renderLights),
             "renderBase" to BooleanPropertyWrapper(this::renderBaseBlock),

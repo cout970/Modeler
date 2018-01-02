@@ -40,7 +40,9 @@ class EventController : ITickeable, IEventController, IInput {
     override fun tick() {
         Profiler.startSection("pollEvents")
         EventManager.pollEvents()
-        eventQueue.onEach { it() }.clear()
+        val events = eventQueue.toList()
+        eventQueue.clear()
+        events.forEach { it() }
         mouse.update()
         Profiler.endSection()
     }

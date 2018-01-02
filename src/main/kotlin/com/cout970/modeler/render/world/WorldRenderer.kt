@@ -1,6 +1,7 @@
 package com.cout970.modeler.render.world
 
 import com.cout970.glutilities.structure.GLStateMachine
+import com.cout970.glutilities.tessellator.BufferPTNC
 import com.cout970.glutilities.tessellator.DrawMode
 import com.cout970.matrix.extensions.Matrix4
 import com.cout970.matrix.extensions.times
@@ -9,13 +10,11 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.render.tool.AutoCache
+import com.cout970.modeler.render.tool.CacheFlags
 import com.cout970.modeler.render.tool.RenderContext
 import com.cout970.modeler.render.tool.createVao
 import com.cout970.modeler.render.tool.shader.ShaderFlag
-import com.cout970.vector.extensions.Vector2
-import com.cout970.vector.extensions.Vector3
-import com.cout970.vector.extensions.times
-import com.cout970.vector.extensions.vec3Of
+import com.cout970.vector.extensions.*
 import org.lwjgl.opengl.GL11
 
 /**
@@ -28,7 +27,8 @@ class WorldRenderer {
     val cursorRenderer = ModelCursorRenderer()
 
     var baseCubeCache = AutoCache()
-    var gridLines = AutoCache()
+    var gridLinesPixel = AutoCache(CacheFlags.GRID_LINES)
+    var gridLinesBlock = AutoCache(CacheFlags.GRID_LINES)
     var lights = AutoCache()
     var skybox = AutoCache()
 
@@ -41,9 +41,7 @@ class WorldRenderer {
         if (ctx.gui.state.renderBaseBlock) {
             renderBaseBlock(ctx)
         }
-        if (ctx.gui.state.drawModelGridLines) {
-            renderGridLines(ctx)
-        }
+        renderGridLines(ctx)
         if (ctx.gui.state.renderLights) {
             renderLights(ctx)
         }
@@ -74,25 +72,72 @@ class WorldRenderer {
     }
 
     fun renderGridLines(ctx: RenderContext) {
-        val vao = gridLines.getOrCreate(ctx) {
-            ctx.buffer.build(DrawMode.LINES) {
-                val size = 16 * 4
-                val min = -size
-                val max = size + 16
+        if (!ctx.gui.gridLines.enableXPlane &&
+            !ctx.gui.gridLines.enableYPlane &&
+            !ctx.gui.gridLines.enableZPlane) return
 
-                for (x in min..max) {
-                    val color = if (x % 16 == 0) Config.colorPalette.grid2Color else Config.colorPalette.grid1Color
-                    add(vec3Of(x, 0, min), Vector2.ORIGIN, Vector3.ORIGIN, color)
-                    add(vec3Of(x, 0, max), Vector2.ORIGIN, Vector3.ORIGIN, color)
-                }
-                for (z in min..max) {
-                    val color = if (z % 16 == 0) Config.colorPalette.grid2Color else Config.colorPalette.grid1Color
-                    add(vec3Of(min, 0, z), Vector2.ORIGIN, Vector3.ORIGIN, color)
-                    add(vec3Of(max, 0, z), Vector2.ORIGIN, Vector3.ORIGIN, color)
-                }
+        val pixelVao = gridLinesPixel.getOrCreate(ctx) {
+            ctx.buffer.build(DrawMode.LINES) { renderGridLines(ctx, true) }
+        }
+        val blockVao = gridLinesBlock.getOrCreate(ctx) {
+            ctx.buffer.build(DrawMode.LINES) { renderGridLines(ctx, false) }
+        }
+        val vao = if (ctx.camera.zoom < Config.zoomLevelToChangeGridDetail) pixelVao else blockVao
+
+        ctx.shader.render(vao, Matrix4.IDENTITY, ShaderFlag.COLOR)
+    }
+
+    private fun BufferPTNC.renderGridLines(ctx: RenderContext, pixel: Boolean) {
+        val size = ctx.gui.gridLines.gridSize
+        val offset = ctx.gui.gridLines.gridOffset
+        val xRange = (-size.xi / 2 + 8..size.xi / 2 + 8)
+        val yRange = (-size.yi / 2 + 8..size.yi / 2 + 8)
+        val zRange = (-size.zi / 2 + 8..size.zi / 2 + 8)
+
+        if (ctx.gui.gridLines.enableXPlane) {
+            for (z in zRange) {
+                val color = if (z % 16 == 0) Config.colorPalette.grid2Color else Config.colorPalette.grid1Color
+                if (!pixel && z % 16 != 0) continue
+                add(offset + vec3Of(0, yRange.first, z), Vector2.ORIGIN, Vector3.ORIGIN, color)
+                add(offset + vec3Of(0, yRange.last, z), Vector2.ORIGIN, Vector3.ORIGIN, color)
+            }
+            for (y in yRange) {
+                val color = if (y % 16 == 0) Config.colorPalette.grid2Color else Config.colorPalette.grid1Color
+                if (!pixel && y % 16 != 0) continue
+                add(offset + vec3Of(0, y, zRange.first), Vector2.ORIGIN, Vector3.ORIGIN, color)
+                add(offset + vec3Of(0, y, zRange.last), Vector2.ORIGIN, Vector3.ORIGIN, color)
             }
         }
-        ctx.shader.render(vao, Matrix4.IDENTITY, ShaderFlag.COLOR)
+
+        if (ctx.gui.gridLines.enableYPlane) {
+            for (x in xRange) {
+                val color = if (x % 16 == 0) Config.colorPalette.grid2Color else Config.colorPalette.grid1Color
+                if (!pixel && x % 16 != 0) continue
+                add(offset + vec3Of(x, 0, zRange.first), Vector2.ORIGIN, Vector3.ORIGIN, color)
+                add(offset + vec3Of(x, 0, zRange.last), Vector2.ORIGIN, Vector3.ORIGIN, color)
+            }
+            for (z in zRange) {
+                val color = if (z % 16 == 0) Config.colorPalette.grid2Color else Config.colorPalette.grid1Color
+                if (!pixel && z % 16 != 0) continue
+                add(offset + vec3Of(xRange.first, 0, z), Vector2.ORIGIN, Vector3.ORIGIN, color)
+                add(offset + vec3Of(xRange.last, 0, z), Vector2.ORIGIN, Vector3.ORIGIN, color)
+            }
+        }
+
+        if (ctx.gui.gridLines.enableZPlane) {
+            for (x in xRange) {
+                val color = if (x % 16 == 0) Config.colorPalette.grid2Color else Config.colorPalette.grid1Color
+                if (!pixel && x % 16 != 0) continue
+                add(offset + vec3Of(x, yRange.first, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
+                add(offset + vec3Of(x, yRange.last, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
+            }
+            for (y in yRange) {
+                val color = if (y % 16 == 0) Config.colorPalette.grid2Color else Config.colorPalette.grid1Color
+                if (!pixel && y % 16 != 0) continue
+                add(offset + vec3Of(xRange.first, y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
+                add(offset + vec3Of(xRange.last, y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
+            }
+        }
     }
 
     fun renderSkybox(ctx: RenderContext) {

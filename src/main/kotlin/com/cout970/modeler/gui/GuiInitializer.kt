@@ -11,6 +11,7 @@ import com.cout970.modeler.core.project.IProjectPropertiesHolder
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.gui.canvas.CanvasManager
+import com.cout970.modeler.gui.canvas.GridLines
 import com.cout970.modeler.gui.canvas.cursor.CursorManager
 import com.cout970.modeler.gui.event.NotificationHandler
 import com.cout970.modeler.gui.leguicomp.Panel
@@ -56,6 +57,8 @@ class GuiInitializer(
         val keyboardBinder = KeyboardBinder(dispatcher)
         log(Level.FINE) { "[GuiInitializer] Creating NotificationHandler" }
         val notificationHandler = NotificationHandler()
+        log(Level.FINE) { "[GuiInitializer] Creating GridLines" }
+        val gridLines = GridLines()
         log(Level.FINE) { "[GuiInitializer] Creating initial canvas" }
         canvasContainer.newCanvas()
         log(Level.FINE) { "[GuiInitializer] GUI Initialization done" }
@@ -77,7 +80,8 @@ class GuiInitializer(
                 modelAccessor = modelAccessor,
                 cursorManager = cursorManager,
                 propertyHolder = propertyHolder,
-                notificationHandler = notificationHandler
+                notificationHandler = notificationHandler,
+                gridLines = gridLines
         )
     }
 }

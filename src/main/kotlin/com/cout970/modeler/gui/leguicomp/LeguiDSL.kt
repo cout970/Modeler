@@ -14,6 +14,7 @@ import org.joml.Vector4f
 import org.liquidengine.legui.border.SimpleLineBorder
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.TextArea
+import org.liquidengine.legui.component.TextComponent
 import org.liquidengine.legui.component.TextInput
 import org.liquidengine.legui.event.MouseClickEvent
 import org.liquidengine.legui.event.ScrollEvent
@@ -125,8 +126,12 @@ fun Component.onClick(func: (MouseClickEvent<*>) -> Unit) {
     }
 }
 
-fun TextInput.defaultTextColor() {
+fun TextComponent.defaultTextColor() {
     textState.textColor = Config.colorPalette.textColor.toColor()
+}
+
+fun TextComponent.fontSize(size: Float = 16f){
+    textState.fontSize = size
 }
 
 inline fun TextInput.textColor(f: ColorPalette.() -> IVector3) {

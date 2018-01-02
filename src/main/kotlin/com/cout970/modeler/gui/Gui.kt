@@ -8,6 +8,7 @@ import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.core.project.IProjectPropertiesHolder
 import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.gui.canvas.CanvasManager
+import com.cout970.modeler.gui.canvas.GridLines
 import com.cout970.modeler.gui.canvas.cursor.CursorManager
 import com.cout970.modeler.gui.event.NotificationHandler
 import com.cout970.modeler.gui.views.EditorView
@@ -35,12 +36,14 @@ data class Gui(
         val canvasManager: CanvasManager,
         val cursorManager: CursorManager,
         val propertyHolder: IProjectPropertiesHolder,
-        val notificationHandler: NotificationHandler
+        val notificationHandler: NotificationHandler,
+        val gridLines: GridLines
 ) {
 
     init {
         canvasManager.gui = this
         editorView.gui = this
         notificationHandler.gui = this
+        gridLines.gui = this
     }
 }
