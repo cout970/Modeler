@@ -1,16 +1,13 @@
 use "jvisualvm.exe -J-Dorg.netbeans.profiler.separateConsole=true"
 # Current
-Add ability to load model without replacing the current one
+face view in the corner
 
 # TODO soom
 join shapes
-add about section
 add binary switches
-face view in the corner
 Update gui, i don't like the right panel, too weird
 better logo.
 choose a name.
-Send feedback, join discord, get invoved with the comunity
 
 # TODO later
 export hitbox dialog
@@ -22,8 +19,6 @@ mirror textures X and Y
 wireframe mode
 Flip axis in selection
 translation relative
-Update grid size based on zoom
-Be able to change grid scale, offset, etc
 3d selection
 Dummy data in object to use cube edit controls
 Background images in ortho projection

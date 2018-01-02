@@ -1,6 +1,7 @@
 package com.cout970.modeler.gui.components
 
 import com.cout970.modeler.core.config.*
+import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.project.Author
 import com.cout970.modeler.core.project.IProjectPropertiesHolder
 import com.cout970.modeler.core.project.ProjectProperties
@@ -21,9 +22,12 @@ import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.ScrollablePanel
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.event.MouseClickEvent
+import java.awt.Desktop
+import java.net.URI
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaType
+
 
 class ConfigMenu : RComponent<ConfigMenu.Props, ConfigMenu.State>() {
 
@@ -50,6 +54,7 @@ class ConfigMenu : RComponent<ConfigMenu.Props, ConfigMenu.State>() {
                 ConfigMenu.Tab.PROJECT -> projectTab()
                 ConfigMenu.Tab.PARAMETERS -> parametersTab()
                 ConfigMenu.Tab.CONTROLS -> controlsTab()
+                ConfigMenu.Tab.ABOUT -> aboutTab()
             }
 
             // padding: 20px
@@ -90,7 +95,13 @@ class ConfigMenu : RComponent<ConfigMenu.Props, ConfigMenu.State>() {
             +TextButton("", "Controls", 160f, 0f, 80f, 32f).apply {
                 if (state.tab == Tab.CONTROLS) background { greyColor } else background { darkColor }
                 textState.fontSize = 18f
+                border = PixelBorder().apply { enableRight = true }
                 onClick { replaceState(state.copy(tab = Tab.CONTROLS)) }
+            }
+            +TextButton("", "About", 240f, 0f, 80f, 32f).apply {
+                if (state.tab == Tab.ABOUT) background { greyColor } else background { darkColor }
+                textState.fontSize = 18f
+                onClick { replaceState(state.copy(tab = Tab.ABOUT)) }
             }
         }
     }
@@ -339,6 +350,88 @@ class ConfigMenu : RComponent<ConfigMenu.Props, ConfigMenu.State>() {
         }
     }
 
+    fun Panel.aboutTab() {
+        +FixedLabel("Modeler made by Cout970",
+                0f, 60f, width, 24f).apply {
+            fontSize(22f)
+            textState.horizontalAlign = HorizontalAlign.CENTER
+        }
+        +FixedLabel("Special thanks to:",
+                20f, 90f, width - 40f, 24f).apply {
+            fontSize(22f)
+            textState.horizontalAlign = HorizontalAlign.LEFT
+        }
+        +FixedLabel("- MechWarrior99 for the inspiration to start the project, the initial gui design and testing",
+                20f, 110f, width - 40f, 24f).apply {
+            fontSize(22f)
+            textState.horizontalAlign = HorizontalAlign.LEFT
+        }
+        +FixedLabel("- ShchAlexander for develop Legui and support the project",
+                20f, 130f, width - 40f, 24f).apply {
+            fontSize(22f)
+            textState.horizontalAlign = HorizontalAlign.LEFT
+        }
+        +FixedLabel("Technologies used:",
+                20f, 160f, width - 40f, 24f).apply {
+            fontSize(22f)
+            textState.horizontalAlign = HorizontalAlign.LEFT
+        }
+        +FixedLabel("- Kotlin: made by Jetbrains",
+                20f, 180f, width - 40f, 24f).apply {
+            fontSize(22f)
+            textState.horizontalAlign = HorizontalAlign.LEFT
+        }
+        +FixedLabel("- Legui: made by ShchAlexander",
+                20f, 200f, width - 40f, 24f).apply {
+            fontSize(22f)
+            textState.horizontalAlign = HorizontalAlign.LEFT
+        }
+        +FixedLabel("- LWJGL: from the LWJGL Team",
+                20f, 220f, width - 40f, 24f).apply {
+            fontSize(22f)
+            textState.horizontalAlign = HorizontalAlign.LEFT
+        }
+        +FixedLabel("Source code:",
+                20f, 250f, width - 40f, 24f).apply {
+            fontSize(22f)
+            textState.horizontalAlign = HorizontalAlign.LEFT
+        }
+        +FixedLabel("https://github.com/cout970/Modeler",
+                20f, 270f, width - 40f, 24f).apply {
+            fontSize(22f)
+            textState.horizontalAlign = HorizontalAlign.LEFT
+            textState.textColor = Vector4f(0f, 119f / 255f, 204f / 255f, 1.0f)
+            onClick {
+                openLink("https://github.com/cout970/Modeler")
+            }
+        }
+        +FixedLabel("You can ask for support at the Magneticraft discord:",
+                20f, 310f, width - 40f, 24f).apply {
+            fontSize(22f)
+            textState.horizontalAlign = HorizontalAlign.LEFT
+        }
+        +FixedLabel("Discord",
+                20f, 330f, width - 40f, 24f).apply {
+            fontSize(22f)
+            textState.horizontalAlign = HorizontalAlign.LEFT
+            textState.textColor = Vector4f(0f, 119f / 255f, 204f / 255f, 1.0f)
+            onClick {
+                openLink("https://discord.gg/EhYbA97")
+            }
+        }
+    }
+
+    fun openLink(link: String) {
+        val desktop = if (Desktop.isDesktopSupported()) Desktop.getDesktop() else null
+        if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+            try {
+                desktop.browse(URI(link))
+            } catch (e: Exception) {
+                e.print()
+            }
+        }
+    }
+
     fun updateUser(user: Author) {
         Config.user = user
         rebuild()
@@ -381,10 +474,11 @@ class ConfigMenu : RComponent<ConfigMenu.Props, ConfigMenu.State>() {
     }
 
     enum class Tab {
-        PROJECT, PARAMETERS, CONTROLS
+        PROJECT, PARAMETERS, CONTROLS, ABOUT
     }
 
     data class State(val tab: Tab)
+
     class Props(
             val popup: Popup,
             val propertyHolder: IProjectPropertiesHolder
