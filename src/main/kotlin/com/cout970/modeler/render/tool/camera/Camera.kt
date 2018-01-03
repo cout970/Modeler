@@ -9,6 +9,7 @@ import com.cout970.modeler.util.toRads
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.Vector3
+import com.cout970.vector.extensions.vec2Of
 import org.joml.Matrix4d
 
 /**
@@ -42,6 +43,22 @@ data class Camera(
         } else {
             MatrixUtils.createOrthoMatrix(viewport)
         }
+    }
+
+    fun getMatrixForOrientationCube(): IMatrix4 {
+        val viewport = vec2Of(150)
+        val projectionMatrix = Matrix4d()
+                .setPerspective(Config.perspectiveFov.toRads(), viewport.xd / viewport.yd, 0.1, 10000.0)
+                .toIMatrix()
+
+        val viewMatrix = Matrix4d().apply {
+            translate(0.0, 0.0, -32.0)
+            rotate(angleX, 1.0, 0.0, 0.0)
+            rotate(angleY, 0.0, 1.0, 0.0)
+            scale(0.5)
+        }.toIMatrix()
+
+        return projectionMatrix * viewMatrix
     }
 
     val matrixForPerspective by lazy {

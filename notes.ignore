@@ -1,4 +1,6 @@
-use "jvisualvm.exe -J-Dorg.netbeans.profiler.separateConsole=true"
+# use "jvisualvm.exe -J-Dorg.netbeans.profiler.separateConsole=true"
+# Loads of skyboxes "http://www.custommapmakers.org/skyboxes.php"
+
 # Current
 face view in the corner
 

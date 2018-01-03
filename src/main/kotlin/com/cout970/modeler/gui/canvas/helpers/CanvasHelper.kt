@@ -39,6 +39,23 @@ object CanvasHelper {
         return SceneSpaceContext(mousePos, mouseRay, matrix)
     }
 
+    fun getContextForOrientationCube(canvas: Canvas, start: IVector2, viewportSize: IVector2, absMousePos: IVector2)
+            : SceneSpaceContext {
+
+        val matrix = canvas.cameraHandler.camera.getMatrixForOrientationCube().toJOML()
+        val mousePos = absMousePos - start
+        val viewport = intArrayOf(0, 0, viewportSize.xi, viewportSize.yi)
+
+        val a = matrix.unproject(vec3Of(mousePos.x, viewportSize.yd - mousePos.yd, 0.0).toJoml3d(),
+                viewport, Vector3d()).toIVector()
+        val b = matrix.unproject(vec3Of(mousePos.x, viewportSize.yd - mousePos.yd, 1.0).toJoml3d(),
+                viewport, Vector3d()).toIVector()
+
+        val mouseRay = Ray(a, b)
+
+        return SceneSpaceContext(mousePos, mouseRay, matrix)
+    }
+
     fun getMouseProjection(canvas: Canvas, absMousePos: IVector2): IVector2 {
         val cam = canvas.textureCamera.camera
         val aspectRatio = (canvas.size.y / canvas.size.x)

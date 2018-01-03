@@ -16,6 +16,7 @@ import com.cout970.modeler.gui.leguicomp.LogFreeBufferedImage as BufferedImage
 class GuiResources {
 
     lateinit var baseCubeMesh: IMesh
+    lateinit var orientationCubeMesh: IMesh
     lateinit var lightMesh: IMesh
     lateinit var translationArrow: IMesh
     lateinit var rotationRing: IMesh
@@ -23,6 +24,7 @@ class GuiResources {
     lateinit var skybox: IMesh
 
     lateinit var baseCubeTexture: Texture
+    lateinit var orientationCube: Texture
     lateinit var centerMarkTexture: Texture
     lateinit var skyboxTexture: Texture
 
@@ -31,6 +33,7 @@ class GuiResources {
     fun reload(loader: ResourceLoader) {
         log(Level.FINE) { "[GuiResources] Loading gui resources" }
         baseCubeMesh = ModelImporters.objImporter.importAsMesh("assets/models/cube.obj".fromClasspath(), true)
+        orientationCubeMesh = ModelImporters.objImporter.importAsMesh("assets/models/orientation_cube.obj".fromClasspath(), false)
         lightMesh = ModelImporters.objImporter.importAsMesh("assets/models/light.obj".fromClasspath(), true)
         translationArrow = ModelImporters.objImporter.importAsMesh("assets/models/translation_x.obj".fromClasspath(),
                 true)
@@ -39,6 +42,7 @@ class GuiResources {
         skybox = ModelImporters.objImporter.importAsMesh("assets/models/skybox.obj".fromClasspath(), false)
 
         baseCubeTexture = loader.getTexture("assets/textures/models/cube.png").apply { magFilter = Texture.PIXELATED }
+        orientationCube = loader.getTexture("assets/textures/models/orientation_cube.png").apply { magFilter = Texture.PIXELATED }
         centerMarkTexture = loader.getTexture("assets/textures/models/center_mark.png")
         skyboxTexture = loader.getTextureCubeMap("assets/textures/models/skybox").apply {
             magFilter = Texture.SMOOTH

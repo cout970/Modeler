@@ -5,6 +5,7 @@ import com.cout970.collision.collide
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
+import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.api.model.selection.IRef
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
@@ -18,7 +19,11 @@ import com.cout970.modeler.gui.canvas.helpers.CanvasHelper
 import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.util.*
 import com.cout970.raytrace.IRayObstacle
-import com.cout970.vector.extensions.unaryMinus
+import com.cout970.raytrace.Ray
+import com.cout970.raytrace.RayTraceResult
+import com.cout970.raytrace.RayTraceUtil
+import com.cout970.vector.api.IVector2
+import com.cout970.vector.extensions.*
 import org.liquidengine.legui.component.Component
 
 /**
@@ -85,6 +90,9 @@ fun selectPartInCanvas(component: Component, input: IInput, model: IModel, gui: 
 }
 
 private fun onModel(canvas: Canvas, model: IModel, gui: Gui, input: IInput): ITask {
+
+    tryClickOrientationCube(gui, canvas, input)?.let { return it }
+
     val obj = trySelectModel(canvas, model, gui.state, input)
     val multiSelection = Config.keyBindings.multipleSelection.check(input)
     val selection = gui.modelAccessor.modelSelectionHandler.getSelection()
@@ -97,6 +105,22 @@ private fun onModel(canvas: Canvas, model: IModel, gui: Gui, input: IInput): ITa
                     obj
             )
     )
+}
+
+private fun tryClickOrientationCube(gui: Gui, canvas: Canvas, input: IInput): ITask? {
+
+    val pos = input.mouse.getMousePos()
+
+    val viewportPos = vec2Of(canvas.absolutePosition.x, canvas.absolutePositionV.yf + canvas.size.y - 150f)
+
+    val context = CanvasHelper.getContextForOrientationCube(canvas, viewportPos, vec2Of(150, 150), pos)
+
+    val obstacles = getOrientationCubeFaces(gui.resources.orientationCubeMesh)
+    val res = obstacles.mapNotNull { (obj, ref) -> obj.rayTrace(context.mouseRay)?.let { result -> result to ref } }
+    val obj = res.getClosest(context.mouseRay)
+
+    val angles = obj?.second ?: return null
+    return ModifyGui { canvas.cameraHandler.setRotation(angles.xd.toRads(), angles.yd.toRads()) }
 }
 
 private fun onTexture(canvas: Canvas, model: IModel, input: IInput, gui: Gui): ITask {
@@ -138,6 +162,26 @@ private fun trySelectTexture(canvas: Canvas, model: IModel, state: GuiState, inp
     return results.firstOrNull()
 }
 
+
+private fun getOrientationCubeFaces(mesh: IMesh): List<Pair<IRayObstacle, IVector2>> {
+    val obstacles = mesh.faces.map { face ->
+        val pos = face.pos.map { mesh.pos[it] }.map { (it * 2.0) + vec3Of(-8) }
+
+        object : IRayObstacle {
+            override fun rayTrace(ray: Ray): RayTraceResult? {
+                return RayTraceUtil.rayTraceQuad(ray, this, pos[0], pos[1], pos[2], pos[3])
+            }
+        }
+    }
+    return listOf(
+            obstacles[0] to vec2Of(-90.0, 0.0), // bottom
+            obstacles[1] to vec2Of(90.0, 0.0),  // top
+            obstacles[2] to vec2Of(0.0, 180.0), // north
+            obstacles[3] to vec2Of(0.0, 0.0),   // south
+            obstacles[4] to vec2Of(0.0, 90.0),  // west
+            obstacles[5] to vec2Of(0.0, -90.0)  // east
+    )
+}
 
 fun IModel.getModelObstacles(selectionType: SelectionType): List<Pair<IRayObstacle, IRef>> {
     val objs = objectRefs

@@ -55,6 +55,10 @@ fun getClosestPointOnLineSegment(A: IVector3, B: IVector3, P: IVector3): IVector
     }
 }
 
+inline fun Number.modulus(other: Number): Double {
+    val rem = this.toDouble() % other.toDouble()
+    return if(rem < 0) rem + other.toDouble() else rem
+}
 fun Number.toRads() = Math.toRadians(this.toDouble())
 fun Number.toDegrees() = Math.toDegrees(this.toDouble())
 

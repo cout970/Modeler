@@ -27,6 +27,7 @@ class WorldRenderer {
     val cursorRenderer = ModelCursorRenderer()
 
     var baseCubeCache = AutoCache()
+    var orientationCubeCache = AutoCache()
     var gridLinesPixel = AutoCache(CacheFlags.GRID_LINES)
     var gridLinesBlock = AutoCache(CacheFlags.GRID_LINES)
     var lights = AutoCache()
@@ -41,7 +42,10 @@ class WorldRenderer {
         if (ctx.gui.state.renderBaseBlock) {
             renderBaseBlock(ctx)
         }
+
         renderGridLines(ctx)
+
+
         if (ctx.gui.state.renderLights) {
             renderLights(ctx)
         }
@@ -49,6 +53,8 @@ class WorldRenderer {
         modelRenderer.renderModels(ctx, model)
 
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
+        renderOrientationCube(ctx)
+
         cursorRenderer.renderCursor(ctx)
     }
 
@@ -168,5 +174,21 @@ class WorldRenderer {
             matrixVP.setMatrix4(ctx.camera.getMatrix(ctx.viewport))
         }
         GLStateMachine.depthTest.enable()
+    }
+
+    fun renderOrientationCube(ctx: RenderContext) {
+
+        ctx.gui.windowHandler.saveViewport(ctx.viewportPos, vec2Of(150, 150)) {
+
+            val vao = orientationCubeCache.getOrCreate(ctx) {
+                ctx.gui.resources.orientationCubeMesh.createVao(ctx.buffer)
+            }
+            val transform = TRSTransformation(translation = vec3Of(-8, -8, -8), scale = vec3Of(2))
+            ctx.gui.resources.orientationCube.bind()
+
+            ctx.shader.matrixVP.setMatrix4(ctx.camera.getMatrixForOrientationCube())
+            ctx.shader.render(vao, transform.matrix, ShaderFlag.TEXTURE)
+            ctx.shader.matrixVP.setMatrix4(ctx.camera.getMatrix(ctx.viewport))
+        }
     }
 }

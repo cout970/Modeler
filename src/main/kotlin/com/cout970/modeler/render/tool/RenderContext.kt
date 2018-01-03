@@ -13,6 +13,7 @@ data class RenderContext(
         val gui: Gui,
         val camera: Camera,
         val viewport: IVector2,
+        val viewportPos: IVector2,
         val lights: List<Light>,
         val shader: UniversalShader,
         val buffer: BufferPTNC

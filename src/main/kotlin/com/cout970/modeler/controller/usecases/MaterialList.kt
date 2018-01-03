@@ -32,9 +32,8 @@ fun applyMaterial(component: Component, modelAccessor: IModelAccessor): ITask {
                     val newModel = model.modifyObjects(model.getSelectedObjectRefs(selection)) { _, obj ->
                         obj.withMaterial(ref)
                     }
-                    TaskUpdateModel(oldModel = model, newModel = newModel) as ITask
+                    return TaskUpdateModel(oldModel = model, newModel = newModel) as ITask
                 }
-                .getOr(TaskNone)
     }
     return TaskNone
 }
