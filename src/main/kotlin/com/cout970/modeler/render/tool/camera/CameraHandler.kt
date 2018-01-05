@@ -70,11 +70,11 @@ class CameraHandler {
     }
 
     fun setRotation(angleX: Double, angleY: Double) {
-        desiredRotation = normalizeAngle(vec2Of(angleX, angleY))
+        desiredRotation = vec2Of(angleX, angleY)
     }
 
     fun rotate(angleX: Double, angleY: Double) {
-        desiredRotation = normalizeAngle(vec2Of(camera.angleX + angleX, camera.angleY + angleY))
+        desiredRotation = vec2Of(camera.angleX + angleX, camera.angleY + angleY)
     }
 
     fun setZoom(zoom: Double) {

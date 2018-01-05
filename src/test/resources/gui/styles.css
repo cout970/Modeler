@@ -1,0 +1,126 @@
+@CHARSET "UTF-8";
+.header {
+    background-color: #2672B3;
+    color: white;
+    height: 48px;
+    width: 100%;
+    font-family: "Times New Roman", monospace;
+    font-size: 18pt;
+    vertical-align: top;
+    text-align: center;
+}
+
+.header_form {
+    float: left;
+    margin-right: 10px;
+}
+
+.header_titulo {
+    margin-left: 10px;
+    padding: 4px;
+    float: none;
+}
+
+.header_menu {
+    float: left;
+    margin-left: 80px;
+    padding: 11px;
+    font-family: "Times New Roman", monospace;
+    color: white;
+    border: 0;
+    background: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.header_inside {
+    height: 20px;
+    padding: 6px;
+}
+
+.start {
+    width: 100%;
+    height: 400px;
+    font-family: "Times New Roman", monospace;
+    color: white;
+    background: #505050;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.header_input {
+    border: 0 none;
+    padding: 1px 4px;
+    font-size: 11px;
+    float: left;
+}
+
+.header_button {
+    font-family: "Times New Roman", monospace;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    color: white;
+    background: none;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.main {
+    color: black;
+    font-family: "Times New Roman", monospace;
+    font-size: 12pt;
+    vertical-align: middle;
+    text-align: center;
+    /*border-left: 5px solid #2672B3;*/
+    /*border-right: 5px solid #2672B3;*/
+}
+
+.main_back {
+    height: 92%;
+    border-left: 0;
+    background: white url("http://darkaqua.net/assets/darkaqua.png") no-repeat left top;
+    image-rendering: -moz-crisp-edges; /* Firefox */
+    image-rendering: -o-crisp-edges; /* Opera */
+    image-rendering: -webkit-optimize-contrast; /* Webkit (non-standard naming) */
+    image-rendering: crisp-edges;
+    -ms-interpolation-mode: nearest-neighbor; /* IE (non-standard property) */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main_form {
+    vertical-align: middle;
+    text-align: center;
+}
+
+.main_input {
+    padding: 10px;
+}
+
+.main_button {
+    font-family: "Times New Roman", monospace;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background: none;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.resultado {
+    padding: 10pt;
+    font-size: 16px;
+}
+
+.footer {
+    background-color: #194C77;
+    color: white;
+    font-family: "Times New Roman", monospace;
+    font-size: 12pt;
+    vertical-align: bottom;
+    text-align: center
+}

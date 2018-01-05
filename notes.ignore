@@ -2,7 +2,7 @@
 # Loads of skyboxes "http://www.custommapmakers.org/skyboxes.php"
 
 # Current
-face view in the corner
+integrate the css loader to be able to change gui desing without code
 
 # TODO soom
 join shapes
@@ -10,6 +10,7 @@ add binary switches
 Update gui, i don't like the right panel, too weird
 better logo.
 choose a name.
+fix selection type buttons not updating properly
 
 # TODO later
 export hitbox dialog
