@@ -45,6 +45,9 @@ class KeyboardBinder(val dispatcher: Dispatcher) {
                 moveCameraToCursor.check(e) -> "camera.move.to.cursor"
                 splitTexture.check(e) -> "model.texture.split"
 
+                joinObjects.check(e) -> "model.obj.join"
+                extrudeFace.check(e) -> "model.obj.join"
+
                 e.keycode == Keyboard.KEY_F1 -> "debug"
                 e.keycode == Keyboard.KEY_F2 -> "debug.changeColors"
                 e.keycode == Keyboard.KEY_F3 -> "debug.show.profiling"

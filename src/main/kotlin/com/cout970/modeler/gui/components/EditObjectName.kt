@@ -66,11 +66,11 @@ class EditObjectName : RComponent<EditObjectName.Props, Unit>() {
             }
             obj.ifNotNull {
                 onLoseFocus = {
-                    props.dispatcher.onEvent("mode.obj.change.name", this)
+                    props.dispatcher.onEvent("model.obj.change.name", this)
                 }
                 onEnterPress = onLoseFocus
                 onTextChange = {
-                    props.dispatcher.onEvent("mode.obj.change.name", this)
+                    props.dispatcher.onEvent("model.obj.change.name", this)
                 }
             }
         }

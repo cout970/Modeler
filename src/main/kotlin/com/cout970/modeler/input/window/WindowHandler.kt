@@ -13,6 +13,7 @@ import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWImage
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL13
+import java.io.File
 import java.util.*
 
 
@@ -84,6 +85,11 @@ class WindowHandler : ITickeable {
     }
 
     fun shouldClose() = window.shouldClose()
+
+    fun updateTitle(projectName: String){
+        val projectPath = File(".").absolutePath
+        window.setTitle("$projectName [$projectPath] - $WINDOW_TITLE")
+    }
 
     override fun tick() {
         Profiler.startSection("windows")

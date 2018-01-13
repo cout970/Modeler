@@ -17,10 +17,12 @@ class TaskUpdateProject(
     override fun run(state: Program) {
         state.projectManager.loadProjectProperties(newProjectProperties)
         state.projectManager.updateModel(newModel)
+        state.windowHandler.updateTitle(newProjectProperties.name)
     }
 
     override fun undo(state: Program) {
         state.projectManager.loadProjectProperties(oldProjectProperties)
         state.projectManager.updateModel(oldModel)
+        state.windowHandler.updateTitle(oldProjectProperties.name)
     }
 }

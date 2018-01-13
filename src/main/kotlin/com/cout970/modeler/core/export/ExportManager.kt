@@ -141,6 +141,7 @@ class ExportManager(val resourceLoader: ResourceLoader) {
                 val save = loadProject(path.path)
                 projectManager.loadProjectProperties(save.projectProperties)
                 projectManager.updateModel(save.model)
+                gui.windowHandler.updateTitle(save.projectProperties.name)
                 model.materials.forEach { it.loadTexture(resourceLoader) }
                 log(Level.FINE) { "Last project loaded" }
                 NotificationHandler.push(Notification("Project loaded",

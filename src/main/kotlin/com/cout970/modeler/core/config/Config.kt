@@ -39,4 +39,7 @@ object Config {
     @ConfigComment("Zoom value before the grid changes from pixels to blocks")
     var zoomLevelToChangeGridDetail: Float = 135f
 
+    @ConfigComment("Amount of milliseconds between backups")
+    var backupInterval: Int = 20_000
+
 }

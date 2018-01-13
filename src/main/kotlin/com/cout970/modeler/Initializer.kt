@@ -129,7 +129,7 @@ class Initializer {
         gui.root.updateSizes(windowHandler.window.getFrameBufferSize())
 
 
-        parseArgs(programArguments, exportManager, projectManager)
+        parseArgs(programArguments, exportManager, projectManager, windowHandler)
 
         log(Level.FINE) { "Searching for last project" }
         exportManager.loadLastProjectIfExists(projectManager, gui)
@@ -138,7 +138,7 @@ class Initializer {
     }
 
     private fun parseArgs(programArguments: List<String>, exportManager: ExportManager,
-                          projectManager: ProjectManager) {
+                          projectManager: ProjectManager, windowHandler: WindowHandler) {
         if (programArguments.isNotEmpty()) {
             log(Level.FINE) { "Parsing arguments..." }
             if (File(programArguments[0]).exists()) {
@@ -147,6 +147,7 @@ class Initializer {
                     val save = exportManager.loadProject(programArguments[0])
                     projectManager.loadProjectProperties(save.projectProperties)
                     projectManager.updateModel(save.model)
+                    windowHandler.updateTitle(save.projectProperties.name)
                     log(Level.NORMAL) { "Project loaded" }
 
                     NotificationHandler.push(Notification("Project loaded",

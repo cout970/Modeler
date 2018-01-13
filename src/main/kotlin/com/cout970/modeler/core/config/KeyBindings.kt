@@ -45,6 +45,8 @@ class KeyBindings {
     var showBottomPanel = KeyBind(Keyboard.KEY_B, ALT)
     var selectAll = KeyBind(Keyboard.KEY_A, CTRL)
     var splitTexture = KeyBind(Keyboard.KEY_P, CTRL)
+    var joinObjects = KeyBind(Keyboard.KEY_J, CTRL)
+    var extrudeFace = KeyBind(Keyboard.KEY_E, CTRL)
 
     var newProject = KeyBind(Keyboard.KEY_N, CTRL, ALT, SHIFT)
     var openProject = KeyBind(Keyboard.KEY_O, CTRL, ALT, SHIFT)

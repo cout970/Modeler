@@ -2,14 +2,13 @@
 # Loads of skyboxes "http://www.custommapmakers.org/skyboxes.php"
 
 # Current
+Extrude face
 
 # TODO soom
-join shapes
 add binary switches
 Update gui, i don't like the right panel, too weird
 better logo.
 choose a name.
-fix selection type buttons not updating properly
 
 # TODO later
 integrate the css loader to be able to change gui desing without code
@@ -28,7 +27,6 @@ Background images in ortho projection
 Open changelog
 Open last backup, Open backupfolder
 Search bar in config menu
-Time between backups in config
 
 # TODO maybe, and of course later
 Add plugin api
