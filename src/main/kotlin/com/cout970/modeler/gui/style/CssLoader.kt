@@ -10,7 +10,7 @@ data class StyleRule(val key: String, val value: String) {
 }
 
 data class StyleTarget(val selectors: List<String>, val rules: List<StyleRule>) {
-    override fun toString(): String = "${selectors.first()} {\n" + rules.joinToString("\n") + "\n}"
+    override fun toString(): String = "${selectors.joinToString(", ")} {\n" + rules.joinToString("\n") + "\n}"
 }
 
 data class StyleSheet(val targets: List<StyleTarget>) {
@@ -152,7 +152,12 @@ object CssLoader {
         reader.trim()
         val rules = readRuleList(reader) ?: return null
 
-        return StyleTarget(listOf(selector), rules)
+        val selectorList = selector.split(",")
+                .map { it.trim() }
+                .filterNot { it.isEmpty() }
+                .toList()
+
+        return StyleTarget(selectorList, rules)
     }
 
     private fun readRuleList(reader: Reader): List<StyleRule>? {
@@ -235,7 +240,7 @@ object CssLoader {
                 append(reader.popChar())
 
                 var newChar = reader.peekChar()
-                while (newChar.isLetter() || newChar == '_' || newChar == '-') {
+                while (newChar.isLetter() || newChar == '_' || newChar == '-' || newChar == ',' || newChar == ' ') {
                     append(reader.popChar())
                     newChar = reader.peekChar()
                 }
