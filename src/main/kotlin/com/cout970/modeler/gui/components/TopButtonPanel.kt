@@ -1,6 +1,7 @@
 package com.cout970.modeler.gui.components
 
 import com.cout970.modeler.gui.GuiState
+import com.cout970.modeler.gui.Listeners
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
@@ -68,10 +69,10 @@ class TopButtonPanel : RComponent<TopButtonPanel.Props, Unit>() {
             }
         }
 
-        +SelectionTypeButtons { SelectionTypeButtons.Props(props.guiState) }
+        +SelectionTypeButtons { SelectionTypeButtons.Props(props.guiState, props.listeners) }
     }
 
-    data class Props(val guiState: GuiState)
+    data class Props(val guiState: GuiState, val listeners: Listeners)
 
     companion object : RComponentSpec<TopButtonPanel, Props, Unit>
 }

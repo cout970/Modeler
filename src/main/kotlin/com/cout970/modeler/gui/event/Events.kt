@@ -3,6 +3,7 @@ package com.cout970.modeler.gui.event
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.selection.ISelection
+import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.util.Nullable
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Frame
@@ -34,6 +35,14 @@ class EventSelectionUpdate(
         frame: Frame,
         val newSelection: Nullable<ISelection>,
         val oldSelection: Nullable<ISelection>
+) : Event<Component>(comp, ctx, frame)
+
+class EventSelectionTypeUpdate(
+        comp: Component,
+        ctx: Context,
+        frame: Frame,
+        val newSelectionType: SelectionType,
+        val oldSelectionType: SelectionType
 ) : Event<Component>(comp, ctx, frame)
 
 class EventNotificationUpdate(

@@ -2,6 +2,8 @@ package com.cout970.modeler.gui.components
 
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.gui.GuiState
+import com.cout970.modeler.gui.Listeners
+import com.cout970.modeler.gui.event.EventSelectionTypeUpdate
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
@@ -14,6 +16,10 @@ import org.liquidengine.legui.event.MouseClickEvent
  * Created by cout970 on 2017/10/21.
  */
 class SelectionTypeButtons : RComponent<SelectionTypeButtons.Props, Unit>() {
+
+    init {
+        state = Unit
+    }
 
     override fun build(ctx: RBuilder): Component = panel {
         background { blackColor }
@@ -34,8 +40,7 @@ class SelectionTypeButtons : RComponent<SelectionTypeButtons.Props, Unit>() {
             tooltip = InstantTooltip("Selection mode: OBJECT")
 
             listenerMap.addListener(MouseClickEvent::class.java) {
-                props.guiState.selectionType = SelectionType.OBJECT
-                replaceState(Unit)
+                setSelectionType(SelectionType.OBJECT)
             }
         }
         +ToggleButton("", "selection_mode_face", secondButton, 32f + 5f + 4f, 4f, 32f, 32f).apply {
@@ -43,8 +48,7 @@ class SelectionTypeButtons : RComponent<SelectionTypeButtons.Props, Unit>() {
             tooltip = InstantTooltip("Selection mode: FACE")
 
             listenerMap.addListener(MouseClickEvent::class.java) {
-                props.guiState.selectionType = SelectionType.FACE
-                replaceState(Unit)
+                setSelectionType(SelectionType.FACE)
             }
         }
         +ToggleButton("", "selection_mode_edge", thirdButton, 64f + 10f + 4f, 4f, 32f, 32f).apply {
@@ -52,8 +56,7 @@ class SelectionTypeButtons : RComponent<SelectionTypeButtons.Props, Unit>() {
             tooltip = InstantTooltip("Selection mode: EDGE")
 
             listenerMap.addListener(MouseClickEvent::class.java) {
-                props.guiState.selectionType = SelectionType.EDGE
-                replaceState(Unit)
+                setSelectionType(SelectionType.EDGE)
             }
         }
         +ToggleButton("", "selection_mode_vertex", fourthButton, 96f + 15f + 4f, 4f, 32f, 32f).apply {
@@ -61,13 +64,19 @@ class SelectionTypeButtons : RComponent<SelectionTypeButtons.Props, Unit>() {
             tooltip = InstantTooltip("Selection mode: VERTEX")
 
             listenerMap.addListener(MouseClickEvent::class.java) {
-                props.guiState.selectionType = SelectionType.VERTEX
-                replaceState(Unit)
+                setSelectionType(SelectionType.VERTEX)
             }
+        }
+
+        listenerMap.addListener(EventSelectionTypeUpdate::class.java){
+            rebuild()
         }
     }
 
-    class Props(val guiState: GuiState)
-    companion object : RComponentSpec<SelectionTypeButtons, SelectionTypeButtons.Props, Unit>
+    fun setSelectionType(newType: SelectionType) {
+        props.guiState.changeSelectionType(props.listeners, newType)
+    }
 
+    class Props(val guiState: GuiState, val listeners: Listeners)
+    companion object : RComponentSpec<SelectionTypeButtons, SelectionTypeButtons.Props, Unit>
 }

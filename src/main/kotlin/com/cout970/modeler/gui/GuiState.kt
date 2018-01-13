@@ -15,6 +15,7 @@ class GuiState {
 
     var transformationMode = TransformationMode.TRANSLATION
     var selectionType: SelectionType = SelectionType.OBJECT
+        private set
 
     var useTexture: Boolean = true
     var useColor: Boolean = false
@@ -46,6 +47,12 @@ class GuiState {
     var gridLinesHash: Int = -1
 
     var playAnimation = false
+
+    fun changeSelectionType(listener: Listeners, newType: SelectionType) {
+        val old = selectionType
+        selectionType = newType
+        listener.onSelectionTypeUpdate(old, newType)
+    }
 
     fun getBooleanProperties() = mapOf(
             "drawTextureGridLines" to BooleanPropertyWrapper(this::drawTextureGridLines),

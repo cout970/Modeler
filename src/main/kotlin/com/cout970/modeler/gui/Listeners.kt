@@ -4,9 +4,11 @@ import com.cout970.glutilities.event.*
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.selection.ISelection
+import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.gui.event.EventMaterialUpdate
 import com.cout970.modeler.gui.event.EventModelUpdate
+import com.cout970.modeler.gui.event.EventSelectionTypeUpdate
 import com.cout970.modeler.gui.event.EventSelectionUpdate
 import com.cout970.modeler.gui.reactive.RComponentWrapper
 import com.cout970.modeler.gui.reactive.RContext
@@ -17,6 +19,8 @@ import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.vec2Of
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.TextInput
+import org.liquidengine.legui.event.Event
+import org.liquidengine.legui.system.context.Context
 
 /**
  * Created by cout970 on 2017/05/16.
@@ -75,24 +79,33 @@ class Listeners : ITickeable {
         return false
     }
 
-    fun onModelChange(old: IModel, new: IModel) {
-        gui.editorView.base.getListeners<EventModelUpdate>().forEach { (comp, listener) ->
-            listener.process(EventModelUpdate(comp, gui.root.context, gui.root, new, old))
-        }
-    }
-
-    fun onSelectionUpdate(old: Nullable<ISelection>, new: Nullable<ISelection>) {
-        val listeners = gui.editorView.base.getListeners<EventSelectionUpdate>()
+    private inline fun <reified T : Event<Component>> sendEventToComponents(func: (Component, Context, Root) -> T) {
+        val listeners = gui.editorView.base.getListeners<T>()
         listeners.forEach { (comp, listener) ->
-            listener.process(EventSelectionUpdate(comp, gui.root.context, gui.root, new, old))
+            listener.process(func(comp, gui.root.context, gui.root))
         }
     }
 
-    fun onMaterialUpdate(old: IMaterial?, new: IMaterial?) {
-        gui.editorView.base.getListeners<EventMaterialUpdate>().forEach { (comp, listener) ->
-            listener.process(EventMaterialUpdate(comp, gui.root.context, gui.root, new.asNullable(), old.asNullable()))
-        }
-    }
+    fun onModelChange(old: IModel, new: IModel) =
+            sendEventToComponents { component, context, root ->
+                EventModelUpdate(component, context, root, old, new)
+            }
+
+    fun onSelectionUpdate(old: Nullable<ISelection>, new: Nullable<ISelection>) =
+            sendEventToComponents { component, context, root ->
+                EventSelectionUpdate(component, context, root, old, new)
+            }
+
+    fun onSelectionTypeUpdate(old: SelectionType, new: SelectionType) =
+            sendEventToComponents { component, context, root ->
+                EventSelectionTypeUpdate(component, context, root, old, new)
+            }
+
+
+    fun onMaterialUpdate(old: IMaterial?, new: IMaterial?) =
+            sendEventToComponents { component, context, root ->
+                EventMaterialUpdate(component, context, root, old.asNullable(), new.asNullable())
+            }
 
     fun onMouseScroll(e: EventMouseScroll): Boolean {
         val mousePos = gui.input.mouse.getMousePos()

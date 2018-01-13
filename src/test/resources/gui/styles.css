@@ -135,20 +135,20 @@
     text-align: center
 }
 
-.test {
-    border: <width>, <style>, <color>;
-    border-color: <color>;
-    border-width: <width>;
-    border-style: <style>; /* only solid for beggining is fine*/
-    border-radius: <radius>;
-    background-color: <color>;
-    font-family: <family>;
-    opacity: <0-1>;
-    margin: <margin>;
-    width: <width>;
-    height: <height>;
-    min-width: <width>;
-    max-width: <width>;
-    min-height: <height>;
-    max-height: <height>;
-}
+/*.test {*/
+    /*border: <width>, <style>, <color>;*/
+    /*border-color: <color>;*/
+    /*border-width: <width>;*/
+    /*border-style: <style>; !* only solid for beggining is fine*!*/
+    /*border-radius: <radius>;*/
+    /*background-color: <color>;*/
+    /*font-family: <family>;*/
+    /*opacity: <0-1>;*/
+    /*margin: <margin>;*/
+    /*width: <width>;*/
+    /*height: <height>;*/
+    /*min-width: <width>;*/
+    /*max-width: <width>;*/
+    /*min-height: <height>;*/
+    /*max-height: <height>;*/
+/*}*/
