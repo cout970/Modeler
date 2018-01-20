@@ -46,7 +46,7 @@ class KeyboardBinder(val dispatcher: Dispatcher) {
                 splitTexture.check(e) -> "model.texture.split"
 
                 joinObjects.check(e) -> "model.obj.join"
-                extrudeFace.check(e) -> "model.obj.join"
+                extrudeFace.check(e) -> "model.face.extrude"
 
                 e.keycode == Keyboard.KEY_F1 -> "debug"
                 e.keycode == Keyboard.KEY_F2 -> "debug.changeColors"

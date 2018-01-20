@@ -20,3 +20,4 @@ val IObjectCube.pos get() = transformation.translation
 val IObjectCube.rot get() = transformation.rotation
 val IObjectCube.rotation get() = transformation.rotation.toAxisRotations()
 val IObjectCube.size get() = transformation.scale
+

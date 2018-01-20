@@ -1,5 +1,7 @@
 package com.cout970.modeler.api.model.selection
 
+import com.cout970.modeler.core.model.selection.ObjectRef
+
 /**
  * Created by cout970 on 2017/05/14.
  */
@@ -58,3 +60,7 @@ fun IRef.getSelectionType() = when (this) {
     is IEdgeRef -> SelectionType.EDGE
     else -> SelectionType.VERTEX
 }
+
+inline val IFaceRef.objectRef: IObjectRef get() = ObjectRef(objectIndex)
+inline val IEdgeRef.objectRef: IObjectRef get() = ObjectRef(objectIndex)
+inline val IPosRef.objectRef: IObjectRef get() = ObjectRef(objectIndex)

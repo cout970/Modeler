@@ -34,6 +34,9 @@ class ModelRenderer {
         val modelToRender = ctx.gui.state.tmpModel ?: model
 
         renderModel(ctx, modelToRender)
+
+//        renderModelOutline(ctx, modelToRender)
+
         renderModelSelection(ctx, modelToRender)
         renderTextureSelection(ctx, modelToRender)
     }
@@ -69,6 +72,38 @@ class ModelRenderer {
             accept(vao)
             GL11.glLineWidth(1f)
         }
+    }
+
+    fun renderModelOutline(ctx: RenderContext, model: IModel) {
+
+
+        if (modelCache.isEmpty() || modelCache.size != model.objects.size || model.hashCode() != modelHash) {
+            modelHash = model.hashCode()
+            modelCache.forEach { it.close() }
+            modelCache = buildCache(modelCache, ctx.buffer, model)
+        }
+
+        val map = model.objects
+                .mapIndexed { ind, iObject -> ind to iObject }
+                .filter { (first) -> model.visibilities[first] }
+
+
+        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE)
+        GL11.glLineWidth(Config.selectionThickness * 10f)
+        map.forEach { (objIndex, _) ->
+            ctx.shader.apply {
+                useCubeMap.setBoolean(false)
+                useTexture.setBoolean(false)
+                useColor.setBoolean(true)
+                useLight.setBoolean(false)
+                showHiddenFaces.setBoolean(false)
+                matrixM.setMatrix4(Matrix4.IDENTITY)
+                accept(modelCache[objIndex])
+                showHiddenFaces.setBoolean(false)
+            }
+        }
+        GL11.glLineWidth(1f)
+        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL)
     }
 
     fun renderModel(ctx: RenderContext, model: IModel) {

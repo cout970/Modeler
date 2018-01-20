@@ -3,8 +3,6 @@ package com.cout970.modeler.core.model.mesh
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
-import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.modeler.core.model.selection.PosRef
 import com.cout970.modeler.util.toJOML
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -49,7 +47,7 @@ class Mesh(
         return Mesh(
                 pos = pos,
                 tex = tex.map {
-                    matrix.transform(Vector4d(it.xd, it.yd,0.0, 1.0))
+                    matrix.transform(Vector4d(it.xd, it.yd, 0.0, 1.0))
                 }.map { vec2Of(it.x, it.y) },
                 faces = faces
         )
@@ -109,5 +107,3 @@ class Mesh(
         return result
     }
 }
-
-fun IMesh.getPosRefs(obj: IObjectRef) = pos.indices.map { PosRef(obj.objectIndex, it) }

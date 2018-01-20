@@ -1,17 +1,24 @@
 package com.cout970.modeler.controller.usecases
 
-import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.modeler.api.model.selection.SelectionType
+import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.model.Object
 import com.cout970.modeler.core.model.getSelectedObjectRefs
 import com.cout970.modeler.core.model.getSelectedObjects
+import com.cout970.modeler.core.model.selection.FaceRef
+import com.cout970.modeler.core.model.selection.Selection
 import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.render.tool.addFace
+import com.cout970.modeler.render.tool.getEdges
+import com.cout970.modeler.render.tool.getFacePos
+import com.cout970.modeler.render.tool.removeFaces
 import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.asNullable
 import com.cout970.modeler.util.text
+import com.cout970.vector.extensions.*
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.TextInput
+import java.util.*
 
 /**
  * Created by cout970 on 2017/10/29.
@@ -70,10 +77,73 @@ fun joinObjects(modelAccessor: IModelAccessor): ITask {
     ))
 }
 
-//@UseCase("model.face.extrude")
-//fun extrudeFace(modelAccessor: IModelAccessor): ITask {
-//    val selection = modelAccessor.modelSelection.getOrNull() ?: return TaskNone
-//    if (selection.selectionType != SelectionType.FACE) return TaskNone
-//
-//    return TaskNone
-//}
+@UseCase("model.face.extrude")
+fun extrudeFace(modelAccessor: IModelAccessor): ITask {
+    val selection = modelAccessor.modelSelection.getOrNull() ?: return TaskNone
+    if (selection.selectionType != SelectionType.FACE || selection.size < 1) return TaskNone
+
+    val model = modelAccessor.model
+
+    val refs = selection.refs.filterIsInstance<IFaceRef>()
+    val affectedObjects = refs.map { it.objectRef }
+    val map = refs.groupBy { it.objectRef }
+
+    val newSelectionRefs = mutableListOf<IFaceRef>()
+
+    val newModel = model.modifyObjects(affectedObjects) { ref, obj ->
+        val faceRefs = map[ref] ?: return@modifyObjects obj
+        val mesh = obj.mesh
+
+        val normal = faceRefs
+                .map { mesh.getFacePos(it.faceIndex) }
+                .map { pos -> (pos[2] - pos[0]) cross (pos[3] - pos[1]) }
+                .reduce { acc, vec -> acc + vec }
+                .normalize()
+
+        if (normal.lengthSq() == 0.0) {
+            return@modifyObjects obj
+        }
+
+        val faces = faceRefs.map { mesh.faces[it.faceIndex] }
+        val faceValues = faces.map { it.pos.map { mesh.pos[it] } }
+
+        val allEdges = faces.flatMap { it.getEdges() }
+
+        val edges = allEdges.filter { Collections.frequency(allEdges, it) == 1 }
+        val newFacePos = edges.map { edge ->
+            val a = mesh.pos[edge.first]
+            val b = mesh.pos[edge.second]
+            val c = a + normal
+            val d = b + normal
+            listOf(a, b, d, c)
+        }
+
+        var newMesh = mesh.removeFaces(faceRefs.map { it.faceIndex })
+
+        newFacePos.forEach { newMesh = newMesh.addFace(it) }
+
+        val base = newMesh.faces.size
+
+        faceValues.forEach { newMesh = newMesh.addFace(it.map { it + normal }) }
+
+        val end = newMesh.faces.size
+
+        newSelectionRefs.addAll((base until end).map { FaceRef(ref.objectIndex, it) })
+
+        obj.withMesh(newMesh.optimize())
+    }
+
+    val newSelection = Selection(SelectionTarget.MODEL, SelectionType.FACE, newSelectionRefs)
+
+    return TaskChain(listOf(
+            TaskUpdateModel(oldModel = model, newModel = newModel),
+
+            TaskUpdateModelSelection(
+                    oldSelection = modelAccessor.modelSelection,
+                    newSelection = newSelection.asNullable()),
+
+            TaskUpdateTextureSelection(
+                    oldSelection = modelAccessor.textureSelection,
+                    newSelection = Nullable.castNull())
+    ))
+}

@@ -6,12 +6,13 @@ import com.cout970.glutilities.tessellator.DrawMode
 import com.cout970.glutilities.tessellator.VAO
 import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
+import com.cout970.modeler.api.model.selection.IObjectRef
+import com.cout970.modeler.core.model.mesh.FaceIndex
+import com.cout970.modeler.core.model.mesh.Mesh
+import com.cout970.modeler.core.model.selection.PosRef
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.Vector3
-import com.cout970.vector.extensions.cross
-import com.cout970.vector.extensions.minus
-import com.cout970.vector.extensions.normalize
+import com.cout970.vector.extensions.*
 import org.lwjgl.opengl.GL14
 import org.lwjgl.opengl.GL15
 import org.lwjgl.opengl.GL33
@@ -21,7 +22,7 @@ import org.lwjgl.opengl.GL33
  */
 
 
-fun measureMilisGPU(func: () -> Unit): Double{
+fun measureMilisGPU(func: () -> Unit): Double {
     val queryId = GL15.glGenQueries()
     val frameGpuTime = IntArray(1)
 
@@ -102,4 +103,30 @@ fun IMesh.createVao(buffer: BufferPTNC, color: IVector3 = Vector3.ONE): VAO {
     return buffer.build(DrawMode.QUADS) {
         append(buffer, color)
     }
+}
+
+fun IFaceIndex.getEdges(): List<Pair<Int, Int>> {
+    return (0 until vertexCount).map { index ->
+        val next = (index + 1) % vertexCount
+        pos[index] to pos[next]
+    }
+}
+
+fun IMesh.getPosRefs(obj: IObjectRef) = pos.indices.map { PosRef(obj.objectIndex, it) }
+
+fun IMesh.removeFace(id: Int): IMesh {
+    return Mesh(this.pos, this.tex, this.faces.filterIndexed { index, _ -> index != id }).optimize()
+}
+
+fun IMesh.removeFaces(refs: List<Int>): IMesh {
+    return Mesh(this.pos, this.tex, this.faces.filterIndexed { index, _ -> index !in refs }).optimize()
+}
+
+fun IMesh.getFacePos(index: Int): List<IVector3> {
+    return faces[index].pos.map { pos[it] }
+}
+
+fun IMesh.addFace(vertex: List<IVector3>): IMesh {
+    val newFace = FaceIndex(listOf(0, 1, 2, 3).map { it + this.pos.size }, (1..4).map { this.tex.size })
+    return Mesh(this.pos + vertex, this.tex + Vector2.ZERO, this.faces + newFace)
 }
