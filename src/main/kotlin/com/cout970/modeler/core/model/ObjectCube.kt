@@ -143,7 +143,7 @@ data class ObjectCube(
         }
 
         override fun rotateTexture(obj: IObject, center: IVector2, angle: Double): IObject {
-            return obj.transformer.rotateTexture(obj, center, angle)
+            return obj
         }
 
         override fun scaleTexture(obj: IObject, center: IVector2, axis: IVector2, offset: Float): IObject {

@@ -103,10 +103,11 @@ class TextureCursorRenderer {
 //                        .flatten()
 
                 val type = ctx.gui.state.selectionType
+                val selection = ctx.gui.modelAccessor.modelSelection
                 val model = ctx.gui.state.tmpModel ?: ctx.gui.modelAccessor.model
                 val materialRef = ctx.gui.state.selectedMaterial
                 val material = model.getMaterial(materialRef)
-                val polygons = model.getTexturePolygons(type, materialRef, material)
+                val polygons = model.getTexturePolygons(selection, type, materialRef, material)
                         .map { it.first }
 
 

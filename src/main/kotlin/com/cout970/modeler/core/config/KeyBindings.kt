@@ -47,6 +47,7 @@ class KeyBindings {
     var splitTexture = KeyBind(Keyboard.KEY_P, CTRL)
     var joinObjects = KeyBind(Keyboard.KEY_J, CTRL)
     var extrudeFace = KeyBind(Keyboard.KEY_E, CTRL)
+    var setIsometricView = KeyBind(Keyboard.KEY_I, ALT)
 
     var newProject = KeyBind(Keyboard.KEY_N, CTRL, ALT, SHIFT)
     var openProject = KeyBind(Keyboard.KEY_O, CTRL, ALT, SHIFT)

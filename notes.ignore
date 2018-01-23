@@ -27,6 +27,14 @@ Background images in ortho projection
 Open changelog
 Open last backup, Open backupfolder
 Search bar in config menu
+Screen key display
+Split by selection (move selected faces to a different obj)
+sub-divide cube
+extrude edge to make a new panel
+make face based on vertex/edge selection
+background for ortho
+c for convert (obj to mesh, mesh to obj)
+remove doubles (duplicated vertices/edges/faces)
 
 # TODO maybe, and of course later
 Add plugin api

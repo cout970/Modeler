@@ -33,12 +33,14 @@ class TexturedMaterial(override val name: String, val path: ResourcePath) : IMat
             loadingError = false
         } catch (e: FileNotFoundException) {
             log(Level.ERROR) { "Unable to find material, name: $name, path: $path" }
-            NotificationHandler.push(Notification("Material not found", "Unable to find material $name at path '$path'"))
+            NotificationHandler.push(
+                    Notification("Material not found", "Unable to find material $name at path '$path'"))
             texture = null
             loadingError = true
         } catch (e: Exception) {
             log(Level.ERROR) { "Error loading material, name: $name, path: $path" }
-            NotificationHandler.push(Notification("Material load error", "Unable to load material $name at path '$path'"))
+            NotificationHandler.push(
+                    Notification("Material load error", "Unable to load material $name at path '$path'"))
             e.print()
             texture = null
             loadingError = true

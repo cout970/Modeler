@@ -6,9 +6,7 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IMesh
-import com.cout970.modeler.api.model.selection.IRef
-import com.cout970.modeler.api.model.selection.SelectionTarget
-import com.cout970.modeler.api.model.selection.SelectionType
+import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.Gui
@@ -62,6 +60,19 @@ fun setCanvasModeAnimation(canvasContainer: CanvasContainer): ITask {
     return TaskNone
 }
 
+@UseCase("camera.set.isometric")
+fun setIsometricCamera(canvasContainer: CanvasContainer): ITask {
+    canvasContainer.selectedCanvas?.let { canvas ->
+        if (canvas.viewMode.is3D) {
+            return ModifyGui {
+                canvas.modelCamera.setOrtho(true)
+                canvas.modelCamera.setRotation(45.toRads(), (-45).toRads())
+            }
+        }
+    }
+    return TaskNone
+}
+
 @UseCase("canvas.jump.camera")
 fun jumpCameraToCanvas(component: Component, state: GuiState, input: IInput, model: IModel): ITask {
     if (state.hoveredObject != null) return TaskNone
@@ -83,16 +94,17 @@ fun selectPartInCanvas(component: Component, input: IInput, model: IModel, gui: 
 
     val canvas = component as Canvas
     return when (canvas.viewMode) {
-        SelectionTarget.MODEL -> onModel(canvas, model, gui, input)
-        SelectionTarget.TEXTURE -> onTexture(canvas, model, input, gui)
-        SelectionTarget.ANIMATION -> onModel(canvas, model, gui, input)
+        SelectionTarget.MODEL -> onModel(canvas, gui, input)
+        SelectionTarget.TEXTURE -> onTexture(canvas, input, gui)
+        SelectionTarget.ANIMATION -> onModel(canvas, gui, input)
     }
 }
 
-private fun onModel(canvas: Canvas, model: IModel, gui: Gui, input: IInput): ITask {
+private fun onModel(canvas: Canvas, gui: Gui, input: IInput): ITask {
 
     tryClickOrientationCube(gui, canvas, input)?.let { return it }
 
+    val model = gui.modelAccessor.model
     val obj = trySelectModel(canvas, model, gui.state, input)
     val multiSelection = Config.keyBindings.multipleSelection.check(input)
     val selection = gui.modelAccessor.modelSelectionHandler.getSelection()
@@ -123,14 +135,15 @@ private fun tryClickOrientationCube(gui: Gui, canvas: Canvas, input: IInput): IT
     return ModifyGui { canvas.cameraHandler.setRotation(angles.xd.toRads(), angles.yd.toRads()) }
 }
 
-private fun onTexture(canvas: Canvas, model: IModel, input: IInput, gui: Gui): ITask {
-    val obj = trySelectTexture(canvas, model, gui.state, input)
+private fun onTexture(canvas: Canvas, input: IInput, gui: Gui): ITask {
+    val access = gui.modelAccessor
+    val obj = trySelectTexture(canvas, access.modelSelection, access.model, gui.state, input)
     val multiSelection = Config.keyBindings.multipleSelection.check(input)
-    val selection = gui.modelAccessor.textureSelectionHandler.getSelection()
+    val selection = access.textureSelectionHandler.getSelection()
 
     return TaskUpdateTextureSelection(
             oldSelection = selection,
-            newSelection = gui.modelAccessor.textureSelectionHandler.updateSelection(
+            newSelection = access.textureSelectionHandler.updateSelection(
                     selection.toNullable(),
                     multiSelection,
                     obj
@@ -146,12 +159,13 @@ private fun trySelectModel(canvas: Canvas, model: IModel, state: GuiState, input
     return res.getClosest(context.mouseRay)?.second
 }
 
-private fun trySelectTexture(canvas: Canvas, model: IModel, state: GuiState, input: IInput): IRef? {
+private fun trySelectTexture(canvas: Canvas, modelSelection: Nullable<ISelection>, model: IModel, state: GuiState,
+                             input: IInput): IRef? {
     val mouse = input.mouse.getMousePos()
     val clickPos = CanvasHelper.getMouseProjection(canvas, mouse)
     val materialRef = state.selectedMaterial
     val actualMaterial = model.getMaterial(materialRef)
-    val polygons = model.getTexturePolygons(state.selectionType, materialRef, actualMaterial)
+    val polygons = model.getTexturePolygons(modelSelection, state.selectionType, materialRef, actualMaterial)
 
     val finalPos = CanvasHelper.fromRenderToMaterial(clickPos, actualMaterial)
     val mouseCollisionBox = getVertexTexturePolygon(finalPos, actualMaterial)
@@ -196,12 +210,24 @@ fun IModel.getModelObstacles(selectionType: SelectionType): List<Pair<IRayObstac
     }
 }
 
-fun IModel.getTexturePolygons(selectionType: SelectionType, matRef: IMaterialRef,
+fun IModel.getTexturePolygons(modelSelection: Nullable<ISelection>, selectionType: SelectionType, matRef: IMaterialRef,
                               mat: IMaterial): List<Pair<IPolygon, IRef>> {
-    val objs = objectRefs
-            .filter { isVisible(it) }
-            .map { getObject(it) to it }
-            .filter { it.first.material == matRef }
+    val selectedObjects = modelSelection.map {
+        it.refs
+                .filterIsInstance<IObjectRef>()
+                .filter { isVisible(it) }
+                .map { getObject(it) to it }
+                .filter { it.first.material == matRef }
+
+    }.getOr(emptyList())
+
+    val objs = when {
+        selectedObjects.isNotEmpty() -> selectedObjects
+        else -> objectRefs
+                .filter { isVisible(it) }
+                .map { getObject(it) to it }
+                .filter { it.first.material == matRef }
+    }
 
     return when (selectionType) {
         SelectionType.OBJECT -> objs.flatMap { (obj, ref) -> obj.getTexturePolygon(ref) }

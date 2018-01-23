@@ -51,7 +51,6 @@ object RotationHelper {
         val center = obj.center.toVector2()
         val direction = (center - clickPos).normalize()
 
-        println(direction)
         return Math.atan2(direction.xd, direction.yd)
     }
 

@@ -47,6 +47,7 @@ class KeyboardBinder(val dispatcher: Dispatcher) {
 
                 joinObjects.check(e) -> "model.obj.join"
                 extrudeFace.check(e) -> "model.face.extrude"
+                setIsometricView.check(e) -> "camera.set.isometric"
 
                 e.keycode == Keyboard.KEY_F1 -> "debug"
                 e.keycode == Keyboard.KEY_F2 -> "debug.changeColors"

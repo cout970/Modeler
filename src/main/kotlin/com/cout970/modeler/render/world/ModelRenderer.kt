@@ -16,6 +16,7 @@ import com.cout970.vector.extensions.Vector2
 import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.plus
 import com.cout970.vector.extensions.vec3Of
+import org.lwjgl.opengl.ARBMultisample
 import org.lwjgl.opengl.GL11
 
 /**
@@ -32,6 +33,9 @@ class ModelRenderer {
     fun renderModels(ctx: RenderContext, model: IModel) {
 
         val modelToRender = ctx.gui.state.tmpModel ?: model
+
+        // Fixes white pixels in borders
+        GL11.glDisable(ARBMultisample.GL_MULTISAMPLE_ARB)
 
         renderModel(ctx, modelToRender)
 
