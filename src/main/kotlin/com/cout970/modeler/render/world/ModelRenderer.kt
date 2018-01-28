@@ -18,6 +18,7 @@ import com.cout970.vector.extensions.plus
 import com.cout970.vector.extensions.vec3Of
 import org.lwjgl.opengl.ARBMultisample
 import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL13
 
 /**
  * Created by cout970 on 2017/06/09.
@@ -36,6 +37,7 @@ class ModelRenderer {
 
         // Fixes white pixels in borders
         GL11.glDisable(ARBMultisample.GL_MULTISAMPLE_ARB)
+        GL11.glDisable(GL13.GL_MULTISAMPLE)
 
         renderModel(ctx, modelToRender)
 

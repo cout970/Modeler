@@ -5,6 +5,9 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.core.export.ExportFormat
 import com.cout970.modeler.core.export.ExportProperties
 import com.cout970.modeler.core.export.ModelImporters
+import com.cout970.modeler.core.log.print
+import com.cout970.modeler.gui.event.Notification
+import com.cout970.modeler.gui.event.NotificationHandler
 import java.io.File
 
 /**
@@ -17,13 +20,20 @@ class TaskExportModel(
 
     override fun run(state: Program) {
         val file = File(prop.path)
-        when (prop.format) {
-            ExportFormat.OBJ -> {
-                ModelImporters.objExporter.export(file.outputStream(), model, prop.materialLib)
+        try {
+            when (prop.format) {
+                ExportFormat.OBJ -> {
+                    ModelImporters.objExporter.export(file.outputStream(), model, prop.materialLib)
+                }
+                ExportFormat.MCX -> {
+                    ModelImporters.mcxExporter.export(file.outputStream(), model, prop.domain)
+                }
             }
-            ExportFormat.MCX -> {
-                ModelImporters.mcxExporter.export(file.outputStream(), model, prop.domain)
-            }
+            NotificationHandler.push(Notification("Model exported successfully",
+                    "The model has been exported successfully to '${prop.path}'"))
+        } catch (e: Exception) {
+            NotificationHandler.push(Notification("Error exporting model ", "Error: ${e.message}"))
+            e.print()
         }
     }
 }

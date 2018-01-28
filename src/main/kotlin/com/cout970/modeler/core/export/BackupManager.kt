@@ -1,5 +1,6 @@
 package com.cout970.modeler.core.export
 
+import com.cout970.modeler.PathConstants
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
@@ -7,7 +8,10 @@ import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.util.createParentsIfNeeded
 import java.io.File
+import java.nio.file.Files
 import java.time.Instant
+
+
 
 
 object BackupManager {
@@ -42,7 +46,9 @@ object BackupManager {
     private fun makeBackup(path: String, exportManager: ExportManager, projectManager: ProjectManager) {
         val projectName = projectManager.projectProperties.name
         File("$path/$projectName").createParentsIfNeeded(true)
+        val finalPath = "$path/$projectName/${getBackupName(projectName)}"
 
-        exportManager.saveProject("$path/$projectName/${getBackupName(projectName)}", projectManager)
+        exportManager.saveProject(PathConstants.LAST_BACKUP_FILE_PATH, projectManager)
+        Files.copy(File(PathConstants.LAST_BACKUP_FILE_PATH).toPath(), File(finalPath).toPath())
     }
 }
