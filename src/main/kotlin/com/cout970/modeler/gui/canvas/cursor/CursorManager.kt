@@ -5,7 +5,10 @@ import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.controller.ITaskProcessor
 import com.cout970.modeler.core.log.Profiler
+import com.cout970.modeler.core.model.edges
+import com.cout970.modeler.core.model.faces
 import com.cout970.modeler.core.model.getSelectedObjects
+import com.cout970.modeler.core.model.pos
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.canvas.Canvas
 import com.cout970.modeler.gui.canvas.ISelectable
@@ -69,7 +72,6 @@ class CursorManager {
 
             model ?: return@run
             modelHash = model.hashCode()
-            visibilityHash = model.visibilities.hashCode()
         }
 
         cursorDrag.taskToPerform?.let { task ->
@@ -98,7 +100,7 @@ class CursorManager {
 
             SelectionType.FACE -> selection.refs
                     .filterIsInstance<IFaceRef>()
-                    .map { model.getObject(it) to it.faceIndex }
+                    .map { model.getObject(it.toObjectRef()) to it.faceIndex }
                     .groupBy { it.first }
                     .map { it.key to it.value.map { it.second } }
                     .map { (obj, faces) ->
@@ -111,13 +113,13 @@ class CursorManager {
 
             SelectionType.EDGE -> selection.refs
                     .filterIsInstance<IEdgeRef>()
-                    .map { model.getObject(it) to it }
+                    .map { model.getObject(it.toObjectRef()) to it }
                     .flatMap { (obj, ref) -> listOf(obj.mesh.tex[ref.firstIndex], obj.mesh.tex[ref.secondIndex]) }
                     .middle()
 
             SelectionType.VERTEX -> selection.refs
                     .filterIsInstance<IPosRef>()
-                    .map { model.getObject(it).mesh.tex[it.posIndex] }
+                    .map { model.getObject(it.toObjectRef()).mesh.tex[it.posIndex] }
                     .middle()
 
         }.let { middle ->
@@ -134,9 +136,8 @@ class CursorManager {
                     .map { it.getCenter() }
                     .middle()
 
-            SelectionType.FACE -> selection.refs
-                    .filterIsInstance<IFaceRef>()
-                    .map { model.getObject(it) to it.faceIndex }
+            SelectionType.FACE -> selection.faces
+                    .map { model.getObject(it.toObjectRef()) to it.faceIndex }
                     .map { (obj, index) ->
                         obj.mesh.faces[index]
                                 .pos
@@ -145,15 +146,13 @@ class CursorManager {
                     }
                     .middle()
 
-            SelectionType.EDGE -> selection.refs
-                    .filterIsInstance<IEdgeRef>()
-                    .map { model.getObject(it) to it }
+            SelectionType.EDGE -> selection.edges
+                    .map { model.getObject(it.toObjectRef()) to it }
                     .flatMap { (obj, ref) -> listOf(obj.mesh.pos[ref.firstIndex], obj.mesh.pos[ref.secondIndex]) }
                     .middle()
 
-            SelectionType.VERTEX -> selection.refs
-                    .filterIsInstance<IPosRef>()
-                    .map { model.getObject(it).mesh.pos[it.posIndex] }
+            SelectionType.VERTEX -> selection.pos
+                    .map { model.getObject(it.toObjectRef()).mesh.pos[it.posIndex] }
                     .middle()
 
         }.let { middle ->

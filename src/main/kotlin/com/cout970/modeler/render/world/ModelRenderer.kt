@@ -7,6 +7,7 @@ import com.cout970.matrix.extensions.Matrix4
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.core.model.faces
 import com.cout970.modeler.core.model.mesh.MeshFactory
 import com.cout970.modeler.render.tool.*
 import com.cout970.modeler.util.getColor
@@ -88,7 +89,7 @@ class ModelRenderer {
             modelCache = buildCache(modelCache, ctx.buffer, model)
         }
 
-        val map = model.objectRefs.filter { model.isVisible(it) }
+        val map = model.objectRefs.filter { model.getObject(it).visible }
 
 
         GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE)
@@ -118,7 +119,7 @@ class ModelRenderer {
         }
 
         val map = model.objectMap
-                .filter { model.isVisible(it.key) }
+                .filter { it.value.visible }
                 .entries
                 .groupBy { it.value.material }
 
@@ -195,9 +196,8 @@ class ModelRenderer {
 
     private fun BufferPTNC.appendFaceSelection(modelToRender: IModel, selection: ISelection, color: IVector3) {
 
-        val pairs = selection.refs
-                .filterIsInstance<IFaceRef>()
-                .map { modelToRender.getObject(it) to it }
+        val pairs = selection.faces
+                .map { modelToRender.getObject(it.toObjectRef()) to it }
 
         pairs.forEach { (obj, ref) ->
             val face = obj.mesh.faces[ref.faceIndex]
@@ -214,7 +214,7 @@ class ModelRenderer {
 
         val pairs = selection.refs
                 .filterIsInstance<IEdgeRef>()
-                .map { modelToRender.getObject(it) to it }
+                .map { modelToRender.getObject(it.toObjectRef()) to it }
 
         pairs.forEach { (obj, ref) ->
             add(obj.mesh.pos[ref.firstIndex], Vector2.ORIGIN, Vector3.ZERO, color)
@@ -222,12 +222,11 @@ class ModelRenderer {
         }
     }
 
-
     private fun BufferPTNC.appendVertexSelection(modelToRender: IModel, selection: ISelection, color: IVector3) {
 
         val pairs = selection.refs
                 .filterIsInstance<IPosRef>()
-                .map { modelToRender.getObject(it) to it }
+                .map { modelToRender.getObject(it.toObjectRef()) to it }
 
         pairs.forEach { (obj, ref) ->
             val point = obj.mesh.pos[ref.posIndex]

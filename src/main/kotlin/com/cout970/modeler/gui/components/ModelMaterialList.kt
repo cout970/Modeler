@@ -2,8 +2,8 @@ package com.cout970.modeler.gui.components
 
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.core.model.getSelectedObjectRefs
 import com.cout970.modeler.core.model.material.MaterialRefNone
+import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.gui.event.EventMaterialUpdate
 import com.cout970.modeler.gui.event.EventSelectionUpdate
@@ -48,7 +48,7 @@ class ModelMaterialList : RComponent<ModelMaterialList.Props, ModelMaterialList.
         val selectedMaterial = props.selectedMaterial()
 
         val materialOfSelectedObjects = selection
-                .map { it to model.getSelectedObjectRefs(it) }
+                .map { it to it.objects }
                 .map { (sel, objs) -> objs.filter(sel::isSelected) }
                 .map { it.map { model.getObject(it).material } }
                 .getOr(emptyList())

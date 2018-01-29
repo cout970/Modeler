@@ -34,9 +34,6 @@ class AutoCache(vararg val flags: CacheFlags) {
         if (CacheFlags.MATERIAL in flags) {
             hash = (hash shl 1) xor ctx.gui.state.materialsHash
         }
-        if (CacheFlags.VISIBILITY in flags) {
-            hash = (hash shl 1) xor ctx.gui.state.visibilityHash
-        }
         if (CacheFlags.MODEL_CURSOR in flags) {
             hash = (hash shl 1) xor (ctx.gui.cursorManager.modelCursor?.hashCode() ?: -1)
         }
@@ -66,7 +63,6 @@ enum class CacheFlags {
     SELECTION_MODEL,
     SELECTION_TEXTURE,
     MATERIAL,
-    VISIBILITY,
     MODEL_CURSOR,
     TEXTURE_CURSOR,
     GRID_LINES

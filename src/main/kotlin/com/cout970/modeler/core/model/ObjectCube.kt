@@ -29,17 +29,16 @@ data class ObjectCube(
         override val material: IMaterialRef = MaterialRefNone,
         override val textureOffset: IVector2 = Vector2.ORIGIN,
         override val textureSize: IVector2 = vec2Of(64),
+        override val visible: Boolean = true,
         val mirrored: Boolean = false,
         override val id: UUID = UUID.randomUUID()
 ) : IObjectCube {
 
     override val mesh: IMesh by lazy { generateMesh() }
 
-    override fun getCenter(): IVector3 = mesh.middle() //transformation.preRotation
-
     val size: IVector3 get() = transformation.scale
-    val pos: IVector3 get() = transformation.translation
 
+    val pos: IVector3 get() = transformation.translation
     fun generateMesh(): IMesh {
         val cube = MeshFactory.createCube(Vector3.ONE, Vector3.ORIGIN)
         val pos = cube.pos.map { Vector4d(it.xd, it.yd, it.zd, 1.0) }
@@ -102,6 +101,10 @@ data class ObjectCube(
         )
     }
 
+    override fun getCenter(): IVector3 = mesh.middle()
+
+    override fun withVisibility(visible: Boolean): IObject = copy(visible = visible)
+
     override fun withSize(size: IVector3): IObjectCube = copy(transformation = transformation.copy(scale = size))
 
     override fun withPos(pos: IVector3): IObjectCube = copy(transformation = transformation.copy(translation = pos))
@@ -112,7 +115,7 @@ data class ObjectCube(
 
     override fun withTextureSize(size: IVector2): IObjectCube = copy(textureSize = size)
 
-    override fun withMesh(newMesh: IMesh): IObject = Object(name, newMesh, material)
+    override fun withMesh(newMesh: IMesh): IObject = Object(name, newMesh, material, visible, id)
 
     override fun withMaterial(materialRef: IMaterialRef): IObject = copy(material = materialRef)
 

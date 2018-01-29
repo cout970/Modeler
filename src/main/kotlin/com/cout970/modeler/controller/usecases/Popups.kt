@@ -53,8 +53,8 @@ fun showExportMenu(gui: Gui, model: IModel): ITask = TaskAsync { returnCallback:
 @UseCase("model.export.hitboxes")
 fun showExportHitboxMenu(model: IModel): ITask {
     val aabb = model.objectRefs
-            .filter { model.isVisible(it) }
             .map { model.getObject(it) }
+            .filter { it.visible }
             .map { AABB.fromMesh(it.mesh) }
 
     return TaskAsync {

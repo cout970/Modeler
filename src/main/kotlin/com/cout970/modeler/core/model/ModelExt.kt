@@ -22,9 +22,6 @@ val ISelection.edges : List<IEdgeRef> get() = refs.filterIsInstance<IEdgeRef>()
 val ISelection.faces : List<IFaceRef> get() = refs.filterIsInstance<IFaceRef>()
 val ISelection.objects : List<IObjectRef> get() = refs.filterIsInstance<IObjectRef>()
 
-@Deprecated("Use the method above", ReplaceWith("sel.objects"))
-fun IModel.getSelectedObjectRefs(sel: ISelection): List<IObjectRef> = sel.refs.filterIsInstance<IObjectRef>()
-
 val IObjectCube.pos get() = transformation.translation
 val IObjectCube.rot get() = transformation.rotation
 val IObjectCube.rotation get() = transformation.rotation.toAxisRotations()

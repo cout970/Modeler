@@ -1,7 +1,7 @@
 package core.model
 
 import com.cout970.modeler.core.model.*
-import com.cout970.modeler.core.model.material.MaterialRef
+import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.MeshFactory
 import com.cout970.modeler.core.resource.ResourcePath
@@ -42,12 +42,11 @@ class TestModel {
 
         assertEquals("Fail at merge", result.objects, modelA.merge(modelB).objects)
         assertEquals("Fail at merge", result.materials, modelA.merge(modelB).materials)
-        assertEquals("Fail at merge", result.visibilities, modelA.merge(modelB).visibilities)
     }
 
     @Test
     fun `Check model merge without material`() {
-        val obj1 = Object("", MeshFactory.createPlane(Vector2.ONE), MaterialRef(-1))
+        val obj1 = Object("", MeshFactory.createPlane(Vector2.ONE), MaterialRefNone)
 
         val modelA = Model.of(mapOf(obj1.toPair()), emptyList())
         val modelB = Model.of(mapOf(obj1.toPair()), emptyList())
@@ -55,23 +54,21 @@ class TestModel {
 
         assertEquals("Fail at merge", result.objects, modelA.merge(modelB).objects)
         assertEquals("Fail at merge", result.materials, modelA.merge(modelB).materials)
-        assertEquals("Fail at merge", result.visibilities, modelA.merge(modelB).visibilities)
     }
 
     @Test
     fun `Check model merge with material`() {
-        val obj1 = Object("", MeshFactory.createPlane(Vector2.ONE), MaterialRef(0))
         val material = TexturedMaterial("name", ResourcePath.fromResourceLocation("path"))
+        val obj1 = Object("", MeshFactory.createPlane(Vector2.ONE), material.ref)
 
         val modelA = Model.of(mapOf(obj1.toPair()), listOf(material))
         val modelB = Model.of(mapOf(obj1.toPair()), listOf(material))
 
-        val resultObj = obj1.withMaterial(MaterialRef(1))
-        val result = Model.of(mapOf(obj1.toPair(), resultObj.toPair()), listOf(material, material))
+        val resultObj = obj1.withMaterial(material.ref)
+        val result = Model.of(mapOf(obj1.toPair(), resultObj.toPair()), listOf(material))
 
         assertEquals("Fail at merge", result.objects, modelA.merge(modelB).objects)
         assertEquals("Fail at merge", result.materials, modelA.merge(modelB).materials)
-        assertEquals("Fail at merge", result.visibilities, modelA.merge(modelB).visibilities)
     }
 
     @Test

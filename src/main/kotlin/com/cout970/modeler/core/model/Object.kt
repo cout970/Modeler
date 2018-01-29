@@ -23,6 +23,7 @@ data class Object(
         override val name: String,
         override val mesh: IMesh,
         override val material: IMaterialRef = MaterialRefNone,
+        override val visible: Boolean = true,
         override val id: UUID = UUID.randomUUID()
 ) : IObject {
 
@@ -30,6 +31,8 @@ data class Object(
     private constructor() : this("", Mesh())
 
     override fun getCenter(): IVector3 = mesh.middle()
+
+    override fun withVisibility(visible: Boolean): IObject = copy(visible = visible)
 
     override fun withMesh(newMesh: IMesh): IObject = copy(mesh = newMesh)
 

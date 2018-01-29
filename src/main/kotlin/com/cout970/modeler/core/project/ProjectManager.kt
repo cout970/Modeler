@@ -6,6 +6,7 @@ import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.animation.Animation
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.Model
+import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.model.selection.ClipboardNone
 import com.cout970.modeler.core.model.selection.IClipboard
 import com.cout970.modeler.core.model.selection.SelectionHandler
@@ -31,13 +32,12 @@ class ProjectManager(val modelSelectionHandler: SelectionHandler, val textureSel
     val materialChangeListeners: MutableList<(old: IMaterial?, new: IMaterial?) -> Unit> = mutableListOf()
 
     fun loadMaterial(material: IMaterial) {
-        if (material !in loadedMaterials.values) {
+        if (material.ref !in loadedMaterials) {
             model = model.addMaterial(material)
             materialChangeListeners.forEach { it.invoke(null, material) }
         }
     }
 
-    // TODO move this to a ITask
     fun updateMaterial(ref: IMaterialRef, new: IMaterial) {
         if (ref in loadedMaterials) {
             materialChangeListeners.forEach { it.invoke(model.getMaterial(ref), new) }
@@ -45,7 +45,6 @@ class ProjectManager(val modelSelectionHandler: SelectionHandler, val textureSel
         }
     }
 
-    // TODO move this to a ITask
     fun removeMaterial(ref: IMaterialRef) {
         if (ref in loadedMaterials) {
             val oldMaterial = model.getMaterial(ref)

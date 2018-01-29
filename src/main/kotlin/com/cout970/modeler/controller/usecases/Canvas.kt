@@ -6,9 +6,13 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IMesh
-import com.cout970.modeler.api.model.selection.*
+import com.cout970.modeler.api.model.selection.IRef
+import com.cout970.modeler.api.model.selection.ISelection
+import com.cout970.modeler.api.model.selection.SelectionTarget
+import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.GuiState
 import com.cout970.modeler.gui.canvas.Canvas
@@ -199,8 +203,8 @@ private fun getOrientationCubeFaces(mesh: IMesh): List<Pair<IRayObstacle, IVecto
 
 fun IModel.getModelObstacles(selectionType: SelectionType): List<Pair<IRayObstacle, IRef>> {
     val objs = objectRefs
-            .filter { isVisible(it) }
             .map { getObject(it) to it }
+            .filter { it.first.visible }
 
     return when (selectionType) {
         SelectionType.OBJECT -> objs.map { (obj, ref) -> obj.toRayObstacle() to ref }
@@ -213,20 +217,17 @@ fun IModel.getModelObstacles(selectionType: SelectionType): List<Pair<IRayObstac
 fun IModel.getTexturePolygons(modelSelection: Nullable<ISelection>, selectionType: SelectionType, matRef: IMaterialRef,
                               mat: IMaterial): List<Pair<IPolygon, IRef>> {
     val selectedObjects = modelSelection.map {
-        it.refs
-                .filterIsInstance<IObjectRef>()
-                .filter { isVisible(it) }
+        it.objects
                 .map { getObject(it) to it }
-                .filter { it.first.material == matRef }
+                .filter { it.first.visible && it.first.material == matRef }
 
     }.getOr(emptyList())
 
     val objs = when {
         selectedObjects.isNotEmpty() -> selectedObjects
         else -> objectRefs
-                .filter { isVisible(it) }
                 .map { getObject(it) to it }
-                .filter { it.first.material == matRef }
+                .filter { it.first.visible && it.first.material == matRef }
     }
 
     return when (selectionType) {

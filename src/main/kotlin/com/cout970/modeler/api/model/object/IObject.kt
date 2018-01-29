@@ -15,6 +15,7 @@ interface IObject {
     val name: String
     val mesh: IMesh
     val material: IMaterialRef
+    val visible: Boolean
 
     val transformer: IObjectTransformer
 
@@ -22,6 +23,7 @@ interface IObject {
 
     fun makeCopy(): IObject
 
+    fun withVisibility(visible: Boolean): IObject
     fun withMesh(newMesh: IMesh): IObject
     fun withMaterial(materialRef: IMaterialRef): IObject
     fun withName(name: String): IObject

@@ -19,18 +19,8 @@ interface IModel : Comparable<IModel> {
     val objectRefs: List<IObjectRef> get() = objectMap.keys.toList()
     val objects: List<IObject> get() = objectMap.values.toList()
 
-    // TODO remove
-    val visibilities: Map<IObjectRef, Boolean>
-
     fun getObject(ref: IObjectRef): IObject
-
     fun getMaterial(ref: IMaterialRef): IMaterial
-
-    @Deprecated("Remove", ReplaceWith("this.getObject(ref).visible"))
-    fun isVisible(ref: IObjectRef): Boolean
-
-    @Deprecated("Remove")
-    fun setVisible(ref: IObjectRef, visible: Boolean): IModel
 
     fun addObjects(objs: List<IObject>): IModel
     fun removeObjects(objs: List<IObjectRef>): IModel

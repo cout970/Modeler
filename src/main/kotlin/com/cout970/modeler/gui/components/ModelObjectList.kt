@@ -59,7 +59,7 @@ class ModelObjectList : RComponent<ModelObjectList.Props, ModelObjectList.State>
             }
 
             val position = index - start
-            +ModelObjectItem { ModelObjectProps(ref, name, model.isVisible(ref), color, position.toFloat()) }
+            +ModelObjectItem { ModelObjectProps(ref, name, model.getObject(ref).visible, color, position.toFloat()) }
         }
 
         +ScrollBar(180f, 0f, 10f, size.y).apply {

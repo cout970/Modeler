@@ -8,7 +8,6 @@ import com.cout970.modeler.core.model.*
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.mesh.getTextureVertex
-import com.cout970.modeler.core.model.selection.ObjectRef
 import com.cout970.modeler.util.scale
 import com.cout970.modeler.util.toAxisRotations
 import com.cout970.modeler.util.toJOML
@@ -107,10 +106,10 @@ object EditTool {
     }
 
     fun transformFaces(source: IModel, sel: ISelection, transform: (IVector3) -> IVector3): IModel {
-        val objRefs = sel.faces.map { ObjectRef(it.objectId) }.toSet()
+        val objRefs = sel.faces.map { it.toObjectRef() }.toSet()
         return source.modifyObjects(objRefs) { ref, obj ->
             val indices: Set<Int> = sel.faces
-                    .filter { it.objectId == ref.objectId }
+                    .filter { it.toObjectRef() == ref }
                     .map { obj.mesh.faces[it.faceIndex] }
                     .flatMap { it.pos }
                     .toSet()
@@ -121,10 +120,10 @@ object EditTool {
     }
 
     fun transformEdges(source: IModel, sel: ISelection, transform: (IVector3) -> IVector3): IModel {
-        val objRefs = sel.edges.map { ObjectRef(it.objectId) }.toSet()
+        val objRefs = sel.edges.map { it.toObjectRef() }.toSet()
         return source.modifyObjects(objRefs) { ref, obj ->
             val indices: Set<Int> = sel.edges
-                    .filter { it.objectId == ref.objectId }
+                    .filter { it.toObjectRef() == ref }
                     .flatMap { listOf(it.firstIndex, it.secondIndex) }
                     .toSet()
 
@@ -134,10 +133,10 @@ object EditTool {
     }
 
     fun transformVertex(source: IModel, sel: ISelection, transform: (IVector3) -> IVector3): IModel {
-        val objRefs = sel.pos.map { ObjectRef(it.objectId) }.toSet()
+        val objRefs = sel.pos.map { it.toObjectRef() }.toSet()
         return source.modifyObjects(objRefs) { ref, obj ->
             val indices: Set<Int> = sel.pos
-                    .filter { it.objectId == ref.objectId }
+                    .filter { it.toObjectRef() == ref }
                     .map { it.posIndex }
                     .toSet()
 
@@ -147,10 +146,10 @@ object EditTool {
     }
 
     fun transformTextureFaces(source: IModel, sel: ISelection, transform: (IVector2) -> IVector2): IModel {
-        val objRefs = sel.faces.map { ObjectRef(it.objectId) }.toSet()
+        val objRefs = sel.faces.map { it.toObjectRef() }.toSet()
         return source.modifyObjects(objRefs) { ref, obj ->
             val indices: Set<Int> = sel.faces
-                    .filter { it.objectId == ref.objectId }
+                    .filter { it.toObjectRef() == ref }
                     .map { obj.mesh.faces[it.faceIndex] }
                     .flatMap { it.tex }
                     .toSet()
@@ -161,10 +160,10 @@ object EditTool {
     }
 
     fun transformTextureEdges(source: IModel, sel: ISelection, transform: (IVector2) -> IVector2): IModel {
-        val objRefs = sel.edges.map { ObjectRef(it.objectId) }.toSet()
+        val objRefs = sel.edges.map { it.toObjectRef() }.toSet()
         return source.modifyObjects(objRefs) { ref, obj ->
             val indices: Set<Int> = sel.edges
-                    .filter { it.objectId == ref.objectId }
+                    .filter { it.toObjectRef() == ref }
                     .flatMap { listOf(it.firstIndex, it.secondIndex) }
                     .toSet()
 
@@ -174,10 +173,10 @@ object EditTool {
     }
 
     fun transformTextureVertex(source: IModel, sel: ISelection, transform: (IVector2) -> IVector2): IModel {
-        val objRefs = sel.pos.map { ObjectRef(it.objectId) }.toSet()
+        val objRefs = sel.pos.map { it.toObjectRef() }.toSet()
         return source.modifyObjects(objRefs) { ref, obj ->
             val indices: Set<Int> = sel.pos
-                    .filter { it.objectId == ref.objectId }
+                    .filter { it.toObjectRef() == ref }
                     .map { it.posIndex }
                     .toSet()
 
@@ -219,7 +218,7 @@ object EditTool {
         if (selection.selectionTarget != SelectionTarget.MODEL) return source
         return when (selection.selectionType) {
             SelectionType.OBJECT -> {
-                source.removeObjects(source.getSelectedObjectRefs(selection))
+                source.removeObjects(selection.objects)
             }
             SelectionType.FACE -> {
                 val toRemove = mutableListOf<IObjectRef>()

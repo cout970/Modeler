@@ -6,17 +6,17 @@ import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.model.material.MaterialNone
-import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.material.MaterialRefNone
-import com.cout970.modeler.core.model.selection.ObjectRef
 
 /**
  * Created by cout970 on 2017/05/07.
+ *
+ * Immutable snapshot of the model in a point of time, Is immutable to reduce memory usage sharing objects and
+ * materials with the new versions
  */
 data class Model(
         override val objectMap: Map<IObjectRef, IObject>,
-        override val materialMap: Map<IMaterialRef, IMaterial>,
-        override val visibilities: Map<IObjectRef, Boolean>
+        override val materialMap: Map<IMaterialRef, IMaterial>
 ) : IModel {
 
     val id: Int = lastId++
@@ -25,32 +25,17 @@ data class Model(
         private var lastId = 0
 
         fun of(objects: List<IObject>, materials: List<IMaterial>): IModel {
-            return Model(objects.associateBy { it.ref }, materials.associateBy { it.ref }, objects.associate { it.ref to true })
+            return Model(objects.associateBy { it.ref }, materials.associateBy { it.ref })
         }
 
         fun of(objects: Map<IObjectRef, IObject>, materials: List<IMaterial>): IModel {
-            return Model(objects, materials.associateBy { it.ref }, objects.mapValues { true })
+            return Model(objects, materials.associateBy { it.ref })
         }
 
-        fun empty() = Model(emptyMap(), emptyMap(), emptyMap())
+        fun empty() = Model(emptyMap(), emptyMap())
     }
 
-    private constructor() : this(emptyMap(), emptyMap(), emptyMap())
-
-    override fun isVisible(ref: IObjectRef): Boolean {
-        if (ref in objectMap) {
-            return visibilities[ref]!!
-        }
-        return false
-    }
-
-    override fun setVisible(ref: IObjectRef, visible: Boolean): IModel {
-        return copy(
-                visibilities = visibilities.mapValues { (index, value) ->
-                    if (index == ref) visible else value
-                }
-        )
-    }
+    private constructor() : this(emptyMap(), emptyMap())
 
     override fun getObject(ref: IObjectRef): IObject {
         if (ref in objectMap) {
@@ -69,17 +54,15 @@ data class Model(
     override fun addObjects(objs: List<IObject>): IModel {
         return copy(
                 objectMap = objectMap + objs.map { it.toPair() },
-                materialMap = materialMap,
-                visibilities = visibilities + objs.map { it.ref to true }
+                materialMap = materialMap
         )
     }
 
     override fun removeObjects(objs: List<IObjectRef>): IModel {
-        val toRemove = objs.map { ObjectRef(it.objectId) }.toSet()
+        val toRemove = objs.toSet()
         return copy(
                 objectMap = objectMap.filter { (index, _) -> index !in toRemove },
-                materialMap = materialMap,
-                visibilities = visibilities.filter { (index, _) -> index !in toRemove }
+                materialMap = materialMap
         )
     }
 
@@ -93,18 +76,21 @@ data class Model(
                         iObject.ref to iObject
                     }
                 }.toMap(),
-                materialMap = materialMap,
-                visibilities = visibilities
+                materialMap = materialMap
         )
     }
 
     override fun addMaterial(material: IMaterial): IModel {
-        return copy(materialMap = materialMap + (MaterialRef(material.id) to material))
+        return copy(materialMap = materialMap + (material.ref to material))
     }
 
     override fun modifyMaterial(ref: IMaterialRef, new: IMaterial): IModel {
         return copy(
-                materialMap = materialMap.toMutableMap().apply { put(ref, new) })
+                objectMap = objectMap.mapValues { (_, obj) ->
+                    if (obj.material == ref) obj.withMaterial(new.ref) else obj
+                },
+                materialMap = materialMap.toMutableMap().apply { remove(ref); put(new.ref, new) }
+        )
     }
 
     override fun removeMaterial(materialRef: IMaterialRef): IModel {
@@ -125,20 +111,17 @@ data class Model(
         val otherObjects = other.objects
 
         val materials = this.materialMap + other.materialMap
-        val visibilities = this.visibilities + other.visibilities
         val objects = this.objectMap + otherObjects.associateBy { it.ref }
 
         return Model(
                 objectMap = objects,
-                materialMap = materials,
-                visibilities = visibilities
+                materialMap = materials
         )
     }
 
     override fun compareTo(other: IModel): Int {
         if (this.objectMap != other.objectMap) return -1
-        if (this.visibilities != other.visibilities) return -1
-        if (this.materials != other.materials) return -1
+        if (this.materialMap != other.materialMap) return -1
 
         return 0
     }

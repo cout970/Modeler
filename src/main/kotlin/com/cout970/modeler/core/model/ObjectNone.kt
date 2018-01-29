@@ -22,6 +22,9 @@ object ObjectNone : IObject {
     override val name: String = "none"
     override val mesh: IMesh = Mesh()
     override val material: IMaterialRef = MaterialRefNone
+    override val visible: Boolean = true
+
+    override fun withVisibility(visible: Boolean): IObject = this
 
     override fun makeCopy(): IObject = ObjectNone
 
@@ -53,8 +56,11 @@ object ObjectCubeNone : IObjectCube {
     override val transformation: TRSTransformation = TRSTransformation.IDENTITY
     override val textureOffset: IVector2 = Vector2.ORIGIN
     override val textureSize: IVector2 = Vector2.ONE
+    override val visible: Boolean = true
 
-    override fun makeCopy(): IObjectCube = ObjectCubeNone
+    override fun withVisibility(visible: Boolean): IObject = this
+
+    override fun makeCopy(): IObjectCube = this
 
     override fun withSize(size: IVector3): IObjectCube = this
 

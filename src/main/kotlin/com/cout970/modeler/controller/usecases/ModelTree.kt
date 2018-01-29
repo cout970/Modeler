@@ -7,7 +7,7 @@ import com.cout970.modeler.controller.tasks.TaskNone
 import com.cout970.modeler.controller.tasks.TaskUpdateModel
 import com.cout970.modeler.controller.tasks.TaskUpdateModelSelection
 import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.core.model.getSelectedObjectRefs
+import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.model.selection.Selection
 import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.core.project.ProjectManager
@@ -45,7 +45,7 @@ fun hideListItem(component: Component, model: IModel): ITask {
             .map { it.metadata["ref"] }
             .flatMap { it as? IObjectRef }
             .map { ref ->
-                val newModel = model.setVisible(ref, false)
+                val newModel = model.modifyObjects({ it == ref }) { _, obj -> obj.withVisibility(false) }
                 TaskUpdateModel(oldModel = model, newModel = newModel) as ITask
             }
             .getOr(TaskNone)
@@ -57,7 +57,7 @@ fun showListItem(component: Component, model: IModel): ITask {
             .map { it.metadata["ref"] }
             .flatMap { it as? IObjectRef }
             .map { ref ->
-                val newModel = model.setVisible(ref, true)
+                val newModel = model.modifyObjects({ it == ref }) { _, obj -> obj.withVisibility(true) }
                 TaskUpdateModel(oldModel = model, newModel = newModel) as ITask
             }
             .getOr(TaskNone)
@@ -85,19 +85,16 @@ fun selectListItem(component: Component, input: IInput, modelAccessor: IModelAcc
 @UseCase("model.toggle.visibility")
 fun toggleListItemVisibility(model: IModel, modelAccessor: IModelAccessor): ITask {
     return modelAccessor.modelSelection
-            .map { it to model.getSelectedObjectRefs(it).first() }
+            .map { it to it.objects.first() }
             .map { toggle(it, model) }
             .getOr(TaskNone)
 }
 
 private fun toggle(pair: Pair<ISelection, IObjectRef>, model: IModel): ITask {
     val (sel, ref) = pair
-    var newModel = model
-    val target = !model.isVisible(ref)
+    val target = !model.getObject(ref).visible
 
-    model.getSelectedObjectRefs(sel).forEach {
-        newModel = newModel.setVisible(it, target)
-    }
+    val newModel = model.modifyObjects(sel.objects.toSet()) { _, obj -> obj.withVisibility(target) }
 
     return TaskUpdateModel(model, newModel)
 }

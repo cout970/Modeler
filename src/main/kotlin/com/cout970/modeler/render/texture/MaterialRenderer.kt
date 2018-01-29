@@ -11,7 +11,7 @@ import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.render.tool.AutoCache
-import com.cout970.modeler.render.tool.CacheFlags
+import com.cout970.modeler.render.tool.CacheFlags.*
 import com.cout970.modeler.render.tool.RenderContext
 import com.cout970.modeler.render.tool.useBlend
 import com.cout970.modeler.util.MatrixUtils
@@ -26,12 +26,13 @@ import java.awt.Color
  */
 class MaterialRenderer {
 
-    var areasCache = AutoCache(CacheFlags.MODEL, CacheFlags.MATERIAL, CacheFlags.VISIBILITY,
-            CacheFlags.SELECTION_TEXTURE, CacheFlags.TEXTURE_CURSOR)
-    val gridLines = AutoCache(CacheFlags.MATERIAL)
-    val materialCache = AutoCache(CacheFlags.MATERIAL)
-    val textureSelectionCache = AutoCache(CacheFlags.MODEL, CacheFlags.SELECTION_TEXTURE, CacheFlags.MATERIAL)
-    val modelSelectionCache = AutoCache(CacheFlags.MODEL, CacheFlags.SELECTION_MODEL, CacheFlags.MATERIAL)
+    var areasCache = AutoCache(MODEL, MATERIAL, SELECTION_TEXTURE, TEXTURE_CURSOR)
+
+    val gridLinesPixel = AutoCache(MATERIAL)
+    val gridLinesBlock = AutoCache(MATERIAL)
+    val materialCache = AutoCache(MATERIAL)
+    val textureSelectionCache = AutoCache(MODEL, SELECTION_TEXTURE, MATERIAL)
+    val modelSelectionCache = AutoCache(MODEL, SELECTION_MODEL, MATERIAL)
 
     val cursorRenderer = TextureCursorRenderer()
 
@@ -69,9 +70,8 @@ class MaterialRenderer {
         val vao = areasCache.getOrCreate(ctx) {
             val model = ctx.gui.state.tmpModel ?: ctx.gui.modelAccessor.model
             val objs = model.objectRefs
-                    .filter { model.isVisible(it) }
                     .map { model.getObject(it) }
-                    .filter { it.material == ref }
+                    .filter { it.visible && it.material == ref }
 
             ctx.buffer.build(DrawMode.QUADS) {
                 objs.forEach { obj ->
@@ -175,7 +175,7 @@ class MaterialRenderer {
         val refs = selection.refs.filterIsInstance<IPosRef>()
 
         refs.forEach { ref ->
-            val obj = model.getObject(ref)
+            val obj = model.getObject(ref.toObjectRef())
 
             val pos = ref.posIndex
                     .let { obj.mesh.tex[it] }
@@ -199,7 +199,7 @@ class MaterialRenderer {
                                                color: IVector3) {
         val refs = selection.refs.filterIsInstance<IEdgeRef>()
         refs.forEach { ref ->
-            val obj = model.getObject(ref)
+            val obj = model.getObject(ref.toObjectRef())
 
             val positions = listOf(ref.firstIndex, ref.secondIndex)
                     .map { obj.mesh.tex[it] }
@@ -214,7 +214,7 @@ class MaterialRenderer {
                                                color: IVector3) {
         val refs = selection.refs.filterIsInstance<IFaceRef>()
         refs.forEach { ref ->
-            val obj = model.getObject(ref)
+            val obj = model.getObject(ref.toObjectRef())
             val face = obj.mesh.faces[ref.faceIndex]
 
             val positions: List<IVector2> = face.tex
@@ -280,30 +280,39 @@ class MaterialRenderer {
     }
 
     fun renderGridLines(ctx: RenderContext, material: IMaterial) {
-        val vao = gridLines.getOrCreate(ctx) {
-            ctx.buffer.build(DrawMode.LINES) {
-                val min = 0
-                val maxX = material.size.xi
-                val maxY = material.size.yi
-
-                for (x in min..maxX) {
-                    val color = if (x % 16 == 0) Config.colorPalette.grid2Color else Config.colorPalette.grid1Color
-                    add(vec3Of(x, min, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
-                    add(vec3Of(x, maxY, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
-                }
-                for (y in min..maxY) {
-                    val color = if (y % 16 == 0) Config.colorPalette.grid2Color else Config.colorPalette.grid1Color
-                    add(vec3Of(min, y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
-                    add(vec3Of(maxX, y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
-                }
-            }
+        val pixelVao = gridLinesPixel.getOrCreate(ctx) {
+            ctx.buffer.build(DrawMode.LINES) { renderGridLines(ctx, material, true) }
         }
+        val blockVao = gridLinesBlock.getOrCreate(ctx) {
+            ctx.buffer.build(DrawMode.LINES) { renderGridLines(ctx, material, false) }
+        }
+        val vao = if (ctx.camera.zoom < Config.zoomLevelToChangeGridDetail) pixelVao else blockVao
+
         ctx.shader.apply {
             useColor.setInt(1)
             useLight.setInt(0)
             useTexture.setInt(0)
             matrixM.setMatrix4(Matrix4.IDENTITY)
             accept(vao)
+        }
+    }
+
+    private fun BufferPTNC.renderGridLines(ctx: RenderContext, material: IMaterial, pixel: Boolean) {
+        val min = 0
+        val maxX = material.size.xi
+        val maxY = material.size.yi
+
+        for (x in min..maxX) {
+            val color = if (x % 16 == 0) Config.colorPalette.grid2Color else Config.colorPalette.grid1Color
+            if (!pixel && x % 16 != 0) continue
+            add(vec3Of(x, min, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
+            add(vec3Of(x, maxY, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
+        }
+        for (y in min..maxY) {
+            val color = if (y % 16 == 0) Config.colorPalette.grid2Color else Config.colorPalette.grid1Color
+            if (!pixel && y % 16 != 0) continue
+            add(vec3Of(min, y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
+            add(vec3Of(maxX, y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
         }
     }
 

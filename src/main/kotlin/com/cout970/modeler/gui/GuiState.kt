@@ -43,7 +43,6 @@ class GuiState {
     var modelSelectionHash: Int = -1
     var textureSelectionHash: Int = -1
     var materialsHash: Int = -1
-    var visibilityHash: Int = -1
     var gridLinesHash: Int = -1
 
     var playAnimation = false

@@ -6,10 +6,8 @@ import com.cout970.glutilities.tessellator.DrawMode
 import com.cout970.glutilities.tessellator.VAO
 import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
-import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
-import com.cout970.modeler.core.model.selection.PosRef
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
@@ -112,13 +110,11 @@ fun IFaceIndex.getEdges(): List<Pair<Int, Int>> {
     }
 }
 
-fun IMesh.getPosRefs(obj: IObjectRef) = pos.indices.map { PosRef(obj.objectId, it) }
-
 fun IMesh.removeFace(id: Int): IMesh {
     return Mesh(this.pos, this.tex, this.faces.filterIndexed { index, _ -> index != id }).optimize()
 }
 
-fun IMesh.removeFaces(refs: List<Int>): IMesh {
+fun IMesh.removeFaces(refs: Set<Int>): IMesh {
     return Mesh(this.pos, this.tex, this.faces.filterIndexed { index, _ -> index !in refs }).optimize()
 }
 

@@ -1,14 +1,11 @@
 package com.cout970.modeler.controller.usecases
 
-import com.cout970.modeler.api.model.selection.IFaceRef
-import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.modeler.api.model.selection.SelectionTarget
-import com.cout970.modeler.api.model.selection.SelectionType
+import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.model.Object
-import com.cout970.modeler.core.model.getSelectedObjectRefs
+import com.cout970.modeler.core.model.faces
 import com.cout970.modeler.core.model.getSelectedObjects
-import com.cout970.modeler.core.model.selection.FaceRef
+import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.model.selection.Selection
 import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.render.tool.addFace
@@ -59,7 +56,7 @@ fun joinObjects(modelAccessor: IModelAccessor): ITask {
 
     val model = modelAccessor.model
     val objs = model.getSelectedObjects(selection)
-    val objsRefs = model.getSelectedObjectRefs(selection)
+    val objsRefs = selection.objects
     val newObj = Object(
             name = objs.first().name,
             mesh = objs.map { it.mesh }.reduce { acc, mesh -> acc.merge(mesh) },
@@ -87,13 +84,13 @@ fun extrudeFace(modelAccessor: IModelAccessor): ITask {
 
     val model = modelAccessor.model
 
-    val refs = selection.refs.filterIsInstance<IFaceRef>()
-    val map = refs.groupBy { it.objectId }
+    val map = selection.faces.groupBy { it.toObjectRef() }
+    val objRefs = selection.faces.map { it.toObjectRef() }.toSet()
 
     val newSelectionRefs = mutableListOf<IFaceRef>()
 
-    val newModel = model.modifyObjects(refs.toSet()) { ref, obj ->
-        val faceRefs = map[ref.objectId] ?: return@modifyObjects obj
+    val newModel = model.modifyObjects(objRefs) { ref, obj ->
+        val faceRefs = map[ref] ?: return@modifyObjects obj
         val mesh = obj.mesh
 
         val normal = faceRefs
@@ -120,7 +117,7 @@ fun extrudeFace(modelAccessor: IModelAccessor): ITask {
             listOf(a, b, d, c)
         }
 
-        var newMesh = mesh.removeFaces(faceRefs.map { it.faceIndex })
+        var newMesh = mesh.removeFaces(faceRefs.map { it.faceIndex }.toSet())
 
         newFacePos.forEach { newMesh = newMesh.addFace(it) }
 
@@ -130,7 +127,7 @@ fun extrudeFace(modelAccessor: IModelAccessor): ITask {
 
         val end = newMesh.faces.size
 
-        newSelectionRefs.addAll((base until end).map { FaceRef(ref.objectId, it) })
+        newSelectionRefs.addAll((base until end).map { ref.toFaceRef(it) })
 
         obj.withMesh(newMesh.optimize())
     }

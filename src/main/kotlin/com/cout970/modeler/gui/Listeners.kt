@@ -45,7 +45,6 @@ class Listeners : ITickeable {
             it.modelChangeListeners += this::onModelChange
             it.modelChangeListeners.add { _, new ->
                 gui.state.modelHash = new.hashCode()
-                gui.state.visibilityHash = new.visibilities.hashCode()
             }
 
             it.modelSelectionHandler.addChangeListener { _, _ ->

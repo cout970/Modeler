@@ -28,9 +28,8 @@ class TaskExportTexture(
             val file = File(path)
             val set = mutableSetOf<Int>()
             val mesh = model.objectRefs
-                    .filter { model.isVisible(it) }
                     .map { model.getObject(it) }
-                    .filter { it.material == material }
+                    .filter { it.visible && it.material == material }
                     .map { it.mesh }
 
             val image = BufferedImage(size.xi, size.yi, BufferedImage.TYPE_INT_ARGB_PRE)
