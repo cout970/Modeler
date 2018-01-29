@@ -8,7 +8,6 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.mesh.MeshFactory
-import com.cout970.modeler.core.model.selection.ObjectRef
 import com.cout970.modeler.render.tool.*
 import com.cout970.modeler.util.getColor
 import com.cout970.vector.api.IVector3
@@ -26,7 +25,7 @@ import org.lwjgl.opengl.GL13
 
 class ModelRenderer {
 
-    var modelCache: List<VAO> = mutableListOf()
+    var modelCache: Map<IObjectRef, VAO> = mutableMapOf()
     var modelSelectionCache = AutoCache(CacheFlags.MODEL, CacheFlags.SELECTION_MODEL, CacheFlags.MODEL_CURSOR)
     var textureSelectionCache = AutoCache(CacheFlags.MODEL, CacheFlags.SELECTION_TEXTURE, CacheFlags.TEXTURE_CURSOR)
     var modelHash = -1
@@ -85,18 +84,16 @@ class ModelRenderer {
 
         if (modelCache.isEmpty() || modelCache.size != model.objects.size || model.hashCode() != modelHash) {
             modelHash = model.hashCode()
-            modelCache.forEach { it.close() }
+            modelCache.forEach { it.value.close() }
             modelCache = buildCache(modelCache, ctx.buffer, model)
         }
 
-        val map = model.objects
-                .mapIndexed { ind, iObject -> ind to iObject }
-                .filter { (first) -> model.visibilities[first] }
+        val map = model.objectRefs.filter { model.isVisible(it) }
 
 
         GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE)
         GL11.glLineWidth(Config.selectionThickness * 10f)
-        map.forEach { (objIndex, _) ->
+        map.forEach { ref ->
             ctx.shader.apply {
                 useCubeMap.setBoolean(false)
                 useTexture.setBoolean(false)
@@ -104,7 +101,7 @@ class ModelRenderer {
                 useLight.setBoolean(false)
                 showHiddenFaces.setBoolean(false)
                 matrixM.setMatrix4(Matrix4.IDENTITY)
-                accept(modelCache[objIndex])
+                accept(modelCache[ref]!!)
                 showHiddenFaces.setBoolean(false)
             }
         }
@@ -116,14 +113,14 @@ class ModelRenderer {
 
         if (modelCache.isEmpty() || modelCache.size != model.objects.size || model.hashCode() != modelHash) {
             modelHash = model.hashCode()
-            modelCache.forEach { it.close() }
+            modelCache.forEach { it.value.close() }
             modelCache = buildCache(modelCache, ctx.buffer, model)
         }
 
-        val map = model.objects
-                .mapIndexed { ind, iObject -> ind to iObject }
-                .filter { (first) -> model.visibilities[first] }
-                .groupBy { it.second.material }
+        val map = model.objectMap
+                .filter { model.isVisible(it.key) }
+                .entries
+                .groupBy { it.value.material }
 
         map.forEach { material, list ->
             model.getMaterial(material).bind()
@@ -135,23 +132,24 @@ class ModelRenderer {
                     useLight.setBoolean(ctx.gui.state.useLight)
                     showHiddenFaces.setBoolean(ctx.gui.state.showHiddenFaces)
                     matrixM.setMatrix4(Matrix4.IDENTITY)
-                    accept(modelCache[objIndex])
+                    accept(modelCache[objIndex]!!)
                     showHiddenFaces.setBoolean(false)
                 }
             }
         }
     }
 
-    private fun buildCache(list: List<VAO>, buffer: BufferPTNC, model: IModel): List<VAO> {
-        list.forEach { it.close() }
-        return model.objects
-                .map { it.mesh }
-                .map { it.createVao(buffer, getColor(it.hashCode())) }
+    private fun buildCache(list: Map<IObjectRef, VAO>, buffer: BufferPTNC, model: IModel): Map<IObjectRef, VAO> {
+        list.forEach { it.value.close() }
+        return model.objectMap
+                .map { (id, obj) -> id to obj.mesh.createVao(buffer, getColor(obj.id.hashCode())) }
+                .toMap()
     }
 
     private fun buildTextureSelection(ctx: RenderContext, modelToRender: IModel,
                                       selection: ISelection): VAO {
         val color = Config.colorPalette.textureSelectionColor
+
         return when (selection.selectionType) {
             SelectionType.OBJECT -> ctx.buffer.build(DrawMode.LINES) {
                 appendObjectSelection(modelToRender, selection, color)
@@ -184,22 +182,22 @@ class ModelRenderer {
 
     private fun BufferPTNC.appendObjectSelection(modelToRender: IModel, selection: ISelection, color: IVector3) {
 
-        val objSel = modelToRender.objects.filterIndexed { index, _ ->
-            selection.isSelected(ObjectRef(index))
-        }
-        objSel.forEach {
-            it.mesh.forEachEdge { (a, b) ->
-                add(a.pos, Vector2.ORIGIN, Vector3.ZERO, color)
-                add(b.pos, Vector2.ORIGIN, Vector3.ZERO, color)
-            }
-        }
+        modelToRender.objectMap
+                .filter { (index, _) -> selection.isSelected(index) }
+                .map { it.value }
+                .forEach {
+                    it.mesh.forEachEdge { (a, b) ->
+                        add(a.pos, Vector2.ORIGIN, Vector3.ZERO, color)
+                        add(b.pos, Vector2.ORIGIN, Vector3.ZERO, color)
+                    }
+                }
     }
 
     private fun BufferPTNC.appendFaceSelection(modelToRender: IModel, selection: ISelection, color: IVector3) {
 
         val pairs = selection.refs
                 .filterIsInstance<IFaceRef>()
-                .map { modelToRender.getObject(ObjectRef(it.objectIndex)) to it }
+                .map { modelToRender.getObject(it) to it }
 
         pairs.forEach { (obj, ref) ->
             val face = obj.mesh.faces[ref.faceIndex]
@@ -216,7 +214,7 @@ class ModelRenderer {
 
         val pairs = selection.refs
                 .filterIsInstance<IEdgeRef>()
-                .map { modelToRender.getObject(ObjectRef(it.objectIndex)) to it }
+                .map { modelToRender.getObject(it) to it }
 
         pairs.forEach { (obj, ref) ->
             add(obj.mesh.pos[ref.firstIndex], Vector2.ORIGIN, Vector3.ZERO, color)
@@ -229,12 +227,11 @@ class ModelRenderer {
 
         val pairs = selection.refs
                 .filterIsInstance<IPosRef>()
-                .map { modelToRender.getObject(ObjectRef(it.objectIndex)) to it }
+                .map { modelToRender.getObject(it) to it }
 
         pairs.forEach { (obj, ref) ->
             val point = obj.mesh.pos[ref.posIndex]
-            MeshFactory.createCube(vec3Of(0.5), vec3Of(-0.25) + point)
-                    .append(this, color)
+            MeshFactory.createCube(vec3Of(0.5), vec3Of(-0.25) + point).append(this, color)
         }
     }
 }

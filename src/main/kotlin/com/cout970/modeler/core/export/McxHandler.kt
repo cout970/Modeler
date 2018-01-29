@@ -2,12 +2,14 @@ package com.cout970.modeler.core.export
 
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.`object`.IObject
+import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.Object
-import com.cout970.modeler.core.model.material.MaterialRef
+import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
+import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.resource.ResourcePath
 import com.cout970.modeler.util.Direction
 import com.cout970.vector.api.IVector2
@@ -90,19 +92,18 @@ class McxImporter {
 
         val model = GSON.fromJson(path.inputStream().reader(), ModelData::class.java)
 
-        val materialPaths = (listOf(model.particleTexture) + model.parts.map { it.texture }).distinct()
-        val materials = materialPaths.map {
-            val name = it.substringAfter(':').substringAfterLast('/')
-            TexturedMaterial(name, ResourcePath.textureFromResourceLocation(it, path))
+        val materialPaths = (listOf(model.particleTexture) + model.parts.map { it.texture }).toSet()
+
+        val materials = materialPaths.associate { matPath ->
+            val name = matPath.substringAfter(':').substringAfterLast('/')
+            matPath to TexturedMaterial(name, ResourcePath.textureFromResourceLocation(matPath, path))
         }
-        val materialMap = materialPaths.zip(materials.indices).toMap()
+        val objects = model.parts.map { it.toObject(materials, model) }
 
-        val objects = model.parts.map { it.toObject(materialMap, model) }
-
-        return Model(objects, materials, objects.map { true })
+        return Model.of(objects, materials.values.toList())
     }
 
-    fun Part.toObject(materials: Map<String, Int>, model: ModelData): IObject {
+    fun Part.toObject(materials: Map<String, IMaterial>, model: ModelData): IObject {
 //        if(side == null && (to - from) == 6){ // probably a cube
 //
 //        }
@@ -134,7 +135,7 @@ class McxImporter {
 
         val mesh = Mesh(pos.map { it * 16.0 }, tex, faces)
 
-        return Object(name, mesh, MaterialRef(materials[texture] ?: -1))
+        return Object(name, mesh, materials[texture]?.ref ?: MaterialRefNone)
     }
 }
 

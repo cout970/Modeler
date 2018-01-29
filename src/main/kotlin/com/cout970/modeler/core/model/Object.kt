@@ -4,7 +4,7 @@ import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.api.model.transformer.IObjectTransformer
-import com.cout970.modeler.core.model.material.MaterialRef
+import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.util.middle
 import com.cout970.modeler.util.scale
@@ -14,6 +14,7 @@ import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.toVector3
 import com.cout970.vector.extensions.vec3Of
+import java.util.*
 
 /**
  * Created by cout970 on 2017/05/07.
@@ -21,7 +22,8 @@ import com.cout970.vector.extensions.vec3Of
 data class Object(
         override val name: String,
         override val mesh: IMesh,
-        override val material: IMaterialRef = MaterialRef(-1)
+        override val material: IMaterialRef = MaterialRefNone,
+        override val id: UUID = UUID.randomUUID()
 ) : IObject {
 
     @Suppress("unused")
@@ -34,6 +36,8 @@ data class Object(
     override fun withMaterial(materialRef: IMaterialRef): IObject = copy(material = materialRef)
 
     override fun withName(name: String): IObject = copy(name = name)
+
+    override fun makeCopy(): IObject = copy(id = UUID.randomUUID())
 
     override val transformer: IObjectTransformer = object : IObjectTransformer {
         override fun translate(obj: IObject, translation: IVector3): IObject {

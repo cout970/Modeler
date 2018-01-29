@@ -103,6 +103,7 @@ class QuaternionSerializer : JsonSerializer<IQuaternion>, JsonDeserializer<IQuat
     }
 }
 
+// TODO fix this, very important
 class ModelSerializer : JsonSerializer<IModel>, JsonDeserializer<IModel> {
 
     override fun serialize(src: IModel, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {

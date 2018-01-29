@@ -1,6 +1,7 @@
 package com.cout970.modeler.gui.components
 
 import com.cout970.modeler.api.model.material.IMaterialRef
+import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
@@ -35,7 +36,7 @@ class ModelMaterialItem : RComponent<ModelMaterialItem.Props, Boolean>() {
             it.setTransparent()
             it.metadata += "ref" to props.ref
         }
-        if (props.ref.materialIndex != -1) {
+        if (props.ref != MaterialRefNone) {
             +IconButton("material.view.load", "loadMaterial", 120f, 0f, 24f, 24f).also {
                 it.setTransparent()
                 it.border.isEnabled = false

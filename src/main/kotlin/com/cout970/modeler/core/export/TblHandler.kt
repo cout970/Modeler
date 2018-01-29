@@ -5,8 +5,8 @@ import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.ObjectCube
 import com.cout970.modeler.core.model.TRSTransformation
-import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.material.TexturedMaterial
+import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.resource.ResourcePath
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -34,10 +34,9 @@ class TblImporter {
 
         val model = parse(path)
         val material = TexturedMaterial("texture", path.enterZip("texture.png"))
-        val materialRef = MaterialRef(0)
         val texSize = vec2Of(model.textureWidth, model.textureHeight)
 
-        val objects = mapCubes(model.cubes, materialRef, texSize) + mapGroups(model.cubeGroups, materialRef, texSize)
+        val objects = mapCubes(model.cubes, material.ref, texSize) + mapGroups(model.cubeGroups, material.ref, texSize)
         return Model.of(objects, listOf(material))
     }
 

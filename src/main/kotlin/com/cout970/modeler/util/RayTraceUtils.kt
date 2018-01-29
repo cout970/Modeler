@@ -89,7 +89,7 @@ fun IObject.getFaceRayObstacles(objRef: IObjectRef): List<Pair<IRayObstacle, IRe
     return mesh.faces.mapIndexed { ref, faceIndex ->
         object : IRayObstacle {
             override fun rayTrace(ray: Ray): RayTraceResult? = mesh.getFaceHit(ray, faceIndex)
-        } to FaceRef(objRef.objectIndex, ref)
+        } to FaceRef(objRef.objectId, ref)
     }
 }
 
@@ -101,7 +101,7 @@ fun IObject.getEdgeRayObstacles(objRef: IObjectRef): List<Pair<IRayObstacle, IRe
 
             object : IRayObstacle {
                 override fun rayTrace(ray: Ray): RayTraceResult? = mesh.getEdgeHit(ray, f.pos[index], f.pos[next])
-            } to EdgeRef(objRef.objectIndex, f.pos[index], f.pos[next])
+            } to EdgeRef(objRef.objectId, f.pos[index], f.pos[next])
         }
     }
 }
@@ -110,7 +110,7 @@ fun IObject.getVertexRayObstacles(objRef: IObjectRef): List<Pair<IRayObstacle, I
     return mesh.pos.mapIndexed { index, _ ->
         object : IRayObstacle {
             override fun rayTrace(ray: Ray): RayTraceResult? = mesh.getVertexHit(ray, index)
-        } to PosRef(objRef.objectIndex, index)
+        } to PosRef(objRef.objectId, index)
     }
 }
 
@@ -122,7 +122,7 @@ fun IObject.getTexturePolygon(objRef: IObjectRef): List<Pair<IPolygon, IRef>> =
 
 fun IObject.getFaceTexturePolygons(objRef: IObjectRef): List<Pair<IPolygon, IRef>> =
         mesh.faces.mapIndexed { ref, faceIndex ->
-            TexturePolygon(faceIndex.getTextureVertex(mesh)) to FaceRef(objRef.objectIndex, ref)
+            TexturePolygon(faceIndex.getTextureVertex(mesh)) to FaceRef(objRef.objectId, ref)
         }
 
 fun IObject.getEdgeTexturePolygons(objRef: IObjectRef, material: IMaterial): List<Pair<IPolygon, IRef>> =
@@ -132,13 +132,13 @@ fun IObject.getEdgeTexturePolygons(objRef: IObjectRef, material: IMaterial): Lis
                 val a = f.tex[index]
                 val b = f.tex[next]
 
-                getEdgeTexturePolygon(mesh.tex[a], mesh.tex[b], material) to EdgeRef(objRef.objectIndex, a, b)
+                getEdgeTexturePolygon(mesh.tex[a], mesh.tex[b], material) to EdgeRef(objRef.objectId, a, b)
             }
         }
 
 fun IObject.getVertexTexturePolygons(objRef: IObjectRef, material: IMaterial): List<Pair<IPolygon, IRef>> =
         mesh.tex.mapIndexed { ref, coord ->
-            getVertexTexturePolygon(coord, material) to PosRef(objRef.objectIndex, ref)
+            getVertexTexturePolygon(coord, material) to PosRef(objRef.objectId, ref)
         }
 
 private fun getEdgeTexturePolygon(a: IVector2, b: IVector2, material: IMaterial): IPolygon {
@@ -161,4 +161,3 @@ fun getVertexTexturePolygon(a: IVector2, material: IMaterial): IPolygon {
             a + vec2Of(scale.xd, scale.yd), a + vec2Of(-scale.xd, scale.yd)
     ))
 }
-

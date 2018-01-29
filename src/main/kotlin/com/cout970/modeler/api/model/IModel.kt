@@ -4,38 +4,45 @@ import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.modeler.core.model.material.MaterialRef
-import com.cout970.modeler.core.model.selection.ObjectRef
 
 
 /**
  * Created by cout970 on 2017/05/07.
  */
 interface IModel : Comparable<IModel> {
-    val objects: List<IObject>
-    val materials: List<IMaterial>
-    val visibilities: List<Boolean>
+    val objectMap: Map<IObjectRef, IObject>
+    val materialMap: Map<IMaterialRef, IMaterial>
 
-    val objectRefs: List<IObjectRef> get() = objects.mapIndexed { index, _ -> ObjectRef(index) }
-    val materialRefs: List<IMaterialRef> get() = materials.mapIndexed { index, _ -> MaterialRef(index) }
+    val materialRefs: List<IMaterialRef> get() = materialMap.keys.toList()
+    val materials: List<IMaterial> get() = materialMap.values.toList()
+
+    val objectRefs: List<IObjectRef> get() = objectMap.keys.toList()
+    val objects: List<IObject> get() = objectMap.values.toList()
+
+    // TODO remove
+    val visibilities: Map<IObjectRef, Boolean>
 
     fun getObject(ref: IObjectRef): IObject
+
     fun getMaterial(ref: IMaterialRef): IMaterial
+
+    @Deprecated("Remove", ReplaceWith("this.getObject(ref).visible"))
     fun isVisible(ref: IObjectRef): Boolean
 
+    @Deprecated("Remove")
     fun setVisible(ref: IObjectRef, visible: Boolean): IModel
 
     fun addObjects(objs: List<IObject>): IModel
     fun removeObjects(objs: List<IObjectRef>): IModel
     fun modifyObjects(predicate: (IObjectRef) -> Boolean, func: (IObjectRef, IObject) -> IObject): IModel
 
-    fun modifyObjects(objs: List<IObjectRef>, func: (IObjectRef, IObject) -> IObject): IModel {
-        return modifyObjects({ it in objs }, func)
-    }
-
     fun addMaterial(material: IMaterial): IModel
     fun modifyMaterial(ref: IMaterialRef, new: IMaterial): IModel
     fun removeMaterial(materialRef: IMaterialRef): IModel
+
+    fun modifyObjects(objs: Set<IObjectRef>, func: (IObjectRef, IObject) -> IObject): IModel {
+        return modifyObjects({ it in objs }, func)
+    }
 
     fun merge(other: IModel): IModel
 }

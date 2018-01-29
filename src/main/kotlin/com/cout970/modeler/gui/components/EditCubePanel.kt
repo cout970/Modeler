@@ -8,7 +8,7 @@ import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.model.*
-import com.cout970.modeler.core.model.selection.ObjectRef
+import com.cout970.modeler.core.model.selection.ObjectRefNone
 import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.gui.event.EventModelUpdate
 import com.cout970.modeler.gui.event.EventSelectionUpdate
@@ -54,10 +54,10 @@ class EditCubePanel : RComponent<EditCubePanel.Props, Unit>() {
                 .toNullable()
                 .flatMap {
                     if (isSelectingOneCube(props.access.model, it)) {
-                        props.access.model.getSelectedObjectRefs(it).first()
+                        it.objects.first()
                     } else null
                 }
-                .getOr(ObjectRef(-1))
+                .getOr(ObjectRefNone)
 
         val cube = (props.access.model.getObject(cubeRef) as? IObjectCube).asNullable()
 
@@ -150,7 +150,7 @@ class EditCubePanel : RComponent<EditCubePanel.Props, Unit>() {
                     value = getter,
                     cmd = "update.template.cube",
                     metadata = properties,
-                    enabled = cubeRef.objectIndex != -1,
+                    enabled = cubeRef != ObjectRefNone,
                     pos = pos
             )
         }

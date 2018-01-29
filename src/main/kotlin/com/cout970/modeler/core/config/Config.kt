@@ -40,6 +40,5 @@ object Config {
     var zoomLevelToChangeGridDetail: Float = 135f
 
     @ConfigComment("Amount of milliseconds between backups")
-    var backupInterval: Int = 20_000
-
+    var backupInterval: Int = 60_000
 }

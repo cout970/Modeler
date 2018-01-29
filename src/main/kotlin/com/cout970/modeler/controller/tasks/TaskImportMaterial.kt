@@ -2,7 +2,7 @@ package com.cout970.modeler.controller.tasks
 
 import com.cout970.modeler.Program
 import com.cout970.modeler.api.model.material.IMaterial
-import com.cout970.modeler.core.model.material.MaterialRef
+import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.gui.event.Notification
 import com.cout970.modeler.gui.event.NotificationHandler
 
@@ -15,16 +15,16 @@ class TaskImportMaterial(
 
     override fun run(state: Program) {
         state.projectManager.loadMaterial(material)
-        state.projectManager.loadedMaterials.forEach { it.loadTexture(state.resourceLoader) }
-        NotificationHandler.push(Notification("Material imported", "Material '${material.name}' has been imported successfully"))
+        state.projectManager.loadedMaterials.forEach { it.value.loadTexture(state.resourceLoader) }
+        NotificationHandler.push(Notification("Material imported",
+                "Material '${material.name}' has been imported successfully"))
 
     }
 
     override fun undo(state: Program) {
-        if (material in state.projectManager.loadedMaterials) {
-            val ref = state.projectManager.loadedMaterials.indexOf(material)
-            state.projectManager.removeMaterial(MaterialRef(ref))
-            state.projectManager.loadedMaterials.forEach { it.loadTexture(state.resourceLoader) }
+        if (state.projectManager.loadedMaterials.containsKey(material.ref)) {
+            state.projectManager.removeMaterial(material.ref)
+            state.projectManager.loadedMaterials.forEach { it.value.loadTexture(state.resourceLoader) }
         }
     }
 }

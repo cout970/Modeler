@@ -94,10 +94,9 @@ private fun paste(saveSelection: ISelection, oldSelection: Nullable<ISelection>,
                   clipboard: IClipboard): ITask = when (saveSelection.selectionType) {
     SelectionType.OBJECT -> {
 
-        val selectedObjects = clipboard.model.getSelectedObjects(saveSelection)
+        val selectedObjects = clipboard.model.getSelectedObjects(saveSelection).map { it.makeCopy() }
         val newModel = model.addObjects(selectedObjects)
-        val selRefs = (model.objects.size until model.objects.size + selectedObjects.size)
-                .map { ObjectRef(it) }
+        val selRefs = selectedObjects.map { ObjectRef(it.id) }
 
         val newSelection = Selection(SelectionTarget.MODEL, SelectionType.OBJECT, selRefs)
 

@@ -1,31 +1,23 @@
 package com.cout970.modeler.core.model.material
 
 import com.cout970.modeler.api.model.material.IMaterialRef
+import java.util.*
 
 /**
  * Created by cout970 on 2017/07/09.
  */
-data class MaterialRef(override val materialIndex: Int) : IMaterialRef {
-
-    override fun equals(other: Any?): Boolean {
-        return other is IMaterialRef && other.materialIndex == materialIndex
-    }
-
-    override fun hashCode(): Int {
-        return materialIndex
-    }
-}
+data class MaterialRef(override val materialId: UUID) : IMaterialRef
 
 object MaterialRefNone : IMaterialRef {
 
-    override val materialIndex: Int = -1
+    override val materialId = MaterialNone.id
 
     override fun equals(other: Any?): Boolean {
-        return other is IMaterialRef && other.materialIndex == materialIndex
+        return other is IMaterialRef && other === this
     }
 
     override fun hashCode(): Int {
-        return materialIndex
+        return -1
     }
 
     override fun toString(): String {

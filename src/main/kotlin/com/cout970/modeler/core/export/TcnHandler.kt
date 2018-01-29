@@ -11,8 +11,8 @@ import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.ObjectCube
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.material.MaterialNone
-import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.material.TexturedMaterial
+import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.resource.ResourcePath
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.*
@@ -80,7 +80,7 @@ class TcnImporter {
             }
 
             try {
-                meshes += getMesh(shape, textureSize, MaterialRef(0))
+                meshes += getMesh(shape, textureSize, texture.ref)
             } catch (e: NumberFormatException) {
                 log(Level.ERROR) { "Tcn file contains malformed integers within its data, ignoring" }
                 e.print()

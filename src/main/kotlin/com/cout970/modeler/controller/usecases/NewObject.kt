@@ -26,8 +26,8 @@ fun newObject(model: IModel): ITask {
 @UseCase("cube.template.new")
 fun newObjectCube(model: IModel): ITask {
     val obj = ObjectCube(
-            "Object ${model.objects.size}",
-            TRSTransformation(vec3Of(4, 16, 4), Quaternion.IDENTITY, vec3Of(8, 8, 8))
+            name = "Object ${model.objects.size}",
+            transformation = TRSTransformation(vec3Of(4, 16, 4), Quaternion.IDENTITY, vec3Of(8, 8, 8))
     )
     return addObject(model, obj)
 }

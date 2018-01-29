@@ -3,7 +3,7 @@ package com.cout970.modeler.gui
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.SelectionType
-import com.cout970.modeler.core.model.material.MaterialRef
+import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.gui.canvas.ISelectable
 import com.cout970.modeler.gui.canvas.TransformationMode
 import com.cout970.modeler.util.BooleanPropertyWrapper
@@ -37,7 +37,7 @@ class GuiState {
     var hoveredObject: ISelectable? = null
     var tmpModel: IModel? = null
 
-    var selectedMaterial: IMaterialRef = MaterialRef(-1)
+    var selectedMaterial: IMaterialRef = MaterialRefNone
 
     var modelHash: Int = -1
     var modelSelectionHash: Int = -1

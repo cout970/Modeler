@@ -112,7 +112,7 @@ fun IFaceIndex.getEdges(): List<Pair<Int, Int>> {
     }
 }
 
-fun IMesh.getPosRefs(obj: IObjectRef) = pos.indices.map { PosRef(obj.objectIndex, it) }
+fun IMesh.getPosRefs(obj: IObjectRef) = pos.indices.map { PosRef(obj.objectId, it) }
 
 fun IMesh.removeFace(id: Int): IMesh {
     return Mesh(this.pos, this.tex, this.faces.filterIndexed { index, _ -> index != id }).optimize()

@@ -12,11 +12,13 @@ import com.cout970.modeler.gui.event.NotificationHandler
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.vec2Of
 import java.io.FileNotFoundException
+import java.util.*
 
 class TexturedMaterial(override val name: String, val path: ResourcePath) : IMaterial {
 
     var texture: Texture? = null
     var loadingError = false
+    override val id: UUID = UUID.randomUUID()
     private var lastModified = -1L
     override val size: IVector2 get() = texture?.size ?: vec2Of(1)
 

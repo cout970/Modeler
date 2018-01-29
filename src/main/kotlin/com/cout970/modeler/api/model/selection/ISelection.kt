@@ -1,6 +1,9 @@
 package com.cout970.modeler.api.model.selection
 
-import com.cout970.modeler.core.model.selection.ObjectRef
+import com.cout970.modeler.core.model.selection.EdgeRef
+import com.cout970.modeler.core.model.selection.FaceRef
+import com.cout970.modeler.core.model.selection.PosRef
+import java.util.*
 
 /**
  * Created by cout970 on 2017/05/14.
@@ -9,22 +12,19 @@ import com.cout970.modeler.core.model.selection.ObjectRef
 interface IRef
 
 interface IObjectRef : IRef {
-    val objectIndex: Int
+    val objectId: UUID
 }
 
-interface IFaceRef : IRef {
-    val objectIndex: Int
+interface IFaceRef : IObjectRef {
     val faceIndex: Int
 }
 
-interface IEdgeRef : IRef {
-    val objectIndex: Int
+interface IEdgeRef : IObjectRef {
     val firstIndex: Int
     val secondIndex: Int
 }
 
-interface IPosRef : IRef {
-    val objectIndex: Int
+interface IPosRef : IObjectRef {
     val posIndex: Int
 }
 
@@ -61,6 +61,14 @@ fun IRef.getSelectionType() = when (this) {
     else -> SelectionType.VERTEX
 }
 
-inline val IFaceRef.objectRef: IObjectRef get() = ObjectRef(objectIndex)
-inline val IEdgeRef.objectRef: IObjectRef get() = ObjectRef(objectIndex)
-inline val IPosRef.objectRef: IObjectRef get() = ObjectRef(objectIndex)
+inline fun UUID.toFaceRef(index: Int) = FaceRef(this, index)
+inline fun UUID.toEdgeRef(a: Int, b: Int) = EdgeRef(this, a, b)
+inline fun UUID.toPosRef(index: Int) = PosRef(this, index)
+
+inline fun IObjectRef.toFaceRef(index: Int) = FaceRef(this.objectId, index)
+inline fun IObjectRef.toEdgeRef(a: Int, b: Int) = EdgeRef(this.objectId, a, b)
+inline fun IObjectRef.toPosRef(index: Int) = PosRef(this.objectId, index)
+
+@Deprecated("Not needed anymore") inline val IFaceRef.objectRef: IObjectRef get() = TODO("REMOVE this function")
+@Deprecated("Not needed anymore") inline val IEdgeRef.objectRef: IObjectRef get() = TODO("REMOVE this function")
+@Deprecated("Not needed anymore") inline val IPosRef.objectRef: IObjectRef get() =  TODO("REMOVE this function")

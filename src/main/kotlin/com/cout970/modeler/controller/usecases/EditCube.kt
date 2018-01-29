@@ -42,7 +42,7 @@ fun changeCube(component: Component, model: IModel): ITask {
                 Pair(ref, newObject)
             }
             .map { (ref, cube) ->
-                val newModel = model.modifyObjects(listOf(ref)) { _, _ -> cube }
+                val newModel = model.modifyObjects(setOf(ref)) { _, _ -> cube }
                 TaskUpdateModel(model, newModel) as ITask
             }
             .getOr(TaskNone)

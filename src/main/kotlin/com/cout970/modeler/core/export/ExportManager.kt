@@ -52,7 +52,7 @@ class ExportManager(val resourceLoader: ResourceLoader) {
                 .registerTypeAdapter(IMaterialRef::class.java, MaterialRefSerializer())
                 .create()!!
 
-        const val CURRENT_SAVE_VERSION = "1.0"
+        const val CURRENT_SAVE_VERSION = "1.1"
     }
 
     fun loadProject(path: String): ProgramSave {

@@ -10,7 +10,6 @@ import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.core.model.selection.ObjectRef
 import com.cout970.modeler.render.tool.AutoCache
 import com.cout970.modeler.render.tool.CacheFlags
 import com.cout970.modeler.render.tool.RenderContext
@@ -176,7 +175,7 @@ class MaterialRenderer {
         val refs = selection.refs.filterIsInstance<IPosRef>()
 
         refs.forEach { ref ->
-            val obj = model.getObject(ObjectRef(ref.objectIndex))
+            val obj = model.getObject(ref)
 
             val pos = ref.posIndex
                     .let { obj.mesh.tex[it] }
@@ -200,7 +199,7 @@ class MaterialRenderer {
                                                color: IVector3) {
         val refs = selection.refs.filterIsInstance<IEdgeRef>()
         refs.forEach { ref ->
-            val obj = model.getObject(ObjectRef(ref.objectIndex))
+            val obj = model.getObject(ref)
 
             val positions = listOf(ref.firstIndex, ref.secondIndex)
                     .map { obj.mesh.tex[it] }
@@ -215,7 +214,7 @@ class MaterialRenderer {
                                                color: IVector3) {
         val refs = selection.refs.filterIsInstance<IFaceRef>()
         refs.forEach { ref ->
-            val obj = model.getObject(ObjectRef(ref.objectIndex))
+            val obj = model.getObject(ref)
             val face = obj.mesh.faces[ref.faceIndex]
 
             val positions: List<IVector2> = face.tex

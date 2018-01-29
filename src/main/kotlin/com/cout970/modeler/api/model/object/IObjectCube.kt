@@ -12,6 +12,8 @@ interface IObjectCube : IObject {
     val textureOffset: IVector2
     val textureSize: IVector2
 
+    override fun makeCopy(): IObjectCube
+
     fun withSize(size: IVector3): IObjectCube
     fun withPos(pos: IVector3): IObjectCube
     fun withTransformation(transform: TRSTransformation): IObjectCube

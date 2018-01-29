@@ -4,10 +4,10 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.controller.tasks.*
-import com.cout970.modeler.core.model.getSelectedObjectRefs
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
+import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.gui.GuiState
@@ -29,10 +29,10 @@ fun applyMaterial(component: Component, modelAccessor: IModelAccessor): ITask {
                 .map { it.metadata["ref"] }
                 .flatMap { it as? IMaterialRef }
                 .map { ref ->
-                    val newModel = model.modifyObjects(model.getSelectedObjectRefs(selection)) { _, obj ->
+                    val newModel = model.modifyObjects(selection.objects.toSet()) { _, obj ->
                         obj.withMaterial(ref)
                     }
-                    return TaskUpdateModel(oldModel = model, newModel = newModel) as ITask
+                    return TaskUpdateModel(oldModel = model, newModel = newModel)
                 }
     }
     return TaskNone
@@ -62,14 +62,14 @@ private fun showLoadMaterialMenu(ref: IMaterialRef, projectManager: ProjectManag
         val material = TexturedMaterial(archive.nameWithoutExtension, archive.toResourcePath())
         returnFunc(TaskUpdateMaterial(
                 ref = ref,
-                oldMaterial = projectManager.loadedMaterials[ref.materialIndex],
+                oldMaterial = projectManager.loadedMaterials[ref]!!,
                 newMaterial = material
         ))
     }
 }
 
 @UseCase("material.view.import")
-fun importMaterial(projectManager: ProjectManager): ITask = TaskAsync { returnFunc ->
+fun importMaterial(): ITask = TaskAsync { returnFunc ->
     val file = TinyFileDialogs.tinyfd_openFileDialog("Import Texture", "",
             textureExtensions, "PNG texture (*.png)", false)
 
@@ -95,7 +95,7 @@ fun removeMaterial(guiState: GuiState, projectManager: ProjectManager): ITask {
     val model = projectManager.model
     val material = model.getMaterial(matRef)
 
-    if (material is MaterialNone) return TaskNone
+    if (material == MaterialNone) return TaskNone
 
     val used = model.objects.any { it.material == matRef }
 
@@ -124,6 +124,6 @@ private fun removeMaterialTask(model: IModel, ref: IMaterialRef, material: IMate
     }
     return TaskChain(listOf(
             TaskUpdateModel(oldModel = model, newModel = newModel),
-            TaskRemoveMaterial(material)
+            TaskRemoveMaterial(ref, material)
     ))
 }

@@ -5,7 +5,7 @@ import com.cout970.modeler.api.model.`object`.IObjectCube
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.api.model.transformer.IObjectTransformer
-import com.cout970.modeler.core.model.material.MaterialRef
+import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.mesh.MeshFactory
@@ -17,6 +17,7 @@ import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
 import org.joml.Vector4d
+import java.util.*
 
 
 /**
@@ -24,20 +25,17 @@ import org.joml.Vector4d
  */
 data class ObjectCube(
         override val name: String,
-
         override val transformation: TRSTransformation,
-
-        override val material: IMaterialRef = MaterialRef(-1),
-
+        override val material: IMaterialRef = MaterialRefNone,
         override val textureOffset: IVector2 = Vector2.ORIGIN,
         override val textureSize: IVector2 = vec2Of(64),
-
-        val mirrored: Boolean = false
+        val mirrored: Boolean = false,
+        override val id: UUID = UUID.randomUUID()
 ) : IObjectCube {
 
     override val mesh: IMesh by lazy { generateMesh() }
 
-    override fun getCenter(): IVector3 = mesh.middle()//transformation.preRotation
+    override fun getCenter(): IVector3 = mesh.middle() //transformation.preRotation
 
     val size: IVector3 get() = transformation.scale
     val pos: IVector3 get() = transformation.translation
@@ -119,6 +117,8 @@ data class ObjectCube(
     override fun withMaterial(materialRef: IMaterialRef): IObject = copy(material = materialRef)
 
     override fun withName(name: String): IObject = copy(name = name)
+
+    override fun makeCopy(): IObjectCube = copy(id = UUID.randomUUID())
 
     override val transformer: IObjectTransformer = object : IObjectTransformer {
 

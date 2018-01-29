@@ -5,21 +5,25 @@ import com.cout970.modeler.api.model.`object`.IObjectCube
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.api.model.transformer.IObjectTransformer
-import com.cout970.modeler.core.model.material.MaterialRef
+import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.Vector2
 import com.cout970.vector.extensions.Vector3
+import java.util.*
 
 /**
  * Created by cout970 on 2017/07/09.
  */
 object ObjectNone : IObject {
+    override val id: UUID = UUID.randomUUID()
     override val name: String = "none"
     override val mesh: IMesh = Mesh()
-    override val material: IMaterialRef = MaterialRef(-1)
+    override val material: IMaterialRef = MaterialRefNone
+
+    override fun makeCopy(): IObject = ObjectNone
 
     override fun withMesh(newMesh: IMesh): IObject = this
 
@@ -34,19 +38,23 @@ object ObjectNone : IObject {
 
         override fun translateTexture(obj: IObject, translation: IVector2): IObject = this@ObjectNone
         override fun rotateTexture(obj: IObject, center: IVector2, angle: Double): IObject = this@ObjectNone
-        override fun scaleTexture(obj: IObject, center: IVector2, axis: IVector2, offset: Float): IObject = this@ObjectNone
+        override fun scaleTexture(obj: IObject, center: IVector2, axis: IVector2,
+                                  offset: Float): IObject = this@ObjectNone
     }
 
     override fun getCenter(): IVector3 = Vector3.ORIGIN
 }
 
 object ObjectCubeNone : IObjectCube {
+    override val id: UUID = UUID.randomUUID()
     override val name: String = "none"
     override val mesh: IMesh = Mesh()
-    override val material: IMaterialRef = MaterialRef(-1)
+    override val material: IMaterialRef = MaterialRefNone
     override val transformation: TRSTransformation = TRSTransformation.IDENTITY
     override val textureOffset: IVector2 = Vector2.ORIGIN
     override val textureSize: IVector2 = Vector2.ONE
+
+    override fun makeCopy(): IObjectCube = ObjectCubeNone
 
     override fun withSize(size: IVector3): IObjectCube = this
 
@@ -71,7 +79,8 @@ object ObjectCubeNone : IObjectCube {
 
         override fun translateTexture(obj: IObject, translation: IVector2): IObject = this@ObjectCubeNone
         override fun rotateTexture(obj: IObject, center: IVector2, angle: Double): IObject = this@ObjectCubeNone
-        override fun scaleTexture(obj: IObject, center: IVector2, axis: IVector2, offset: Float): IObject = this@ObjectCubeNone
+        override fun scaleTexture(obj: IObject, center: IVector2, axis: IVector2,
+                                  offset: Float): IObject = this@ObjectCubeNone
     }
 
     override fun getCenter(): IVector3 = Vector3.ORIGIN

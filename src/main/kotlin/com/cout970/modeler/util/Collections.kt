@@ -125,6 +125,7 @@ fun <T> List<T>.getCyclic(index: Int): T {
 }
 
 fun getColor(hash: Int): IVector3 {
-    val c = Color.getHSBColor((hash.toDouble() / Int.MAX_VALUE.toDouble()).toFloat() * 360f, 0.5f, 1f)
+    val hue = hash.toDouble() / Int.MAX_VALUE.toDouble()
+    val c = Color.getHSBColor(hue.toFloat(), 0.5f, 1f)
     return vec3Of(c.blue / 255f, c.green / 255f, c.red / 255f)
 }

@@ -64,7 +64,7 @@ class Dispatcher {
                 val task = dependencyInjector.callUseCase(state, comp, useCase)
                 state.taskHistory.processTask(task)
             } catch (e: Exception) {
-                log(Level.ERROR) { "Usable to run usecase: ${useCase::class.simpleName}" }
+                log(Level.ERROR) { "Unable to run usecase: ${useCase::class.simpleName}" }
                 e.print()
             }
         }

@@ -8,10 +8,11 @@ import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.Object
-import com.cout970.modeler.core.model.material.MaterialRef
+import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
+import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.resource.ResourcePath
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -130,13 +131,13 @@ class ObjImporter {
 
         val (data, groups, objMaterials) = parseFile(path, flipUvs)
 
-        val materials = objMaterials.distinct().map { it.toMaterial() }
-        val materialMap = materials.associate { mat -> mat.name to MaterialRef(materials.indexOf(mat)) }
+        val materials = objMaterials.toSet().map { it.toMaterial() }
+        val materialMap = materials.associate { mat -> mat.name to mat.ref }
 
         val objs = groups.map { group ->
             Object(name = group.name,
                     mesh = group.toMesh(data).optimize(),
-                    material = materialMap[group.material] ?: MaterialRef(-1)
+                    material = materialMap[group.material] ?: MaterialRefNone
             )
         }
 

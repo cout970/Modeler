@@ -1,6 +1,9 @@
 package com.cout970.modeler.controller.usecases
 
-import com.cout970.modeler.api.model.selection.*
+import com.cout970.modeler.api.model.selection.IFaceRef
+import com.cout970.modeler.api.model.selection.IObjectRef
+import com.cout970.modeler.api.model.selection.SelectionTarget
+import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.model.Object
 import com.cout970.modeler.core.model.getSelectedObjectRefs
@@ -85,13 +88,12 @@ fun extrudeFace(modelAccessor: IModelAccessor): ITask {
     val model = modelAccessor.model
 
     val refs = selection.refs.filterIsInstance<IFaceRef>()
-    val affectedObjects = refs.map { it.objectRef }
-    val map = refs.groupBy { it.objectRef }
+    val map = refs.groupBy { it.objectId }
 
     val newSelectionRefs = mutableListOf<IFaceRef>()
 
-    val newModel = model.modifyObjects(affectedObjects) { ref, obj ->
-        val faceRefs = map[ref] ?: return@modifyObjects obj
+    val newModel = model.modifyObjects(refs.toSet()) { ref, obj ->
+        val faceRefs = map[ref.objectId] ?: return@modifyObjects obj
         val mesh = obj.mesh
 
         val normal = faceRefs
@@ -128,7 +130,7 @@ fun extrudeFace(modelAccessor: IModelAccessor): ITask {
 
         val end = newMesh.faces.size
 
-        newSelectionRefs.addAll((base until end).map { FaceRef(ref.objectIndex, it) })
+        newSelectionRefs.addAll((base until end).map { FaceRef(ref.objectId, it) })
 
         obj.withMesh(newMesh.optimize())
     }

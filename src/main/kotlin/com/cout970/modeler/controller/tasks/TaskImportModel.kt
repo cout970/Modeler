@@ -9,7 +9,6 @@ import com.cout970.modeler.core.export.ImportProperties
 import com.cout970.modeler.core.export.ModelImporters
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.material.MaterialRefNone
-import com.cout970.modeler.core.model.selection.ObjectRef
 import com.cout970.modeler.core.model.selection.Selection
 import com.cout970.modeler.gui.event.Notification
 import com.cout970.modeler.gui.event.NotificationHandler
@@ -44,10 +43,7 @@ class TaskImportModel(
             val oldModel = state.projectManager.model
             val newModel = if (properties.append) oldModel.merge(it) else it
             val newSelection = if (properties.append) {
-                val startIndex = oldModel.objects.size
-                val refs = it.objectRefs.map { ObjectRef(startIndex + it.objectIndex) }
-
-                Selection(SelectionTarget.MODEL, SelectionType.OBJECT, refs)
+                Selection(SelectionTarget.MODEL, SelectionType.OBJECT, oldModel.objectRefs)
             } else {
                 Selection(SelectionTarget.MODEL, SelectionType.OBJECT, it.objectRefs)
             }
