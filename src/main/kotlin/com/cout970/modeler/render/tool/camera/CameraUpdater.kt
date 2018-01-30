@@ -63,7 +63,7 @@ class CameraUpdater(
         val speed = 1 / (600 * timer.delta) * if (Config.keyBindings.slowCameraMovements.check(
                 input)) 1 / 10f else 1f
 
-        if (selectedScene.viewMode == SelectionTarget.MODEL || selectedScene.viewMode == SelectionTarget.ANIMATION) {
+        if (selectedScene.viewMode == SelectionTarget.MODEL) {
             if (move) {
                 moveModelCamera(selectedScene, 1 / 60.0)
             } else if (rotate) {

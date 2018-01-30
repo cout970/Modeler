@@ -13,7 +13,6 @@ class KeyBindings {
     var moveCamera = MouseKeyBind(Mouse.BUTTON_MIDDLE)
     var selectModel = MouseKeyBind(Mouse.BUTTON_LEFT)
     var jumpCameraToCursor = MouseKeyBind(Mouse.BUTTON_RIGHT)
-
     var multipleSelection = KeyBind(Keyboard.KEY_LEFT_CONTROL)
     var disableGridMotion = KeyBind(Keyboard.KEY_LEFT_CONTROL)
     var disablePixelGridMotion = KeyBind(Keyboard.KEY_LEFT_SHIFT)
@@ -28,13 +27,16 @@ class KeyBindings {
     var paste = KeyBind(Keyboard.KEY_V, CTRL)
     var addCube = KeyBind(Keyboard.KEY_C, CTRL, ALT)
     var addPlane = KeyBind(Keyboard.KEY_P, CTRL, ALT)
+
     var setObjectSelectionType = KeyBind(Keyboard.KEY_1)
     var setFaceSelectionType = KeyBind(Keyboard.KEY_2)
     var setEdgeSelectionType = KeyBind(Keyboard.KEY_3)
     var setVertexSelectionType = KeyBind(Keyboard.KEY_4)
+
     var setTranslationCursorMode = KeyBind(Keyboard.KEY_T)
     var setRotationCursorMode = KeyBind(Keyboard.KEY_R)
     var setScaleCursorMode = KeyBind(Keyboard.KEY_S)
+
     var importTexture = KeyBind(Keyboard.KEY_T, CTRL, ALT)
     var exportTexture = KeyBind(Keyboard.KEY_T, CTRL, ALT, SHIFT)
     var setTextureMode = KeyBind(Keyboard.KEY_T, CTRL)
@@ -48,6 +50,14 @@ class KeyBindings {
     var joinObjects = KeyBind(Keyboard.KEY_J, CTRL)
     var extrudeFace = KeyBind(Keyboard.KEY_E, CTRL)
     var setIsometricView = KeyBind(Keyboard.KEY_I, ALT)
+
+    var layoutChangeMode = KeyBind(Keyboard.KEY_M, ALT)
+    var moveLayoutSplitterLeft = KeyBind(Keyboard.KEY_J, ALT)
+    var moveLayoutSplitterRight = KeyBind(Keyboard.KEY_K, ALT)
+    var moveLayoutSplitterUp = KeyBind(Keyboard.KEY_H, ALT)
+    var moveLayoutSplitterDown = KeyBind(Keyboard.KEY_L, ALT)
+    var newCanvas = KeyBind(Keyboard.KEY_N, ALT)
+    var deleteCanvas = KeyBind(Keyboard.KEY_D, ALT)
 
     var newProject = KeyBind(Keyboard.KEY_N, CTRL, ALT, SHIFT)
     var openProject = KeyBind(Keyboard.KEY_O, CTRL, ALT, SHIFT)

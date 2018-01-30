@@ -3,6 +3,7 @@ package com.cout970.modeler.controller.usecases
 import com.cout970.modeler.Debugger
 import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.tasks.TaskNone
+import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.gui.leguicomp.ProfilerDiagram
 
 /**
@@ -10,7 +11,7 @@ import com.cout970.modeler.gui.leguicomp.ProfilerDiagram
  */
 
 @UseCase("debug")
-fun onDebug(): ITask {
+fun onDebug(modelAccessor: IModelAccessor): ITask {
     Debugger.debug {
         //reload gui
 
@@ -28,6 +29,13 @@ fun onDebug(): ITask {
 //        taskHistory.processTask(TaskImportModel(projectManager.model, properties))
     }
     return TaskNone
+//    val refs = modelAccessor.modelSelection.map { it.objects }.getOrNull() ?: return TaskNone
+//
+//    val newAnimation = animationOf(
+//            TranslationOperation(0.0f, 1.0f, refs, vec3Of(0, 8, 0))
+//    )
+//
+//    return TaskUpdateAnimation(modelAccessor.animation, newAnimation)
 }
 
 @UseCase("debug.show.profiling")

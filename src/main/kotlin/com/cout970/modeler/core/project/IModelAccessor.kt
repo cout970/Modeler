@@ -1,5 +1,6 @@
 package com.cout970.modeler.core.project
 
+import com.cout970.modeler.api.animation.IAnimation
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.core.model.selection.SelectionHandler
@@ -11,9 +12,11 @@ import com.cout970.modeler.util.Nullable
 interface IModelAccessor {
 
     val model: IModel
+    val animation: IAnimation
 
     val modelSelectionHandler: SelectionHandler
     val textureSelectionHandler: SelectionHandler
+
     val modelSelection: Nullable<ISelection> get() = modelSelectionHandler.getSelection()
     val textureSelection: Nullable<ISelection> get() = textureSelectionHandler.getSelection()
 }
@@ -26,6 +29,7 @@ class ModelAccessor(
     override val textureSelectionHandler: SelectionHandler = projectManager.textureSelectionHandler
 
     override val model: IModel get() = projectManager.model
+    override val animation: IAnimation get() = projectManager.animation
     override val modelSelection: Nullable<ISelection> get() = modelSelectionHandler.getSelection()
     override val textureSelection: Nullable<ISelection> get() = textureSelectionHandler.getSelection()
 }

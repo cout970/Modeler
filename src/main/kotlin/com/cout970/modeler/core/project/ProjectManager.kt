@@ -1,9 +1,10 @@
 package com.cout970.modeler.core.project
 
+import com.cout970.modeler.api.animation.IAnimation
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
-import com.cout970.modeler.core.animation.Animation
+import com.cout970.modeler.core.animation.animationOf
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.ref
@@ -26,7 +27,8 @@ class ProjectManager(val modelSelectionHandler: SelectionHandler, val textureSel
 
     var clipboard: IClipboard = ClipboardNone
 
-    var animation = Animation(listOf())
+    var animation: IAnimation = animationOf()
+        private set
 
     val modelChangeListeners: MutableList<(old: IModel, new: IModel) -> Unit> = mutableListOf()
     val materialChangeListeners: MutableList<(old: IMaterial?, new: IMaterial?) -> Unit> = mutableListOf()
@@ -58,6 +60,10 @@ class ProjectManager(val modelSelectionHandler: SelectionHandler, val textureSel
         this.model = model
 
         modelChangeListeners.forEach { it.invoke(old, model) }
+    }
+
+    fun updateAnimation(newAnimation: IAnimation) {
+        animation = newAnimation
     }
 
     fun loadProjectProperties(aNew: ProjectProperties) {

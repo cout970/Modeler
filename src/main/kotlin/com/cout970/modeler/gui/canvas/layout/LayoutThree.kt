@@ -1,8 +1,7 @@
 package com.cout970.modeler.gui.canvas.layout
 
-import com.cout970.glutilities.device.Keyboard
 import com.cout970.glutilities.event.EventKeyUpdate
-import com.cout970.modeler.core.config.KeyboardModifiers
+import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.util.next
@@ -89,27 +88,27 @@ class LayoutThree(override val container: CanvasContainer) : ICanvasLayout {
     }
 
     override fun onEvent(gui: Gui, e: EventKeyUpdate): Boolean {
-        if (KeyboardModifiers.ALT.check(e)) {
-            when (e.keycode) {
-                Keyboard.KEY_M -> mode = mode.next()
-                Keyboard.KEY_J -> horizontalSplitter -= 1f / 32f
-                Keyboard.KEY_K -> horizontalSplitter += 1f / 32f
-                Keyboard.KEY_L -> verticalSplitter -= 1f / 32f
-                Keyboard.KEY_H -> verticalSplitter += 1f / 32f
-                Keyboard.KEY_N -> {
+        Config.keyBindings.apply {
+            when {
+                layoutChangeMode.check(e) -> mode = mode.next()
+                moveLayoutSplitterLeft.check(e) -> horizontalSplitter -= 1f / 32f
+                moveLayoutSplitterRight.check(e) -> horizontalSplitter += 1f / 32f
+                moveLayoutSplitterUp.check(e) -> verticalSplitter -= 1f / 32f
+                moveLayoutSplitterDown.check(e) -> verticalSplitter += 1f / 32f
+                newCanvas.check(e) -> {
                     container.newCanvas()
                     container.selectLayout()
                 }
-                Keyboard.KEY_D -> {
+                deleteCanvas.check(e) -> {
                     container.removeCanvas(container.canvas.lastIndex)
                     container.selectLayout()
                 }
+
                 else -> return false
             }
-            gui.root.reRender()
-            return true
         }
-        return false
+        gui.root.reRender()
+        return true
     }
 
     enum class Mode {

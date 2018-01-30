@@ -109,7 +109,7 @@ class CenterPanel : RComponent<CenterPanel.Props, Unit>() {
 
         +ProfilerDiagram(props.timer)
 
-        +EventPanel {  }
+        +EventPanel { }
     }
 
     class Props(val visibleElements: VisibleElements, val canvasContainer: CanvasContainer, val timer: Timer)

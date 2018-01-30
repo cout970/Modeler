@@ -47,8 +47,7 @@ interface ISelection {
 
 enum class SelectionTarget(val is3D: Boolean) {
     MODEL(true),
-    TEXTURE(false),
-    ANIMATION(true)
+    TEXTURE(false)
 }
 
 enum class SelectionType {

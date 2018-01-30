@@ -56,14 +56,6 @@ fun setCanvasModeModel(canvasContainer: CanvasContainer): ITask {
     return TaskNone
 }
 
-@UseCase("view.set.animation.mode")
-fun setCanvasModeAnimation(canvasContainer: CanvasContainer): ITask {
-    canvasContainer.selectedCanvas?.let { canvas ->
-        return ModifyGui { canvas.viewMode = SelectionTarget.ANIMATION }
-    }
-    return TaskNone
-}
-
 @UseCase("camera.set.isometric")
 fun setIsometricCamera(canvasContainer: CanvasContainer): ITask {
     canvasContainer.selectedCanvas?.let { canvas ->
@@ -100,7 +92,6 @@ fun selectPartInCanvas(component: Component, input: IInput, model: IModel, gui: 
     return when (canvas.viewMode) {
         SelectionTarget.MODEL -> onModel(canvas, gui, input)
         SelectionTarget.TEXTURE -> onTexture(canvas, input, gui)
-        SelectionTarget.ANIMATION -> onModel(canvas, gui, input)
     }
 }
 

@@ -1,8 +1,7 @@
 package com.cout970.modeler.gui.canvas.layout
 
-import com.cout970.glutilities.device.Keyboard
 import com.cout970.glutilities.event.EventKeyUpdate
-import com.cout970.modeler.core.config.KeyboardModifiers
+import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.canvas.CanvasContainer
 import org.joml.Vector2f
@@ -20,13 +19,13 @@ class LayoutOne(override val container: CanvasContainer) : ICanvasLayout {
     }
 
     override fun onEvent(gui: Gui, e: EventKeyUpdate): Boolean {
-        if (KeyboardModifiers.ALT.check(e)) {
-            when (e.keycode) {
-                Keyboard.KEY_N -> {
+        Config.keyBindings.apply {
+            when {
+                newCanvas.check(e) -> {
                     container.newCanvas()
                     container.selectLayout()
                 }
-                Keyboard.KEY_D -> {
+                deleteCanvas.check(e) -> {
                     if (container.canvas.isNotEmpty()) {
                         container.removeCanvas(container.canvas.lastIndex)
                         container.selectLayout()
@@ -34,9 +33,8 @@ class LayoutOne(override val container: CanvasContainer) : ICanvasLayout {
                 }
                 else -> return false
             }
-            gui.root.reRender()
-            return true
         }
-        return false
+        gui.root.reRender()
+        return true
     }
 }

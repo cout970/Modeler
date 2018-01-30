@@ -70,7 +70,8 @@ class EditorView : IView {
 
                 +BottomPanel {
                     BottomPanel.Props(
-                            visibleElements = visible
+                            visibleElements = visible,
+                            modelAccessor = gui.modelAccessor
                     )
                 }
 
