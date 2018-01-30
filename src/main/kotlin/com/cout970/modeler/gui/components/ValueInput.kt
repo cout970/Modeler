@@ -72,9 +72,6 @@ class ValueInput : RComponent<ValueInput.Props, Unit>() {
         if(!props.enabled) {
             disableInput()
         }
-//        if (props.ref.objectIndex == -1) {
-//            disableInput()
-//        }
     }
 
     var lastTick = 0L

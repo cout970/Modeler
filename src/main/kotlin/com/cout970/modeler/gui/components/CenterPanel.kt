@@ -27,7 +27,7 @@ class CenterPanel : RComponent<CenterPanel.Props, Unit>() {
     }
 
     override fun build(ctx: RBuilder): Component = panel root@ {
-        val left = if (props.visibleElements.left) 280f else 0f
+        val left = if (props.visibleElements.left) 288f else 0f
         val right = if (props.visibleElements.right) 190f else 0f
         val bottom = if (props.visibleElements.bottom) 200f else 0f
         width = ctx.parentSize.xf - left - right

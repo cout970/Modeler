@@ -2,6 +2,7 @@ package com.cout970.modeler.gui.leguicomp
 
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.util.hide
+import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.setTransparent
 import com.cout970.modeler.util.toColor
 import org.joml.Vector2f
@@ -17,11 +18,14 @@ class VerticalPanel(
 
     init {
         setTransparent()
+        setBorderless()
         container.setTransparent()
+        container.setBorderless()
         horizontalScrollBar.hide()
         verticalScrollBar.setTransparent()
+        verticalScrollBar.setBorderless()
         verticalScrollBar.arrowColor = Config.colorPalette.darkColor.toColor()
-        verticalScrollBar.scrollColor = Config.colorPalette.darkColor.toColor()
+        verticalScrollBar.scrollColor = Config.colorPalette.blackColor.toColor()
         verticalScrollBar.isArrowsEnabled = false
     }
 

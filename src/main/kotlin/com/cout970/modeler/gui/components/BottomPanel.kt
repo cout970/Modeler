@@ -14,7 +14,7 @@ import org.liquidengine.legui.component.Component
 class BottomPanel : RComponent<BottomPanel.Props, Unit>() {
 
     override fun build(ctx: RBuilder): Component = panel {
-        val left = if (props.visibleElements.left) 280f else 0f
+        val left = if (props.visibleElements.left) 288f else 0f
         val right = if (props.visibleElements.right) 190f else 0f
         val totalWidth = ctx.parentSize.xf - left - right
         width = totalWidth

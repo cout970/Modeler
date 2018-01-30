@@ -28,7 +28,7 @@ class EditObjectName : RComponent<EditObjectName.Props, Unit>() {
     override fun build(ctx: RBuilder): Component = panel {
 
         marginX(ctx, 5f)
-        posY = 35f
+        posY = 0f
         height = 64f
         setTransparent()
         border(3f) { greyColor }

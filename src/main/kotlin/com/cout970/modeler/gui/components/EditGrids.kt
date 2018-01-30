@@ -29,7 +29,7 @@ class EditGrids : RComponent<EditGrids.Props, Unit>() {
         setTransparent()
         marginX(ctx, 5f)
         border(3f) { greyColor }
-        posY = 132f + 444f
+        posY = 132f + 444f - 35f
         height = 320f
 
         +panel {

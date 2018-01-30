@@ -38,7 +38,7 @@ class EditCubePanel : RComponent<EditCubePanel.Props, Unit>() {
 
     override fun build(ctx: RBuilder): Component = panel root@ {
         marginX(ctx, 5f)
-        posY = 105f
+        posY = 70f
         height = 465f
         border(3f) { greyColor }
         setTransparent()
