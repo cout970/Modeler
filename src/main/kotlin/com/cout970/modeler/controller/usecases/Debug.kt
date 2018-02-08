@@ -5,6 +5,7 @@ import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.tasks.TaskNone
 import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.gui.leguicomp.ProfilerDiagram
+import com.cout970.modeler.render.RenderManager
 
 /**
  * Created by cout970 on 2017/07/20.
@@ -29,13 +30,13 @@ fun onDebug(modelAccessor: IModelAccessor): ITask {
 //        taskHistory.processTask(TaskImportModel(projectManager.model, properties))
     }
     return TaskNone
-//    val refs = modelAccessor.modelSelection.map { it.objects }.getOrNull() ?: return TaskNone
-//
-//    val newAnimation = animationOf(
-//            TranslationOperation(0.0f, 1.0f, refs, vec3Of(0, 8, 0))
-//    )
-//
-//    return TaskUpdateAnimation(modelAccessor.animation, newAnimation)
+}
+
+@UseCase("debug.toggle.dynamic")
+fun toggleDynamicDebug(rm: RenderManager): ITask {
+    Debugger.DYNAMIC_DEBUG = !Debugger.DYNAMIC_DEBUG
+    rm.guiRenderer.context.isDebugEnabled = Debugger.DYNAMIC_DEBUG
+    return TaskNone
 }
 
 @UseCase("debug.show.profiling")

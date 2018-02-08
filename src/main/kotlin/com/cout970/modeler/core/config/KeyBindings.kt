@@ -51,6 +51,9 @@ class KeyBindings {
     var extrudeFace = KeyBind(Keyboard.KEY_E, CTRL)
     var setIsometricView = KeyBind(Keyboard.KEY_I, ALT)
 
+    var addAnimation = KeyBind(Keyboard.KEY_U, CTRL)
+    var toggleAnimation = KeyBind(Keyboard.KEY_SPACE)
+
     var layoutChangeMode = KeyBind(Keyboard.KEY_M, ALT)
     var moveLayoutSplitterLeft = KeyBind(Keyboard.KEY_J, ALT)
     var moveLayoutSplitterRight = KeyBind(Keyboard.KEY_K, ALT)

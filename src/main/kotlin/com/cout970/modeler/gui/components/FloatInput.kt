@@ -1,6 +1,7 @@
 package com.cout970.modeler.gui.components
 
 import com.cout970.modeler.controller.usecases.scriptEngine
+import com.cout970.modeler.core.log.print
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
@@ -28,7 +29,15 @@ class FloatInput : RComponent<FloatInput.Props, Unit>() {
         width = 120f
         height = 24f
 
-        val value: Float = props.property.call(props.obj)
+        val value: Float = try {
+            if (props.property.parameters.isEmpty()) {
+                props.property.call()
+            } else {
+                props.property.call(props.obj)
+            }
+        } catch (e: Exception) {
+            e.print(); 0f
+        }
 
         +IconButton("", "button_left", 0f, 0f, 24f, 24f).apply {
             onClick {
@@ -63,7 +72,15 @@ class FloatInput : RComponent<FloatInput.Props, Unit>() {
     }
 
     fun dispatch(value: Float) {
-        props.property.setter.call(props.obj, value)
+        try {
+            if (props.property.parameters.isEmpty()) {
+                props.property.setter.call(value)
+            } else {
+                props.property.setter.call(props.obj, value)
+            }
+        } catch (e: Exception) {
+            e.print()
+        }
     }
 
     fun String.toFloatValue(): Float? {

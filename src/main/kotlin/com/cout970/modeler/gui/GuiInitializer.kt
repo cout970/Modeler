@@ -18,6 +18,7 @@ import com.cout970.modeler.gui.leguicomp.Panel
 import com.cout970.modeler.gui.views.EditorView
 import com.cout970.modeler.input.event.EventController
 import com.cout970.modeler.input.window.WindowHandler
+import com.cout970.modeler.render.tool.Animator
 
 /**
  * Created by cout970 on 2017/04/08.
@@ -59,6 +60,8 @@ class GuiInitializer(
         val notificationHandler = NotificationHandler()
         log(Level.FINE) { "[GuiInitializer] Creating GridLines" }
         val gridLines = GridLines()
+        log(Level.FINE) { "[GuiInitializer] Creating Animator" }
+        val animator = Animator()
         log(Level.FINE) { "[GuiInitializer] Creating initial canvas" }
         canvasContainer.newCanvas()
         log(Level.FINE) { "[GuiInitializer] GUI Initialization done" }
@@ -81,7 +84,8 @@ class GuiInitializer(
                 cursorManager = cursorManager,
                 propertyHolder = propertyHolder,
                 notificationHandler = notificationHandler,
-                gridLines = gridLines
+                gridLines = gridLines,
+                animator = animator
         )
     }
 }

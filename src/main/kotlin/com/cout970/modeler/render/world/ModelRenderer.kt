@@ -1,6 +1,5 @@
 package com.cout970.modeler.render.world
 
-import com.cout970.glutilities.structure.Timer
 import com.cout970.glutilities.tessellator.BufferPTNC
 import com.cout970.glutilities.tessellator.DrawMode
 import com.cout970.glutilities.tessellator.VAO
@@ -124,6 +123,10 @@ class ModelRenderer {
                 .entries
                 .groupBy { it.value.material }
 
+        val animation = ctx.gui.modelAccessor.animation
+        val animator = ctx.gui.animator
+        animator.updateTime(ctx.gui.timer)
+
         map.forEach { material, list ->
             model.getMaterial(material).bind()
             list.forEach { (objIndex, _) ->
@@ -134,7 +137,8 @@ class ModelRenderer {
                     useLight.setBoolean(ctx.gui.state.useLight)
                     showHiddenFaces.setBoolean(ctx.gui.state.showHiddenFaces)
                     matrixM.setMatrix4(Matrix4.IDENTITY)
-                    Animator.animate(ctx.gui.modelAccessor.animation, Timer.secTime.toFloat() % 1.0f, objIndex, this)
+
+                    animator.animate(animation, objIndex, this)
                     accept(modelCache[objIndex]!!)
                     showHiddenFaces.setBoolean(false)
                 }

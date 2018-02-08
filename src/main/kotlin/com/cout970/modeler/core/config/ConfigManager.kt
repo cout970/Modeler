@@ -17,7 +17,7 @@ object ConfigManager {
 
     fun loadConfig() {
         val file = File(PathConstants.CONFIG_FILE_PATH)
-        if (file.exists() && !Debugger.DEBUG) {
+        if (file.exists() && !Debugger.STATIC_DEBUG) {
             val gson = GsonBuilder()
                     .setLenient()
                     .registerTypeAdapter(IVector3::class.java, ColorSerializer())

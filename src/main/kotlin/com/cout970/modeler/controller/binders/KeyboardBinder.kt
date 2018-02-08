@@ -49,9 +49,14 @@ class KeyboardBinder(val dispatcher: Dispatcher) {
                 extrudeFace.check(e) -> "model.face.extrude"
                 setIsometricView.check(e) -> "camera.set.isometric"
 
+                addAnimation.check(e) -> "animation.add"
+                toggleAnimation.check(e) -> "animation.state.toggle"
+
                 e.keycode == Keyboard.KEY_F1 -> "debug"
                 e.keycode == Keyboard.KEY_F2 -> "debug.changeColors"
                 e.keycode == Keyboard.KEY_F3 -> "debug.show.profiling"
+            // wtf F4 doesn't work
+                e.keycode == Keyboard.KEY_F5 -> "debug.toggle.dynamic"
                 else -> null
             }
             if (key != null) {

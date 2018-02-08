@@ -1,7 +1,9 @@
 package com.cout970.modeler.render
 
 import com.cout970.glutilities.tessellator.BufferPTNC
+import com.cout970.modeler.Debugger
 import com.cout970.modeler.core.log.Profiler
+import com.cout970.modeler.gui.components.AnimationPanel
 import com.cout970.modeler.gui.leguicomp.PixelBorder
 import com.cout970.modeler.gui.leguicomp.ProfilerDiagram
 import com.cout970.modeler.gui.reactive.RComponentWrapper
@@ -40,10 +42,12 @@ class GuiRenderer(val rootFrame: Frame, window: Long) {
         RendererProvider.setRendererProvider(NvgRendererProvider.getInstance())
         renderer = NvgRenderer()
         renderer.initialize()
+        context.isDebugEnabled = Debugger.DYNAMIC_DEBUG
 
         (RendererProvider.getInstance() as? NvgRendererProvider)?.let {
             it.putBorderRenderer(PixelBorder::class.java, PixelBorder.PixelBorderRenderer)
             it.putComponentRenderer(ProfilerDiagram::class.java, ProfilerDiagram.ProfilerDiagramRenderer)
+            it.putComponentRenderer(AnimationPanel::class.java, AnimationPanel.Renderer)
             it.putComponentRenderer(RComponentWrapper::class.java, RComponentRenderer)
             it.putComponentRenderer(Panel::class.java, LeguiComponentRenderer as NvgComponentRenderer<Panel>)
             it.putComponentRenderer(com.cout970.modeler.gui.leguicomp.Panel::class.java, LeguiComponentRenderer as NvgComponentRenderer<com.cout970.modeler.gui.leguicomp.Panel>)

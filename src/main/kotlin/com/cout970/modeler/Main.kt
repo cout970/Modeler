@@ -11,7 +11,7 @@ import com.cout970.modeler.core.log.print
 
 fun main(args: Array<String>) {
     log(Level.NORMAL) { "Start of log" }
-    log(Level.NORMAL) { "Debug mode is " + if (Debugger.DEBUG) "enable" else "disable" }
+    log(Level.NORMAL) { "Debug mode is " + if (Debugger.STATIC_DEBUG) "enable" else "disable" }
     log(Level.NORMAL) { "Log level: ${Logger.level}" }
     log(Level.NORMAL) { "Program arguments: '${args.joinToString()}'" }
 

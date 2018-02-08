@@ -7,6 +7,7 @@ import com.cout970.modeler.core.log.log
 import com.cout970.modeler.gui.event.EventSelectionUpdate
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponentWrapper
+import com.cout970.modeler.util.forEachComponent
 import com.cout970.modeler.util.isNotEmpty
 import com.cout970.modeler.util.toColor
 import com.cout970.vector.api.IVector3
@@ -27,6 +28,18 @@ fun panel(func: Panel.() -> Unit): Panel {
     val panel = Panel()
     func(panel)
     return panel
+}
+
+val Component.name: String
+    get() = if (this is Panel) {
+        name ?: throw IllegalStateException("$this")
+    } else javaClass.simpleName
+
+fun Component.printPaths(prefix: String = "") {
+    println("$prefix/$name")
+    forEachComponent {
+        printPaths("$prefix/$name/${it.name}")
+    }
 }
 
 fun Component.printTree(prefix: String = "") {
@@ -130,7 +143,7 @@ fun TextComponent.defaultTextColor() {
     textState.textColor = Config.colorPalette.textColor.toColor()
 }
 
-fun TextComponent.fontSize(size: Float = 16f){
+fun TextComponent.fontSize(size: Float = 16f) {
     textState.fontSize = size
 }
 

@@ -16,7 +16,7 @@ object Logger {
 
     val level get() = Config.logLevel
     val logs = File(PathConstants.LOGS_FOLDER_PATH).apply { createParentsIfNeeded(true) }
-    val stream = (if (Debugger.DEBUG) System.out else object : PrintStream(File(logs, getFileName())) {
+    val stream = (if (Debugger.STATIC_DEBUG) System.out else object : PrintStream(File(logs, getFileName())) {
         override fun println() {
             super.println()
             System.out.println()

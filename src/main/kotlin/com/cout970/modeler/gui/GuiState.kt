@@ -1,5 +1,6 @@
 package com.cout970.modeler.gui
 
+import com.cout970.modeler.api.animation.AnimationState
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.SelectionType
@@ -45,7 +46,7 @@ class GuiState {
     var materialsHash: Int = -1
     var gridLinesHash: Int = -1
 
-    var playAnimation = false
+
 
     fun changeSelectionType(listener: Listeners, newType: SelectionType) {
         val old = selectionType

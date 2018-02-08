@@ -14,6 +14,7 @@ import com.cout970.modeler.gui.event.NotificationHandler
 import com.cout970.modeler.gui.views.EditorView
 import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.input.window.WindowHandler
+import com.cout970.modeler.render.tool.Animator
 
 /**
  * Created by cout970 on 2017/05/26.
@@ -37,7 +38,8 @@ data class Gui(
         val cursorManager: CursorManager,
         val propertyHolder: IProjectPropertiesHolder,
         val notificationHandler: NotificationHandler,
-        val gridLines: GridLines
+        val gridLines: GridLines,
+        val animator: Animator
 ) {
 
     init {
@@ -45,5 +47,6 @@ data class Gui(
         editorView.gui = this
         notificationHandler.gui = this
         gridLines.gui = this
+        animator.gui = this
     }
 }

@@ -45,6 +45,14 @@ inline fun <T> Iterable<T>.filterNotIndexed(predicate: (index: Int, T) -> Boolea
     return destination
 }
 
+inline fun <S, T> Iterable<T>.reduceAll(first: S, operation: (acc: S, T) -> S): S {
+    var accumulator: S = first
+    for (it in this){
+        accumulator = operation(accumulator, it)
+    }
+    return accumulator
+}
+
 
 inline fun <reified F> Iterable<*>.castTo(): List<F> = map { it as F }
 

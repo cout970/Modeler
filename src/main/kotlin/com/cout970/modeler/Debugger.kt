@@ -10,7 +10,8 @@ object Debugger {
 
     private lateinit var state: Program
 
-    val DEBUG: Boolean by lazy { System.getProperty("user.name") == "cout970" }
+    val STATIC_DEBUG: Boolean by lazy { System.getProperty("user.name") == "cout970" }
+    var DYNAMIC_DEBUG: Boolean  = false
 
     var drawVboCount = 0
     var drawRegionsCount = 0

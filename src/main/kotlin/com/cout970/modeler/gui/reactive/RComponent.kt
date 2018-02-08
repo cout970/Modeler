@@ -29,7 +29,7 @@ abstract class RComponent<P : Any, S : Any> {
     abstract fun build(ctx: RBuilder): Component
 
     fun rebuild(){
-        replaceState(state)
+        context.markDirty(this)
     }
 
     fun replaceState(newState: S) {

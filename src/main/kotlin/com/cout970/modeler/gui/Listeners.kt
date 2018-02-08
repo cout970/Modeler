@@ -6,13 +6,11 @@ import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.core.project.ProjectManager
-import com.cout970.modeler.gui.event.EventMaterialUpdate
-import com.cout970.modeler.gui.event.EventModelUpdate
-import com.cout970.modeler.gui.event.EventSelectionTypeUpdate
-import com.cout970.modeler.gui.event.EventSelectionUpdate
+import com.cout970.modeler.gui.event.*
 import com.cout970.modeler.gui.reactive.RComponentWrapper
 import com.cout970.modeler.gui.reactive.RContext
 import com.cout970.modeler.input.event.EventController
+import com.cout970.modeler.render.tool.Animator
 import com.cout970.modeler.render.tool.camera.CameraUpdater
 import com.cout970.modeler.util.*
 import com.cout970.vector.api.IVector2
@@ -84,6 +82,11 @@ class Listeners : ITickeable {
             listener.process(func(comp, gui.root.context, gui.root))
         }
     }
+
+    fun onAnimatorChange(animator: Animator) =
+            sendEventToComponents { component, context, root ->
+                EventAnimatorUpdate(component, context, root, animator)
+            }
 
     fun onModelChange(old: IModel, new: IModel) =
             sendEventToComponents { component, context, root ->

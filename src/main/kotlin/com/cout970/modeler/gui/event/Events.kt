@@ -4,6 +4,7 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionType
+import com.cout970.modeler.render.tool.Animator
 import com.cout970.modeler.util.Nullable
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Frame
@@ -50,4 +51,11 @@ class EventNotificationUpdate(
         ctx: Context,
         frame: Frame,
         val notifications: List<Notification>
+) : Event<Component>(comp, ctx, frame)
+
+class EventAnimatorUpdate(
+        comp: Component,
+        ctx: Context,
+        frame: Frame,
+        val animator: Animator
 ) : Event<Component>(comp, ctx, frame)

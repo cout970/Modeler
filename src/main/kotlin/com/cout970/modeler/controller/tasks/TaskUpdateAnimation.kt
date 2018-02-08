@@ -10,9 +10,11 @@ class TaskUpdateAnimation(val oldAnimation: IAnimation, val newAnimation: IAnima
 
     override fun run(state: Program) {
         state.projectManager.updateAnimation(newAnimation)
+        state.gui.listeners.onAnimatorChange(state.gui.animator)
     }
 
     override fun undo(state: Program) {
         state.projectManager.updateAnimation(oldAnimation)
+        state.gui.listeners.onAnimatorChange(state.gui.animator)
     }
 }

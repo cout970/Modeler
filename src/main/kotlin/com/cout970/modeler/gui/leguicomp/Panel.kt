@@ -9,6 +9,8 @@ import org.liquidengine.legui.component.Panel as LeguiPanel
 
 open class Panel : LeguiComponent() {
 
+    var name: String? = null
+
     init {
         cornerRadius = 0.0f
     }
