@@ -7,6 +7,7 @@ import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
+import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.Object
 import com.cout970.modeler.core.model.ObjectCube
@@ -16,6 +17,7 @@ import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
+import com.cout970.modeler.core.model.selection.ObjectRef
 import com.cout970.modeler.core.resource.ResourcePath
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
@@ -26,6 +28,7 @@ import com.google.gson.*
 import java.awt.Color
 import java.lang.reflect.Type
 import java.net.URI
+import java.util.*
 
 /**
  * Created by cout970 on 2017/01/04.
@@ -103,13 +106,10 @@ class QuaternionSerializer : JsonSerializer<IQuaternion>, JsonDeserializer<IQuat
     }
 }
 
-// TODO fix this, very important
 class ModelSerializer : JsonSerializer<IModel>, JsonDeserializer<IModel> {
 
     override fun serialize(src: IModel, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-        return context.serialize(src).asJsonObject.apply {
-            this.remove("id")
-        }
+        return context.serialize(src)
     }
 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IModel {
@@ -168,13 +168,33 @@ class ObjectSerializer : JsonSerializer<IObject>, JsonDeserializer<IObject> {
                         material = context.deserialize(obj["material"], IMaterialRef::class.java),
                         textureOffset = context.deserialize(obj["textureOffset"], IVector2::class.java),
                         textureSize = context.deserialize(obj["textureSize"], IVector2::class.java),
-                        mirrored = context.deserialize(obj["mirrored"], Boolean::class.java)
+                        mirrored = context.deserialize(obj["mirrored"], Boolean::class.java),
+                        visible = context.deserialize(obj["visible"], Boolean::class.java),
+                        id = context.deserialize(obj["id"], UUID::class.java)
                 )
             }
-            "Object" -> context.deserialize(json, Object::class.java)
+            "Object" -> Object(
+                        name = context.deserialize(obj["name"], String::class.java),
+                        mesh = context.deserialize(obj["mesh"], IMesh::class.java),
+                        material = context.deserialize(obj["material"], IMaterialRef::class.java),
+                        visible = context.deserialize(obj["visible"], Boolean::class.java),
+                        id = context.deserialize(obj["id"], UUID::class.java)
+                    )
+
 
             else -> throw IllegalStateException("Unknown Class: ${obj["class"]}")
         }
+    }
+}
+
+class ObjectRefSerializer : JsonSerializer<IObjectRef>, JsonDeserializer<IObjectRef> {
+
+    override fun serialize(src: IObjectRef, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+        return context.serialize(src.objectId)
+    }
+
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IObjectRef {
+        return ObjectRef(context.deserialize(json, UUID::class.java))
     }
 }
 
@@ -185,14 +205,20 @@ class MaterialSerializer : JsonSerializer<IMaterial>, JsonDeserializer<IMaterial
             addProperty("name", src.name)
             if (src is TexturedMaterial) {
                 addProperty("path", src.path.uri.toString())
+                add("id", context.serialize(src.id))
             }
         }
     }
 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IMaterial {
         val obj = json.asJsonObject
-        return if (obj["name"].asString == "noTexture") MaterialNone
-        else TexturedMaterial(obj["name"].asString, ResourcePath(URI(obj["path"].asString)))
+        return when {
+            obj["name"].asString == "noTexture" -> MaterialNone
+            else -> {
+                val id = context.deserialize<UUID>(obj["id"], UUID::class.java)
+                TexturedMaterial(obj["name"].asString, ResourcePath(URI(obj["path"].asString)), id)
+            }
+        }
     }
 }
 
@@ -204,6 +230,17 @@ class MaterialRefSerializer : JsonSerializer<IMaterialRef>, JsonDeserializer<IMa
 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IMaterialRef {
         return context.deserialize(json, MaterialRef::class.java)
+    }
+}
+
+class UUIDSerializer : JsonSerializer<UUID>, JsonDeserializer<UUID> {
+
+    override fun serialize(src: UUID, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+        return JsonPrimitive(src.toString())
+    }
+
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): UUID {
+        return UUID.fromString(json.asString)
     }
 }
 

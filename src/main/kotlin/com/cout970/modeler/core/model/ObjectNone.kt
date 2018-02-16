@@ -18,7 +18,7 @@ import java.util.*
  * Created by cout970 on 2017/07/09.
  */
 object ObjectNone : IObject {
-    override val id: UUID = UUID.randomUUID()
+    override val id: UUID = UUID.fromString("89672293-60d2-46ea-9b56-46c624dec60a")
     override val name: String = "none"
     override val mesh: IMesh = Mesh()
     override val material: IMaterialRef = MaterialRefNone
@@ -49,7 +49,7 @@ object ObjectNone : IObject {
 }
 
 object ObjectCubeNone : IObjectCube {
-    override val id: UUID = UUID.randomUUID()
+    override val id: UUID = UUID.fromString("89672293-60d2-46ea-9b56-46c624dec60a")
     override val name: String = "none"
     override val mesh: IMesh = Mesh()
     override val material: IMaterialRef = MaterialRefNone

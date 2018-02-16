@@ -7,9 +7,10 @@ import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.vec2Of
 import java.util.*
 
+
 object MaterialNone : IMaterial {
 
-    override val id: UUID = UUID.randomUUID()
+    override val id: UUID = UUID.fromString("89672293-60d2-46ea-9b56-46c624dec60a")
     override val name: String = "noTexture"
     override val size: IVector2 = vec2Of(64)
     lateinit var whiteTexture: Texture
