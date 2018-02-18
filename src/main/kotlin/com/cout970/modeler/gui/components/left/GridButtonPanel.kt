@@ -1,4 +1,4 @@
-package com.cout970.modeler.gui.components
+package com.cout970.modeler.gui.components.left
 
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.gui.reactive.RBuilder

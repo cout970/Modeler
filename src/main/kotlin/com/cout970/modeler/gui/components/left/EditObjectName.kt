@@ -1,4 +1,4 @@
-package com.cout970.modeler.gui.components
+package com.cout970.modeler.gui.components.left
 
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.controller.Dispatcher
@@ -94,5 +94,5 @@ class EditObjectName : RComponent<EditObjectName.Props, Unit>() {
     class Props(val access: IModelAccessor, val dispatcher: Dispatcher,
                 val posY: Float, val visible: Boolean, val toggle: () -> Unit)
 
-    companion object : RComponentSpec<EditObjectName, EditObjectName.Props, Unit>
+    companion object : RComponentSpec<EditObjectName, Props, Unit>
 }

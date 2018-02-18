@@ -1,4 +1,4 @@
-package com.cout970.modeler.gui.components
+package com.cout970.modeler.gui.components.right
 
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.project.IModelAccessor
@@ -52,7 +52,10 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
                 it.setTooltip("Create Cube Mesh")
             }
 
-            +ModelObjectList { ModelObjectList.Props(props.modelAccessor, vec2Of(0f, 70f), vec2Of(190f, height - 72f)) }
+            +ModelObjectList {
+                ModelObjectList.Props(props.modelAccessor, vec2Of(0f, 70f),
+                        vec2Of(190f, height - 72f))
+            }
         }
         +panel {
             setBorderless()

@@ -1,4 +1,4 @@
-package com.cout970.modeler.gui.components
+package com.cout970.modeler.gui.components.left
 
 import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.project.IModelAccessor
@@ -45,7 +45,8 @@ class LeftPanel : RComponent<LeftPanel.Props, LeftPanel.State>() {
 
             var posY = 0f
             +EditObjectName {
-                EditObjectName.Props(props.access, props.dispatcher, posY, state.editObjectName) {
+                EditObjectName.Props(props.access, props.dispatcher, posY,
+                        state.editObjectName) {
                     replaceState(state.copy(editObjectName = !state.editObjectName))
                 }
             }
@@ -53,7 +54,8 @@ class LeftPanel : RComponent<LeftPanel.Props, LeftPanel.State>() {
             posY += 6f
 
             +EditCubePanel {
-                EditCubePanel.Props(props.access, props.dispatcher, posY, state.editCubePanel) {
+                EditCubePanel.Props(props.access, props.dispatcher, posY,
+                        state.editCubePanel) {
                     replaceState(state.copy(editCubePanel = !state.editCubePanel))
                 }
             }
@@ -61,7 +63,8 @@ class LeftPanel : RComponent<LeftPanel.Props, LeftPanel.State>() {
             posY += 6f
 
             +EditGrids {
-                EditGrids.Props(props.dispatcher, props.gridLines, posY, state.editGrids) {
+                EditGrids.Props(props.dispatcher, props.gridLines, posY,
+                        state.editGrids) {
                     replaceState(state.copy(editGrids = !state.editGrids))
                 }
             }

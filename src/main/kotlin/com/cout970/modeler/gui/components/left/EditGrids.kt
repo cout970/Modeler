@@ -1,8 +1,9 @@
-package com.cout970.modeler.gui.components
+package com.cout970.modeler.gui.components.left
 
 import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.canvas.GridLines
+import com.cout970.modeler.gui.components.ValueInput
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent

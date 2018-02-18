@@ -1,4 +1,4 @@
-package com.cout970.modeler.gui.components
+package com.cout970.modeler.gui.components.left
 
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.`object`.IObjectCube
@@ -10,6 +10,7 @@ import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.model.*
 import com.cout970.modeler.core.model.selection.ObjectRefNone
 import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.gui.components.ValueInput
 import com.cout970.modeler.gui.event.EventModelUpdate
 import com.cout970.modeler.gui.event.EventSelectionUpdate
 import com.cout970.modeler.gui.leguicomp.*

@@ -1,12 +1,10 @@
-package com.cout970.modeler.gui.components
+package com.cout970.modeler.gui.components.right
 
-import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.core.model.material.MaterialRefNone
-import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.project.IModelAccessor
-import com.cout970.modeler.gui.event.EventMaterialUpdate
+import com.cout970.modeler.gui.event.EventModelUpdate
 import com.cout970.modeler.gui.event.EventSelectionUpdate
+import com.cout970.modeler.gui.leguicomp.background
 import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
@@ -23,59 +21,48 @@ import org.liquidengine.legui.event.MouseClickEvent
 import org.liquidengine.legui.event.ScrollEvent
 
 /**
- * Created by cout970 on 2017/10/14.
+ * Created by cout970 on 2017/10/07.
  */
-class ModelMaterialList : RComponent<ModelMaterialList.Props, ModelMaterialList.State>() {
+class ModelObjectList : RComponent<ModelObjectList.Props, ModelObjectList.State>() {
 
     init {
         state = State(0f, false)
     }
 
     override fun build(ctx: RBuilder) = panel {
-
         position = props.pos.toJoml2f()
         size = props.size.toJoml2f()
-        backgroundColor = Config.colorPalette.lightDarkColor.toColor()
+        background { lightDarkColor }
 
-        val scrollSize = size.y / 24.0
         val model = props.modelAccessor.model
         val selection = props.modelAccessor.modelSelection
-        val maxScroll = Math.max(0.0, model.objects.size - Math.ceil(scrollSize)).toFloat()
+        val maxItemAmount = Math.ceil(size.y / 24.0)
+        val maxScroll = Math.max(0.0, model.objects.size - maxItemAmount + 1).toFloat()
 
-        val start = Math.floor(state.scroll.toDouble()).toInt()
-        val end = Math.ceil(start + scrollSize).toInt()
-        val materialRefs = (model.materialRefs + listOf(MaterialRefNone))
-        val selectedMaterial = props.selectedMaterial()
-
-        val materialOfSelectedObjects = selection
-                .map { it to it.objects }
-                .map { (sel, objs) -> objs.filter(sel::isSelected) }
-                .map { it.map { model.getObject(it).material } }
-                .getOr(emptyList())
+        val start = Math.ceil(state.scroll.toDouble()).toInt()
+        val end = start + maxItemAmount.toInt() + 1
+        val objectRefs = model.objectRefs
 
         for (index in start until end) {
-            if (index !in materialRefs.indices) {
+            if (index !in objectRefs.indices) {
                 break
             }
 
-            val ref = materialRefs[index]
-            val name = model.getMaterial(ref).name
+            val ref = objectRefs[index]
+            val name = model.getObject(ref).name
+            val selected = selection.map { it.isSelected(ref) }.getOr(false)
 
-
-            val color = when (ref) {
-                in materialOfSelectedObjects -> {
-                    Config.colorPalette.greyColor.toColor()
-                }
-                selectedMaterial -> {
-                    Config.colorPalette.brightColor.toColor()
-                }
-                else -> {
-                    Config.colorPalette.lightDarkColor.toColor()
-                }
+            val color = if (selected) {
+                Config.colorPalette.selectedButton.toColor()
+            } else {
+                Config.colorPalette.lightDarkColor.toColor()
             }
 
             val position = index - start
-            +ModelMaterialItem { ModelMaterialItem.Props(ref, name, position, color) }
+            +ModelObjectItem {
+                ModelObjectProps(ref, name, model.getObject(ref).visible,
+                        color, position.toFloat())
+            }
         }
 
         +ScrollBar(180f, 0f, 10f, size.y).apply {
@@ -116,19 +103,13 @@ class ModelMaterialList : RComponent<ModelMaterialList.Props, ModelMaterialList.
         listenerMap.addListener(EventSelectionUpdate::class.java) {
             replaceState(state.copy(scroll = state.scroll.coerceIn(0f, maxScroll), scrolling = state.scrolling))
         }
-        listenerMap.addListener(EventMaterialUpdate::class.java) {
+        listenerMap.addListener(EventModelUpdate::class.java) {
             replaceState(state.copy(scroll = state.scroll.coerceIn(0f, maxScroll), scrolling = state.scrolling))
         }
     }
 
-    class Props(
-            val modelAccessor: IModelAccessor,
-            val selectedMaterial: () -> IMaterialRef,
-            val pos: IVector2,
-            val size: IVector2
-    )
-
+    class Props(val modelAccessor: IModelAccessor, val pos: IVector2, val size: IVector2)
     data class State(val scroll: Float, val scrolling: Boolean)
 
-    companion object : RComponentSpec<ModelMaterialList, Props, State>
+    companion object : RComponentSpec<ModelObjectList, Props, State>
 }

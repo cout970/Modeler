@@ -1,4 +1,4 @@
-package com.cout970.modeler.gui.components
+package com.cout970.modeler.gui.components.right
 
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.project.IModelAccessor
@@ -58,5 +58,5 @@ class ModelStatistics : RComponent<ModelStatistics.Props, Unit>() {
 
     class Props(val modelAccessor: IModelAccessor)
 
-    companion object : RComponentSpec<ModelStatistics, ModelStatistics.Props, Unit>
+    companion object : RComponentSpec<ModelStatistics, Props, Unit>
 }

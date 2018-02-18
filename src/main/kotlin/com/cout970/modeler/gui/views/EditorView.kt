@@ -2,6 +2,8 @@ package com.cout970.modeler.gui.views
 
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.components.*
+import com.cout970.modeler.gui.components.left.LeftPanel
+import com.cout970.modeler.gui.components.right.RightPanel
 import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.gui.reactive.RComponentRenderer.render
 import com.cout970.modeler.gui.reactive.invoke

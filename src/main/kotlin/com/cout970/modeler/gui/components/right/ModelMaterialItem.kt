@@ -1,4 +1,4 @@
-package com.cout970.modeler.gui.components
+package com.cout970.modeler.gui.components.right
 
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.model.material.MaterialRefNone
