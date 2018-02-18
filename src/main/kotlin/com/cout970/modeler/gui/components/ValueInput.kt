@@ -69,7 +69,7 @@ class ValueInput : RComponent<ValueInput.Props, Unit>() {
             }
         }
 
-        if(!props.enabled) {
+        if (!props.enabled) {
             disableInput()
         }
     }
@@ -78,7 +78,7 @@ class ValueInput : RComponent<ValueInput.Props, Unit>() {
 
     fun dispatch(offset: Float, content: String) {
         // this avoid generating a million task doing the same thing
-        if(lastTick == Loop.currentTick) return
+        if (lastTick == Loop.currentTick) return
         lastTick = Loop.currentTick
 
         val data = Panel().apply {

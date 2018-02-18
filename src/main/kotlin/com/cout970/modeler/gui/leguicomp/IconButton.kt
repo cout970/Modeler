@@ -5,6 +5,7 @@ import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.setTransparent
 import org.liquidengine.legui.component.Button
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
+import org.liquidengine.legui.icon.Icon
 import org.liquidengine.legui.icon.ImageIcon
 
 /**
@@ -33,7 +34,7 @@ class IconButton(
         this.tooltip = InstantTooltip(tooltip)
     }
 
-    fun setImage(img: ImageIcon) {
+    fun setImage(img: Icon) {
         backgroundIcon = img
         focusedBackgroundIcon = img
         hoveredBackgroundIcon = img

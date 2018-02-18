@@ -68,7 +68,7 @@ class SelectionTypeButtons : RComponent<SelectionTypeButtons.Props, Unit>() {
             }
         }
 
-        listenerMap.addListener(EventSelectionTypeUpdate::class.java){
+        listenerMap.addListener(EventSelectionTypeUpdate::class.java) {
             rebuild()
         }
     }

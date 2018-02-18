@@ -11,12 +11,12 @@ import org.liquidengine.legui.icon.ImageIcon
  * Created by cout970 on 2017/09/21.
  */
 class TextButton(
-        val command: String,
-        text: String,
-        posX: Number,
-        posY: Number,
-        sizeX: Number,
-        sizeY: Number
+        val command: String = "",
+        text: String = "",
+        posX: Number = 0f,
+        posY: Number = 0f,
+        sizeX: Number = 32f,
+        sizeY: Number = 32f
 ) : Button(text, posX.toFloat(), posY.toFloat(), sizeX.toFloat(), sizeY.toFloat()) {
 
     init {

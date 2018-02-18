@@ -25,7 +25,11 @@ import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.Vector2
 import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.vec2Of
+import org.joml.Vector2f
+import org.liquidengine.legui.color.ColorConstants
 import org.liquidengine.legui.component.Component
+import org.liquidengine.legui.font.FontRegistry
+import org.liquidengine.legui.icon.CharIcon
 
 /**
  * Created by cout970 on 2017/09/27.
@@ -38,8 +42,8 @@ class EditCubePanel : RComponent<EditCubePanel.Props, Unit>() {
 
     override fun build(ctx: RBuilder): Component = panel root@ {
         marginX(ctx, 5f)
-        posY = 70f
-        height = 465f
+        posY = props.posY
+        height = if (props.visible) 484f else 24f
         border(3f) { greyColor }
         setTransparent()
 
@@ -67,7 +71,29 @@ class EditCubePanel : RComponent<EditCubePanel.Props, Unit>() {
         val tex = { cube.map { it.textureOffset }.getOr(Vector2.ORIGIN) }
         val scale = { cube.map { it.textureSize }.getOr(Vector2.ORIGIN) }
         val disp = props.dispatcher
-        var p = 5f
+        var p = 24f
+
+        +panel {
+            // size
+            width = this@root.width
+            height = 24f
+            posY = 1f
+            setBorderless()
+            setTransparent()
+
+            +FixedLabel("Edit Cube", 50f, 0f, width - 100, 22f).apply { textState.fontSize = 22f }
+
+            // close button
+            +IconButton(posX = 250f, posY = 3f).apply {
+                if (props.visible) {
+                    setImage(CharIcon(Vector2f(16f, 16f), FontRegistry.DEFAULT, 'X', ColorConstants.lightGray()))
+                } else {
+                    setImage(CharIcon(Vector2f(16f, 16f), FontRegistry.DEFAULT, 'O', ColorConstants.lightGray()))
+                }
+                background { darkColor }
+                onClick { props.toggle() }
+            }
+        }
 
         +panel {
             // size
@@ -77,6 +103,7 @@ class EditCubePanel : RComponent<EditCubePanel.Props, Unit>() {
             p += 115f
             setBorderless()
             setTransparent()
+
 
             +FixedLabel("Size", 0f, 0f, width, 18f).apply { textState.fontSize = 22f }
             +FixedLabel("x", 10f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
@@ -164,7 +191,8 @@ class EditCubePanel : RComponent<EditCubePanel.Props, Unit>() {
         return selectedObj is ObjectCube
     }
 
-    data class Props(val access: IModelAccessor, val dispatcher: Dispatcher)
+    data class Props(val access: IModelAccessor, val dispatcher: Dispatcher,
+                     val posY: Float, val visible: Boolean, val toggle: () -> Unit)
 
     companion object : RComponentSpec<EditCubePanel, Props, Unit>
 }

@@ -80,7 +80,8 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
         }
     }
 
-    class Props(val modelAccessor: IModelAccessor, val selectedMaterial: () -> IMaterialRef, val visibleElements: VisibleElements)
+    class Props(val modelAccessor: IModelAccessor, val selectedMaterial: () -> IMaterialRef,
+                val visibleElements: VisibleElements)
 
     companion object : RComponentSpec<RightPanel, Props, Unit>
 }

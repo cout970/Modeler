@@ -88,7 +88,7 @@ class BottomPanel : RComponent<BottomPanel.Props, Unit>() {
                     color = Vector4f(0f, 0f, 0f, 1f)
                 }
 
-                +FixedLabel(op.name, x = 5f, width = 100f).apply {
+                +TextButton(text = op.name, posX = 5f, sizeX = 100f).apply {
                     textState.horizontalAlign = HorizontalAlign.LEFT
                 }
             }
