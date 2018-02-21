@@ -121,6 +121,8 @@ data class ObjectCube(
 
     override fun withName(name: String): IObject = copy(name = name)
 
+    override fun withId(id: UUID): IObject = copy(id = id)
+
     override fun makeCopy(): IObjectCube = copy(id = UUID.randomUUID())
 
     override val transformer: IObjectTransformer = object : IObjectTransformer {

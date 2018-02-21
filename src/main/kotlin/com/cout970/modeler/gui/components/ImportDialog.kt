@@ -72,7 +72,7 @@ class ImportDialog : RComponent<ImportDialog.Props, ImportDialog.State>() {
                                 "Import",
                                 "",
                                 extensions,
-                                "Model Files (*.tcn, *.obj, *.json, *.tbl, *.mcx)",
+                                "Model Files (*.tcn, *.obj, *.json, *.tbl, *.mcx, *.pff)",
                                 false
                         )
                         if (file != null) {
@@ -82,6 +82,7 @@ class ImportDialog : RComponent<ImportDialog.Props, ImportDialog.State>() {
                                 file.endsWith(".json") -> 2
                                 file.endsWith(".tbl") -> 3
                                 file.endsWith(".mcx") -> 4
+                                file.endsWith(".pff") -> 5
                                 else -> state.option
                             }
                             replaceState(state.copy(text = file, option = newOption, forceUpdate = !state.forceUpdate))
@@ -179,8 +180,9 @@ class ImportDialog : RComponent<ImportDialog.Props, ImportDialog.State>() {
                 "Techne (*.tcn, *.zip)",
                 "Minecraft (*.json)",
                 "Tabula (*.tbl)",
-                "MCX (*.mcx)"
+                "MCX (*.mcx)",
+                "Project (*.pff)"
         )
-        private val extensions = Arrays.asList("*.obj", "*.tcn", "*.json", "*.tbl", "*.mcx").toPointerBuffer()
+        private val extensions = Arrays.asList("*.obj", "*.tcn", "*.json", "*.tbl", "*.mcx", "*.pff").toPointerBuffer()
     }
 }

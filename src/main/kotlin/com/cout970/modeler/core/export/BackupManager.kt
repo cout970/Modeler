@@ -12,8 +12,6 @@ import java.nio.file.Files
 import java.time.Instant
 
 
-
-
 object BackupManager {
 
     var hash = -1
@@ -40,7 +38,7 @@ object BackupManager {
     }
 
     private fun getBackupName(projectName: String): String {
-        return "Backup_${projectName}_${Instant.now().toString().replace("[^a-zA-Z0-9.\\-]".toRegex(), "_")}.pff"
+        return "Backup_${projectName}_${Instant.now().toString().replace("""[^a-zA-Z0-9.\-]""".toRegex(), "_")}.pff"
     }
 
     private fun makeBackup(path: String, exportManager: ExportManager, projectManager: ProjectManager) {
@@ -50,5 +48,6 @@ object BackupManager {
 
         exportManager.saveProject(PathConstants.LAST_BACKUP_FILE_PATH, projectManager)
         Files.copy(File(PathConstants.LAST_BACKUP_FILE_PATH).toPath(), File(finalPath).toPath())
+        log(Level.NORMAL) { "Backup saved at ${File(finalPath).absolutePath}" }
     }
 }

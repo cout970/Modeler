@@ -7,6 +7,8 @@ import com.cout970.modeler.core.export.project.ProjectLoaderV11
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
+import com.cout970.modeler.core.model.Model
+import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.model.selection.ClipboardNone.Companion.model
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.project.ProjectProperties
@@ -17,6 +19,7 @@ import com.cout970.modeler.gui.event.NotificationHandler
 import com.cout970.modeler.util.createParentsIfNeeded
 import com.google.gson.GsonBuilder
 import java.io.File
+import java.util.*
 import java.util.zip.ZipFile
 
 /**
@@ -49,6 +52,14 @@ class ExportManager(val resourceLoader: ResourceLoader) {
 
     fun saveProject(path: String, manger: ProjectManager) {
         saveProject(path, ProgramSave(CURRENT_SAVE_VERSION, manger.projectProperties, manger.model))
+    }
+
+    fun import(file: String): IModel {
+        val model = loadProject(file).model
+        // Make sure the id of the imported model are different from the current model
+        val objs = model.objectMap.toList().map { it.second.withId(UUID.randomUUID()) }.associateBy { it.ref }
+
+        return Model(objs, model.materialMap)
     }
 
     fun loadLastProjectIfExists(projectManager: ProjectManager, gui: Gui) {

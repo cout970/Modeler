@@ -6,9 +6,10 @@ package com.cout970.modeler.core.export
 enum class ImportFormat {
     OBJ, //wavefront models
     TCN, //techne models
-    JSON, //minecraft models
+    JSON,//minecraft models
     TBL, //tabula
-    MCX
+    MCX, // custom format for minecraft
+    PFF  // project file
 }
 
 enum class ExportFormat {

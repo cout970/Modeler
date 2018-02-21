@@ -34,6 +34,8 @@ object ObjectNone : IObject {
 
     override fun withName(name: String): IObject = this
 
+    override fun withId(id: UUID): IObject = this
+
     override val transformer: IObjectTransformer = object : IObjectTransformer {
         override fun translate(obj: IObject, translation: IVector3): IObject = this@ObjectNone
         override fun rotate(obj: IObject, pivot: IVector3, rot: IQuaternion): IObject = this@ObjectNone
@@ -77,6 +79,8 @@ object ObjectCubeNone : IObjectCube {
     override fun withMaterial(materialRef: IMaterialRef): IObject = this
 
     override fun withName(name: String): IObject = this
+
+    override fun withId(id: UUID): IObject = this
 
     override val transformer: IObjectTransformer = object : IObjectTransformer {
         override fun translate(obj: IObject, translation: IVector3): IObject = this@ObjectCubeNone

@@ -27,4 +27,5 @@ interface IObject {
     fun withMesh(newMesh: IMesh): IObject
     fun withMaterial(materialRef: IMaterialRef): IObject
     fun withName(name: String): IObject
+    fun withId(id: UUID): IObject
 }

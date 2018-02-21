@@ -4,6 +4,7 @@ import com.cout970.modeler.Program
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
+import com.cout970.modeler.core.export.ExportManager
 import com.cout970.modeler.core.export.ImportFormat
 import com.cout970.modeler.core.export.ImportProperties
 import com.cout970.modeler.core.export.ModelImporters
@@ -29,7 +30,7 @@ class TaskImportModel(
     override fun run(state: Program) {
         if (modelCache == null) {
             try {
-                val newModel = import()
+                val newModel = import(state.exportManager)
                 newModel.materials.forEach { it.loadTexture(state.resourceLoader) }
                 modelCache = newModel
             } catch (e: Exception) {
@@ -42,11 +43,7 @@ class TaskImportModel(
         modelCache?.let {
             val oldModel = state.projectManager.model
             val newModel = if (properties.append) oldModel.merge(it) else it
-            val newSelection = if (properties.append) {
-                Selection(SelectionTarget.MODEL, SelectionType.OBJECT, oldModel.objectRefs)
-            } else {
-                Selection(SelectionTarget.MODEL, SelectionType.OBJECT, it.objectRefs)
-            }
+            val newSelection = Selection(SelectionTarget.MODEL, SelectionType.OBJECT, it.objectRefs)
             state.gui.state.tmpModel = null
             state.gui.state.hoveredObject = null
             state.gui.cursorManager.textureCursor = null
@@ -69,7 +66,7 @@ class TaskImportModel(
         state.gui.state.materialsHash = (System.currentTimeMillis() and 0xFFFFFFFF).toInt()
     }
 
-    fun import(): IModel {
+    fun import(exportManager: ExportManager): IModel {
         val file = File(properties.path).toResourcePath()
         return when (properties.format) {
             ImportFormat.OBJ -> {
@@ -86,6 +83,9 @@ class TaskImportModel(
             }
             ImportFormat.MCX -> {
                 ModelImporters.mcxImporter.import(file)
+            }
+            ImportFormat.PFF -> {
+                exportManager.import(properties.path)
             }
         }
     }
