@@ -1,7 +1,6 @@
 package com.cout970.modeler.gui.components
 
 import com.cout970.glutilities.structure.Timer
-import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.gui.reactive.RBuilder
@@ -9,10 +8,9 @@ import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.gui.reactive.invoke
 import com.cout970.modeler.gui.views.VisibleElements
-import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.setTransparent
-import com.cout970.modeler.util.toColor
+import com.cout970.reactive.dsl.*
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
@@ -41,7 +39,7 @@ class CenterPanel : RComponent<CenterPanel.Props, Unit>() {
             position = Vector2f()
             size = this@root.size
             setBorderless()
-            setTransparent()
+            transparent()
             if (props.canvasContainer.canvas.isEmpty()) {
                 hide()
             }
@@ -60,7 +58,7 @@ class CenterPanel : RComponent<CenterPanel.Props, Unit>() {
             }
 
             size = this@root.size
-            backgroundColor = Config.colorPalette.blackColor.toColor()
+            background { blackColor }
             setBorderless()
 
             val x = size.x / 2 - 125f

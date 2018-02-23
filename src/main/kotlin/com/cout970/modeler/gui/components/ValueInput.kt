@@ -8,6 +8,8 @@ import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.input.window.Loop
 import com.cout970.modeler.util.*
+import com.cout970.reactive.dsl.height
+import com.cout970.reactive.dsl.width
 import com.cout970.vector.api.IVector2
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
@@ -33,11 +35,11 @@ class ValueInput : RComponent<ValueInput.Props, Unit>() {
         setTransparent()
         setBorderless()
 
-        val input = StringInput(formatter.format(props.value()), 0f, 16f, 75f, 40f).apply {
+        val input = StringInput("", formatter.format(props.value()), 0f, 16f, 75f, 40f).apply {
             textState.textColor = Config.colorPalette.textColor.toColor()
             textState.horizontalAlign = HorizontalAlign.CENTER
             textState.fontSize = 24f
-            backgroundColor = Config.colorPalette.greyColor.toColor()
+            background { greyColor }
         }
 
         +input.apply {
@@ -54,7 +56,7 @@ class ValueInput : RComponent<ValueInput.Props, Unit>() {
         }
 
         +IconButton("", "button_up", 0f, 0f, 75f, 16f).apply {
-            backgroundColor = Config.colorPalette.lightDarkColor.toColor()
+            background { lightDarkColor }
             listenerMap.addListener(MouseClickEvent::class.java) {
                 if (it.action == MouseClickEvent.MouseClickAction.RELEASE)
                     dispatch(1f, input.text)
@@ -62,7 +64,7 @@ class ValueInput : RComponent<ValueInput.Props, Unit>() {
         }
 
         +IconButton("", "button_down", 0f, 56f, 75f, 16f).apply {
-            backgroundColor = Config.colorPalette.lightDarkColor.toColor()
+            background { lightDarkColor }
             listenerMap.addListener(MouseClickEvent::class.java) {
                 if (it.action == MouseClickEvent.MouseClickAction.RELEASE)
                     dispatch(-1f, input.text)

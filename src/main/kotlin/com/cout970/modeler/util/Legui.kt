@@ -1,11 +1,12 @@
 package com.cout970.modeler.util
 
+import com.cout970.reactive.core.Renderer
 import com.cout970.vector.api.IVector2
 import org.joml.Vector2f
-import org.liquidengine.legui.color.ColorConstants
 import org.liquidengine.legui.component.*
 import org.liquidengine.legui.event.Event
 import org.liquidengine.legui.listener.EventListener
+import org.liquidengine.legui.style.color.ColorConstants
 import org.liquidengine.legui.system.context.Context
 
 val Component.absolutePositionV: IVector2 get() = absolutePosition.toIVector()
@@ -19,15 +20,9 @@ var Frame.size: Vector2f
         componentLayer.container.size = value
     }
 
-fun Component.hide() {
-    isEnabled = false
-    isVisible = false
-}
 
-fun Component.show() {
-    isEnabled = true
-    isVisible = true
-}
+fun Component.child(key: String) = childs.find { it.metadata[Renderer.METADATA_KEY] == key }
+
 
 fun Component.disable() {
     isEnabled = false
@@ -98,13 +93,23 @@ fun Component.forEachComponent(func: (Component) -> Unit) {
     }
 }
 
+@Deprecated(message = "use borderless()",
+        replaceWith = ReplaceWith("borderless()", "com.cout970.reactive.dsl.borderless"))
 fun Component.setBorderless(): Component {
-    border.isEnabled = false
+    style.border.isEnabled = false
     return this
 }
 
+@Deprecated(message = "use rectCorners()", replaceWith = ReplaceWith("rectCorners()", "com.cout970.reactive.dsl.rectCorners"))
+fun Component.rectangularCorners(): Component {
+    style.cornerRadius.set(0f)
+    return this
+}
+
+@Deprecated(message = "use transparent()",
+        replaceWith = ReplaceWith("transparent()", "com.cout970.reactive.dsl.transparent"))
 fun Component.setTransparent(): Component {
-    backgroundColor = ColorConstants.transparent()
+    style.background.color = ColorConstants.transparent()
     return this
 }
 

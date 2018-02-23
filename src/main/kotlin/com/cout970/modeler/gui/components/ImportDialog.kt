@@ -11,8 +11,11 @@ import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.util.toColor
 import com.cout970.modeler.util.toJoml2f
 import com.cout970.modeler.util.toPointerBuffer
+import com.cout970.reactive.dsl.height
+import com.cout970.reactive.dsl.posX
+import com.cout970.reactive.dsl.posY
+import com.cout970.reactive.dsl.width
 import org.joml.Vector4f
-import org.liquidengine.legui.border.SimpleLineBorder
 import org.liquidengine.legui.component.CheckBox
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.TextInput
@@ -22,6 +25,7 @@ import org.liquidengine.legui.component.event.textinput.TextInputContentChangeEv
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.event.MouseClickEvent
 import org.liquidengine.legui.icon.CharIcon
+import org.liquidengine.legui.style.border.SimpleLineBorder
 import org.lwjgl.util.tinyfd.TinyFileDialogs
 import java.util.*
 
@@ -36,12 +40,12 @@ class ImportDialog : RComponent<ImportDialog.Props, ImportDialog.State>() {
 
     override fun build(ctx: RBuilder): Component = panel {
         size = ctx.parentSize.toJoml2f()
-        backgroundColor = Vector4f(1f, 1f, 1f, 0.05f)
+        style.background.color = Vector4f(1f, 1f, 1f, 0.05f)
 
         // Centered panel
         +panel {
-            backgroundColor = Config.colorPalette.darkestColor.toColor()
-            border = SimpleLineBorder(Config.colorPalette.greyColor.toColor(), 2f)
+            background { darkestColor }
+            style.border = SimpleLineBorder(Config.colorPalette.greyColor.toColor(), 2f)
             width = 460f
             height = 240f
             posX = (ctx.parentSize.xf - width) / 2f
@@ -112,11 +116,11 @@ class ImportDialog : RComponent<ImportDialog.Props, ImportDialog.State>() {
             //fourth line
             +CheckBox("Flip UV", 360f, 150f, 80f, 24f).apply {
 
-                backgroundColor = Config.colorPalette.buttonColor.toColor()
+                background { buttonColor }
                 textState.fontSize = 18f
                 textState.padding.x = 5f
                 isChecked = state.flipUV
-                cornerRadius = 0f
+                style.cornerRadius.set(0f)
 
                 if (state.option != 0) { // disable
                     isEnabled = false

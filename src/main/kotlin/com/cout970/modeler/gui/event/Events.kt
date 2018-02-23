@@ -59,3 +59,8 @@ class EventAnimatorUpdate(
         frame: Frame,
         val animator: Animator
 ) : Event<Component>(comp, ctx, frame)
+
+class EventGuiCommand(comp: Component, ctx: Context, frame: Frame,
+                      val command: String, val args: Map<String, Any>
+) : Event<Component>(comp, ctx, frame)
+

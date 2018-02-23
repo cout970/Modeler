@@ -74,7 +74,7 @@ class ModelObjectList : RComponent<ModelObjectList.Props, ModelObjectList.State>
             isScrolling = state.scrolling
 
             isArrowsEnabled = false
-            cornerRadius = 0f
+            style.cornerRadius.set(0f)
             scrollColor = Config.colorPalette.blackColor.toColor()
             setTransparent()
 

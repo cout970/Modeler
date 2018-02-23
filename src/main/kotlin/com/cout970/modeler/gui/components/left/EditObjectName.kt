@@ -13,12 +13,15 @@ import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.util.disable
 import com.cout970.modeler.util.setTransparent
 import com.cout970.modeler.util.toColor
+import com.cout970.reactive.dsl.height
+import com.cout970.reactive.dsl.posY
+import com.cout970.reactive.dsl.width
 import org.joml.Vector2f
-import org.liquidengine.legui.color.ColorConstants
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
-import org.liquidengine.legui.font.FontRegistry
 import org.liquidengine.legui.icon.CharIcon
+import org.liquidengine.legui.style.color.ColorConstants
+import org.liquidengine.legui.style.font.FontRegistry
 
 /**
  * Created by cout970 on 2017/10/29.
@@ -31,7 +34,7 @@ class EditObjectName : RComponent<EditObjectName.Props, Unit>() {
 
     override fun build(ctx: RBuilder): Component = panel {
 
-        marginX(ctx, 5f)
+        marginX(5f)
         posY = props.posY
         height = if (props.visible) 64f else 24f
         setTransparent()
@@ -71,9 +74,9 @@ class EditObjectName : RComponent<EditObjectName.Props, Unit>() {
             onClick { props.toggle() }
         }
 
-        +StringInput(text, 10f, 24f, width - 20f, 32f).apply {
+        +StringInput("", text, 10f, 24f, width - 20f, 32f).apply {
             textState.horizontalAlign = HorizontalAlign.CENTER
-            backgroundColor = Config.colorPalette.greyColor.toColor()
+            background { greyColor }
             textState.fontSize = 24f
             obj.ifNull {
                 isEditable = false

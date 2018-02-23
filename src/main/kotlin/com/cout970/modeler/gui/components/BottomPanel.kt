@@ -10,9 +10,9 @@ import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.gui.reactive.invoke
 import com.cout970.modeler.gui.views.VisibleElements
 import com.cout970.modeler.render.tool.Animator
-import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.setTransparent
+import com.cout970.reactive.dsl.*
 import com.cout970.vector.extensions.vec2Of
 import org.joml.Vector4f
 import org.liquidengine.legui.component.Component
@@ -83,7 +83,7 @@ class BottomPanel : RComponent<BottomPanel.Props, Unit>() {
                 height = 24f
                 background { greyColor }
 
-                border = PixelBorder().apply {
+                style.border = PixelBorder().apply {
                     enableBottom = true
                     color = Vector4f(0f, 0f, 0f, 1f)
                 }

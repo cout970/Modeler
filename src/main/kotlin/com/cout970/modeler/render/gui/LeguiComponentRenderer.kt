@@ -8,7 +8,7 @@ object LeguiComponentRenderer : NvgDefaultComponentRenderer<Component>() {
 
     override fun renderSelf(component: Component, ctx: Context, nanovg: Long) {
         if (!component.isVisible ||
-            component.backgroundColor.w < 0.01 ||
+            component.style.background.color.w < 0.01 ||
             component.size.lengthSquared() < 0.0001) return
 
         super.renderSelf(component, ctx, nanovg)
@@ -16,8 +16,8 @@ object LeguiComponentRenderer : NvgDefaultComponentRenderer<Component>() {
 
     override fun renderBorder(component: Component, context: Context, nanovg: Long) {
         if (!component.isVisible ||
-            component.border == null ||
-            !component.border.isEnabled ||
+            component.style.border == null ||
+            !component.style.border.isEnabled ||
             component.size.lengthSquared() < 0.0001) return
 
         super.renderBorder(component, context, nanovg)

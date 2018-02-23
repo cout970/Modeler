@@ -8,9 +8,9 @@ import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.gui.reactive.invoke
 import com.cout970.modeler.gui.views.VisibleElements
-import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.setTransparent
+import com.cout970.reactive.dsl.*
 import com.cout970.vector.extensions.vec2Of
 import org.liquidengine.legui.component.Component
 
@@ -27,7 +27,7 @@ class RightPanel : RComponent<RightPanel.Props, Unit>() {
         background { darkestColor }
         posX = ctx.parentSize.xf - 190f
         width = 190f
-        fillY(ctx)
+        fillY()
         setBorderless()
         val topSize = 85f
 

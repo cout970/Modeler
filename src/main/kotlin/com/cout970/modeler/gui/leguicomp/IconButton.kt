@@ -12,8 +12,8 @@ import org.liquidengine.legui.icon.ImageIcon
  * Created by cout970 on 2017/09/15.
  */
 class IconButton(
-        val command: String = "",
-        val icon: String = "",
+        var command: String = "",
+        var icon: String = "",
         posX: Float = 0f, posY: Float = 0f,
         sizeX: Float = 16f, sizeY: Float = 16f
 ) : Button("", posX, posY, sizeX, sizeY), IResourceReloadable {
@@ -21,7 +21,7 @@ class IconButton(
     init {
         setBorderless()
         setTransparent()
-        cornerRadius = 0f
+        style.cornerRadius.set(0f)
     }
 
     override fun loadResources(resources: GuiResources) {

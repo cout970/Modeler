@@ -1,11 +1,9 @@
 package com.cout970.modeler.gui.reactive
 
 import org.joml.Vector2f
-import org.joml.Vector4f
-import org.liquidengine.legui.border.Border
-import org.liquidengine.legui.color.ColorConstants.transparent
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Panel
+import org.liquidengine.legui.style.Style
 
 /**
  * Created by cout970 on 2017/09/24.
@@ -44,19 +42,6 @@ class RComponentWrapper<out C : RComponent<P, S>, P : Any, S : Any>(
         subTree.position = Vector2f()
     }
 
-
-    override fun getBackgroundColor(): Vector4f {
-        return transparent()
-    }
-
-    override fun getFocusedStrokeColor(): Vector4f {
-        return transparent()
-    }
-
-    override fun getCornerRadius(): Float {
-        return subTree.cornerRadius
-    }
-
     override fun isEnabled(): Boolean {
         return subTree.isEnabled
     }
@@ -89,14 +74,6 @@ class RComponentWrapper<out C : RComponent<P, S>, P : Any, S : Any>(
         return subTree.metadata
     }
 
-    override fun setBorder(border: Border?) {
-        subTree.border = border
-    }
-
-    override fun setCornerRadius(cornerRadius: Float) {
-        subTree.cornerRadius = cornerRadius
-    }
-
     override fun setHovered(hovered: Boolean) {
         subTree.isHovered = hovered
     }
@@ -105,15 +82,19 @@ class RComponentWrapper<out C : RComponent<P, S>, P : Any, S : Any>(
         subTree.isFocused = focused
     }
 
-    override fun setFocusedStrokeColor(r: Float, g: Float, b: Float, a: Float) {
-        subTree.setFocusedStrokeColor(r, g, b, a)
-    }
-
     override fun setPressed(pressed: Boolean) {
         subTree.isPressed = pressed
     }
 
     override fun setSize(width: Float, height: Float) {
         subTree.setSize(width, height)
+    }
+
+    override fun getStyle(): Style {
+        return subTree.getStyle()
+    }
+
+    override fun setStyle(style: Style?) {
+        subTree.setStyle(style)
     }
 }

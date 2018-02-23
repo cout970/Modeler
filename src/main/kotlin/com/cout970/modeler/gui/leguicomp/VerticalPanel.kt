@@ -1,10 +1,10 @@
 package com.cout970.modeler.gui.leguicomp
 
 import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.setTransparent
 import com.cout970.modeler.util.toColor
+import com.cout970.reactive.dsl.hide
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.ScrollablePanel

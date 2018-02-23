@@ -14,7 +14,7 @@ class DropDown(val cmd: String, val x: Float = 0f, val y: Float = 0f, val width:
 
     init {
         selectionListPanel.verticalScrollBar.apply {
-            backgroundColor = Config.colorPalette.brightestColor.toColor()
+            background { brightestColor }
             scrollColor = Config.colorPalette.greyColor.toColor()
             arrowColor = Config.colorPalette.whiteColor.toColor()
         }

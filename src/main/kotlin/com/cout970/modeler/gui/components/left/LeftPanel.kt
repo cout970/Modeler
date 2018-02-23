@@ -3,14 +3,19 @@ package com.cout970.modeler.gui.components.left
 import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.gui.canvas.GridLines
-import com.cout970.modeler.gui.leguicomp.*
+import com.cout970.modeler.gui.leguicomp.VerticalPanel
+import com.cout970.modeler.gui.leguicomp.background
+import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.gui.reactive.invoke
 import com.cout970.modeler.gui.views.VisibleElements
-import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.setBorderless
+import com.cout970.reactive.dsl.height
+import com.cout970.reactive.dsl.hide
+import com.cout970.reactive.dsl.posY
+import com.cout970.reactive.dsl.width
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.event.ScrollEvent
 

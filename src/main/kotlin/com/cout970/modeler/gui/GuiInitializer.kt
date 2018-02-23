@@ -19,6 +19,7 @@ import com.cout970.modeler.gui.views.EditorView
 import com.cout970.modeler.input.event.EventController
 import com.cout970.modeler.input.window.WindowHandler
 import com.cout970.modeler.render.tool.Animator
+import com.cout970.modeler.util.PropertyManager
 
 /**
  * Created by cout970 on 2017/04/08.
@@ -65,6 +66,8 @@ class GuiInitializer(
         log(Level.FINE) { "[GuiInitializer] Creating initial canvas" }
         canvasContainer.newCanvas()
         log(Level.FINE) { "[GuiInitializer] GUI Initialization done" }
+
+        PropertyManager.setupProperties(listeners)
 
         return Gui(
                 root = root,

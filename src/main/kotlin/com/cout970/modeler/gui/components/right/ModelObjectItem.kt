@@ -1,14 +1,15 @@
 package com.cout970.modeler.gui.components.right
 
 import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.modeler.gui.leguicomp.*
+import com.cout970.modeler.gui.leguicomp.IconButton
+import com.cout970.modeler.gui.leguicomp.TextButton
+import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
-import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.setTransparent
-import com.cout970.modeler.util.show
+import com.cout970.reactive.dsl.*
 import org.joml.Vector4f
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
@@ -24,8 +25,8 @@ class ModelObjectItem : RComponent<ModelObjectProps, Boolean>() {
 
     override fun build(ctx: RBuilder): Component = panel {
 
-        backgroundColor = props.color
-        cornerRadius = 0f
+        style.background.color = props.color
+        style.cornerRadius.set(0f)
         width = 180f
         height = 24f
         posY = props.index * 24f

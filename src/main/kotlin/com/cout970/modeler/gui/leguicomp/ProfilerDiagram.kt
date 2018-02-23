@@ -11,10 +11,10 @@ import com.cout970.vector.extensions.plus
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.vec3Of
 import org.joml.Vector4f
-import org.liquidengine.legui.color.ColorConstants
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.component.optional.align.VerticalAlign
-import org.liquidengine.legui.font.FontRegistry
+import org.liquidengine.legui.style.color.ColorConstants
+import org.liquidengine.legui.style.font.FontRegistry
 import org.liquidengine.legui.system.context.Context
 import org.liquidengine.legui.system.renderer.nvg.NvgComponentRenderer
 import org.liquidengine.legui.system.renderer.nvg.util.NvgText

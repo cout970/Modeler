@@ -13,6 +13,8 @@ import com.cout970.modeler.input.event.EventController
 import com.cout970.modeler.render.tool.Animator
 import com.cout970.modeler.render.tool.camera.CameraUpdater
 import com.cout970.modeler.util.*
+import com.cout970.reactive.core.AsyncManager
+import com.cout970.reactive.core.SyncManager
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.vec2Of
 import org.liquidengine.legui.component.Component
@@ -23,7 +25,7 @@ import org.liquidengine.legui.system.context.Context
 /**
  * Created by cout970 on 2017/05/16.
  */
-class Listeners : ITickeable {
+class Listeners : ITickeable, IGuiCmdRunner {
 
     private lateinit var gui: Gui
     lateinit var cameraUpdater: CameraUpdater
@@ -38,6 +40,8 @@ class Listeners : ITickeable {
 
             cameraUpdater = CameraUpdater(gui.canvasContainer, it, gui.timer)
         }
+
+        AsyncManager.setInstance(SyncManager)
 
         projectManager.let {
             it.modelChangeListeners += this::onModelChange
@@ -109,6 +113,11 @@ class Listeners : ITickeable {
                 EventMaterialUpdate(component, context, root, old.asNullable(), new.asNullable())
             }
 
+    override fun runGuiCommand(cmd: String, args: Map<String, Any>) =
+            sendEventToComponents { component, context, root ->
+                EventGuiCommand(component, context, root, cmd, args)
+            }
+
     fun onMouseScroll(e: EventMouseScroll): Boolean {
         val mousePos = gui.input.mouse.getMousePos()
         gui.canvasContainer.canvas.forEach { canvas ->
@@ -131,7 +140,8 @@ class Listeners : ITickeable {
         cameraUpdater.updateCameras()
         gui.cursorManager.tick()
 
-        getRContext(gui.root.mainView.base)?.update()
+//        SyncManager.runSync()
+//        getRContext(gui.root.mainView.base)?.update()
 
         sizeUpdate?.let {
             gui.root.updateSizes(it)

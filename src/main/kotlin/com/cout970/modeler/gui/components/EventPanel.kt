@@ -3,16 +3,18 @@ package com.cout970.modeler.gui.components
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.event.EventNotificationUpdate
 import com.cout970.modeler.gui.event.NotificationHandler
-import com.cout970.modeler.gui.leguicomp.*
+import com.cout970.modeler.gui.leguicomp.FixedLabel
+import com.cout970.modeler.gui.leguicomp.background
+import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
-import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.setTransparent
 import com.cout970.modeler.util.toColor
-import org.liquidengine.legui.border.SimpleLineBorder
+import com.cout970.reactive.dsl.*
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.TextArea
+import org.liquidengine.legui.style.border.SimpleLineBorder
 
 class EventPanel : RComponent<Unit, Unit>() {
 
@@ -35,7 +37,7 @@ class EventPanel : RComponent<Unit, Unit>() {
         notifications.asReversed().forEachIndexed { index, notification ->
             +panel {
                 background { darkColor }
-                border = SimpleLineBorder(Config.colorPalette.darkestColor.toColor(), 2f)
+                style.border = SimpleLineBorder(Config.colorPalette.darkestColor.toColor(), 2f)
                 width = 330f
                 height = 65f
                 posY = index * (height + 4f)

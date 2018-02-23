@@ -15,16 +15,16 @@ import com.cout970.vector.extensions.unaryMinus
  */
 
 @UseCase("set.selection.type.object")
-fun setSelectionTypeObject(): ITask = ModifyGui { it.state.changeSelectionType(it.listeners, SelectionType.OBJECT) }
+fun setSelectionTypeObject(): ITask = ModifyGui { it.state.selectionType = SelectionType.OBJECT }
 
 @UseCase("set.selection.type.face")
-fun setSelectionTypeFace(): ITask = ModifyGui { it.state.changeSelectionType(it.listeners, SelectionType.FACE) }
+fun setSelectionTypeFace(): ITask = ModifyGui { it.state.selectionType = SelectionType.FACE }
 
 @UseCase("set.selection.type.edge")
-fun setSelectionTypeEdge(): ITask = ModifyGui { it.state.changeSelectionType(it.listeners, SelectionType.EDGE) }
+fun setSelectionTypeEdge(): ITask = ModifyGui { it.state.selectionType = SelectionType.EDGE }
 
 @UseCase("set.selection.type.vertex")
-fun setSelectionTypeVertex(): ITask = ModifyGui { it.state.changeSelectionType(it.listeners, SelectionType.VERTEX) }
+fun setSelectionTypeVertex(): ITask = ModifyGui { it.state.selectionType = SelectionType.VERTEX }
 
 @UseCase("show.left.panel")
 fun showLeftPanel(): ITask = ModifyGui { gui ->

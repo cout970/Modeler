@@ -7,6 +7,7 @@ import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.gui.event.EventMaterialUpdate
 import com.cout970.modeler.gui.event.EventSelectionUpdate
+import com.cout970.modeler.gui.leguicomp.background
 import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
@@ -35,7 +36,7 @@ class ModelMaterialList : RComponent<ModelMaterialList.Props, ModelMaterialList.
 
         position = props.pos.toJoml2f()
         size = props.size.toJoml2f()
-        backgroundColor = Config.colorPalette.lightDarkColor.toColor()
+        background { lightDarkColor }
 
         val scrollSize = size.y / 24.0
         val model = props.modelAccessor.model
@@ -89,7 +90,7 @@ class ModelMaterialList : RComponent<ModelMaterialList.Props, ModelMaterialList.
             isScrolling = state.scrolling
 
             isArrowsEnabled = false
-            cornerRadius = 0f
+            style.cornerRadius.set(0f)
             scrollColor = Config.colorPalette.blackColor.toColor()
             setTransparent()
 

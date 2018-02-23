@@ -5,11 +5,12 @@ import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
+import com.cout970.reactive.dsl.backgroundColor
 import org.joml.Vector2f
-import org.liquidengine.legui.color.ColorConstants
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Label
 import org.liquidengine.legui.event.MouseClickEvent
+import org.liquidengine.legui.style.color.ColorConstants
 
 /**
  * Created by cout970 on 2017/09/23.
@@ -31,10 +32,10 @@ class RButton : RComponent<RButton.Props, RButton.State>() {
         }
 
         if (state.on) {
-            backgroundColor = ColorConstants.green()
+            backgroundColor { ColorConstants.green() }
             +Label("On")
         } else {
-            backgroundColor = ColorConstants.red()
+            backgroundColor { ColorConstants.red() }
             +Label("Off")
         }
     }

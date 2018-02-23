@@ -11,14 +11,18 @@ import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.util.toColor
 import com.cout970.modeler.util.toJoml2f
 import com.cout970.modeler.util.toPointerBuffer
+import com.cout970.reactive.dsl.height
+import com.cout970.reactive.dsl.posX
+import com.cout970.reactive.dsl.posY
+import com.cout970.reactive.dsl.width
 import org.joml.Vector4f
-import org.liquidengine.legui.border.SimpleLineBorder
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.TextInput
 import org.liquidengine.legui.component.event.selectbox.SelectBoxChangeSelectionEvent
 import org.liquidengine.legui.component.event.textinput.TextInputContentChangeEvent
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.event.MouseClickEvent
+import org.liquidengine.legui.style.border.SimpleLineBorder
 import org.lwjgl.PointerBuffer
 import org.lwjgl.util.tinyfd.TinyFileDialogs
 
@@ -33,11 +37,11 @@ class ExportDialog : RComponent<ExportDialog.Props, ExportDialog.State>() {
 
     override fun build(ctx: RBuilder): Component = panel {
         size = ctx.parentSize.toJoml2f()
-        backgroundColor = Vector4f(1f, 1f, 1f, 0.05f)
+        style.background.color = Vector4f(1f, 1f, 1f, 0.05f)
 
         +panel {
-            backgroundColor = Config.colorPalette.darkestColor.toColor()
-            border = SimpleLineBorder(Config.colorPalette.greyColor.toColor(), 2f)
+            background{ darkestColor }
+            style.border = SimpleLineBorder(Config.colorPalette.greyColor.toColor(), 2f)
             width = 460f
             height = 240f
             posX = (ctx.parentSize.xf - width) / 2f

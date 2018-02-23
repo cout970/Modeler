@@ -3,11 +3,11 @@ package com.cout970.modeler.gui.leguicomp
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.GuiResources
 import com.cout970.modeler.util.IPropertyBind
-import com.cout970.modeler.util.setTransparent
 import com.cout970.modeler.util.toColor
-import org.liquidengine.legui.border.SimpleLineBorder
+import com.cout970.reactive.dsl.transparent
 import org.liquidengine.legui.icon.Icon
 import org.liquidengine.legui.icon.ImageIcon
+import org.liquidengine.legui.style.border.SimpleLineBorder
 import org.liquidengine.legui.component.ToggleButton as LeguiToggleButton
 
 
@@ -17,19 +17,18 @@ import org.liquidengine.legui.component.ToggleButton as LeguiToggleButton
 
 class ToggleButton(
         val id: String = "",
-        val icon: String = "",
+        var icon: String = "",
         val default: Boolean = false,
         posX: Float = 0f, posY: Float = 0f,
         sizeX: Float = 16f, sizeY: Float = 16f
-) : LeguiToggleButton(posX, posY, sizeX, sizeY), IResourceReloadable {
+) : LeguiToggleButton("", posX, posY, sizeX, sizeY), IResourceReloadable {
 
     var properties = mapOf<String, IPropertyBind<Boolean>>()
 
     init {
-        setTransparent()
+        transparent()
         toggledBackgroundColor = Config.colorPalette.selectedButton.toColor()
-        border.isEnabled = false
-        border = SimpleLineBorder(Config.colorPalette.selectedButton.toColor(), 1f)
+        style.border = SimpleLineBorder(Config.colorPalette.selectedButton.toColor(), 1f)
     }
 
     override fun isToggled(): Boolean = properties[id]?.get() ?: default
@@ -37,7 +36,8 @@ class ToggleButton(
     override fun setToggled(toggled: Boolean) {
         properties[id]?.set(toggled)
         super.setToggled(toggled)
-        border.isEnabled = toggled
+        style.border = SimpleLineBorder(Config.colorPalette.selectedButton.toColor(), 1f)
+        style.border.isEnabled = toggled
     }
 
     fun bindProperties(map: Map<String, IPropertyBind<Boolean>>) {

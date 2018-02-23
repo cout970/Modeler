@@ -1,24 +1,30 @@
 package com.cout970.modeler.gui.leguicomp
 
+import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.config.ColorPalette
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
+import com.cout970.modeler.gui.event.EventGuiCommand
 import com.cout970.modeler.gui.event.EventSelectionUpdate
-import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponentWrapper
 import com.cout970.modeler.util.forEachComponent
 import com.cout970.modeler.util.isNotEmpty
 import com.cout970.modeler.util.toColor
+import com.cout970.reactive.core.Listener
+import com.cout970.reactive.dsl.posY
+import com.cout970.reactive.dsl.sizeY
 import com.cout970.vector.api.IVector3
 import org.joml.Vector4f
-import org.liquidengine.legui.border.SimpleLineBorder
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.TextArea
 import org.liquidengine.legui.component.TextComponent
 import org.liquidengine.legui.component.TextInput
+import org.liquidengine.legui.event.Event
 import org.liquidengine.legui.event.MouseClickEvent
 import org.liquidengine.legui.event.ScrollEvent
+import org.liquidengine.legui.listener.ListenerMap
+import org.liquidengine.legui.style.border.SimpleLineBorder
 
 /**
  * Created by cout970 on 2017/09/07.
@@ -63,72 +69,56 @@ fun spaces(amount: Int): String = buildString {
     (0 until amount).forEach { append(' ') }
 }
 
-var Component.width: Float
-    get() = size.x
-    set(x) {
-        size.x = x
+fun Component.alignAsColumn(padding: Float) {
+    var y = 0f
+    childs.forEach {
+        it.posY = y
+        y += it.sizeY + padding
     }
-
-var Component.height: Float
-    get() = size.y
-    set(y) {
-        size.y = y
-    }
-
-var Component.posX: Float
-    get() = position.x
-    set(x) {
-        position.x = x
-    }
-
-var Component.posY: Float
-    get() = position.y
-    set(y) {
-        position.y = y
-    }
-
-fun Component.fill(ctx: RBuilder) {
-    size.x = ctx.parentSize.xf
-    size.y = ctx.parentSize.yf
 }
 
-fun Component.fillX(ctx: RBuilder) {
-    size.x = ctx.parentSize.xf
+fun Component.fill() {
+    size.x = parent.size.x
+    size.y = parent.size.y
 }
 
-fun Component.fillY(ctx: RBuilder) {
-    size.y = ctx.parentSize.yf
+fun Component.fillX() {
+    size.x = parent.size.x
 }
 
-fun Component.marginX(ctx: RBuilder, margin: Float) {
-    size.x = ctx.parentSize.xf - margin * 2
+fun Component.fillY() {
+    size.y = parent.size.y
+}
+
+fun Component.marginX(margin: Float) {
+    size.x = parent.size.x - margin * 2
     position.x = margin
 }
 
-fun Component.marginY(ctx: RBuilder, margin: Float) {
-    size.y = ctx.parentSize.yf - margin * 2
+fun Component.marginY(margin: Float) {
+    size.y = parent.size.y - margin * 2
     position.y = margin
 }
 
-fun Component.center(ctx: RBuilder) {
-    position.x = (ctx.parentSize.xf - size.x) * 0.5f
-    position.y = (ctx.parentSize.yf - size.y) * 0.5f
+fun Component.center() {
+    position.x = (parent.size.x - size.x) * 0.5f
+    position.y = (parent.size.y - size.y) * 0.5f
 }
 
-fun Component.centerX(ctx: RBuilder) {
-    position.x = (ctx.parentSize.xf - size.x) * 0.5f
+fun Component.centerX() {
+    position.x = (parent.size.x - size.x) * 0.5f
 }
 
-fun Component.centerY(ctx: RBuilder) {
-    position.y = (ctx.parentSize.yf - size.y) * 0.5f
+fun Component.centerY() {
+    position.y = (parent.size.y - size.y) * 0.5f
 }
 
 inline fun Component.background(f: ColorPalette.() -> IVector3) {
-    backgroundColor = Config.colorPalette.f().toColor()
+    style.background.color = Config.colorPalette.f().toColor()
 }
 
 inline fun Component.border(size: Float = 1f, f: ColorPalette.() -> IVector3) {
-    border = SimpleLineBorder(Config.colorPalette.f().toColor(), size)
+    style.border = SimpleLineBorder(Config.colorPalette.f().toColor(), size)
 }
 
 fun Component.onClick(func: (MouseClickEvent<*>) -> Unit) {
@@ -156,7 +146,7 @@ inline fun TextInput.highlightColor(f: ColorPalette.() -> IVector3) {
 }
 
 inline fun TextInput.focusedStrokeColor(f: ColorPalette.() -> IVector3) {
-    focusedStrokeColor = Config.colorPalette.f().toColor()
+    style.focusedStrokeColor = Config.colorPalette.f().toColor()
 }
 
 fun TextArea.defaultTextColor() {
@@ -172,7 +162,7 @@ inline fun TextArea.highlightColor(f: ColorPalette.() -> IVector3) {
 }
 
 inline fun TextArea.focusedStrokeColor(f: ColorPalette.() -> IVector3) {
-    focusedStrokeColor = Config.colorPalette.f().toColor()
+    style.focusedStrokeColor = Config.colorPalette.f().toColor()
 }
 
 var Component.onScroll: ((ScrollEvent<*>) -> Unit)?
@@ -192,4 +182,29 @@ fun debugPixelBorder() = PixelBorder().apply {
 fun Component.forEachRecursive(func: (Component) -> Unit) {
     func(this)
     childs.forEach { it.forEachRecursive(func) }
+}
+
+fun com.cout970.reactive.core.RBuilder.onCmd(cmd: String, func: (args: Map<String, Any>) -> Unit) {
+    listeners.add(Listener(EventGuiCommand::class.java) { command ->
+        if (command.command == cmd) {
+            func(command.args)
+        }
+    })
+}
+
+fun com.cout970.reactive.core.RBuilder.postMount(func: Component.() -> Unit) {
+    val oldDeferred = this.deferred
+    this.deferred = {
+        it.metadata["postMount"] = func
+        oldDeferred?.invoke(it)
+    }
+}
+
+fun <T: Event<*>> ListenerMap.clear(clazz: Class<T>){
+    getListeners(clazz).forEach { removeListener(clazz, it) }
+}
+
+fun Component.dispatch(str: String){
+    val dispatcher = metadata["Dispatcher"] as Dispatcher
+    dispatcher.onEvent(str, this)
 }

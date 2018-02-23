@@ -1,13 +1,15 @@
 package com.cout970.modeler.gui.components.right
 
-import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.gui.event.EventModelUpdate
-import com.cout970.modeler.gui.leguicomp.*
+import com.cout970.modeler.gui.leguicomp.FixedLabel
+import com.cout970.modeler.gui.leguicomp.background
+import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
-import com.cout970.modeler.util.toColor
+import com.cout970.reactive.dsl.height
+import com.cout970.reactive.dsl.width
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 
@@ -22,7 +24,7 @@ class ModelStatistics : RComponent<ModelStatistics.Props, Unit>() {
 
     override fun build(ctx: RBuilder): Component = panel {
         background { darkestColor }
-        cornerRadius = 0f
+        style.cornerRadius.set(0f)
         width = 190f
         height = 85f
 
@@ -35,7 +37,7 @@ class ModelStatistics : RComponent<ModelStatistics.Props, Unit>() {
         val config: FixedLabel.() -> Unit = {
             textState.horizontalAlign = HorizontalAlign.LEFT
             textState.padding.x = 10f
-            backgroundColor = Config.colorPalette.lightDarkColor.toColor()
+            background { lightDarkColor }
         }
 
         +FixedLabel("Objs: $objs", 5f, 5f, 180f, 16f).apply {

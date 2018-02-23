@@ -1,6 +1,5 @@
 package com.cout970.modeler.gui
 
-import com.cout970.modeler.api.animation.AnimationState
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.SelectionType
@@ -8,6 +7,7 @@ import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.gui.canvas.ISelectable
 import com.cout970.modeler.gui.canvas.TransformationMode
 import com.cout970.modeler.util.BooleanPropertyWrapper
+import com.cout970.modeler.util.GuiProperty
 
 /**
  * Created by cout970 on 2017/06/12.
@@ -15,10 +15,10 @@ import com.cout970.modeler.util.BooleanPropertyWrapper
 class GuiState {
 
     var transformationMode = TransformationMode.TRANSLATION
-    var selectionType: SelectionType = SelectionType.OBJECT
-        private set
+    var selectionType: SelectionType by GuiProperty(SelectionType.OBJECT, "SelectionType")
 
     var useTexture: Boolean = true
+
     var useColor: Boolean = false
     var useLight: Boolean = true
     var showHiddenFaces: Boolean = false
@@ -45,14 +45,6 @@ class GuiState {
     var textureSelectionHash: Int = -1
     var materialsHash: Int = -1
     var gridLinesHash: Int = -1
-
-
-
-    fun changeSelectionType(listener: Listeners, newType: SelectionType) {
-        val old = selectionType
-        selectionType = newType
-        listener.onSelectionTypeUpdate(old, newType)
-    }
 
     fun getBooleanProperties() = mapOf(
             "drawTextureGridLines" to BooleanPropertyWrapper(this::drawTextureGridLines),

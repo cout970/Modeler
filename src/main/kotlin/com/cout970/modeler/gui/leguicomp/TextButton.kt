@@ -1,6 +1,7 @@
 package com.cout970.modeler.gui.leguicomp
 
 import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.util.rectangularCorners
 import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.toColor
 import org.liquidengine.legui.component.Button
@@ -21,8 +22,8 @@ class TextButton(
 
     init {
         textState.textColor = Config.colorPalette.textColor.toColor()
-        backgroundColor = Config.colorPalette.buttonColor.toColor()
-        cornerRadius = 0f
+        background { buttonColor }
+        rectangularCorners()
         setBorderless()
     }
 

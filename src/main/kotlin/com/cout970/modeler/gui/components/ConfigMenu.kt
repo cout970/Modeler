@@ -11,17 +11,17 @@ import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.gui.reactive.invoke
-import com.cout970.modeler.util.hide
 import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.setTransparent
 import com.cout970.modeler.util.text
+import com.cout970.reactive.dsl.*
 import com.cout970.vector.extensions.vec2Of
 import org.joml.Vector4f
-import org.liquidengine.legui.color.ColorConstants
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.ScrollablePanel
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.event.MouseClickEvent
+import org.liquidengine.legui.style.color.ColorConstants
 import java.awt.Desktop
 import java.net.URI
 import kotlin.reflect.KMutableProperty
@@ -37,14 +37,14 @@ class ConfigMenu : RComponent<ConfigMenu.Props, ConfigMenu.State>() {
 
     @Suppress("UNCHECKED_CAST")
     override fun build(ctx: RBuilder): Component = panel {
-        backgroundColor = Vector4f(1f, 1f, 1f, 0.05f)
-        fill(ctx)
+        style.background.color = Vector4f(1f, 1f, 1f, 0.05f)
+        fill()
 
         // Centered panel
         +panel {
             width = 700f
             height = 550f
-            center(ctx)
+            center()
             border(2f) { greyColor }
             background { darkestColor }
 
@@ -83,19 +83,19 @@ class ConfigMenu : RComponent<ConfigMenu.Props, ConfigMenu.State>() {
             +TextButton("", "Project", 0f, 0f, 80f, 32f).apply {
                 if (state.tab == Tab.PROJECT) background { greyColor } else background { darkColor }
                 textState.fontSize = 18f
-                border = PixelBorder().apply { enableRight = true }
+                style.border = PixelBorder().apply { enableRight = true }
                 onClick { replaceState(state.copy(tab = Tab.PROJECT)) }
             }
             +TextButton("", "Parameters", 80f, 0f, 80f, 32f).apply {
                 if (state.tab == Tab.PARAMETERS) background { greyColor } else background { darkColor }
                 textState.fontSize = 18f
-                border = PixelBorder().apply { enableRight = true }
+                style.border = PixelBorder().apply { enableRight = true }
                 onClick { replaceState(state.copy(tab = Tab.PARAMETERS)) }
             }
             +TextButton("", "Controls", 160f, 0f, 80f, 32f).apply {
                 if (state.tab == Tab.CONTROLS) background { greyColor } else background { darkColor }
                 textState.fontSize = 18f
-                border = PixelBorder().apply { enableRight = true }
+                style.border = PixelBorder().apply { enableRight = true }
                 onClick { replaceState(state.copy(tab = Tab.CONTROLS)) }
             }
             +TextButton("", "About", 240f, 0f, 80f, 32f).apply {
@@ -140,7 +140,7 @@ class ConfigMenu : RComponent<ConfigMenu.Props, ConfigMenu.State>() {
                 textState.horizontalAlign = HorizontalAlign.LEFT
             }
 
-            +StringInput(project.name, 160f, 60f, 480f).apply {
+            +StringInput("", project.name, 160f, 60f, 480f).apply {
                 background { darkestColor }
                 textState.padding.z = 10f
                 textState.fontSize = 20f
@@ -192,7 +192,7 @@ class ConfigMenu : RComponent<ConfigMenu.Props, ConfigMenu.State>() {
                 textState.fontSize = 18f
                 textState.horizontalAlign = HorizontalAlign.LEFT
             }
-            +StringInput(user.name, 160f, 30f, 480f).apply {
+            +StringInput("", user.name, 160f, 30f, 480f).apply {
                 background { darkestColor }
                 textState.padding.z = 10f
                 textState.fontSize = 20f
@@ -211,7 +211,7 @@ class ConfigMenu : RComponent<ConfigMenu.Props, ConfigMenu.State>() {
                 textState.horizontalAlign = HorizontalAlign.LEFT
             }
 
-            +StringInput(user.email, 160f, 60f, 480f).apply {
+            +StringInput("", user.email, 160f, 60f, 480f).apply {
                 background { darkestColor }
                 textState.padding.z = 10f
                 textState.fontSize = 20f
@@ -230,7 +230,7 @@ class ConfigMenu : RComponent<ConfigMenu.Props, ConfigMenu.State>() {
                 textState.horizontalAlign = HorizontalAlign.LEFT
             }
 
-            +StringInput(user.web, 160f, 90f, 480f).apply {
+            +StringInput("", user.web, 160f, 90f, 480f).apply {
                 background { darkestColor }
                 textState.padding.z = 10f
                 textState.fontSize = 20f
@@ -241,7 +241,7 @@ class ConfigMenu : RComponent<ConfigMenu.Props, ConfigMenu.State>() {
                 onLoseFocus = {
                     updateUser(user.copy(web = text))
                 }
-                onEnterPress = onEnterPress
+                onEnterPress = onLoseFocus
             }
         }
     }

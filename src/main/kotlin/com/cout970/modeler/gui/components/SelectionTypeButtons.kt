@@ -4,11 +4,18 @@ import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.gui.GuiState
 import com.cout970.modeler.gui.Listeners
 import com.cout970.modeler.gui.event.EventSelectionTypeUpdate
-import com.cout970.modeler.gui.leguicomp.*
+import com.cout970.modeler.gui.leguicomp.InstantTooltip
+import com.cout970.modeler.gui.leguicomp.ToggleButton
+import com.cout970.modeler.gui.leguicomp.background
+import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.util.setBorderless
+import com.cout970.reactive.dsl.height
+import com.cout970.reactive.dsl.posX
+import com.cout970.reactive.dsl.posY
+import com.cout970.reactive.dsl.width
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.event.MouseClickEvent
 
@@ -27,7 +34,7 @@ class SelectionTypeButtons : RComponent<SelectionTypeButtons.Props, Unit>() {
         posY = 5f
         width = 143f + 8f
         height = 40f
-        cornerRadius = 5f
+        style.cornerRadius.set(5f)
         setBorderless()
 
         val firstButton = props.guiState.selectionType == SelectionType.OBJECT
@@ -74,7 +81,7 @@ class SelectionTypeButtons : RComponent<SelectionTypeButtons.Props, Unit>() {
     }
 
     fun setSelectionType(newType: SelectionType) {
-        props.guiState.changeSelectionType(props.listeners, newType)
+//        props.guiState.changeSelectionType(props.listeners, newType)
     }
 
     class Props(val guiState: GuiState, val listeners: Listeners)

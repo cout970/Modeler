@@ -2,13 +2,18 @@ package com.cout970.modeler.gui.components
 
 import com.cout970.modeler.gui.GuiState
 import com.cout970.modeler.gui.Listeners
-import com.cout970.modeler.gui.leguicomp.*
+import com.cout970.modeler.gui.leguicomp.IconButton
+import com.cout970.modeler.gui.leguicomp.background
+import com.cout970.modeler.gui.leguicomp.fillX
+import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.gui.reactive.invoke
 import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.setTransparent
+import com.cout970.reactive.dsl.height
+import com.cout970.reactive.dsl.width
 import org.liquidengine.legui.component.Component
 
 /**
@@ -23,7 +28,7 @@ class TopButtonPanel : RComponent<TopButtonPanel.Props, Unit>() {
     override fun build(ctx: RBuilder): Component = panel {
         background { darkestColor }
         height = 48f
-        fillX(ctx)
+        fillX()
         setBorderless()
 
         +panel {

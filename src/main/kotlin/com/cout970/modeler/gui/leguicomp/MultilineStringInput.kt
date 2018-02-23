@@ -1,6 +1,7 @@
 package com.cout970.modeler.gui.leguicomp
 
 import com.cout970.glutilities.device.Keyboard
+import com.cout970.modeler.util.rectangularCorners
 import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.setTransparent
 import org.liquidengine.legui.component.TextArea
@@ -28,7 +29,7 @@ class MultilineStringInput(
         defaultTextColor()
         focusedStrokeColor { greyColor }
         highlightColor { brightestColor }
-        cornerRadius = 0f
+        rectangularCorners()
         textState.fontSize = 18f
         textState.horizontalAlign = HorizontalAlign.LEFT
         textState.verticalAlign = VerticalAlign.TOP

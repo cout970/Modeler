@@ -22,15 +22,18 @@ import com.cout970.modeler.util.asNullable
 import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.setTransparent
 import com.cout970.modeler.util.toNullable
+import com.cout970.reactive.dsl.height
+import com.cout970.reactive.dsl.posY
+import com.cout970.reactive.dsl.width
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.Vector2
 import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.vec2Of
 import org.joml.Vector2f
-import org.liquidengine.legui.color.ColorConstants
 import org.liquidengine.legui.component.Component
-import org.liquidengine.legui.font.FontRegistry
 import org.liquidengine.legui.icon.CharIcon
+import org.liquidengine.legui.style.color.ColorConstants
+import org.liquidengine.legui.style.font.FontRegistry
 
 /**
  * Created by cout970 on 2017/09/27.
@@ -42,7 +45,7 @@ class EditCubePanel : RComponent<EditCubePanel.Props, Unit>() {
     }
 
     override fun build(ctx: RBuilder): Component = panel root@ {
-        marginX(ctx, 5f)
+        marginX(5f)
         posY = props.posY
         height = if (props.visible) 484f else 24f
         border(3f) { greyColor }

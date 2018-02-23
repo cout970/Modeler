@@ -2,12 +2,16 @@ package com.cout970.modeler.gui.components
 
 import com.cout970.glutilities.device.Mouse
 import com.cout970.modeler.core.config.MouseKeyBind
-import com.cout970.modeler.gui.leguicomp.*
+import com.cout970.modeler.gui.leguicomp.TextButton
+import com.cout970.modeler.gui.leguicomp.background
+import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.toJoml2f
+import com.cout970.reactive.dsl.height
+import com.cout970.reactive.dsl.width
 import com.cout970.vector.api.IVector2
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
@@ -23,7 +27,7 @@ class MouseButtonInput : RComponent<MouseButtonInput.Props, MouseButtonInput.Sta
     override fun build(ctx: RBuilder): Component = panel {
         background { darkestColor }
         setBorderless()
-        cornerRadius = 0f
+        style.cornerRadius.set(0f)
         position = props.pos.toJoml2f()
         width = 150f
         height = 24f

@@ -4,7 +4,7 @@ import com.cout970.modeler.api.animation.IAnimation
 import com.cout970.modeler.gui.leguicomp.Panel
 import com.cout970.modeler.render.tool.Animator
 import org.joml.Vector2f
-import org.liquidengine.legui.color.ColorConstants.*
+import org.liquidengine.legui.style.color.ColorConstants.*
 import org.liquidengine.legui.system.context.Context
 import org.liquidengine.legui.system.renderer.nvg.NvgComponentRenderer
 import org.liquidengine.legui.system.renderer.nvg.util.NvgShapes
@@ -24,8 +24,8 @@ class AnimationPanel(val animator: Animator, val animation: IAnimation) : Panel(
             val absPointerPos = Vector2f(absPos.x + pointerPos, absPos.y)
 
             // Background
-            NvgShapes.drawRect(nanovg, component.absolutePosition, component.size, component.backgroundColor,
-                    component.cornerRadius)
+            NvgShapes.drawRect(nanovg, component.absolutePosition, component.size, component.style.background.color,
+                    component.style.cornerRadius)
 
             val scale = (component.size.x / size).toInt()
 

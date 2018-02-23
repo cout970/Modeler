@@ -1,5 +1,6 @@
 package com.cout970.modeler.gui.leguicomp
 
+import com.cout970.modeler.util.rectangularCorners
 import org.liquidengine.legui.component.Component as LeguiComponent
 import org.liquidengine.legui.component.Panel as LeguiPanel
 
@@ -12,7 +13,7 @@ open class Panel : LeguiComponent() {
     var name: String? = null
 
     init {
-        cornerRadius = 0.0f
+        rectangularCorners()
     }
 
     operator fun LeguiComponent.unaryPlus() {

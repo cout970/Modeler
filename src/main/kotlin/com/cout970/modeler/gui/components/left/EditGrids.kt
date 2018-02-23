@@ -12,15 +12,18 @@ import com.cout970.modeler.gui.reactive.invoke
 import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.setTransparent
 import com.cout970.modeler.util.toColor
+import com.cout970.reactive.dsl.height
+import com.cout970.reactive.dsl.posY
+import com.cout970.reactive.dsl.width
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.vec2Of
 import org.joml.Vector2f
-import org.liquidengine.legui.color.ColorConstants
 import org.liquidengine.legui.component.CheckBox
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
-import org.liquidengine.legui.font.FontRegistry
 import org.liquidengine.legui.icon.CharIcon
+import org.liquidengine.legui.style.color.ColorConstants
+import org.liquidengine.legui.style.font.FontRegistry
 
 class EditGrids : RComponent<EditGrids.Props, Unit>() {
 
@@ -30,7 +33,7 @@ class EditGrids : RComponent<EditGrids.Props, Unit>() {
 
     override fun build(ctx: RBuilder): Component = panel root@ {
         setTransparent()
-        marginX(ctx, 5f)
+        marginX(5f)
         border(3f) { greyColor }
 //        posY = 132f + 444f - 35f
         posY = props.posY
@@ -101,7 +104,7 @@ class EditGrids : RComponent<EditGrids.Props, Unit>() {
         }
 
         +panel {
-            marginX(ctx, 10f)
+            marginX(10f)
             posY = 110f + 110f + 10f + 25f
             height = 24f * 3 + 15f
             setTransparent()
@@ -109,7 +112,7 @@ class EditGrids : RComponent<EditGrids.Props, Unit>() {
 
             +CheckBox("Enable Plane X", 0f, 0f, width - 10f, 24f).apply {
                 defaultTextColor()
-                cornerRadius = 0f
+                style.cornerRadius.set(0f)
                 fontSize(20f)
                 textState.padding.x = 24f
                 isChecked = props.gridLines.enableXPlane
