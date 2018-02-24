@@ -15,7 +15,7 @@ class TopBar : RStatelessComponent<EmptyProps>() {
 
     override fun RBuilder.render() = div("TopBar") {
         style {
-            borderless()
+            style.border = PixelBorder().also { it.enableBottom = true }
             background { darkestColor }
             height = 48f
         }

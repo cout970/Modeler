@@ -21,7 +21,7 @@ data class RootState(
         var bottomVisible: Boolean = false
 ) : RState
 
-data class RootProps(val gui: Gui): RProps
+data class RootProps(val gui: Gui) : RProps
 
 class RootComp : RComponent<RootProps, RootState>() {
 
@@ -40,8 +40,10 @@ class RootComp : RComponent<RootProps, RootState>() {
         }
 
         child(TopBar::class)
-        child(CenterPanel::class, CenterPanelProps(props.gui.canvasContainer))
-        child(LeftPanel::class, LeftPanelProps(props.gui.modelAccessor, props.gui.gridLines))
+        child(CenterPanel::class, CenterPanelProps(props.gui.canvasContainer, props.gui.timer))
+
+        child(LeftPanel::class, LeftPanelProps(state.leftVisible, props.gui.modelAccessor, props.gui.gridLines))
+        child(RightPanel::class, RightPanelProps(state.rightVisible, props.gui.modelAccessor, props.gui.state))
 
         onCmd("toggleLeft") { setState { copy(leftVisible = !leftVisible) } }
         onCmd("toggleRight") { setState { copy(rightVisible = !rightVisible) } }

@@ -137,11 +137,9 @@ class Listeners : ITickeable, IGuiCmdRunner {
     }
 
     override fun tick() {
+        SyncManager.runSync()
         cameraUpdater.updateCameras()
         gui.cursorManager.tick()
-
-//        SyncManager.runSync()
-//        getRContext(gui.root.mainView.base)?.update()
 
         sizeUpdate?.let {
             gui.root.updateSizes(it)

@@ -1,18 +1,27 @@
 package com.cout970.modeler.gui.rcomponents
 
+import com.cout970.glutilities.structure.Timer
+import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.canvas.CanvasContainer
+import com.cout970.modeler.gui.event.EventNotificationUpdate
+import com.cout970.modeler.gui.event.NotificationHandler
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.util.child
+import com.cout970.modeler.util.toColor
+import com.cout970.reactive.core.EmptyProps
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RProps
 import com.cout970.reactive.core.RStatelessComponent
 import com.cout970.reactive.dsl.*
+import com.cout970.reactive.nodes.child
 import com.cout970.reactive.nodes.comp
 import com.cout970.reactive.nodes.div
 import com.cout970.reactive.nodes.style
+import org.liquidengine.legui.component.TextArea
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
+import org.liquidengine.legui.style.border.SimpleLineBorder
 
-data class CenterPanelProps(val canvasContainer: CanvasContainer) : RProps
+data class CenterPanelProps(val canvasContainer: CanvasContainer, val timer: Timer) : RProps
 
 class CenterPanel : RStatelessComponent<CenterPanelProps>() {
 
@@ -25,7 +34,7 @@ class CenterPanel : RStatelessComponent<CenterPanelProps>() {
 
         postMount {
             val left = if (parent.child("LeftPanel")?.isEnabled == true) 288f else 0f
-            val right = if (parent.child("RightPanel")?.isEnabled == true) 190f else 0f
+            val right = if (parent.child("RightPanel")?.isEnabled == true) 288f else 0f
             val bottom = if (parent.child("BottomPanel")?.isEnabled == true) 200f else 0f
             posX = left
             posY = 48f
@@ -114,8 +123,53 @@ class CenterPanel : RStatelessComponent<CenterPanelProps>() {
 
         }
 
-//        +ProfilerDiagram(props.timer)
+        +ProfilerDiagram(props.timer)
 
-//        +EventPanel { }
+        child(EventPanel::class)
+    }
+}
+
+class EventPanel : RStatelessComponent<EmptyProps>() {
+
+    override fun RBuilder.render() = div("EventPanel") {
+
+        val notifications = NotificationHandler.getNotifications()
+
+        style {
+            transparent()
+        }
+
+        postMount {
+            width = 330f
+            height = (65f + 4f) * notifications.size
+            posX = parent.sizeX - width - 10f
+            posY = parent.sizeY - height - 10f
+            if (notifications.isEmpty()) hide()
+        }
+
+        on<EventNotificationUpdate> {
+            rerender()
+        }
+
+        notifications.asReversed().forEachIndexed { index, notification ->
+            div {
+                style {
+                    background { darkColor }
+                    style.border = SimpleLineBorder(Config.colorPalette.darkestColor.toColor(), 2f)
+                    width = 330f
+                    height = 65f
+                    posY = index * (height + 4f)
+                }
+
+                +FixedLabel(notification.title, y = 0f, width = 330f, height = 24f).apply {
+                    textState.fontSize = 18f
+                }
+                +TextArea(notification.text, 0f, 24f, 330f, 40f).apply {
+                    isEditable = false
+                    textState.textColor = Config.colorPalette.textColor.toColor()
+                    background { darkColor }
+                }
+            }
+        }
     }
 }

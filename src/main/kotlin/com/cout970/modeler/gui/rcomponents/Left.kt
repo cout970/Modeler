@@ -32,7 +32,7 @@ import org.liquidengine.legui.icon.CharIcon
 import org.liquidengine.legui.style.color.ColorConstants
 import org.liquidengine.legui.style.font.FontRegistry
 
-data class LeftPanelProps(val modelAccessor: IModelAccessor, val grids: GridLines) : RProps
+data class LeftPanelProps(val visible: Boolean, val modelAccessor: IModelAccessor, val grids: GridLines) : RProps
 
 class LeftPanel : RStatelessComponent<LeftPanelProps>() {
 
@@ -42,6 +42,9 @@ class LeftPanel : RStatelessComponent<LeftPanelProps>() {
             borderless()
             posX = 0f
             posY = 48f
+
+            if (!props.visible)
+                hide()
         }
 
         postMount {
@@ -53,7 +56,6 @@ class LeftPanel : RStatelessComponent<LeftPanelProps>() {
         // TODO add support for scroll panels
         comp(Panel()) {
 
-            println("[LeftPanel] render")
             style {
                 //                verticalScrollBar.visibleAmount = 20f
 //                viewport.listenerMap.clear(ScrollEvent::class.java)
@@ -62,11 +64,10 @@ class LeftPanel : RStatelessComponent<LeftPanelProps>() {
             }
 
             postMount {
-                println("[LeftPanel] postMount")
                 posX = 0f
-                posY = 0f
+                posY = 5f
                 sizeX = parent.sizeX - 8f
-                fillY()
+                sizeY = parent.sizeY - posY
                 alignAsColumn(6f)
 //                this as VerticalPanel
 //                container.apply {
@@ -91,7 +92,6 @@ class EditObjectName : RComponent<ModelAccessorProps, VisibleWidget>() {
     override fun getInitialState() = VisibleWidget(true)
 
     override fun RBuilder.render() = div("EditObjectName") {
-        println("[EditObjectName] render")
         style {
             transparent()
             border(2f) { greyColor }
@@ -100,7 +100,6 @@ class EditObjectName : RComponent<ModelAccessorProps, VisibleWidget>() {
         }
 
         postMount {
-            println("[EditObjectName] postMount")
             marginX(5f)
         }
 
@@ -141,7 +140,7 @@ class EditObjectName : RComponent<ModelAccessorProps, VisibleWidget>() {
                 posX = 250f
                 posY = 4f
             }
-            onClick {
+            onRelease {
                 setState { copy(on = !on) }
             }
         }
@@ -248,7 +247,7 @@ class EditCubePanel : RComponent<ModelAccessorProps, VisibleWidget>() {
                 setImage(CharIcon(Vector2f(16f, 16f), FontRegistry.DEFAULT, charCode, ColorConstants.lightGray()))
                 background { darkColor }
 
-                onClick { setState { copy(on = !on) } }
+                onRelease { setState { copy(on = !on) } }
             }
         }
 
@@ -414,7 +413,7 @@ class EditGrids : RComponent<EditGridsProps, VisibleWidget>() {
                 setImage(CharIcon(Vector2f(16f, 16f), FontRegistry.DEFAULT, charCode, ColorConstants.lightGray()))
                 background { darkColor }
 
-                onClick { setState { copy(on = !on) } }
+                onRelease { setState { copy(on = !on) } }
             }
         }
 

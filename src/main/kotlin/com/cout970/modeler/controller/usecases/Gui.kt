@@ -28,19 +28,19 @@ fun setSelectionTypeVertex(): ITask = ModifyGui { it.state.selectionType = Selec
 
 @UseCase("show.left.panel")
 fun showLeftPanel(): ITask = ModifyGui { gui ->
-    gui.state.showLeftPanel = !gui.state.showLeftPanel
+    gui.listeners.runGuiCommand("toggleLeft")
     gui.root.reRender()
 }
 
 @UseCase("show.right.panel")
 fun showRightPanel(): ITask = ModifyGui { gui ->
-    gui.state.showRightPanel = !gui.state.showRightPanel
+    gui.listeners.runGuiCommand("toggleRight")
     gui.root.reRender()
 }
 
 @UseCase("show.bottom.panel")
 fun showBottomPanel(): ITask = ModifyGui { gui ->
-    gui.state.showBottomPanel = !gui.state.showBottomPanel
+    gui.listeners.runGuiCommand("toggleBottom")
     gui.root.reRender()
 }
 
