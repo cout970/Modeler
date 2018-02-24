@@ -110,6 +110,7 @@ data class ModelTreeProps(val modelAccessor: IModelAccessor) : RProps
 class ModelTree : RStatelessComponent<ModelTreeProps>() {
 
     override fun RBuilder.render() = div("ModelTree") {
+
         style {
             transparent()
             border(2f) { greyColor }
@@ -143,63 +144,93 @@ class ModelTree : RStatelessComponent<ModelTreeProps>() {
             }
         }
 
-        val objs = props.modelAccessor.model.objectMap.values
-        val selected = props.modelAccessor.modelSelection.map { sel ->
-            { obj: IObjectRef -> sel.isSelected(obj) }
-        }.getOr { false }
+        scrollPanel("ModeTreeScrollPanel") {
+            style {
+                transparent()
+                borderless()
+            }
 
-        objs.forEachIndexed { index, obj ->
-            div(obj.name) {
-                style {
-                    sizeY = 24f
-                    posY = 28f + index * (sizeY + 2f)
-                    transparent()
-                    borderless()
-                    rectCorners()
+            postMount {
+                posX = 5f
+                posY = 24f + 5f
+                sizeX = parent.sizeX - 10f
+                sizeY = parent.sizeY - posY - 5f
+            }
 
-                    if (selected(obj.ref)) {
-                        background { lightBrightColor }
-                    } else {
-                        background { lightDarkColor }
+            horizontalScroll {
+                hide()
+            }
+
+            verticalScroll {
+                rectCorners()
+                sizeX = 16f
+                arrowColor = color { lightBrightColor }
+                scrollColor = color { darkColor }
+                visibleAmount = 50f
+                backgroundColor { color { lightBrightColor } }
+            }
+
+            container {
+
+                val objs = props.modelAccessor.model.objectMap.values
+                val selected = props.modelAccessor.modelSelection.map { sel ->
+                    { obj: IObjectRef -> sel.isSelected(obj) }
+                }.getOr { false }
+
+                objs.forEachIndexed { index, obj ->
+                    div(obj.name) {
+                        style {
+                            sizeY = 24f
+                            posY = index * (sizeY + 2f)
+                            transparent()
+                            borderless()
+                            rectCorners()
+
+                            if (selected(obj.ref)) {
+                                background { lightBrightColor }
+                            } else {
+                                background { lightDarkColor }
+                            }
+                        }
+
+                        postMount {
+                            sizeX = parent.sizeX - 5f
+                        }
+
+                        val icon = if (obj is IObjectCube) "obj_type_cube" else "obj_type_mesh"
+
+                        +IconButton("tree.view.select", icon, 0f, 0f, 24f, 24f).apply {
+                            metadata += "ref" to obj.ref
+                        }
+                        +TextButton("tree.view.select", obj.name, 24f, 0f, 172f, 24f).apply {
+                            transparent()
+                            borderless()
+                            fontSize = 20f
+                            horizontalAlign = HorizontalAlign.LEFT
+                            textState.padding.x = 2f
+                            metadata += "ref" to obj.ref
+                        }
+                        +IconButton("tree.view.show.item", "showIcon", 196f, 0f, 24f, 24f).apply {
+                            transparent()
+                            borderless()
+                            metadata += "ref" to obj.ref
+                            if (obj.visible) hide() else show()
+                            setTooltip("Show object")
+                        }
+                        +IconButton("tree.view.hide.item", "hideIcon", 196f, 0f, 24f, 24f).apply {
+                            transparent()
+                            borderless()
+                            metadata += "ref" to obj.ref
+                            if (!obj.visible) hide() else show()
+                            setTooltip("Hide object")
+                        }
+                        +IconButton("tree.view.delete.item", "deleteIcon", 222f, 0f, 24f, 24f).apply {
+                            transparent()
+                            borderless()
+                            metadata += "ref" to obj.ref
+                            setTooltip("Delete object")
+                        }
                     }
-                }
-
-                postMount {
-                    marginX(5f)
-                }
-
-                val icon = if (obj is IObjectCube) "obj_type_cube" else "obj_type_mesh"
-
-                +IconButton("tree.view.select", icon, 4f, 4f, 16f, 16f).apply {
-                    metadata += "ref" to obj.ref
-                }
-                +TextButton("tree.view.select", obj.name, 20f, 0f, 180f, 24f).apply {
-                    transparent()
-                    borderless()
-                    fontSize = 20f
-                    horizontalAlign = HorizontalAlign.LEFT
-                    textState.padding.x = 5f
-                    metadata += "ref" to obj.ref
-                }
-                +IconButton("tree.view.show.item", "showIcon", 180f, 0f, 24f, 24f).apply {
-                    transparent()
-                    borderless()
-                    metadata += "ref" to obj.ref
-                    if (obj.visible) hide() else show()
-                    setTooltip("Show object")
-                }
-                +IconButton("tree.view.hide.item", "hideIcon", 180f, 0f, 24f, 24f).apply {
-                    transparent()
-                    borderless()
-                    metadata += "ref" to obj.ref
-                    if (!obj.visible) hide() else show()
-                    setTooltip("Hide object")
-                }
-                +IconButton("tree.view.delete.item", "deleteIcon", 210f, 0f, 24f, 24f).apply {
-                    transparent()
-                    borderless()
-                    metadata += "ref" to obj.ref
-                    setTooltip("Delete object")
                 }
             }
         }
@@ -245,68 +276,104 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
             }
         }
 
-        val model = props.modelAccessor.model
-        val selection = props.modelAccessor.modelSelection
-        val materialRefs = (model.materialRefs + listOf(MaterialRefNone))
-        val selectedMaterial = props.selectedMaterial()
-
-        val materialOfSelectedObjects = selection
-                .map { it to it.objects }
-                .map { (sel, objs) -> objs.filter(sel::isSelected) }
-                .map { it.map { model.getObject(it).material } }
-                .getOr(emptyList())
-
-        materialRefs.forEachIndexed { index, ref ->
-            val material = model.getMaterial(ref)
-
-            val color = when (ref) {
-                in materialOfSelectedObjects -> {
-                    Config.colorPalette.greyColor.toColor()
-                }
-                selectedMaterial -> {
-                    Config.colorPalette.brightColor.toColor()
-                }
-                else -> {
-                    Config.colorPalette.lightDarkColor.toColor()
-                }
+        scrollPanel("MaterialListScrollPanel") {
+            style {
+                transparent()
+                borderless()
             }
 
-            div(material.name) {
-                style {
-                    sizeY = 24f
-                    posY = 28f + index * (sizeY + 2f)
-                    transparent()
-                    borderless()
-                    rectCorners()
-                    backgroundColor { color }
-                }
+            postMount {
+                posX = 0f
+                posY = 24f + 5f
+                sizeX = parent.sizeX - 5f
+                sizeY = parent.sizeY - posY - 5f
+            }
 
-                postMount {
-                    marginX(5f)
-                }
+            horizontalScroll {
+                hide()
+            }
 
-                +TextButton("material.view.select", material.name, 0f, 0f, 120f, 24f).apply {
-                    textState.padding.x = 10f
-                    horizontalAlign = HorizontalAlign.LEFT
-                    fontSize = 20f
-                    transparent()
-                    metadata += "ref" to material.ref
-                }
+            verticalScroll {
+                rectCorners()
+                sizeX = 16f
+                arrowColor = color { lightBrightColor }
+                scrollColor = color { darkColor }
+                visibleAmount = 50f
+                backgroundColor { color { lightBrightColor } }
+            }
 
-                if (material.ref != MaterialRefNone) {
-                    +IconButton("material.view.load", "loadMaterial", 120f, 0f, 24f, 24f).apply {
-                        transparent()
-                        borderless()
-                        metadata += "ref" to material.ref
-                        setTooltip("Load material")
+            container {
+
+                val model = props.modelAccessor.model
+                val selection = props.modelAccessor.modelSelection
+                val materialRefs = (model.materialRefs + listOf(MaterialRefNone))
+                val selectedMaterial = props.selectedMaterial()
+
+                val materialOfSelectedObjects = selection
+                        .map { it to it.objects }
+                        .map { (sel, objs) -> objs.filter(sel::isSelected) }
+                        .map { it.map { model.getObject(it).material } }
+                        .getOr(emptyList())
+
+                materialRefs.forEachIndexed { index, ref ->
+                    val material = model.getMaterial(ref)
+
+                    val color = when (ref) {
+                        in materialOfSelectedObjects -> {
+                            Config.colorPalette.greyColor.toColor()
+                        }
+                        selectedMaterial -> {
+                            Config.colorPalette.brightColor.toColor()
+                        }
+                        else -> {
+                            Config.colorPalette.lightDarkColor.toColor()
+                        }
                     }
-                }
 
-                +IconButton("material.view.apply", "applyMaterial", 150f, 0f, 24f, 24f).apply {
-                    transparent()
-                    borderless()
-                    metadata += "ref" to material.ref
-                    setTooltip("Apply material")
+                    div(material.name) {
+                        style {
+                            sizeY = 24f
+                            posY = index * (sizeY + 2f)
+                            transparent()
+                            borderless()
+                            rectCorners()
+                            backgroundColor { color }
+                        }
+
+                        postMount {
+                            marginX(5f)
+                        }
+
+                        val icon = if (ref in materialOfSelectedObjects) "material_in_use" else ""
+
+                        +IconButton("material.view.select", icon, 0f, 0f, 24f, 24f).apply {
+                            metadata += "ref" to material.ref
+                        }
+
+                        +TextButton("material.view.select", material.name, 24f, 0f, 172f, 24f).apply {
+                            textState.padding.x = 2f
+                            horizontalAlign = HorizontalAlign.LEFT
+                            fontSize = 20f
+                            transparent()
+                            metadata += "ref" to material.ref
+                        }
+
+                        if (material.ref != MaterialRefNone) {
+                            +IconButton("material.view.load", "loadMaterial", 196f, 0f, 24f, 24f).apply {
+                                transparent()
+                                borderless()
+                                metadata += "ref" to material.ref
+                                setTooltip("Load material")
+                            }
+                        }
+
+                        +IconButton("material.view.apply", "applyMaterial", 222f, 0f, 24f, 24f).apply {
+                            transparent()
+                            borderless()
+                            metadata += "ref" to material.ref
+                            setTooltip("Apply material")
+                        }
+                    }
                 }
             }
         }

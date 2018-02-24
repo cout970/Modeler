@@ -6,7 +6,9 @@ import com.cout970.modeler.api.model.`object`.IObjectCube
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.*
+import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.MaterialRef
+import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.selection.ObjectRef
 import com.cout970.modeler.util.toAxisRotations
 
@@ -30,4 +32,4 @@ val IObjectCube.size get() = transformation.scale
 fun IObject.toPair(): Pair<IObjectRef, IObject> = Pair(ObjectRef(id), this)
 
 inline val IObject.ref: IObjectRef get() = ObjectRef(id)
-inline val IMaterial.ref: IMaterialRef get() = MaterialRef(id)
+inline val IMaterial.ref: IMaterialRef get() = if(id == MaterialNone.id) MaterialRefNone else MaterialRef(id)

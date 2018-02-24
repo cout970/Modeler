@@ -113,6 +113,8 @@ fun Component.centerY() {
     position.y = (parent.size.y - size.y) * 0.5f
 }
 
+inline fun color(f: ColorPalette.() -> IVector3): Vector4f = Config.colorPalette.f().toColor()
+
 inline fun Component.background(f: ColorPalette.() -> IVector3) {
     style.background.color = Config.colorPalette.f().toColor()
 }
