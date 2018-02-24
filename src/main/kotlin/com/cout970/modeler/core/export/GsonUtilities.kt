@@ -14,6 +14,7 @@ import com.cout970.modeler.core.model.ObjectCube
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.MaterialRef
+import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
@@ -174,12 +175,12 @@ class ObjectSerializer : JsonSerializer<IObject>, JsonDeserializer<IObject> {
                 )
             }
             "Object" -> Object(
-                        name = context.deserialize(obj["name"], String::class.java),
-                        mesh = context.deserialize(obj["mesh"], IMesh::class.java),
-                        material = context.deserialize(obj["material"], IMaterialRef::class.java),
-                        visible = context.deserialize(obj["visible"], Boolean::class.java),
-                        id = context.deserialize(obj["id"], UUID::class.java)
-                    )
+                    name = context.deserialize(obj["name"], String::class.java),
+                    mesh = context.deserialize(obj["mesh"], IMesh::class.java),
+                    material = context.deserialize(obj["material"], IMaterialRef::class.java),
+                    visible = context.deserialize(obj["visible"], Boolean::class.java),
+                    id = context.deserialize(obj["id"], UUID::class.java)
+            )
 
 
             else -> throw IllegalStateException("Unknown Class: ${obj["class"]}")
@@ -225,11 +226,13 @@ class MaterialSerializer : JsonSerializer<IMaterial>, JsonDeserializer<IMaterial
 class MaterialRefSerializer : JsonSerializer<IMaterialRef>, JsonDeserializer<IMaterialRef> {
 
     override fun serialize(src: IMaterialRef, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-        return context.serialize(src)
+        return JsonPrimitive(src.materialId.toString())
     }
 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IMaterialRef {
-        return context.deserialize(json, MaterialRef::class.java)
+        val uuid = UUID.fromString(json.asString)
+        if (uuid == MaterialRefNone.materialId) return MaterialRefNone
+        return MaterialRef(uuid)
     }
 }
 
