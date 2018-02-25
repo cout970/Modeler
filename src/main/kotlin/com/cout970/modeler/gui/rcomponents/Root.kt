@@ -39,7 +39,7 @@ class RootComp : RComponent<RootProps, RootState>() {
             sizeY = parent.sizeY
         }
 
-        child(TopBar::class)
+        child(TopBar::class, ModelAccessorProps(props.gui.modelAccessor))
         child(CenterPanel::class, CenterPanelProps(props.gui.canvasContainer, props.gui.timer))
 
         child(LeftPanel::class, LeftPanelProps(state.leftVisible, props.gui.modelAccessor, props.gui.gridLines))

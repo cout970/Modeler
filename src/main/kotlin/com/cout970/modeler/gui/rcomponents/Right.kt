@@ -9,6 +9,7 @@ import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.gui.GuiState
+import com.cout970.modeler.gui.event.EventMaterialUpdate
 import com.cout970.modeler.gui.event.EventModelUpdate
 import com.cout970.modeler.gui.event.EventSelectionUpdate
 import com.cout970.modeler.gui.leguicomp.*
@@ -261,6 +262,7 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
         }
 
         on<EventModelUpdate> { rerender() }
+        on<EventMaterialUpdate> { rerender() }
         on<EventSelectionUpdate> { rerender() }
 
         comp(FixedLabel()) {
@@ -281,6 +283,39 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
             }
         }
 
+        div("Buttons") {
+            style {
+                transparent()
+                borderless()
+                posY = 24f
+                sizeY = 32f
+            }
+
+            postMount {
+                marginX(5f)
+            }
+
+            +IconButton("material.view.import", "add_material", 0f, 0f, 32f, 32f).also {
+                it.setTooltip("Import material")
+            }
+
+            +IconButton("material.view.duplicate", "duplicate_material", 32f, 0f, 32f, 32f).also {
+                it.setTooltip("Duplicate material")
+                it.metadata += "ref" to props.selectedMaterial()
+
+            }
+
+            +IconButton("material.view.load", "load_material", 64f, 0f, 32f, 32f).also {
+                it.setTooltip("Load different texture")
+                it.metadata += "ref" to props.selectedMaterial()
+            }
+
+            +IconButton("material.view.remove", "remove_material", 96f, 0f, 32f, 32f).also {
+                it.setTooltip("Delete material")
+                it.metadata += "ref" to props.selectedMaterial()
+            }
+        }
+
         scrollPanel("MaterialListScrollPanel") {
             style {
                 transparent()
@@ -289,7 +324,7 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
 
             postMount {
                 posX = 0f
-                posY = 24f + 5f
+                posY = 24f + 32f + 5f
                 sizeX = parent.sizeX - 5f
                 sizeY = parent.sizeY - posY - 5f
             }
@@ -328,16 +363,10 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
                 materialRefs.forEachIndexed { index, ref ->
                     val material = model.getMaterial(ref)
 
-                    val color = when (ref) {
-                        in materialOfSelectedObjects -> {
-                            Config.colorPalette.greyColor.toColor()
-                        }
-                        selectedMaterial -> {
-                            Config.colorPalette.brightColor.toColor()
-                        }
-                        else -> {
-                            Config.colorPalette.lightDarkColor.toColor()
-                        }
+                    val color = if (ref == selectedMaterial) {
+                        Config.colorPalette.brightColor.toColor()
+                    } else {
+                        Config.colorPalette.lightDarkColor.toColor()
                     }
 
                     div(material.name) {
@@ -360,28 +389,19 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
                             metadata += "ref" to material.ref
                         }
 
-                        +TextButton("material.view.select", material.name, 24f, 0f, 172f, 24f).apply {
-                            textState.padding.x = 2f
+                        +TextButton("material.view.select", material.name, 24f, 0f, 196f, 24f).apply {
                             horizontalAlign = HorizontalAlign.LEFT
+                            textState.padding.x = 2f
                             fontSize = 20f
                             transparent()
                             metadata += "ref" to material.ref
                         }
 
-                        if (material.ref != MaterialRefNone) {
-                            +IconButton("material.view.load", "loadMaterial", 196f, 0f, 24f, 24f).apply {
-                                transparent()
-                                borderless()
-                                metadata += "ref" to material.ref
-                                setTooltip("Load material")
-                            }
-                        }
-
-                        +IconButton("material.view.apply", "applyMaterial", 222f, 0f, 24f, 24f).apply {
+                        +IconButton("material.view.apply", "apply_material", 222f, 0f, 24f, 24f).apply {
                             transparent()
                             borderless()
-                            metadata += "ref" to material.ref
                             setTooltip("Apply material")
+                            metadata += "ref" to material.ref
                         }
                     }
                 }

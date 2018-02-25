@@ -44,7 +44,12 @@ fun loadMaterial(component: Component, projectManager: ProjectManager): ITask {
             .asNullable()
             .map { it.metadata["ref"] }
             .flatMap { it as? IMaterialRef }
-            .map { showLoadMaterialMenu(it, projectManager) }
+            .map {
+                if (it == MaterialRefNone)
+                    importMaterial()
+                else
+                    showLoadMaterialMenu(it, projectManager)
+            }
             .getOr(TaskNone)
 }
 
@@ -86,6 +91,17 @@ fun selectMaterial(component: Component): ITask {
             .map { it.metadata["ref"] }
             .flatMap { it as? IMaterialRef }
             .map { TaskUpdateMaterialSelection(it) as ITask }
+            .getOr(TaskNone)
+}
+
+@UseCase("material.view.duplicate")
+fun duplicateMaterial(component: Component, access: IModelAccessor): ITask {
+    return component.asNullable()
+            .flatMap { it.metadata["ref"] }
+            .flatMap { it as? IMaterialRef }
+            .map { access.model.getMaterial(it) }
+            .filterIsInstance<TexturedMaterial>()
+            .map { TaskImportMaterial(it.copy(name = "${it.name} copy")) as ITask }
             .getOr(TaskNone)
 }
 

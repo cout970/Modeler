@@ -14,7 +14,8 @@ import com.cout970.vector.extensions.vec2Of
 import java.io.FileNotFoundException
 import java.util.*
 
-class TexturedMaterial(override val name: String, val path: ResourcePath, override val id: UUID = UUID.randomUUID()) : IMaterial {
+class TexturedMaterial(override val name: String, val path: ResourcePath,
+                       override val id: UUID = UUID.randomUUID()) : IMaterial {
 
     var texture: Texture? = null
     var loadingError = false
@@ -55,6 +56,8 @@ class TexturedMaterial(override val name: String, val path: ResourcePath, overri
     override fun bind() {
         texture?.bind() ?: MaterialNone.whiteTexture.bind()
     }
+
+    fun copy(name: String = this.name, path: ResourcePath = this.path) = TexturedMaterial(name, path)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -55,10 +55,13 @@ class GuiResources {
         iconMap["deleteIcon"] = BufferedImage("assets/textures/delete.png")
         iconMap["showIcon"] = BufferedImage("assets/textures/show.png")
         iconMap["hideIcon"] = BufferedImage("assets/textures/hide.png")
-        iconMap["applyMaterial"] = BufferedImage("assets/textures/apply_material.png")
-        iconMap["loadMaterial"] = BufferedImage("assets/textures/load_material.png")
-        iconMap["addMaterialIcon"] = BufferedImage("assets/textures/add_material.png")
-        iconMap["removeMaterialIcon"] = BufferedImage("assets/textures/remove_material.png")
+
+        iconMap["apply_material"] = BufferedImage("assets/textures/apply_material.png")
+        iconMap["load_material"] = BufferedImage("assets/textures/load_material.png")
+        iconMap["duplicate_material"] = BufferedImage("assets/textures/duplicate_material.png")
+        iconMap["add_material"] = BufferedImage("assets/textures/add_material.png")
+        iconMap["remove_material"] = BufferedImage("assets/textures/remove_material.png")
+
         iconMap["addTemplateCubeIcon"] = BufferedImage("assets/textures/add_template_cube.png")
         iconMap["addMeshCubeIcon"] = BufferedImage("assets/textures/add_mesh_cube.png")
         iconMap["newProjectIcon"] = BufferedImage("assets/textures/new_project.png")
