@@ -14,6 +14,8 @@ import com.cout970.modeler.util.toColor
 import com.cout970.reactive.core.Listener
 import com.cout970.reactive.dsl.posY
 import com.cout970.reactive.dsl.sizeY
+import com.cout970.reactive.nodes.ComponentBuilder
+import com.cout970.reactive.nodes.comp
 import com.cout970.vector.api.IVector3
 import org.joml.Vector4f
 import org.liquidengine.legui.component.Component
@@ -202,11 +204,21 @@ fun com.cout970.reactive.core.RBuilder.postMount(func: Component.() -> Unit) {
     }
 }
 
-fun <T: Event<*>> ListenerMap.clear(clazz: Class<T>){
+fun <T : Event<*>> ListenerMap.clear(clazz: Class<T>) {
     getListeners(clazz).forEach { removeListener(clazz, it) }
 }
 
-fun Component.dispatch(str: String){
+fun Component.dispatch(str: String) {
     val dispatcher = metadata["Dispatcher"] as Dispatcher
     dispatcher.onEvent(str, this)
+}
+
+fun <T : Component> ComponentBuilder<T>.childrenAsNodes() {
+    this.component.childs.forEach {
+        comp(it) {
+            if (it.isNotEmpty) {
+                childrenAsNodes()
+            }
+        }
+    }
 }

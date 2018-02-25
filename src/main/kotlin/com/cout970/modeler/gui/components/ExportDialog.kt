@@ -59,7 +59,7 @@ class ExportDialog : RComponent<ExportDialog.Props, ExportDialog.State>() {
                 textState.horizontalAlign = HorizontalAlign.LEFT
             }
 
-            +DropDown("", 90f, 50f, 350f, 24f).apply {
+            +DropDown(90f, 50f, 350f, 24f).apply {
                 elementHeight = 22f
                 buttonWidth = 22f
                 visibleCount = 2

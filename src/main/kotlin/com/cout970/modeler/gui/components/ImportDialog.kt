@@ -101,7 +101,7 @@ class ImportDialog : RComponent<ImportDialog.Props, ImportDialog.State>() {
                 textState.horizontalAlign = HorizontalAlign.LEFT
             }
 
-            +DropDown("", 90f, 100f, 350f, 24f).apply {
+            +DropDown(90f, 100f, 350f, 24f).apply {
                 elementHeight = 22f
                 buttonWidth = 22f
                 visibleCount = 5

@@ -10,6 +10,7 @@ import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.GuiState
 import com.cout970.modeler.gui.Popup
 import com.cout970.modeler.util.toPointerBuffer
+import com.cout970.reactive.core.AsyncManager
 import org.lwjgl.PointerBuffer
 import org.lwjgl.util.tinyfd.TinyFileDialogs
 import java.io.File
@@ -20,9 +21,9 @@ val textureExtensions: PointerBuffer = listOf("*.png").toPointerBuffer()
 fun showConfigMenu(gui: Gui): ITask = TaskAsync {
     gui.state.popup = Popup("config") {
         gui.state.popup = null
-        gui.root.reRender()
+        AsyncManager.runLater { gui.root.reRender() }
     }
-    gui.root.reRender()
+    AsyncManager.runLater { gui.root.reRender() }
 }
 
 
@@ -30,24 +31,24 @@ fun showConfigMenu(gui: Gui): ITask = TaskAsync {
 fun showImportMenu(gui: Gui, model: IModel): ITask = TaskAsync { returnCallback: (ITask) -> Unit ->
     gui.state.popup = Popup("import") { prop ->
         gui.state.popup = null
-        gui.root.reRender()
+        AsyncManager.runLater { gui.root.reRender() }
         if (prop != null) {
             returnCallback(TaskImportModel(model, prop as ImportProperties))
         }
     }
-    gui.root.reRender()
+    AsyncManager.runLater { gui.root.reRender() }
 }
 
 @UseCase("model.export")
 fun showExportMenu(gui: Gui, model: IModel): ITask = TaskAsync { returnCallback: (ITask) -> Unit ->
     gui.state.popup = Popup("export") { prop ->
         gui.state.popup = null
-        gui.root.reRender()
+        AsyncManager.runLater { gui.root.reRender() }
         if (prop != null) {
             returnCallback(TaskExportModel(model, prop as ExportProperties))
         }
     }
-    gui.root.reRender()
+    AsyncManager.runLater { gui.root.reRender() }
 }
 
 @UseCase("model.export.hitboxes")
