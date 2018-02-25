@@ -1,9 +1,9 @@
 package com.cout970.modeler.gui.leguicomp
 
 import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.util.rectangularCorners
-import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.toColor
+import com.cout970.reactive.dsl.borderless
+import com.cout970.reactive.dsl.rectCorners
 import org.liquidengine.legui.component.Button
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.icon.ImageIcon
@@ -23,8 +23,8 @@ class TextButton(
     init {
         textState.textColor = Config.colorPalette.textColor.toColor()
         background { buttonColor }
-        rectangularCorners()
-        setBorderless()
+        rectCorners()
+        borderless()
     }
 
     fun setTooltip(tooltip: String) {

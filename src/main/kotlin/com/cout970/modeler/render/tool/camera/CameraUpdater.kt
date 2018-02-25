@@ -21,7 +21,8 @@ import com.cout970.vector.extensions.*
 class CameraUpdater(
         val canvasContainer: CanvasContainer,
         val input: IInput,
-        val timer: Timer
+        val timer: Timer,
+        val isBlocked: () -> Boolean
 ) {
 
     private var selectedCanvas: Canvas? = null
@@ -32,7 +33,10 @@ class CameraUpdater(
         }
 
         updateSelectedCanvas()
-        selectedCanvas?.let { moveCamera(it) }
+
+        if (!isBlocked()) {
+            selectedCanvas?.let { moveCamera(it) }
+        }
     }
 
     private fun updateSelectedCanvas() {
@@ -60,8 +64,8 @@ class CameraUpdater(
 
         if (!move && !rotate) return
 
-        val speed = 1 / (600 * timer.delta) * if (Config.keyBindings.slowCameraMovements.check(
-                input)) 1 / 10f else 1f
+        val speed = 1 / (600 * timer.delta) *
+                    if (Config.keyBindings.slowCameraMovements.check(input)) 1 / 10f else 1f
 
         if (selectedScene.viewMode == SelectionTarget.MODEL) {
             if (move) {

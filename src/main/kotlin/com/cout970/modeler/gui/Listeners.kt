@@ -18,6 +18,7 @@ import com.cout970.reactive.core.SyncManager
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.vec2Of
 import org.liquidengine.legui.component.Component
+import org.liquidengine.legui.component.TextArea
 import org.liquidengine.legui.component.TextInput
 import org.liquidengine.legui.event.Event
 import org.liquidengine.legui.system.context.Context
@@ -38,7 +39,7 @@ class Listeners : ITickeable, IGuiCmdRunner {
             it.addListener(EventMouseScroll::class.java, this::onMouseScroll)
             it.addListener(EventMouseClick::class.java, gui.canvasManager::onMouseClick)
 
-            cameraUpdater = CameraUpdater(gui.canvasContainer, it, gui.timer)
+            cameraUpdater = CameraUpdater(gui.canvasContainer, it, gui.timer, { gui.state.popup != null })
         }
 
         AsyncManager.setInstance(SyncManager)
@@ -121,7 +122,8 @@ class Listeners : ITickeable, IGuiCmdRunner {
     fun onMouseScroll(e: EventMouseScroll): Boolean {
         val mousePos = gui.input.mouse.getMousePos()
         gui.canvasContainer.canvas.forEach { canvas ->
-            if (mousePos.isInside(canvas.absolutePositionV, canvas.size.toIVector())) {
+            if (mousePos.isInside(canvas.absolutePositionV, canvas.size.toIVector()) && gui.state.popup == null) {
+
                 cameraUpdater.updateZoom(canvas, e)
                 return true
             }
@@ -133,6 +135,7 @@ class Listeners : ITickeable, IGuiCmdRunner {
         if (e.keyState != EnumKeyState.PRESS) return false
         if (gui.canvasContainer.layout.onEvent(gui, e)) return true
         if (gui.root.context.focusedGui is TextInput) return false
+        if (gui.root.context.focusedGui is TextArea) return false
         return gui.keyboardBinder.onEvent(e)
     }
 

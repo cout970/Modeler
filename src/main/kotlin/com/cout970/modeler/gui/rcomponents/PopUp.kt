@@ -1,8 +1,11 @@
 package com.cout970.modeler.gui.rcomponents
 
 import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.core.export.ExportFormat
+import com.cout970.modeler.core.export.ExportProperties
 import com.cout970.modeler.core.export.ImportFormat
 import com.cout970.modeler.core.export.ImportProperties
+import com.cout970.modeler.core.project.IProjectPropertiesHolder
 import com.cout970.modeler.gui.GuiState
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.util.toColor
@@ -20,11 +23,12 @@ import org.liquidengine.legui.component.event.checkbox.CheckBoxChangeValueEvent
 import org.liquidengine.legui.component.event.selectbox.SelectBoxChangeSelectionEvent
 import org.liquidengine.legui.component.event.textinput.TextInputContentChangeEvent
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
-import org.liquidengine.legui.event.MouseClickEvent
 import org.liquidengine.legui.icon.CharIcon
+import org.liquidengine.legui.style.border.SimpleLineBorder
+import org.lwjgl.PointerBuffer
 import org.lwjgl.util.tinyfd.TinyFileDialogs
 
-data class PopUpProps(val state: GuiState) : RProps
+data class PopUpProps(val state: GuiState, val propertyHolder: IProjectPropertiesHolder) : RProps
 
 class PopUp : RStatelessComponent<PopUpProps>() {
 
@@ -45,15 +49,10 @@ class PopUp : RStatelessComponent<PopUpProps>() {
         popup?.let {
             when (it.name) {
                 "import" -> child(ImportDialog::class, PopupReturnProps(it.returnFunc))
-                "export" -> {
-//                    +ExportDialog { ExportDialog.Props(it) }
-                }
-                "config" -> {
-//                    +ConfigMenu { ConfigMenu.Props(it, gui.propertyHolder) }
-                }
+                "export" -> child(ExportDialog::class, PopupReturnProps(it.returnFunc))
+                "config" -> child(ConfigMenu::class, ConfigMenuProps(it.returnFunc, props.propertyHolder))
             }
         }
-
     }
 }
 
@@ -182,7 +181,7 @@ class ImportDialog : RComponent<PopupReturnProps, ImportDialogState>() {
 
         //fifth line
         +TextButton("", "Replace", 180f, 200f, 80f, 24f).apply {
-            listenerMap.addListener(MouseClickEvent::class.java) {
+            onClick {
                 props.returnFunc(ImportProperties(
                         path = state.text,
                         format = ImportFormat.values()[state.option],
@@ -193,7 +192,7 @@ class ImportDialog : RComponent<PopupReturnProps, ImportDialogState>() {
         }
 
         +TextButton("", "Append", 270f, 200f, 80f, 24f).apply {
-            listenerMap.addListener(MouseClickEvent::class.java) {
+            onClick {
                 props.returnFunc(ImportProperties(
                         path = state.text,
                         format = ImportFormat.values()[state.option],
@@ -212,5 +211,114 @@ class ImportDialog : RComponent<PopupReturnProps, ImportDialogState>() {
 
     override fun shouldComponentUpdate(nextProps: PopupReturnProps, nextState: ImportDialogState): Boolean {
         return state.flipUV != nextState.flipUV || state.option != nextState.option || state.forceUpdate != nextState.forceUpdate
+    }
+}
+
+data class ExportDialogState(val text: String, val selection: Int, var forceUpdate: Boolean) : RState
+
+class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
+
+    companion object {
+        private val options = listOf("Obj (*.obj)", "MCX (*.mcx)")
+        private val exportExtensionsObj = listOf("*.obj").toPointerBuffer()
+        private val exportExtensionsMcx = listOf("*.mcx").toPointerBuffer()
+
+        private fun getExportFileExtensions(format: ExportFormat): PointerBuffer = when (format) {
+            ExportFormat.OBJ -> exportExtensionsObj
+            ExportFormat.MCX -> exportExtensionsMcx
+        }
+    }
+
+    override fun getInitialState() = ExportDialogState("", 0, false)
+
+    override fun RBuilder.render() = div("ExportDialog") {
+        style {
+            background { darkestColor }
+            style.border = SimpleLineBorder(Config.colorPalette.greyColor.toColor(), 2f)
+            width = 460f
+            height = 240f
+        }
+
+        postMount {
+            center()
+        }
+
+        // first line
+        +FixedLabel("Export Model", 0f, 8f, 460f, 24f).apply {
+            textState.fontSize = 22f
+        }
+
+        //second line
+        +FixedLabel("Format", 25f, 50f, 400f, 24f).apply {
+            textState.fontSize = 20f
+            textState.horizontalAlign = HorizontalAlign.LEFT
+        }
+
+        comp(DropDown(90f, 50f, 350f, 24f)) {
+            style {
+                elementHeight = 22f
+                buttonWidth = 22f
+                visibleCount = 2
+                options.forEach { addElement(it) }
+                setSelected(state.selection, true)
+            }
+
+            childrenAsNodes()
+
+            on<SelectBoxChangeSelectionEvent<DropDown>> {
+                setState { copy(selection = options.indexOf(it.newValue)) }
+            }
+        }
+
+        //third line
+        +FixedLabel("Path", 25f, 100f, 400f, 24f).apply {
+            textState.fontSize = 20f
+            textState.horizontalAlign = HorizontalAlign.LEFT
+        }
+
+        comp(TextInput(state.text, 90f, 100f, 250f, 24f)) {
+            on<TextInputContentChangeEvent<TextInput>> {
+                setState { copy(text = it.newValue, forceUpdate = false) }
+            }
+        }
+
+        comp(TextButton("", "Select", 360f, 100f, 80f, 24f)) {
+            onRelease {
+                val file = TinyFileDialogs.tinyfd_saveFileDialog(
+                        "Export",
+                        "model." + ExportFormat.values()[state.selection].name.toLowerCase(),
+                        getExportFileExtensions(ExportFormat.values()[state.selection]),
+                        options[state.selection]
+                )
+
+                if (file != null) {
+                    setState { copy(text = file, forceUpdate = true) }
+                }
+            }
+        }
+
+        //fourth line
+
+        //fifth line
+        +TextButton("", "Export", 270f, 200f, 80f, 24f).apply {
+            onClick {
+                props.returnFunc(ExportProperties(
+                        path = state.text,
+                        format = ExportFormat.values()[state.selection],
+                        domain = "domain",
+                        materialLib = "materials"
+                ))
+            }
+        }
+
+        +TextButton("", "Cancel", 360f, 200f, 80f, 24f).apply {
+            onClick {
+                props.returnFunc(null)
+            }
+        }
+    }
+
+    override fun shouldComponentUpdate(nextProps: PopupReturnProps, nextState: ExportDialogState): Boolean {
+        return state.selection != nextState.selection || nextState.forceUpdate
     }
 }

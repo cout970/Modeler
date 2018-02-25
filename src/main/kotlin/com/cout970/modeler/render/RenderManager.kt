@@ -53,5 +53,8 @@ class RenderManager : ITickeable {
 
     override fun postTick() {
         Debugger.postTick()
+        Profiler.startSection("leguiEvents")
+        guiRenderer.updateEvents()
+        Profiler.endSection()
     }
 }

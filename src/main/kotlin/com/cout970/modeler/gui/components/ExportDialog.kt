@@ -2,9 +2,9 @@ package com.cout970.modeler.gui.components
 
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.export.ExportFormat
-import com.cout970.modeler.core.export.ExportProperties
 import com.cout970.modeler.gui.Popup
-import com.cout970.modeler.gui.leguicomp.*
+import com.cout970.modeler.gui.leguicomp.background
+import com.cout970.modeler.gui.leguicomp.panel
 import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
@@ -17,14 +17,8 @@ import com.cout970.reactive.dsl.posY
 import com.cout970.reactive.dsl.width
 import org.joml.Vector4f
 import org.liquidengine.legui.component.Component
-import org.liquidengine.legui.component.TextInput
-import org.liquidengine.legui.component.event.selectbox.SelectBoxChangeSelectionEvent
-import org.liquidengine.legui.component.event.textinput.TextInputContentChangeEvent
-import org.liquidengine.legui.component.optional.align.HorizontalAlign
-import org.liquidengine.legui.event.MouseClickEvent
 import org.liquidengine.legui.style.border.SimpleLineBorder
 import org.lwjgl.PointerBuffer
-import org.lwjgl.util.tinyfd.TinyFileDialogs
 
 /**
  * Created by cout970 on 2017/09/30.
@@ -48,77 +42,6 @@ class ExportDialog : RComponent<ExportDialog.Props, ExportDialog.State>() {
             posY = (ctx.parentSize.yf - height) / 2f
 
 
-            // first line
-            +FixedLabel("Export Model", 0f, 8f, 460f, 24f).apply {
-                textState.fontSize = 22f
-            }
-
-            //second line
-            +FixedLabel("Format", 25f, 50f, 400f, 24f).apply {
-                textState.fontSize = 20f
-                textState.horizontalAlign = HorizontalAlign.LEFT
-            }
-
-            +DropDown(90f, 50f, 350f, 24f).apply {
-                elementHeight = 22f
-                buttonWidth = 22f
-                visibleCount = 2
-                options.forEach { addElement(it) }
-                setSelected(state.selection, true)
-
-                listenerMap.addListener(SelectBoxChangeSelectionEvent::class.java) {
-                    replaceState(state.copy(selection = options.indexOf(it.newValue)))
-                }
-            }
-
-            //third line
-            +FixedLabel("Path", 25f, 100f, 400f, 24f).apply {
-                textState.fontSize = 20f
-                textState.horizontalAlign = HorizontalAlign.LEFT
-            }
-
-            +TextInput(state.text, 90f, 100f, 250f, 24f).apply {
-                listenerMap.addListener(TextInputContentChangeEvent::class.java) {
-                    replaceState(state.copy(text = it.newValue, forceUpdate = false))
-                }
-            }
-
-            +TextButton("", "Select", 360f, 100f, 80f, 24f).apply {
-                listenerMap.addListener(MouseClickEvent::class.java) {
-                    if (it.action == MouseClickEvent.MouseClickAction.RELEASE) {
-                        val file = TinyFileDialogs.tinyfd_saveFileDialog(
-                                "Export",
-                                "model." + ExportFormat.values()[state.selection].name.toLowerCase(),
-                                getExportFileExtensions(ExportFormat.values()[state.selection]),
-                                options[state.selection]
-                        )
-
-                        if (file != null) {
-                            replaceState(state.copy(text = file, forceUpdate = true))
-                        }
-                    }
-                }
-            }
-
-            //fourth line
-
-            //fifth line
-            +TextButton("", "Export", 270f, 200f, 80f, 24f).apply {
-                listenerMap.addListener(MouseClickEvent::class.java) {
-                    props.popup.returnFunc(ExportProperties(
-                            path = state.text,
-                            format = ExportFormat.values()[state.selection],
-                            domain = "domain",
-                            materialLib = "materials"
-                    ))
-                }
-            }
-
-            +TextButton("", "Cancel", 360f, 200f, 80f, 24f).apply {
-                listenerMap.addListener(MouseClickEvent::class.java) {
-                    props.popup.returnFunc(null)
-                }
-            }
         }
     }
 

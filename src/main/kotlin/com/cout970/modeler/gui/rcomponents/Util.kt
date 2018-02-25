@@ -1,5 +1,6 @@
 package com.cout970.modeler.gui.rcomponents
 
+import com.cout970.modeler.controller.usecases.scriptEngine
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.input.window.Loop
 import com.cout970.modeler.util.child
@@ -10,6 +11,7 @@ import com.cout970.reactive.core.*
 import com.cout970.reactive.dsl.*
 import com.cout970.reactive.nodes.*
 import com.cout970.vector.api.IVector2
+import org.joml.Vector2f
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Panel
 import org.liquidengine.legui.component.ScrollBar
@@ -119,7 +121,6 @@ class FloatInput : RStatelessComponent<FloatInputProps>() {
     }
 }
 
-
 data class ScrollPanelProps(
         val postMount: Component.() -> Unit = {},
         val vertical: ScrollBar.() -> Unit = {},
@@ -142,9 +143,9 @@ class ScrollPanel : RComponent<ScrollPanelProps, ScrollPanelState>() {
     private var leguiContext: Context? = null
 
     override fun RBuilder.render() = div("ScrollPanel") {
+
         style {
-            transparent()
-            borderless()
+            props.style(this)
         }
 
         postMount {
@@ -164,10 +165,6 @@ class ScrollPanel : RComponent<ScrollPanelProps, ScrollPanelState>() {
         }
 
         div("Container") {
-
-            style {
-                props.style(this)
-            }
 
             onScroll {
                 val parent = it.component.parent ?: return@onScroll
@@ -270,7 +267,7 @@ class ScrollPanel : RComponent<ScrollPanelProps, ScrollPanelState>() {
     }
 }
 
-class ScrollPanelBuilder() {
+class ScrollPanelBuilder {
 
     private var postMount: Component.() -> Unit = {}
     private var vertical: ScrollBar.() -> Unit = {}
@@ -303,3 +300,64 @@ class ScrollPanelBuilder() {
 
 fun RBuilder.scrollPanel(key: String? = null, block: ScrollPanelBuilder.() -> Unit = {}) =
         child(ScrollPanel::class, ScrollPanelBuilder().apply(block).buildProps())
+
+
+data class TinyFloatInputProps(val pos: Vector2f, val getter: () -> Float, val setter: (Float) -> Unit) : RProps
+
+class TinyFloatInput : RStatelessComponent<TinyFloatInputProps>() {
+
+    override fun RBuilder.render() = div("TinyFloatInput") {
+        style {
+            background { darkestColor }
+            borderless()
+            rectCorners()
+            position.set(props.pos)
+            width = 120f
+            height = 24f
+        }
+
+        +IconButton("", "button_left", 0f, 0f, 24f, 24f).apply {
+            borderless()
+            onClick {
+                value -= 0.1f
+                rerender()
+            }
+        }
+
+        +StringInput("", "%.3f".format(Locale.ENGLISH, value), 24f, 0f, 72f, 24f).apply {
+            horizontalAlign = HorizontalAlign.CENTER
+            onScroll {
+                text.toFloatValue()?.let { txt ->
+                    value = it.yoffset.toFloat() + txt
+                } ?: rerender()
+            }
+
+            onEnterPress = {
+                text.toFloatValue()?.let { txt ->
+                    value = txt
+                } ?: rerender()
+            }
+
+            onLoseFocus = onEnterPress
+        }
+
+        +IconButton("", "button_right", 96f, 0f, 24f, 24f).apply {
+            borderless()
+            onClick {
+                value += 0.1f
+                rerender()
+            }
+        }
+    }
+
+    var value: Float
+        get() = props.getter()
+        set(value) {
+            props.setter(value)
+            rerender()
+        }
+
+    fun String.toFloatValue(): Float? {
+        return (scriptEngine.eval(this) as? Number)?.toFloat()
+    }
+}

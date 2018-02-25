@@ -172,6 +172,11 @@ class ModelTree : RStatelessComponent<ModelTreeProps>() {
 
             container {
 
+                style {
+                    transparent()
+                    borderless()
+                }
+
                 val objs = props.modelAccessor.model.objectMap.values
                 val selected = props.modelAccessor.modelSelection.map { sel ->
                     { obj: IObjectRef -> sel.isSelected(obj) }
@@ -303,6 +308,11 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
             }
 
             container {
+
+                style {
+                    transparent()
+                    borderless()
+                }
 
                 val model = props.modelAccessor.model
                 val selection = props.modelAccessor.modelSelection

@@ -45,7 +45,7 @@ class RootComp : RComponent<RootProps, RootState>() {
         child(LeftPanel::class, LeftPanelProps(state.leftVisible, props.gui.modelAccessor, props.gui.gridLines))
         child(RightPanel::class, RightPanelProps(state.rightVisible, props.gui.modelAccessor, props.gui.state))
 
-        child(PopUp::class, PopUpProps(props.gui.state))
+        child(PopUp::class, PopUpProps(props.gui.state, props.gui.propertyHolder))
 
         onCmd("toggleLeft") { setState { copy(leftVisible = !leftVisible) } }
         onCmd("toggleRight") { setState { copy(rightVisible = !rightVisible) } }
