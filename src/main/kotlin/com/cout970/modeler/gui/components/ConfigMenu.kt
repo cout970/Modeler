@@ -315,11 +315,11 @@ class ConfigMenu : RComponent<ConfigMenu.Props, ConfigMenu.State>() {
                             prop.getTooltip()?.let { tooltip = InstantTooltip(it) }
                         }
 
-                        +MouseButtonInput {
-                            MouseButtonInput.Props(vec2Of(480f, 0f),
-                                    prop as KMutableProperty<MouseKeyBind>,
-                                    Config.keyBindings)
-                        }
+//                        +MouseButtonInput {
+//                                        MouseButtonInput.Props(vec2Of(480f, 0f),
+//                                                prop as KMutableProperty<MouseKeyBind>,
+//                                                Config.keyBindings)
+//                        }
                     })
                 }
 
@@ -339,11 +339,11 @@ class ConfigMenu : RComponent<ConfigMenu.Props, ConfigMenu.State>() {
                             prop.getTooltip()?.let { tooltip = InstantTooltip(it) }
                         }
 
-                        +KeyboardKeyInput {
-                            KeyboardKeyInput.Props(vec2Of(480f, 0f),
-                                    prop as KMutableProperty<KeyBind>,
-                                    Config.keyBindings)
-                        }
+//                        +KeyboardKeyInput {
+//                            KeyboardKeyInput.Props(vec2Of(480f, 0f),
+//                                    prop as KMutableProperty<KeyBind>,
+//                                    Config.keyBindings)
+//                        }
                     })
                 }
             }

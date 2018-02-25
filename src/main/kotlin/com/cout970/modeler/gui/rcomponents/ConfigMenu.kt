@@ -1,15 +1,13 @@
 package com.cout970.modeler.gui.rcomponents
 
+import com.cout970.glutilities.device.Mouse
 import com.cout970.modeler.core.config.*
 import com.cout970.modeler.core.config.ConfigManager.getDefaultConfig
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.project.Author
 import com.cout970.modeler.core.project.IProjectPropertiesHolder
 import com.cout970.modeler.core.project.ProjectProperties
-import com.cout970.modeler.gui.components.KeyboardKeyInput
-import com.cout970.modeler.gui.components.MouseButtonInput
 import com.cout970.modeler.gui.leguicomp.*
-import com.cout970.modeler.gui.reactive.invoke
 import com.cout970.modeler.util.text
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
@@ -17,14 +15,19 @@ import com.cout970.reactive.core.RProps
 import com.cout970.reactive.core.RState
 import com.cout970.reactive.dsl.*
 import com.cout970.reactive.nodes.child
+import com.cout970.reactive.nodes.comp
 import com.cout970.reactive.nodes.div
 import com.cout970.reactive.nodes.style
-import com.cout970.vector.extensions.vec2Of
+import com.google.gson.Gson
 import com.google.gson.JsonObject
 import org.joml.Vector2f
 import org.joml.Vector4f
+import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
+import org.liquidengine.legui.event.MouseClickEvent
 import org.liquidengine.legui.style.color.ColorConstants
+import org.liquidengine.legui.system.context.Context
+import org.lwjgl.glfw.GLFW
 import java.awt.Desktop
 import java.net.URI
 import kotlin.reflect.KMutableProperty
@@ -383,7 +386,7 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                     height = mouseKeybinds.size * 30f + keybinds.size * 30f + 10f
                 }
 
-                mouseKeybinds.sortedBy { it.first }.forEachIndexed { index, (name, prop) ->
+                mouseKeybinds.sortedBy { it.first }.forEachIndexed { index, (name, tooltip, prop) ->
 
                     div {
                         style {
@@ -398,19 +401,16 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                         +FixedLabel(name.capitalize(), 10f, 0f, 100f, 24f).apply {
                             textState.horizontalAlign = HorizontalAlign.LEFT
                             textState.fontSize = 20f
-                            prop.getTooltip()?.let { tooltip = InstantTooltip(it) }
+                            tooltip?.let { this.tooltip = InstantTooltip(it) }
                         }
 
-                        // TODO
-                        +MouseButtonInput {
-                            MouseButtonInput.Props(vec2Of(480f, 0f),
-                                    prop as KMutableProperty<MouseKeyBind>,
-                                    Config.keyBindings)
-                        }
+                        child(MouseButtonInput::class, MouseButtonInputProps(
+                                Vector2f(480f, 0f), prop.first, prop.second
+                        ))
                     }
                 }
 
-                keybinds.sortedBy { it.first }.forEachIndexed { index, (name, prop) ->
+                keybinds.sortedBy { it.first }.forEachIndexed { index, (name, tooltip, prop) ->
 
                     div {
                         style {
@@ -423,19 +423,22 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                         }
 
                         +FixedLabel(name.capitalize(), 10f, 0f, 100f, 24f).apply {
-                            textState.horizontalAlign = HorizontalAlign.LEFT
-                            textState.fontSize = 20f
-                            prop.getTooltip()?.let { tooltip = InstantTooltip(it) }
+                            horizontalAlign = HorizontalAlign.LEFT
+                            fontSize = 20f
+                            tooltip?.let { this.tooltip = InstantTooltip(it) }
                         }
 
-                        // TODO
-                        +KeyboardKeyInput {
-                            KeyboardKeyInput.Props(vec2Of(480f, 0f),
-                                    prop as KMutableProperty<KeyBind>,
-                                    Config.keyBindings)
-                        }
+                        child(KeyboardKeyInput::class, KeyboardKeyInputProps(
+                                pos = Vector2f(480f, 0f), getter = prop.first, setter = prop.second
+                        ))
                     }
                 }
+            }
+        }
+
+        +TextButton("", "Reset defaults", 300f, 505f, 90f, 24f).apply {
+            onClick {
+                setState { copy(editingConfig = mergeControls(editingConfig, getDefaultConfig())) }
             }
         }
     }
@@ -562,20 +565,54 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                 }
     }
 
-    fun getMouseKeyBinds(): List<Pair<String, KMutableProperty<*>>> {
+    fun getMouseKeyBinds(): List<Triple<String, String?, Pair<() -> MouseKeyBind, (MouseKeyBind) -> Unit>>> {
+        val gson = Gson()
         return KeyBindings::class
                 .memberProperties
                 .filterIsInstance<KMutableProperty<*>>()
                 .filter { it.returnType.javaType == MouseKeyBind::class.java }
-                .map { it.name to it }
+                .map {
+                    Triple(it.name,
+                            it.getTooltip(),
+                            Pair(
+                                    {
+                                        val keybinds = state.editingConfig["keyBindings"].asJsonObject
+                                        gson.fromJson(keybinds[it.name], MouseKeyBind::class.java)
+                                    },
+                                    { value: MouseKeyBind ->
+                                        val keybinds = state.editingConfig["keyBindings"].asJsonObject
+                                        keybinds.remove(it.name)
+                                        keybinds.add(it.name, gson.toJsonTree(value))
+                                        rerender()
+                                    }
+                            )
+                    )
+                }
     }
 
-    fun getKeyBinds(): List<Pair<String, KMutableProperty<*>>> {
+    fun getKeyBinds(): List<Triple<String, String?, Pair<() -> KeyBind, (KeyBind) -> Unit>>> {
+        val gson = Gson()
         return KeyBindings::class
                 .memberProperties
                 .filterIsInstance<KMutableProperty<*>>()
                 .filter { it.returnType.javaType == KeyBind::class.java }
-                .map { it.name to it }
+                .map {
+                    Triple(it.name,
+                            it.getTooltip(),
+                            Pair(
+                                    {
+                                        val keybinds = state.editingConfig["keyBindings"].asJsonObject
+                                        gson.fromJson(keybinds[it.name], KeyBind::class.java)
+                                    },
+                                    { value: KeyBind ->
+                                        val keybinds = state.editingConfig["keyBindings"].asJsonObject
+                                        keybinds.remove(it.name)
+                                        keybinds.add(it.name, gson.toJsonTree(value))
+                                        rerender()
+                                    }
+                            )
+                    )
+                }
     }
 
     fun mergeParameters(current: JsonObject, new: JsonObject): JsonObject {
@@ -586,9 +623,176 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
         return new
     }
 
+    fun mergeControls(current: JsonObject, new: JsonObject): JsonObject {
+        current.entrySet().forEach { (key, value) ->
+            if(key != "keyBindings"){
+                new.remove(key)
+                new.add(key, value)
+            }
+        }
+        return new
+    }
+
     enum class Tab {
         PROJECT, PARAMETERS, CONTROLS, ABOUT
     }
 
     data class State(val tab: Tab, val previousConfig: JsonObject, val editingConfig: JsonObject) : RState
+}
+
+class MouseButtonInputProps(
+        val pos: Vector2f,
+        val getter: () -> MouseKeyBind,
+        val setter: (MouseKeyBind) -> Unit
+) : RProps
+
+class MouseButtonInput : RComponent<MouseButtonInputProps, MouseButtonInput.State>() {
+
+    private var context: Context? = null
+    private var lastComponent: Component? = null
+
+    override fun getInitialState() = State(true)
+
+    override fun RBuilder.render() = div("MouseButtonInput") {
+        style {
+            background { darkestColor }
+            borderless()
+            rectCorners()
+            position.set(props.pos)
+            width = 150f
+            height = 24f
+        }
+
+        val text = if (state.showMode) getMouseButtonName(props.getter().button) else "Press new button"
+
+        comp(TextButton("", text, 0f, 0f, 150f, 24f)) {
+            style {
+                background { greyColor }
+                horizontalAlign = HorizontalAlign.LEFT
+                fontSize = 20f
+                textState.padding.x = 5f
+            }
+
+            postMount {
+                context?.let { ctx ->
+                    if (lastComponent != null && ctx.focusedGui == lastComponent) {
+                        ctx.focusedGui = this
+                        this.isFocused = true
+                    }
+                    lastComponent = null
+                }
+                context = null
+            }
+
+            on<MouseClickEvent<TextButton>> {
+                if (state.showMode) {
+                    if (it.action == MouseClickEvent.MouseClickAction.CLICK) {
+                        context = it.context
+                        lastComponent = it.component
+                        setState { copy(showMode = false) }
+                    }
+                } else {
+                    if (it.action == MouseClickEvent.MouseClickAction.PRESS) {
+                        props.setter(MouseKeyBind(it.button.code))
+                        setState { copy(showMode = true) }
+                    }
+                }
+            }
+
+            onFocus {
+                if (!it.isFocused && !state.showMode) {
+                    setState { copy(showMode = true) }
+                }
+            }
+        }
+    }
+
+    fun getMouseButtonName(button: Int): String = when (button) {
+        Mouse.BUTTON_LEFT -> "Left button"
+        Mouse.BUTTON_MIDDLE -> "Middle button"
+        Mouse.BUTTON_RIGHT -> "Right button"
+        else -> "Unknown button"
+    }
+
+    data class State(val showMode: Boolean) : RState
+}
+
+class KeyboardKeyInputProps(
+        val pos: Vector2f,
+        val getter: () -> KeyBind,
+        val setter: (KeyBind) -> Unit
+) : RProps
+
+class KeyboardKeyInput : RComponent<KeyboardKeyInputProps, KeyboardKeyInput.State>() {
+
+    private var context: Context? = null
+    private var lastComponent: Component? = null
+
+    override fun getInitialState() = State(true)
+
+    override fun RBuilder.render() = div("KeyboardKeyInput") {
+        style {
+            background { darkestColor }
+            borderless()
+            style.cornerRadius.set(0f)
+            position.set(props.pos)
+            width = 150f
+            height = 24f
+        }
+
+        val text = if (state.showMode) props.getter().getName() else "Press new key"
+
+        comp(StringInput("", text, 0f, 0f, 150f, 24f)) {
+            style {
+                background { greyColor }
+            }
+
+            postMount {
+                context?.let { ctx ->
+                    if (lastComponent != null && ctx.focusedGui == lastComponent) {
+                        ctx.focusedGui = this
+                        this.isFocused = true
+                    }
+                    lastComponent = null
+                }
+                context = null
+            }
+
+            onClick {
+                if (state.showMode) {
+                    context = it.context
+                    lastComponent = it.component
+                    setState { copy(showMode = false) }
+                }
+            }
+
+            onFocus {
+                if (!it.isFocused && !state.showMode) {
+                    setState { copy(showMode = true) }
+                }
+            }
+
+            onKey {
+                if (!state.showMode) {
+                    if (it.action == GLFW.GLFW_RELEASE) {
+                        setKey(it.key, it.mods)
+                        setState { copy(showMode = true) }
+                    }
+                }
+            }
+        }
+    }
+
+    fun setKey(key: Int, mods: Int) {
+
+        val modifiers = mutableListOf<KeyboardModifiers>()
+        if (mods and GLFW.GLFW_MOD_CONTROL != 0) modifiers += KeyboardModifiers.CTRL
+        if (mods and GLFW.GLFW_MOD_ALT != 0) modifiers += KeyboardModifiers.ALT
+        if (mods and GLFW.GLFW_MOD_SHIFT != 0) modifiers += KeyboardModifiers.SHIFT
+        if (mods and GLFW.GLFW_MOD_SUPER != 0) modifiers += KeyboardModifiers.SUPER
+
+        props.setter(KeyBind(key, *modifiers.toTypedArray()))
+    }
+
+    data class State(val showMode: Boolean) : RState
 }
