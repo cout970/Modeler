@@ -189,8 +189,8 @@ class ScrollPanel : RComponent<ScrollPanelProps, ScrollPanelState>() {
                 borderless()
 
                 curValue = state.scrollY
-                isScrolling = lastVerticalScrollBar?.isScrolling ?: false
                 hack {
+                    isScrolling = lastVerticalScrollBar?.isScrolling ?: false
                     leguiContext?.let {
                         if (it.focusedGui == lastHorizontalScrollBar) {
                             it.focusedGui = this
@@ -201,7 +201,7 @@ class ScrollPanel : RComponent<ScrollPanelProps, ScrollPanelState>() {
             }
 
             on<ScrollBarChangeValueEvent<ScrollBar>> {
-                setState { copy(scrollX = it.newValue) }
+                setState { copy(scrollY = it.newValue) }
             }
 
             on<CursorEnterEvent<ScrollBar>> {
@@ -245,7 +245,6 @@ class ScrollPanel : RComponent<ScrollPanelProps, ScrollPanelState>() {
                 leguiContext = it.context
                 if (it.isEntered) it.context.focusedGui = it.targetComponent
             }
-
 
             postMount {
                 this as ScrollBar

@@ -17,6 +17,7 @@ import com.cout970.modeler.gui.event.EventSelectionUpdate
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.asNullable
+import com.cout970.modeler.util.child
 import com.cout970.modeler.util.toColor
 import com.cout970.reactive.core.*
 import com.cout970.reactive.dsl.*
@@ -28,6 +29,7 @@ import com.cout970.vector.extensions.vec2Of
 import org.joml.Vector2f
 import org.liquidengine.legui.component.CheckBox
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
+import org.liquidengine.legui.event.ScrollEvent
 import org.liquidengine.legui.icon.CharIcon
 import org.liquidengine.legui.style.color.ColorConstants
 import org.liquidengine.legui.style.font.FontRegistry
@@ -53,12 +55,9 @@ class LeftPanel : RStatelessComponent<LeftPanelProps>() {
         }
 
 
-        // TODO add support for scroll panels
-        comp(Panel()) {
+        scrollPanel {
 
             style {
-                //                verticalScrollBar.visibleAmount = 20f
-//                viewport.listenerMap.clear(ScrollEvent::class.java)
                 borderless()
                 transparent()
             }
@@ -66,19 +65,37 @@ class LeftPanel : RStatelessComponent<LeftPanelProps>() {
             postMount {
                 posX = 0f
                 posY = 5f
-                sizeX = parent.sizeX - 8f
+                sizeX = parent.sizeX
                 sizeY = parent.sizeY - posY
-                alignAsColumn(6f)
-//                this as VerticalPanel
-//                container.apply {
-//                    width = 280f
-//                    height = 64f + 486f + 345f
-//                }
+
+                child("Container")?.listenerMap?.clear(ScrollEvent::class.java)
             }
 
-            child(EditObjectName::class, ModelAccessorProps(props.modelAccessor))
-            child(EditCubePanel::class, ModelAccessorProps(props.modelAccessor))
-            child(EditGrids::class, EditGridsProps(props.grids))
+            horizontalScroll { hide() }
+
+            verticalScroll {
+                isArrowsEnabled = false
+                scrollColor = color { lightBrightColor }
+                backgroundColor { color { darkColor } }
+                rectCorners()
+                height = 8f
+            }
+
+            container {
+                style {
+                    borderless()
+                    transparent()
+                }
+
+                postMount {
+                    floatTop(6f)
+                }
+
+                child(EditorControls::class)
+                child(EditObjectName::class, ModelAccessorProps(props.modelAccessor))
+                child(EditCubePanel::class, ModelAccessorProps(props.modelAccessor))
+                child(EditGrids::class, EditGridsProps(props.grids))
+            }
         }
     }
 }
@@ -86,6 +103,107 @@ class LeftPanel : RStatelessComponent<LeftPanelProps>() {
 
 data class VisibleWidget(val on: Boolean) : RState
 data class ModelAccessorProps(val access: IModelAccessor) : RProps
+
+class EditorControls : RComponent<EmptyProps, VisibleWidget>() {
+
+    override fun getInitialState() = VisibleWidget(true)
+
+    override fun RBuilder.render() = div("EditorControls") {
+        style {
+            transparent()
+            border(2f) { greyColor }
+            rectCorners()
+            height = if (state.on) 53f else 24f
+        }
+
+        postMount {
+            marginX(5f)
+        }
+
+        comp(FixedLabel()) {
+            style {
+                textState.apply {
+                    this.text = "Editor Controls"
+                    horizontalAlign = HorizontalAlign.CENTER
+                    fontSize = 20f
+                }
+            }
+
+            postMount {
+                posX = 50f
+                posY = 0f
+                sizeX = parent.sizeX - 100f
+                sizeY = 24f
+            }
+        }
+
+        comp(IconButton()) {
+            style {
+                val charCode = if (state.on) 'X' else 'O'
+                setImage(CharIcon(Vector2f(16f, 16f), FontRegistry.DEFAULT, charCode, ColorConstants.lightGray()))
+                background { darkColor }
+                posX = 250f
+                posY = 4f
+            }
+            onRelease {
+                setState { copy(on = !on) }
+            }
+        }
+
+        div {
+            style {
+                transparent()
+                borderless()
+                posY = 24f
+                sizeY = 24f
+            }
+
+            postMount {
+                marginX(5f)
+                floatLeft(5f, 0f)
+            }
+
+            val config: ToggleButton.() -> Unit = {
+                borderless()
+                rectCorners()
+            }
+
+            +ToggleButton("drawTextureGridLines", "grid", true, 0f, 0f, 24f, 24f)
+                    .apply(config)
+                    .apply { tooltip = InstantTooltip("Enable/Disable texture grid lines") }
+
+            +ToggleButton("renderLights", "focus", false, 0f, 0f, 24f, 24f)
+                    .apply(config)
+                    .apply { tooltip = InstantTooltip("Enable/Disable lights rendering") }
+
+            +ToggleButton("useTexture", "texture", true, 0f, 0f, 24f, 24f)
+                    .apply(config)
+                    .apply { tooltip = InstantTooltip("Enable/Disable model texture") }
+
+            +ToggleButton("useColor", "color", false, 0f, 0f, 24f, 24f)
+                    .apply(config)
+                    .apply { tooltip = InstantTooltip("Enable/Disable model coloring") }
+
+            +ToggleButton("useLight", "light", true, 0f, 0f, 24f, 24f)
+                    .apply(config)
+                    .apply { tooltip = InstantTooltip("Enable/Disable lightning") }
+
+            +ToggleButton("showInvisible", "invisible", true, 0f, 0f, 24f, 24f)
+                    .apply(config)
+                    .apply { tooltip = InstantTooltip("Enable/Disable transparent sides") }
+
+            +ToggleButton("renderBase", "invisible", true, 0f, 0f, 24f, 24f)
+                    .apply(config)
+                    .apply { tooltip = InstantTooltip("Enable/Disable base block") }
+
+            +ToggleButton("drawTextureProjection", "invisible", true, 0f, 0f, 24f, 24f)
+                    .apply(config)
+                    .apply { tooltip = InstantTooltip("Enable/Disable texture projection") }
+        }
+
+
+    }
+}
 
 class EditObjectName : RComponent<ModelAccessorProps, VisibleWidget>() {
 

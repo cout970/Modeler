@@ -184,7 +184,7 @@ fun <T:Comparable<T>>shuffle(items:MutableList<T>):List<T>{
 
 /* extension version */
 fun <T> Iterable<T>.shuffle(): List<T> {
-    val list = this.toMutableList().apply {  }
+    val list = this.toMutableList()
     Collections.shuffle(list)
     return list
 }

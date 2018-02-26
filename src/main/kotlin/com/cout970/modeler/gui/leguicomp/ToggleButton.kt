@@ -36,8 +36,8 @@ class ToggleButton(
     override fun setToggled(toggled: Boolean) {
         properties[id]?.set(toggled)
         super.setToggled(toggled)
-        style.border = SimpleLineBorder(Config.colorPalette.selectedButton.toColor(), 1f)
-        style.border.isEnabled = toggled
+//        style.border = SimpleLineBorder(Config.colorPalette.selectedButton.toColor(), 1f)
+        style.border?.isEnabled = toggled
     }
 
     fun bindProperties(map: Map<String, IPropertyBind<Boolean>>) {
