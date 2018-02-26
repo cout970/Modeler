@@ -7,6 +7,7 @@ import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.gui.event.*
+import com.cout970.modeler.gui.leguicomp.childs
 import com.cout970.modeler.gui.reactive.RComponentWrapper
 import com.cout970.modeler.gui.reactive.RContext
 import com.cout970.modeler.input.event.EventController

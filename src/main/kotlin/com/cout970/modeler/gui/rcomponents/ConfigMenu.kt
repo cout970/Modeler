@@ -688,7 +688,7 @@ class MouseButtonInput : RComponent<MouseButtonInputProps, MouseButtonInput.Stat
                 if (state.showMode) {
                     if (it.action == MouseClickEvent.MouseClickAction.CLICK) {
                         context = it.context
-                        lastComponent = it.component
+                        lastComponent = it.targetComponent
                         setState { copy(showMode = false) }
                     }
                 } else {
@@ -761,7 +761,7 @@ class KeyboardKeyInput : RComponent<KeyboardKeyInputProps, KeyboardKeyInput.Stat
             onClick {
                 if (state.showMode) {
                     context = it.context
-                    lastComponent = it.component
+                    lastComponent = it.targetComponent
                     setState { copy(showMode = false) }
                 }
             }

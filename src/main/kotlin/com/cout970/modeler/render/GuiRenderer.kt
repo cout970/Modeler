@@ -10,6 +10,7 @@ import com.cout970.modeler.gui.reactive.RComponentWrapper
 import com.cout970.modeler.input.event.CustomCallbackKeeper
 import com.cout970.modeler.render.gui.LeguiComponentRenderer
 import com.cout970.modeler.render.gui.RComponentRenderer
+import org.liquidengine.legui.animation.Animator
 import org.liquidengine.legui.component.Frame
 import org.liquidengine.legui.component.LayerContainer
 import org.liquidengine.legui.component.Panel
@@ -59,6 +60,7 @@ class GuiRenderer(val rootFrame: Frame, window: Long) {
         context.updateGlfwWindow()
         EventProcessor.getInstance().processEvents()
         systemEventProcessor.processEvents(rootFrame, context)
+        Animator.getInstance().runAnimations()
     }
 
     fun render() {

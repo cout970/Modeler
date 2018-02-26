@@ -2,15 +2,11 @@ package com.cout970.modeler.gui.rcomponents
 
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.leguicomp.onCmd
-import com.cout970.modeler.gui.leguicomp.postMount
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
 import com.cout970.reactive.core.RProps
 import com.cout970.reactive.core.RState
-import com.cout970.reactive.dsl.borderless
-import com.cout970.reactive.dsl.sizeX
-import com.cout970.reactive.dsl.sizeY
-import com.cout970.reactive.dsl.transparent
+import com.cout970.reactive.dsl.*
 import com.cout970.reactive.nodes.child
 import com.cout970.reactive.nodes.div
 import com.cout970.reactive.nodes.style

@@ -1,5 +1,6 @@
 package com.cout970.modeler.gui.reactive
 
+import com.cout970.modeler.gui.leguicomp.childs
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Panel

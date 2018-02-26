@@ -2,6 +2,7 @@ package com.cout970.modeler.gui.rcomponents
 
 import com.cout970.modeler.controller.usecases.scriptEngine
 import com.cout970.modeler.gui.leguicomp.*
+import com.cout970.modeler.hack
 import com.cout970.modeler.input.window.Loop
 import com.cout970.modeler.util.child
 import com.cout970.modeler.util.disableInput
@@ -16,6 +17,7 @@ import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Panel
 import org.liquidengine.legui.component.ScrollBar
 import org.liquidengine.legui.component.Viewport
+import org.liquidengine.legui.component.event.scrollbar.ScrollBarChangeValueEvent
 import org.liquidengine.legui.component.optional.Orientation
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.event.CursorEnterEvent
@@ -75,7 +77,7 @@ class FloatInput : RStatelessComponent<FloatInputProps>() {
 
             on<ScrollEvent<StringInput>> {
                 val off = it.yoffset.toFloat()
-                dispatch(it.component, off, it.component.text)
+                dispatch(it.targetComponent, off, it.targetComponent.text)
             }
         }
 
@@ -167,7 +169,7 @@ class ScrollPanel : RComponent<ScrollPanelProps, ScrollPanelState>() {
         div("Container") {
 
             onScroll {
-                val parent = it.component.parent ?: return@onScroll
+                val parent = it.targetComponent.parent ?: return@onScroll
                 val scroll = parent.child("VerticalScroll") as? ScrollBar ?: return@onScroll
 
                 if (scroll.isEnabled) {
@@ -188,24 +190,28 @@ class ScrollPanel : RComponent<ScrollPanelProps, ScrollPanelState>() {
 
                 curValue = state.scrollY
                 isScrolling = lastVerticalScrollBar?.isScrolling ?: false
-                leguiContext?.let {
-                    if (it.focusedGui == lastHorizontalScrollBar) {
-                        it.focusedGui = this
+                hack {
+                    leguiContext?.let {
+                        if (it.focusedGui == lastHorizontalScrollBar) {
+                            it.focusedGui = this
+                        }
                     }
+                    lastVerticalScrollBar = this
                 }
-                lastVerticalScrollBar = this
+            }
 
-                let { bar ->
-                    bar.viewport = Viewport { setState { copy(scrollY = bar.curValue) } }
-                }
+            on<ScrollBarChangeValueEvent<ScrollBar>> {
+                setState { copy(scrollX = it.newValue) }
             }
 
             on<CursorEnterEvent<ScrollBar>> {
                 leguiContext = it.context
-                if (it.isEntered) it.context.focusedGui = it.component
+                if (it.isEntered) it.context.focusedGui = it.targetComponent
             }
 
             postMount {
+                this as ScrollBar
+                viewport = createViewport(parent.child("Container")!!)
                 val hSize = parent.child("HorizontalScroll")!!.let { if (it.isEnabled) it.sizeY else 0f }
                 posX = parent.width - sizeX
                 posY = 0f
@@ -220,26 +226,30 @@ class ScrollPanel : RComponent<ScrollPanelProps, ScrollPanelState>() {
                 borderless()
 
                 curValue = state.scrollX
-                isScrolling = lastHorizontalScrollBar?.isScrolling ?: false
-                leguiContext?.let {
-                    if (it.focusedGui == lastHorizontalScrollBar) {
-                        it.focusedGui = this
+                hack {
+                    isScrolling = lastHorizontalScrollBar?.isScrolling ?: false
+                    leguiContext?.let {
+                        if (it.focusedGui == lastHorizontalScrollBar) {
+                            it.focusedGui = this
+                        }
                     }
+                    lastHorizontalScrollBar = this
                 }
-                lastHorizontalScrollBar = this
+            }
 
-                let { bar ->
-                    bar.viewport = Viewport { setState { copy(scrollX = bar.curValue) } }
-                }
+            on<ScrollBarChangeValueEvent<ScrollBar>> {
+                setState { copy(scrollX = it.newValue) }
             }
 
             on<CursorEnterEvent<ScrollBar>> {
                 leguiContext = it.context
-                if (it.isEntered) it.context.focusedGui = it.component
+                if (it.isEntered) it.context.focusedGui = it.targetComponent
             }
 
 
             postMount {
+                this as ScrollBar
+                viewport = createViewport(parent.child("Container")!!)
                 val vSize = parent.child("VerticalScroll")!!.let { if (it.isEnabled) it.sizeX else 0f }
                 posX = 0f
                 posY = parent.height - sizeY
@@ -248,9 +258,22 @@ class ScrollPanel : RComponent<ScrollPanelProps, ScrollPanelState>() {
         }
     }
 
+    fun createViewport(container: Component) = object : Viewport {
+
+        val size = run {
+            val realSizeX = container.childComponents.map { it.posX + it.sizeX }.max() ?: 0f
+            val realSizeY = container.childComponents.map { it.posY + it.sizeY }.max() ?: 0f
+            Vector2f(realSizeX, realSizeY)
+        }
+
+        override fun getViewportViewSize() = Vector2f(size)
+
+        override fun getViewportSize() = Vector2f(container.size)
+    }
+
     fun offsetContent(parent: Component, vertical: ScrollBar, horizontal: ScrollBar, container: Panel) {
-        val realSizeX = container.childs.map { it.posX + it.sizeX }.max() ?: 0f
-        val realSizeY = container.childs.map { it.posY + it.sizeY }.max() ?: 0f
+        val realSizeX = container.childComponents.map { it.posX + it.sizeX }.max() ?: 0f
+        val realSizeY = container.childComponents.map { it.posY + it.sizeY }.max() ?: 0f
 
         container.let {
             it.sizeX = parent.sizeX - vertical.let { if (it.isEnabled) it.sizeX else 0f }

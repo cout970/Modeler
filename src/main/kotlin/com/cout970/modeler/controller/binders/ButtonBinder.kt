@@ -20,7 +20,7 @@ class ButtonBinder(val dispatcher: Dispatcher) {
     }
 
     fun bindButtons(panel: Component) {
-        panel.childs.forEach {
+        panel.childComponents.forEach {
             when (it) {
                 is IconButton -> {
                     if (it.command != "") {

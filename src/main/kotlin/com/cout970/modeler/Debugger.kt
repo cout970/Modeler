@@ -11,7 +11,7 @@ object Debugger {
     private lateinit var state: Program
 
     val STATIC_DEBUG: Boolean by lazy { System.getProperty("user.name") == "cout970" }
-    var DYNAMIC_DEBUG: Boolean  = false
+    var DYNAMIC_DEBUG: Boolean = false
 
     var drawVboCount = 0
     var drawRegionsCount = 0
@@ -41,7 +41,7 @@ object Debugger {
         return false
     }
 
-    fun printStackTrace(){
+    fun printStackTrace() {
         val trace = Thread.currentThread().stackTrace
         val usefulTrace = trace.takeLast(trace.size - 2)
         val string = usefulTrace.joinToString("\n") {
@@ -71,3 +71,6 @@ object Debugger {
         buildVaoCount = 0
     }
 }
+
+// Marks code that is a hack and needs to be fixed or change in the future
+fun hack(code: () -> Unit) = code()

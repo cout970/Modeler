@@ -3,6 +3,7 @@ package com.cout970.modeler.gui
 import com.cout970.modeler.controller.binders.ButtonBinder
 import com.cout970.modeler.gui.leguicomp.IResourceReloadable
 import com.cout970.modeler.gui.leguicomp.ToggleButton
+import com.cout970.modeler.gui.leguicomp.childs
 import com.cout970.modeler.gui.views.IView
 import com.cout970.modeler.util.*
 import com.cout970.vector.api.IVector2
@@ -20,7 +21,7 @@ class Root(val mainView: IView) : Frame(1f, 1f) {
     lateinit var context: Context
 
     private fun updateView() {
-        componentLayer.clearChilds()
+        componentLayer.clearChildComponents()
         componentLayer.add(mainView.base)
     }
 

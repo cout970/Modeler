@@ -5,6 +5,7 @@ import com.cout970.modeler.gui.reactive.RBuilder
 import com.cout970.modeler.gui.reactive.RComponent
 import com.cout970.modeler.gui.reactive.RComponentSpec
 import com.cout970.modeler.util.setBorderless
+import com.cout970.reactive.dsl.fillX
 import com.cout970.reactive.dsl.height
 import org.liquidengine.legui.component.Component
 

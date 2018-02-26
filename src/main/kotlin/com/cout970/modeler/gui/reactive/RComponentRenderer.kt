@@ -1,6 +1,7 @@
 package com.cout970.modeler.gui.reactive
 
 import com.cout970.modeler.gui.Gui
+import com.cout970.modeler.gui.leguicomp.childs
 import com.cout970.modeler.util.isNotEmpty
 import com.cout970.modeler.util.toIVector
 import org.liquidengine.legui.component.Component
@@ -20,7 +21,7 @@ object RComponentRenderer {
         val root = expandSubTree(null, ctx.virtualTree(), buildContext, ctx)
 
         ctx.root.also {
-            it.clearChilds()
+            it.clearChildComponents()
             it.add(root)
             require(it.count() == 1) { "Duplicated children" }
         }
@@ -47,14 +48,14 @@ object RComponentRenderer {
     }
 
     private fun buildComponentHelper(wrapper: RComponentWrapper<*, *, *>, buildCtx: RBuilder, ctx: RContext) {
-        val oldTree = wrapper.getChilds().firstOrNull()
+        val oldTree = wrapper.childs.firstOrNull()
         val newTree = wrapper.buildSubTree(buildCtx)
 
         val expandedTree = expandSubTree(oldTree, newTree, buildCtx, ctx)
 
         val finalTree = if (oldTree != null) mergeTrees(oldTree, expandedTree) else expandedTree
 
-        wrapper.clearChilds()
+        wrapper.clearChildComponents()
         wrapper.add(finalTree)
         require(wrapper.count() == 1) { "Duplicated children" }
         wrapper.onUpdateChild()
@@ -87,7 +88,7 @@ object RComponentRenderer {
 
             val finalTree = if (oldTree != null) mergeTrees(oldTree, expandedTree) else expandedTree
 
-            new.clearChilds()
+            new.clearChildComponents()
             new.add(finalTree)
             require(new.count() == 1) { "Duplicated children" }
             new.onUpdateChild()
@@ -103,14 +104,14 @@ object RComponentRenderer {
                     expandSubTree(oldChild, newChild, updateBuildContext(buildCtx, new), ctx)
                 }
 
-                return new.apply { clearChilds(); children.forEach { child -> add(child) } }
+                return new.apply { clearChildComponents(); children.forEach { child -> add(child) } }
             }
         }
         val children = new.childs.map {
             expandSubTree(null, it, updateBuildContext(buildCtx, new), ctx)
         }
 
-        return new.apply { clearChilds(); children.forEach { child -> add(child) } }
+        return new.apply { clearChildComponents(); children.forEach { child -> add(child) } }
     }
 
     private fun updateBuildContext(old: RBuilder, parent: Component): RBuilder =
@@ -131,7 +132,7 @@ object RComponentRenderer {
                 val childs = old.childs.zip(new.childs).map { (oldC, newC) ->
                     mergeTrees(oldC, newC)
                 }
-                new.apply { clearChilds(); childs.forEach { child -> add(child) } }
+                new.apply { clearChildComponents(); childs.forEach { child -> add(child) } }
             }
         }
         return new

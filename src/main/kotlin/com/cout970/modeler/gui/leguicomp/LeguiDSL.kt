@@ -14,8 +14,6 @@ import com.cout970.modeler.util.toColor
 import com.cout970.reactive.core.Listener
 import com.cout970.reactive.dsl.posY
 import com.cout970.reactive.dsl.sizeY
-import com.cout970.reactive.nodes.ComponentBuilder
-import com.cout970.reactive.nodes.comp
 import com.cout970.vector.api.IVector3
 import org.joml.Vector4f
 import org.liquidengine.legui.component.Component
@@ -73,46 +71,10 @@ fun spaces(amount: Int): String = buildString {
 
 fun Component.alignAsColumn(padding: Float) {
     var y = 0f
-    childs.forEach {
+    childComponents.forEach {
         it.posY = y
         y += it.sizeY + padding
     }
-}
-
-fun Component.fill() {
-    size.x = parent.size.x
-    size.y = parent.size.y
-}
-
-fun Component.fillX() {
-    size.x = parent.size.x
-}
-
-fun Component.fillY() {
-    size.y = parent.size.y
-}
-
-fun Component.marginX(margin: Float) {
-    size.x = parent.size.x - margin * 2
-    position.x = margin
-}
-
-fun Component.marginY(margin: Float) {
-    size.y = parent.size.y - margin * 2
-    position.y = margin
-}
-
-fun Component.center() {
-    position.x = (parent.size.x - size.x) * 0.5f
-    position.y = (parent.size.y - size.y) * 0.5f
-}
-
-fun Component.centerX() {
-    position.x = (parent.size.x - size.x) * 0.5f
-}
-
-fun Component.centerY() {
-    position.y = (parent.size.y - size.y) * 0.5f
 }
 
 inline fun color(f: ColorPalette.() -> IVector3): Vector4f = Config.colorPalette.f().toColor()
@@ -185,7 +147,7 @@ fun debugPixelBorder() = PixelBorder().apply {
 
 fun Component.forEachRecursive(func: (Component) -> Unit) {
     func(this)
-    childs.forEach { it.forEachRecursive(func) }
+    childComponents.forEach { it.forEachRecursive(func) }
 }
 
 fun com.cout970.reactive.core.RBuilder.onCmd(cmd: String, func: (args: Map<String, Any>) -> Unit) {
@@ -194,14 +156,6 @@ fun com.cout970.reactive.core.RBuilder.onCmd(cmd: String, func: (args: Map<Strin
             func(command.args)
         }
     })
-}
-
-fun com.cout970.reactive.core.RBuilder.postMount(func: Component.() -> Unit) {
-    val oldDeferred = this.deferred
-    this.deferred = {
-        it.metadata["postMount"] = func
-        oldDeferred?.invoke(it)
-    }
 }
 
 fun <T : Event<*>> ListenerMap.clear(clazz: Class<T>) {
@@ -213,12 +167,5 @@ fun Component.dispatch(str: String) {
     dispatcher.onEvent(str, this)
 }
 
-fun <T : Component> ComponentBuilder<T>.childrenAsNodes() {
-    this.component.childs.forEach {
-        comp(it) {
-            if (it.isNotEmpty) {
-                childrenAsNodes()
-            }
-        }
-    }
-}
+@Deprecated("Obsolete", ReplaceWith("this.childComponents"))
+inline val Component.childs get() = childComponents!!

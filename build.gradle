@@ -15,10 +15,14 @@ switch (OperatingSystem.current()) {
         break
 }
 
+ext.kotlin_version = '1.2.21'
+ext.lwjglVersion = "3.1.3-SNAPSHOT"
+ext.legui_version = "1.4.5-184"
+
 buildscript {
-    ext.kotlin_version = '1.2.10'
+    ext.kotlin_version = '1.2.21'
     ext.lwjglVersion = "3.1.3-SNAPSHOT"
-    ext.legui_version = "1.4.3-SNAPSHOT"
+    ext.legui_version = "1.4.5-184"
 
     repositories {
         mavenCentral()
@@ -53,6 +57,10 @@ repositories {
         url = "https://raw.github.com/LiquidEngine/repo/snapshots"
     }
     maven {
+        name = "Develop"
+        url = "https://raw.github.com/LiquidEngine/repo/develop"
+    }
+    maven {
         name = "kotlin-eap"
         url = "https://dl.bintray.com/kotlin/kotlin-eap-1.1/"
     }
@@ -66,9 +74,9 @@ dependencies {
             "./lib/RaytraceLib-1.0.3.jar",
             "./lib/VectorLib-1.0.3.jar",
             "./lib/CollisionLib-1.0.4.jar",
-            "./lib/reactive-1.0.2.jar")
+            "./lib/reactive-1.1.0.jar")
 
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     compile "org.liquidengine:legui:$legui_version"
 
@@ -105,6 +113,12 @@ jar {
     }
     from sourceSets.main.allSource
 }
+
+compileKotlin {
+    incremental = true
+    kotlinOptions.jvmTarget = "1.8"
+}
+
 kotlin {
     experimental {
         coroutines "enable"

@@ -2,6 +2,7 @@ package com.cout970.modeler.gui.reactive
 
 import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.gui.Gui
+import com.cout970.modeler.gui.leguicomp.childs
 import com.cout970.modeler.util.isNotEmpty
 import org.liquidengine.legui.component.Component
 

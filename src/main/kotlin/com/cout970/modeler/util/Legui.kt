@@ -1,5 +1,6 @@
 package com.cout970.modeler.util
 
+import com.cout970.modeler.gui.leguicomp.childs
 import com.cout970.reactive.core.Renderer
 import com.cout970.vector.api.IVector2
 import org.joml.Vector2f
@@ -21,7 +22,7 @@ var Frame.size: Vector2f
     }
 
 
-fun Component.child(key: String) = childs.find { it.metadata[Renderer.METADATA_KEY] == key }
+fun Component.child(key: String) = childComponents.find { it.metadata[Renderer.METADATA_KEY] == key }
 
 
 fun Component.disable() {
