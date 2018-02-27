@@ -5,6 +5,8 @@ import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.core.model.*
+import com.cout970.modeler.core.model.`object`.Object
+import com.cout970.modeler.core.model.`object`.ObjectCube
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.mesh.getTextureVertex

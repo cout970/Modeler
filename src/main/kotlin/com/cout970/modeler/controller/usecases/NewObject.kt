@@ -4,8 +4,8 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.tasks.TaskUpdateModel
-import com.cout970.modeler.core.model.Object
-import com.cout970.modeler.core.model.ObjectCube
+import com.cout970.modeler.core.model.`object`.Object
+import com.cout970.modeler.core.model.`object`.ObjectCube
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.mesh.MeshFactory
 import com.cout970.vector.extensions.Quaternion

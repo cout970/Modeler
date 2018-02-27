@@ -9,6 +9,8 @@ import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.core.export.*
 import com.cout970.modeler.core.model.*
+import com.cout970.modeler.core.model.`object`.Object
+import com.cout970.modeler.core.model.`object`.ObjectCube
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.material.TexturedMaterial

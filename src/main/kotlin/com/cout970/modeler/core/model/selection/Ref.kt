@@ -4,7 +4,7 @@ import com.cout970.modeler.api.model.selection.IEdgeRef
 import com.cout970.modeler.api.model.selection.IFaceRef
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.api.model.selection.IPosRef
-import com.cout970.modeler.core.model.ObjectNone
+import com.cout970.modeler.core.model.`object`.ObjectNone
 import java.util.*
 
 /**

@@ -1,10 +1,11 @@
-package com.cout970.modeler.core.model
+package com.cout970.modeler.core.model.`object`
 
 import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.`object`.IObjectCube
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.api.model.transformer.IObjectTransformer
+import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.vector.api.IQuaternion

@@ -2,7 +2,7 @@ package com.cout970.modeler.controller.usecases
 
 import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.controller.tasks.*
-import com.cout970.modeler.core.model.Object
+import com.cout970.modeler.core.model.`object`.Object
 import com.cout970.modeler.core.model.faces
 import com.cout970.modeler.core.model.getSelectedObjects
 import com.cout970.modeler.core.model.objects

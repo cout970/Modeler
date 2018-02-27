@@ -2,21 +2,18 @@
 # Loads of skyboxes "http://www.custommapmakers.org/skyboxes.php"
 
 # Current
-Extrude face
+Add model hierarchy
 
 # TODO soom
 add binary switches
-Update gui, i don't like the right panel, too weird
 better logo.
 choose a name.
 
 # TODO later
-integrate the css loader to be able to change gui desing without code
 export hitbox dialog
 detect duplicated shapes
 change scale to be directional
 add groups for config bindings
-add restore default config, Reset settings
 mirror textures X and Y
 wireframe mode
 Flip axis in selection
@@ -32,7 +29,6 @@ Split by selection (move selected faces to a different obj)
 sub-divide cube
 extrude edge to make a new panel
 make face based on vertex/edge selection
-background for ortho
 c for convert (obj to mesh, mesh to obj)
 remove doubles (duplicated vertices/edges/faces)
 

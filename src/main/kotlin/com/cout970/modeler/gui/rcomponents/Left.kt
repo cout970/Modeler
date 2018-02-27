@@ -9,6 +9,7 @@ import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.*
+import com.cout970.modeler.core.model.`object`.ObjectCube
 import com.cout970.modeler.core.model.selection.ObjectRefNone
 import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.gui.canvas.GridLines
@@ -200,8 +201,6 @@ class EditorControls : RComponent<EmptyProps, VisibleWidget>() {
                     .apply(config)
                     .apply { tooltip = InstantTooltip("Enable/Disable texture projection") }
         }
-
-
     }
 }
 

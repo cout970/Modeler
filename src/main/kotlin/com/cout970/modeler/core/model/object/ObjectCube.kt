@@ -1,10 +1,11 @@
-package com.cout970.modeler.core.model
+package com.cout970.modeler.core.model.`object`
 
 import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.`object`.IObjectCube
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.api.model.transformer.IObjectTransformer
+import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
@@ -115,7 +116,8 @@ data class ObjectCube(
 
     override fun withTextureSize(size: IVector2): IObjectCube = copy(textureSize = size)
 
-    override fun withMesh(newMesh: IMesh): IObject = Object(name, newMesh, material, visible, id)
+    override fun withMesh(newMesh: IMesh): IObject = Object(name, newMesh,
+            material, visible, id)
 
     override fun withMaterial(materialRef: IMaterialRef): IObject = copy(material = materialRef)
 
@@ -133,7 +135,8 @@ data class ObjectCube(
         }
 
         override fun rotate(obj: IObject, pivot: IVector3, rot: IQuaternion): IObject {
-            val newRot = TRSTransformation.fromRotationPivot(pivot, rot.toAxisRotations())
+            val newRot = TRSTransformation.fromRotationPivot(pivot,
+                    rot.toAxisRotations())
             return copy(transformation = transformation.merge(newRot))
         }
 

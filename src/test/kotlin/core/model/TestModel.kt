@@ -1,6 +1,8 @@
 package core.model
 
 import com.cout970.modeler.core.model.*
+import com.cout970.modeler.core.model.`object`.Object
+import com.cout970.modeler.core.model.`object`.ObjectCube
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.MeshFactory
@@ -46,7 +48,8 @@ class TestModel {
 
     @Test
     fun `Check model merge without material`() {
-        val obj1 = Object("", MeshFactory.createPlane(Vector2.ONE), MaterialRefNone)
+        val obj1 = Object("", MeshFactory.createPlane(Vector2.ONE),
+                MaterialRefNone)
 
         val modelA = Model.of(mapOf(obj1.toPair()), emptyList())
         val modelB = Model.of(mapOf(obj1.toPair()), emptyList())
@@ -59,7 +62,8 @@ class TestModel {
     @Test
     fun `Check model merge with material`() {
         val material = TexturedMaterial("name", ResourcePath.fromResourceLocation("path"))
-        val obj1 = Object("", MeshFactory.createPlane(Vector2.ONE), material.ref)
+        val obj1 = Object("", MeshFactory.createPlane(Vector2.ONE),
+                material.ref)
 
         val modelA = Model.of(mapOf(obj1.toPair()), listOf(material))
         val modelB = Model.of(mapOf(obj1.toPair()), listOf(material))

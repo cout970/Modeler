@@ -1,9 +1,10 @@
-package com.cout970.modeler.core.model
+package com.cout970.modeler.core.model.`object`
 
 import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.api.model.transformer.IObjectTransformer
+import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.util.middle
@@ -50,7 +51,9 @@ data class Object(
         }
 
         override fun rotate(obj: IObject, pivot: IVector3, rot: IQuaternion): IObject {
-            return copy(mesh = mesh.transform(TRSTransformation.fromRotationPivot(pivot, rot.toAxisRotations())))
+            return copy(mesh = mesh.transform(
+                    TRSTransformation.fromRotationPivot(pivot,
+                            rot.toAxisRotations())))
         }
 
         override fun scale(obj: IObject, center: IVector3, axis: IVector3, offset: Float): IObject {
@@ -58,11 +61,13 @@ data class Object(
         }
 
         override fun translateTexture(obj: IObject, translation: IVector2): IObject {
-            return copy(mesh = mesh.transformTexture(TRSTransformation(translation.toVector3(0.0))))
+            return copy(mesh = mesh.transformTexture(
+                    TRSTransformation(translation.toVector3(0.0))))
         }
 
         override fun rotateTexture(obj: IObject, center: IVector2, angle: Double): IObject {
-            val trans = TRSTransformation.fromRotationPivot(center.toVector3(0.0), vec3Of(0.0, 0.0, 1.0))
+            val trans = TRSTransformation.fromRotationPivot(
+                    center.toVector3(0.0), vec3Of(0.0, 0.0, 1.0))
             return copy(mesh = mesh.transformTexture(trans))
         }
 

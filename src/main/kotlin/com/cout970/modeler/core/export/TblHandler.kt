@@ -3,7 +3,7 @@ package com.cout970.modeler.core.export
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.model.Model
-import com.cout970.modeler.core.model.ObjectCube
+import com.cout970.modeler.core.model.`object`.ObjectCube
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.ref
@@ -53,7 +53,8 @@ class TblImporter {
 
             ObjectCube(
                     name = cube.name,
-                    transformation = TRSTransformation(translation = transformPos(cube), scale = cube.dimensions).merge(newRot),
+                    transformation = TRSTransformation(translation = transformPos(cube), scale = cube.dimensions).merge(
+                            newRot),
                     material = material,
                     textureOffset = cube.txOffset,
                     textureSize = texSize,

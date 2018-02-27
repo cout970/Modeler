@@ -4,7 +4,7 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.core.model.Model
-import com.cout970.modeler.core.model.Object
+import com.cout970.modeler.core.model.`object`.Object
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.FaceIndex

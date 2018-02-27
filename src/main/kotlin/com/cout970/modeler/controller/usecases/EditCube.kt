@@ -6,7 +6,7 @@ import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.tasks.TaskNone
 import com.cout970.modeler.controller.tasks.TaskUpdateModel
-import com.cout970.modeler.core.model.ObjectCubeNone
+import com.cout970.modeler.core.model.`object`.ObjectCubeNone
 import com.cout970.modeler.core.model.pos
 import com.cout970.modeler.core.model.size
 import com.cout970.modeler.util.asNullable
