@@ -8,12 +8,15 @@ import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.core.export.*
-import com.cout970.modeler.core.model.*
+import com.cout970.modeler.core.model.Model
+import com.cout970.modeler.core.model.TRSTransformation
+import com.cout970.modeler.core.model.`object`.GroupTree
 import com.cout970.modeler.core.model.`object`.Object
 import com.cout970.modeler.core.model.`object`.ObjectCube
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
+import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.project.ProjectProperties
 import com.cout970.modeler.core.resource.ResourcePath
 import com.cout970.vector.api.IQuaternion
@@ -81,7 +84,7 @@ object ProjectLoaderV10 {
                 obj.withMaterial(materialList.getOrElse(materialIndex, { MaterialNone }).ref)
             }
 
-            return Model(objectsList.associateBy { it.ref }, materialList.associateBy { it.ref })
+            return Model(objectsList.associateBy { it.ref }, materialList.associateBy { it.ref }, GroupTree.emptyTree())
         }
     }
 

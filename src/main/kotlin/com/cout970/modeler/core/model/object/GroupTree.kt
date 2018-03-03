@@ -3,6 +3,21 @@ package com.cout970.modeler.core.model.`object`
 import com.cout970.modeler.api.model.`object`.IGroup
 import com.cout970.modeler.api.model.`object`.IGroupTree
 import com.cout970.modeler.api.model.selection.IObjectRef
+import java.util.*
+
+data class Group(
+        override val name: String,
+        override val id: UUID = UUID.randomUUID()
+) : IGroup {
+
+    override fun equals(other: Any?): Boolean {
+        return (other as? IGroup)?.id == id
+    }
+
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
+}
 
 data class GroupTree(
         val rootSet: Set<IGroup>,
@@ -14,7 +29,7 @@ data class GroupTree(
     companion object {
         fun emptyTree(): IGroupTree = GroupTree(
                 emptySet(), emptyMap(), emptyMap(),
-                ImmutableBiMultimapImpl.emptyBimap()
+                ImmutableBiMultimapImpl.emptyBiMultimap()
         )
     }
 
@@ -75,4 +90,21 @@ data class GroupTree(
     override fun getGroup(obj: IObjectRef): IGroup? = objectMapping.getReverse(obj)
 
     override fun getObjects(group: IGroup): List<IObjectRef> = objectMapping[group]
+
+    override fun merge(other: IGroupTree): IGroupTree {
+        other as GroupTree
+
+        var objectMapping = this.objectMapping
+
+        other.objectMapping.forEach { (key, value) ->
+            objectMapping = objectMapping.addAll(key, value)
+        }
+
+        return GroupTree(
+                rootSet = this.rootSet + other.rootSet,
+                parentMap = this.parentMap + other.parentMap,
+                childMap = this.childMap + other.childMap,
+                objectMapping = objectMapping
+        )
+    }
 }

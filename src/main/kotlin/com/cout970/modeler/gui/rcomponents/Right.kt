@@ -1,5 +1,7 @@
 package com.cout970.modeler.gui.rcomponents
 
+import com.cout970.modeler.api.model.`object`.IGroup
+import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.`object`.IObjectCube
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.IObjectRef
@@ -103,6 +105,9 @@ class CreateObjectPanel : RStatelessComponent<EmptyProps>() {
         +IconButton("cube.mesh.new", "addMeshCubeIcon", 40f, 28f, 32f, 32f).also {
             it.setTooltip("Create Cube Mesh")
         }
+        +IconButton("group.add", "addMeshCubeIcon", 75f, 28f, 32f, 32f).also {
+            it.setTooltip("Create Object Group")
+        }
     }
 }
 
@@ -178,66 +183,120 @@ class ModelTree : RStatelessComponent<ModelTreeProps>() {
                     borderless()
                 }
 
-                val objs = props.modelAccessor.model.objectMap.values
+                val model = props.modelAccessor.model
+                val objs = model.objectMap.values
+                val tree = model.groupTree
                 val selected = props.modelAccessor.modelSelection.map { sel ->
                     { obj: IObjectRef -> sel.isSelected(obj) }
                 }.getOr { false }
 
-                objs.forEachIndexed { index, obj ->
-                    div(obj.name) {
-                        style {
-                            sizeY = 24f
-                            posY = index * (sizeY + 2f)
-                            transparent()
-                            borderless()
-                            rectCorners()
+                var index = 0
 
-                            if (selected(obj.ref)) {
-                                background { lightBrightColor }
-                            } else {
-                                background { lightDarkColor }
-                            }
-                        }
-
-                        postMount {
-                            sizeX = parent.sizeX - 5f
-                        }
-
-                        val icon = if (obj is IObjectCube) "obj_type_cube" else "obj_type_mesh"
-
-                        +IconButton("tree.view.select", icon, 0f, 0f, 24f, 24f).apply {
-                            metadata += "ref" to obj.ref
-                        }
-                        +TextButton("tree.view.select", obj.name, 24f, 0f, 172f, 24f).apply {
-                            transparent()
-                            borderless()
-                            fontSize = 20f
-                            horizontalAlign = HorizontalAlign.LEFT
-                            textState.padding.x = 2f
-                            metadata += "ref" to obj.ref
-                        }
-                        +IconButton("tree.view.show.item", "showIcon", 196f, 0f, 24f, 24f).apply {
-                            transparent()
-                            borderless()
-                            metadata += "ref" to obj.ref
-                            if (obj.visible) hide() else show()
-                            setTooltip("Show object")
-                        }
-                        +IconButton("tree.view.hide.item", "hideIcon", 196f, 0f, 24f, 24f).apply {
-                            transparent()
-                            borderless()
-                            metadata += "ref" to obj.ref
-                            if (!obj.visible) hide() else show()
-                            setTooltip("Hide object")
-                        }
-                        +IconButton("tree.view.delete.item", "deleteIcon", 222f, 0f, 24f, 24f).apply {
-                            transparent()
-                            borderless()
-                            metadata += "ref" to obj.ref
-                            setTooltip("Delete object")
+                tree.root.forEach { group ->
+                    group(index++, group)
+                    // TODO make more generic
+                    tree.getChildren(group).forEach {
+                        group(index++, group)
+                        tree.getObjects(it).forEach { ref ->
+                            obj(index++, model.getObject(ref), selected(ref))
                         }
                     }
+                    tree.getObjects(group).forEach { ref ->
+                        obj(index++, model.getObject(ref), selected(ref))
+                    }
                 }
+
+                // remaining objects, that are in the root object
+                objs.forEach { obj ->
+                    if (tree.getGroup(obj.ref) == null) {
+                        obj(index++, obj, selected(obj.ref))
+                    }
+                }
+            }
+        }
+    }
+
+    fun RBuilder.group(index: Int, group: IGroup) {
+        div(group.name) {
+            style {
+                sizeY = 24f
+                posY = index * (sizeY + 2f)
+                transparent()
+                borderless()
+                rectCorners()
+
+                background { lightDarkColor }
+            }
+
+            postMount {
+                sizeX = parent.sizeX - 5f
+            }
+
+
+            +IconButton("", "", 0f, 0f, 24f, 24f)
+
+            +TextButton("", group.name, 24f, 0f, 172f, 24f).apply {
+                transparent()
+                borderless()
+                fontSize = 20f
+                horizontalAlign = HorizontalAlign.LEFT
+                textState.padding.x = 2f
+            }
+        }
+    }
+
+    fun RBuilder.obj(index: Int, obj: IObject, selected: Boolean) {
+        div(obj.name) {
+            style {
+                sizeY = 24f
+                posY = index * (sizeY + 2f)
+                transparent()
+                borderless()
+                rectCorners()
+
+                if (selected) {
+                    background { lightBrightColor }
+                } else {
+                    background { lightDarkColor }
+                }
+            }
+
+            postMount {
+                sizeX = parent.sizeX - 5f
+            }
+
+            val icon = if (obj is IObjectCube) "obj_type_cube" else "obj_type_mesh"
+
+            +IconButton("tree.view.select", icon, 0f, 0f, 24f, 24f).apply {
+                metadata += "ref" to obj.ref
+            }
+            +TextButton("tree.view.select", obj.name, 24f, 0f, 172f, 24f).apply {
+                transparent()
+                borderless()
+                fontSize = 20f
+                horizontalAlign = HorizontalAlign.LEFT
+                textState.padding.x = 2f
+                metadata += "ref" to obj.ref
+            }
+            +IconButton("tree.view.show.item", "showIcon", 196f, 0f, 24f, 24f).apply {
+                transparent()
+                borderless()
+                metadata += "ref" to obj.ref
+                if (obj.visible) hide() else show()
+                setTooltip("Show object")
+            }
+            +IconButton("tree.view.hide.item", "hideIcon", 196f, 0f, 24f, 24f).apply {
+                transparent()
+                borderless()
+                metadata += "ref" to obj.ref
+                if (!obj.visible) hide() else show()
+                setTooltip("Hide object")
+            }
+            +IconButton("tree.view.delete.item", "deleteIcon", 222f, 0f, 24f, 24f).apply {
+                transparent()
+                borderless()
+                metadata += "ref" to obj.ref
+                setTooltip("Delete object")
             }
         }
     }

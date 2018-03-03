@@ -1,10 +1,12 @@
 package com.cout970.modeler.core.model
 
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.`object`.IGroupTree
 import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.IObjectRef
+import com.cout970.modeler.core.model.`object`.GroupTree
 import com.cout970.modeler.core.model.`object`.ObjectNone
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.MaterialRefNone
@@ -17,7 +19,8 @@ import com.cout970.modeler.core.model.material.MaterialRefNone
  */
 data class Model(
         override val objectMap: Map<IObjectRef, IObject>,
-        override val materialMap: Map<IMaterialRef, IMaterial>
+        override val materialMap: Map<IMaterialRef, IMaterial>,
+        override val groupTree: IGroupTree
 ) : IModel {
 
     val id: Int = lastId++
@@ -26,17 +29,17 @@ data class Model(
         private var lastId = 0
 
         fun of(objects: List<IObject>, materials: List<IMaterial>): IModel {
-            return Model(objects.associateBy { it.ref }, materials.associateBy { it.ref })
+            return Model(objects.associateBy { it.ref }, materials.associateBy { it.ref }, GroupTree.emptyTree())
         }
 
         fun of(objects: Map<IObjectRef, IObject>, materials: List<IMaterial>): IModel {
-            return Model(objects, materials.associateBy { it.ref })
+            return Model(objects, materials.associateBy { it.ref }, GroupTree.emptyTree())
         }
 
-        fun empty() = Model(emptyMap(), emptyMap())
+        fun empty() = Model(emptyMap(), emptyMap(), GroupTree.emptyTree())
     }
 
-    private constructor() : this(emptyMap(), emptyMap())
+    private constructor() : this(emptyMap(), emptyMap(), GroupTree.emptyTree())
 
     override fun getObject(ref: IObjectRef): IObject {
         if (ref in objectMap) {
@@ -107,16 +110,15 @@ data class Model(
         )
     }
 
+    override fun withGroupTree(newGroupTree: IGroupTree): IModel {
+        return copy(groupTree = newGroupTree)
+    }
+
     override fun merge(other: IModel): IModel {
-
-        val otherObjects = other.objects
-
-        val materials = this.materialMap + other.materialMap
-        val objects = this.objectMap + otherObjects.associateBy { it.ref }
-
         return Model(
-                objectMap = objects,
-                materialMap = materials
+                objectMap = this.objectMap + other.objects.associateBy { it.ref },
+                materialMap = this.materialMap + other.materialMap,
+                groupTree = this.groupTree.merge(other.groupTree)
         )
     }
 

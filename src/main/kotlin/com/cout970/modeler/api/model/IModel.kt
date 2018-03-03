@@ -13,6 +13,7 @@ import com.cout970.modeler.api.model.selection.IObjectRef
 interface IModel : Comparable<IModel> {
     val objectMap: Map<IObjectRef, IObject>
     val materialMap: Map<IMaterialRef, IMaterial>
+    val groupTree: IGroupTree
 
     val materialRefs: List<IMaterialRef> get() = materialMap.keys.toList()
     val materials: List<IMaterial> get() = materialMap.values.toList()
@@ -30,6 +31,8 @@ interface IModel : Comparable<IModel> {
     fun addMaterial(material: IMaterial): IModel
     fun modifyMaterial(ref: IMaterialRef, new: IMaterial): IModel
     fun removeMaterial(materialRef: IMaterialRef): IModel
+
+    fun withGroupTree(newGroupTree: IGroupTree): IModel
 
     fun modifyObjects(objs: Set<IObjectRef>, func: (IObjectRef, IObject) -> IObject): IModel {
         return modifyObjects({ it in objs }, func)

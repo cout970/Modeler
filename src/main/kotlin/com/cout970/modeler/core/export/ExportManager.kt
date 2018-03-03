@@ -8,6 +8,7 @@ import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.Model
+import com.cout970.modeler.core.model.`object`.GroupTree
 import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.model.selection.ClipboardNone.Companion.model
 import com.cout970.modeler.core.project.ProjectManager
@@ -59,7 +60,7 @@ class ExportManager(val resourceLoader: ResourceLoader) {
         // Make sure the id of the imported model are different from the current model
         val objs = model.objectMap.toList().map { it.second.withId(UUID.randomUUID()) }.associateBy { it.ref }
 
-        return Model(objs, model.materialMap)
+        return Model(objs, model.materialMap, GroupTree.emptyTree())
     }
 
     fun loadLastProjectIfExists(projectManager: ProjectManager, gui: Gui) {

@@ -45,12 +45,12 @@ class ImmutableBiMultimapImpl<K, V>(
 ) : ImmutableBiMultimap<K, V> {
 
     companion object {
-        fun <K, V> emptyBimap(): ImmutableBiMultimap<K, V> = ImmutableBiMultimapImpl(
+        fun <K, V> emptyBiMultimap(): ImmutableBiMultimap<K, V> = ImmutableBiMultimapImpl(
                 emptyMap(), emptyMap())
 
-        fun <K, V> bimapOf(vararg entries: Pair<K, List<V>>): ImmutableBiMultimap<K, V> {
+        fun <K, V> biMultimapOf(vararg entries: Pair<K, List<V>>): ImmutableBiMultimap<K, V> {
             return entries.fold(
-                    emptyBimap()) { acc, entry -> acc.addAll(entry.first, entry.second) }
+                    emptyBiMultimap()) { acc, entry -> acc.addAll(entry.first, entry.second) }
         }
     }
 

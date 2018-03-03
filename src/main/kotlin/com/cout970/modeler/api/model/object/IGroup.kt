@@ -9,6 +9,7 @@ interface IGroup {
 }
 
 interface IGroupTree {
+
     val root: List<IGroup>
 
     fun addGroup(parent: IGroup?, newGroup: IGroup): IGroupTree
@@ -28,4 +29,6 @@ interface IGroupTree {
     fun getGroup(obj: IObjectRef): IGroup?
 
     fun getObjects(group: IGroup): List<IObjectRef>
+
+    fun merge(other: IGroupTree): IGroupTree
 }

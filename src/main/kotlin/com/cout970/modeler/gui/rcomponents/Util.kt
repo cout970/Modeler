@@ -387,3 +387,25 @@ class TinyFloatInput : RStatelessComponent<TinyFloatInputProps>() {
         return (scriptEngine.eval(this) as? Number)?.toFloat()
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
