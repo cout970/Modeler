@@ -18,7 +18,6 @@ import com.cout970.modeler.gui.event.EventSelectionUpdate
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.asNullable
-import com.cout970.modeler.util.child
 import com.cout970.modeler.util.toColor
 import com.cout970.reactive.core.*
 import com.cout970.reactive.dsl.*
@@ -56,7 +55,7 @@ class LeftPanel : RStatelessComponent<LeftPanelProps>() {
         }
 
 
-        scrollPanel {
+        scrollablePanel {
 
             style {
                 borderless()
@@ -72,20 +71,23 @@ class LeftPanel : RStatelessComponent<LeftPanelProps>() {
                 child("Container")?.listenerMap?.clear(ScrollEvent::class.java)
             }
 
-            horizontalScroll { hide() }
+            horizontalScroll { style { hide() } }
 
             verticalScroll {
-                isArrowsEnabled = false
-                scrollColor = color { lightBrightColor }
-                backgroundColor { color { darkColor } }
-                rectCorners()
-                height = 8f
+                style {
+                    isArrowsEnabled = false
+                    scrollColor = color { lightBrightColor }
+                    backgroundColor { color { darkColor } }
+                    rectCorners()
+                }
             }
 
             container {
                 style {
                     borderless()
                     transparent()
+                    width = 288f - 8f
+                    height = 1200f
                 }
 
                 postMount {

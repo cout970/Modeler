@@ -6,7 +6,6 @@ import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.gui.event.EventNotificationUpdate
 import com.cout970.modeler.gui.event.NotificationHandler
 import com.cout970.modeler.gui.leguicomp.*
-import com.cout970.modeler.util.child
 import com.cout970.modeler.util.toColor
 import com.cout970.reactive.core.EmptyProps
 import com.cout970.reactive.core.RBuilder

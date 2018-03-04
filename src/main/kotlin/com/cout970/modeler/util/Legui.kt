@@ -22,6 +22,7 @@ var Frame.size: Vector2f
     }
 
 
+@Deprecated("Use the Reactive version", ReplaceWith("this.child(key)", "com.cout970.reactive.dsl.child"))
 fun Component.child(key: String) = childComponents.find { it.metadata[Renderer.METADATA_KEY] == key }
 
 

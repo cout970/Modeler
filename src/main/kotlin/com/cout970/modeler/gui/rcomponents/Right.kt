@@ -21,10 +21,7 @@ import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RProps
 import com.cout970.reactive.core.RStatelessComponent
 import com.cout970.reactive.dsl.*
-import com.cout970.reactive.nodes.child
-import com.cout970.reactive.nodes.comp
-import com.cout970.reactive.nodes.div
-import com.cout970.reactive.nodes.style
+import com.cout970.reactive.nodes.*
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 
 
@@ -150,7 +147,7 @@ class ModelTree : RStatelessComponent<ModelTreeProps>() {
             }
         }
 
-        scrollPanel("ModeTreeScrollPanel") {
+        scrollablePanel("ModeTreeScrollPanel") {
             style {
                 transparent()
                 borderless()
@@ -164,24 +161,21 @@ class ModelTree : RStatelessComponent<ModelTreeProps>() {
             }
 
             horizontalScroll {
-                hide()
+                style { hide() }
             }
 
             verticalScroll {
-                rectCorners()
-                sizeX = 16f
-                arrowColor = color { lightBrightColor }
-                scrollColor = color { darkColor }
-                visibleAmount = 50f
-                backgroundColor { color { lightBrightColor } }
+                style {
+                    rectCorners()
+                    style.minimumSize.x = 16f
+                    arrowColor = color { lightBrightColor }
+                    scrollColor = color { darkColor }
+                    visibleAmount = 50f
+                    backgroundColor { color { lightBrightColor } }
+                }
             }
 
             container {
-
-                style {
-                    transparent()
-                    borderless()
-                }
 
                 val model = props.modelAccessor.model
                 val objs = model.objectMap.values
@@ -211,6 +205,13 @@ class ModelTree : RStatelessComponent<ModelTreeProps>() {
                     if (tree.getGroup(obj.ref) == null) {
                         obj(index++, obj, selected(obj.ref))
                     }
+                }
+
+                style {
+                    transparent()
+                    borderless()
+                    height = index * 26f
+                    width = 251f
                 }
             }
         }
@@ -375,7 +376,7 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
             }
         }
 
-        scrollPanel("MaterialListScrollPanel") {
+        scrollablePanel("MaterialListScrollPanel") {
             style {
                 transparent()
                 borderless()
@@ -389,24 +390,21 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
             }
 
             horizontalScroll {
-                hide()
+                style { hide() }
             }
 
             verticalScroll {
-                rectCorners()
-                sizeX = 16f
-                arrowColor = color { lightBrightColor }
-                scrollColor = color { darkColor }
-                visibleAmount = 50f
-                backgroundColor { color { lightBrightColor } }
+                style {
+                    rectCorners()
+                    style.minimumSize.x = 16f
+                    arrowColor = color { lightBrightColor }
+                    scrollColor = color { darkColor }
+                    visibleAmount = 50f
+                    backgroundColor { color { lightBrightColor } }
+                }
             }
 
             container {
-
-                style {
-                    transparent()
-                    borderless()
-                }
 
                 val model = props.modelAccessor.model
                 val selection = props.modelAccessor.modelSelection
@@ -418,6 +416,14 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
                         .map { (sel, objs) -> objs.filter(sel::isSelected) }
                         .map { it.map { model.getObject(it).material } }
                         .getOr(emptyList())
+
+
+                style {
+                    transparent()
+                    borderless()
+                    sizeX = 256f
+                    sizeY = materialRefs.size * (24f + 2f)
+                }
 
                 materialRefs.forEachIndexed { index, ref ->
                     val material = model.getMaterial(ref)

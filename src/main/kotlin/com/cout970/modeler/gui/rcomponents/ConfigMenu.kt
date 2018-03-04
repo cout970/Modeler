@@ -14,10 +14,7 @@ import com.cout970.reactive.core.RComponent
 import com.cout970.reactive.core.RProps
 import com.cout970.reactive.core.RState
 import com.cout970.reactive.dsl.*
-import com.cout970.reactive.nodes.child
-import com.cout970.reactive.nodes.comp
-import com.cout970.reactive.nodes.div
-import com.cout970.reactive.nodes.style
+import com.cout970.reactive.nodes.*
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import org.joml.Vector2f
@@ -170,6 +167,7 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                 textState.horizontalAlign = HorizontalAlign.LEFT
             }
 
+            println("Name: '${project.name}'")
             +StringInput("", project.name, 160f, 60f, 480f).apply {
                 background { darkestColor }
                 textState.padding.z = 10f
@@ -192,6 +190,7 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                 textState.horizontalAlign = HorizontalAlign.LEFT
             }
 
+            println("Description: '${project.description}'")
             +MultilineStringInput(project.description, 160f, 90f, 480f, 24f + 80f).apply {
                 background { darkestColor }
                 textState.padding.z = 10f
@@ -228,6 +227,9 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                 textState.fontSize = 18f
                 textState.horizontalAlign = HorizontalAlign.LEFT
             }
+
+            println("User name: '${user.name}'")
+
             +StringInput("", user.name, 160f, 30f, 480f).apply {
                 background { darkestColor }
                 textState.padding.z = 10f
@@ -249,6 +251,7 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                 textState.horizontalAlign = HorizontalAlign.LEFT
             }
 
+            println("User email: '${user.email}'")
             +StringInput("", user.email, 160f, 60f, 480f).apply {
                 background { darkestColor }
                 textState.padding.z = 10f
@@ -270,6 +273,8 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                 textState.horizontalAlign = HorizontalAlign.LEFT
             }
 
+            println("User web: '${user.web}'")
+
             +StringInput("", user.web, 160f, 90f, 480f).apply {
                 background { darkestColor }
                 textState.padding.z = 10f
@@ -290,7 +295,7 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
 
     @Suppress("UNCHECKED_CAST")
     fun RBuilder.parametersTab() {
-        scrollPanel {
+        scrollablePanel {
             style {
                 background { darkColor }
                 posX = 20f
@@ -299,15 +304,17 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                 sizeY = 430f
             }
 
-            horizontalScroll { hide() }
+            horizontalScroll { style { hide() } }
 
             val properties = getProperties()
 
             verticalScroll {
-                if (properties.size * 30f + 10f > 430f) {
-                    visibleAmount = 50f
-                } else {
-                    hide()
+                style {
+                    if (properties.size * 30f + 10f > 430f) {
+                        visibleAmount = 50f
+                    } else {
+                        hide()
+                    }
                 }
             }
 
@@ -355,7 +362,7 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
 
     @Suppress("UNCHECKED_CAST")
     fun RBuilder.controlsTab() {
-        scrollPanel {
+        scrollablePanel {
             style {
                 background { darkColor }
                 posX = 20f
@@ -364,10 +371,12 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                 sizeY = 430f
             }
 
-            horizontalScroll { hide() }
+            horizontalScroll { style { hide() } }
 
             verticalScroll {
-                visibleAmount = 10f
+                style {
+                    visibleAmount = 10f
+                }
             }
 
             container {
@@ -625,7 +634,7 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
 
     fun mergeControls(current: JsonObject, new: JsonObject): JsonObject {
         current.entrySet().forEach { (key, value) ->
-            if(key != "keyBindings"){
+            if (key != "keyBindings") {
                 new.remove(key)
                 new.add(key, value)
             }

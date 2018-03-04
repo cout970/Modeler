@@ -71,7 +71,7 @@ dependencies {
             "./lib/RaytraceLib-1.0.3.jar",
             "./lib/VectorLib-1.0.3.jar",
             "./lib/CollisionLib-1.0.4.jar",
-            "./lib/reactive-1.1.0.jar")
+            "./lib/reactive-1.2.0.jar")
 
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
