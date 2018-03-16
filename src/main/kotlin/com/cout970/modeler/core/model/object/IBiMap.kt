@@ -54,8 +54,8 @@ class ImmutableBiMultimapImpl<K, V>(
         }
     }
 
-    override val keySize: Int = direct.size
-    override val size: Int = reverse.size
+    override val keySize: Int get() = direct.size
+    override val size: Int get() = reverse.size
 
     override fun get(key: K): List<V> = direct[key]?.toList() ?: emptyList()
 

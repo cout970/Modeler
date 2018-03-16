@@ -2,6 +2,8 @@ package com.cout970.modeler.core.export
 
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.ITransformation
+import com.cout970.modeler.api.model.`object`.IGroup
+import com.cout970.modeler.api.model.`object`.IGroupTree
 import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
@@ -9,9 +11,8 @@ import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.model.Model
-import com.cout970.modeler.core.model.`object`.Object
-import com.cout970.modeler.core.model.`object`.ObjectCube
 import com.cout970.modeler.core.model.TRSTransformation
+import com.cout970.modeler.core.model.`object`.*
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.material.MaterialRefNone
@@ -115,6 +116,43 @@ class ModelSerializer : JsonSerializer<IModel>, JsonDeserializer<IModel> {
 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IModel {
         return context.deserialize(json, Model::class.java)
+    }
+}
+
+class GroupTreeSerializer : JsonSerializer<IGroupTree>, JsonDeserializer<IGroupTree> {
+
+    override fun serialize(src: IGroupTree, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+        return context.serialize(src)
+    }
+
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IGroupTree {
+        if (json.isJsonNull) return GroupTree.emptyTree()
+        return context.deserialize(json, GroupTree::class.java)
+    }
+}
+
+class GroupSerializer : JsonSerializer<IGroup>, JsonDeserializer<IGroup> {
+
+    override fun serialize(src: IGroup, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+        return context.serialize(src)
+    }
+
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IGroup {
+        return context.deserialize(json, Group::class.java)
+    }
+}
+
+class ImmutableBiMultimapSerializer : JsonSerializer<ImmutableBiMultimap<*, *>>, JsonDeserializer<ImmutableBiMultimap<*, *>> {
+
+    override fun serialize(src: ImmutableBiMultimap<*, *>, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+        return context.serialize(src)
+    }
+
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): ImmutableBiMultimap<*, *> {
+        if(json.isJsonNull || (json.isJsonObject && json.asJsonObject.size() == 0))
+            return ImmutableBiMultimapImpl.emptyBiMultimap<IGroup, IObjectRef>()
+
+        return context.deserialize(json, ImmutableBiMultimapImpl::class.java)
     }
 }
 
@@ -230,9 +268,15 @@ class MaterialRefSerializer : JsonSerializer<IMaterialRef>, JsonDeserializer<IMa
     }
 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IMaterialRef {
-        val uuid = UUID.fromString(json.asString)
-        if (uuid == MaterialRefNone.materialId) return MaterialRefNone
-        return MaterialRef(uuid)
+        if (json.isJsonObject) {
+            val ref = context.deserialize<MaterialRef>(json, MaterialRef::class.java)
+            if (ref.materialId == MaterialRefNone.materialId) return MaterialRefNone
+            return ref
+        } else {
+            val uuid = UUID.fromString(json.asString)
+            if (uuid == MaterialRefNone.materialId) return MaterialRefNone
+            return MaterialRef(uuid)
+        }
     }
 }
 

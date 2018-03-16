@@ -82,6 +82,12 @@ class LeftPanel : RStatelessComponent<LeftPanelProps>() {
                 }
             }
 
+            viewport {
+                postMount {
+                    listenerMap.clear(ScrollEvent::class.java)
+                }
+            }
+
             container {
                 style {
                     borderless()
@@ -202,6 +208,10 @@ class EditorControls : RComponent<EmptyProps, VisibleWidget>() {
             +ToggleButton("drawTextureProjection", "invisible", true, 0f, 0f, 24f, 24f)
                     .apply(config)
                     .apply { tooltip = InstantTooltip("Enable/Disable texture projection") }
+
+            +ToggleButton("renderSkybox", "invisible", true, 0f, 0f, 24f, 24f)
+                    .apply(config)
+                    .apply { tooltip = InstantTooltip("Enable/Disable skybox") }
         }
     }
 }

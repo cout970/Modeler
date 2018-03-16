@@ -2,6 +2,8 @@ package com.cout970.modeler.core.export.project
 
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.ITransformation
+import com.cout970.modeler.api.model.`object`.IGroup
+import com.cout970.modeler.api.model.`object`.IGroupTree
 import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
@@ -9,6 +11,7 @@ import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.export.*
+import com.cout970.modeler.core.model.`object`.ImmutableBiMultimap
 import com.cout970.modeler.core.project.ProjectProperties
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
@@ -34,6 +37,9 @@ object ProjectLoaderV11 {
             .registerTypeAdapter(IQuaternion::class.java, QuaternionSerializer())
             .registerTypeAdapter(IMaterial::class.java, MaterialSerializer())
             .registerTypeAdapter(IModel::class.java, ModelSerializer())
+            .registerTypeAdapter(IGroupTree::class.java, GroupTreeSerializer())
+            .registerTypeAdapter(IGroup::class.java, GroupSerializer())
+            .registerTypeAdapter(ImmutableBiMultimap::class.java, ImmutableBiMultimapSerializer())
             .registerTypeAdapter(IObject::class.java, ObjectSerializer())
             .registerTypeAdapter(IMesh::class.java, MeshSerializer())
             .registerTypeAdapter(IFaceIndex::class.java, FaceSerializer())
@@ -51,6 +57,7 @@ object ProjectLoaderV11 {
                     ?: throw IllegalStateException("Missing file 'model.json' inside '$path'")
 
         checkIntegrity(null, model.objects)
+//        checkIntegrity(null, model.groupTree)
         return ProgramSave(VERSION, properties, model)
     }
 

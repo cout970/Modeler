@@ -229,7 +229,7 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
         }
     }
 
-    override fun getInitialState() = ExportDialogState("", 0, false)
+    override fun getInitialState() = ExportDialogState("", 1, false)
 
     override fun RBuilder.render() = div("ExportDialog") {
         style {
