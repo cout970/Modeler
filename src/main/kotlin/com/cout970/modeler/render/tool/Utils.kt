@@ -20,6 +20,12 @@ import org.lwjgl.opengl.GL33
  */
 
 
+fun printGlErrors(name: String = "", func: () -> Unit) {
+    println("[$name] pre: ${GLStateMachine.pollErrors()}")
+    func()
+    println("[$name] post: ${GLStateMachine.pollErrors()}")
+}
+
 fun measureMilisGPU(func: () -> Unit): Double {
     val queryId = GL15.glGenQueries()
     val frameGpuTime = IntArray(1)
@@ -55,9 +61,14 @@ inline fun IMesh.forEachVertex(func: (Vertex) -> Unit) {
         val bd = d - b
         val normal = (ac cross bd).normalize()
 
-        for (index in 0 until face.vertexCount) {
-            func(Vertex(pos[face.pos[index]], tex[face.tex[index]], normal))
-        }
+
+        func(Vertex(pos[face.pos[0]], tex[face.tex[0]], normal))
+        func(Vertex(pos[face.pos[1]], tex[face.tex[1]], normal))
+        func(Vertex(pos[face.pos[2]], tex[face.tex[2]], normal))
+
+        func(Vertex(pos[face.pos[0]], tex[face.tex[0]], normal))
+        func(Vertex(pos[face.pos[2]], tex[face.tex[2]], normal))
+        func(Vertex(pos[face.pos[3]], tex[face.tex[3]], normal))
     }
 }
 
@@ -98,7 +109,7 @@ fun IMesh.append(buffer: BufferPTNC, color: IVector3 = Vector3.ONE) {
 }
 
 fun IMesh.createVao(buffer: BufferPTNC, color: IVector3 = Vector3.ONE): VAO {
-    return buffer.build(DrawMode.QUADS) {
+    return buffer.build(DrawMode.TRIANGLES) {
         append(buffer, color)
     }
 }

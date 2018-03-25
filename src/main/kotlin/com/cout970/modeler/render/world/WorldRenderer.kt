@@ -55,6 +55,7 @@ class WorldRenderer {
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
         renderOrientationCube(ctx)
 
+
         cursorRenderer.renderCursor(ctx)
     }
 
@@ -79,8 +80,8 @@ class WorldRenderer {
 
     fun renderGridLines(ctx: RenderContext) {
         if (!ctx.gui.gridLines.enableXPlane &&
-            !ctx.gui.gridLines.enableYPlane &&
-            !ctx.gui.gridLines.enableZPlane) return
+                !ctx.gui.gridLines.enableYPlane &&
+                !ctx.gui.gridLines.enableZPlane) return
 
         val pixelVao = gridLinesPixel.getOrCreate(ctx) {
             ctx.buffer.build(DrawMode.LINES) { renderGridLines(ctx, true) }
@@ -179,6 +180,7 @@ class WorldRenderer {
     fun renderOrientationCube(ctx: RenderContext) {
 
         ctx.gui.windowHandler.saveViewport(ctx.viewportPos, vec2Of(150, 150)) {
+
 
             val vao = orientationCubeCache.getOrCreate(ctx) {
                 ctx.gui.resources.orientationCubeMesh.createVao(ctx.buffer)

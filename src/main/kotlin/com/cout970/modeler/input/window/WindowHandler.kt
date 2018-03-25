@@ -12,7 +12,6 @@ import com.cout970.vector.extensions.vec2Of
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWImage
 import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL13
 import java.io.File
 import java.util.*
 
@@ -27,7 +26,7 @@ class WindowHandler : ITickeable {
     var viewport = Pair(vec2Of(0), vec2Of(1))
         set(value) {
             GL11.glViewport(value.first.xi, value.first.yi, value.second.xi, value.second.yi)
-            GL11.glEnable(GL13.GL_MULTISAMPLE)
+//            GL11.glEnable(GL13.GL_MULTISAMPLE)
             field = value
         }
 
@@ -43,11 +42,13 @@ class WindowHandler : ITickeable {
         window = WindowBuilder.build {
             title = WINDOW_TITLE
             size = vec2Of(800, 600)
-            vSync = false
+            vSync = true
             properties.put(GLFW_STENCIL_BITS, 24)
-            properties.put(GLFW_SAMPLES, 8)
-//            properties.put(GLFW_CONTEXT_VERSION_MAJOR, 3)
-//            properties.put(GLFW_CONTEXT_VERSION_MINOR, 2)
+//            properties.put(GLFW_SAMPLES, 4)
+
+            properties.put(GLFW_CONTEXT_VERSION_MAJOR, 3)
+            properties.put(GLFW_CONTEXT_VERSION_MINOR, 3)
+
 //            properties.put(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE)
 //            properties.put(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE)
         }
@@ -86,7 +87,7 @@ class WindowHandler : ITickeable {
 
     fun shouldClose() = window.shouldClose()
 
-    fun updateTitle(projectName: String){
+    fun updateTitle(projectName: String) {
         val projectPath = File(".").absolutePath
         window.setTitle("$projectName [$projectPath] - $WINDOW_TITLE")
     }

@@ -181,7 +181,7 @@ class ModelRenderer {
             SelectionType.EDGE -> ctx.buffer.build(DrawMode.LINES) {
                 appendEdgeSelection(modelToRender, selection, color)
             }
-            SelectionType.VERTEX -> ctx.buffer.build(DrawMode.QUADS) {
+            SelectionType.VERTEX -> ctx.buffer.build(DrawMode.TRIANGLES) {
                 appendVertexSelection(modelToRender, selection, color)
             }
         }

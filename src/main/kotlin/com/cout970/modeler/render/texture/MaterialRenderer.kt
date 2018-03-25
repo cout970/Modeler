@@ -73,7 +73,7 @@ class MaterialRenderer {
                     .map { model.getObject(it) }
                     .filter { it.visible && it.material == ref }
 
-            ctx.buffer.build(DrawMode.QUADS) {
+            ctx.buffer.build(DrawMode.TRIANGLES) {
                 objs.forEach { obj ->
                     val mesh = obj.mesh
 
@@ -85,10 +85,17 @@ class MaterialRenderer {
                                 .map { mesh.tex[it] }
                                 .map { vec2Of(it.xd, 1 - it.yd) }
                                 .map { it * material.size }
-                        positions.indices.forEach {
-                            val pos0 = positions[it]
-                            add(vec3Of(pos0.x, pos0.y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
-                        }
+
+                        assert(positions.size == 4)
+
+
+                        positions[0].let { add(vec3Of(it.x, it.y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color) }
+                        positions[1].let { add(vec3Of(it.x, it.y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color) }
+                        positions[2].let { add(vec3Of(it.x, it.y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color) }
+
+                        positions[0].let { add(vec3Of(it.x, it.y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color) }
+                        positions[2].let { add(vec3Of(it.x, it.y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color) }
+                        positions[3].let { add(vec3Of(it.x, it.y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color) }
                     }
                 }
             }
@@ -259,11 +266,14 @@ class MaterialRenderer {
 
     fun renderMaterial(ctx: RenderContext, material: IMaterial) {
         val vao = materialCache.getOrCreate(ctx) {
-            ctx.buffer.build(DrawMode.QUADS) {
+            ctx.buffer.build(DrawMode.TRIANGLES) {
                 val maxX = material.size.xi
                 val maxY = material.size.yi
                 add(vec3Of(0, 0, 0), vec2Of(0, 1), Vector3.ORIGIN, Vector3.ORIGIN)
                 add(vec3Of(maxX, 0, 0), vec2Of(1, 1), Vector3.ORIGIN, Vector3.ORIGIN)
+                add(vec3Of(maxX, maxY, 0), vec2Of(1, 0), Vector3.ORIGIN, Vector3.ORIGIN)
+
+                add(vec3Of(0, 0, 0), vec2Of(0, 1), Vector3.ORIGIN, Vector3.ORIGIN)
                 add(vec3Of(maxX, maxY, 0), vec2Of(1, 0), Vector3.ORIGIN, Vector3.ORIGIN)
                 add(vec3Of(0, maxY, 0), vec2Of(0, 0), Vector3.ORIGIN, Vector3.ORIGIN)
             }
