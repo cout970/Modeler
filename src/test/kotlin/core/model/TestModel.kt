@@ -1,11 +1,14 @@
 package core.model
 
-import com.cout970.modeler.core.model.*
+import com.cout970.modeler.core.model.Model
+import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.`object`.Object
 import com.cout970.modeler.core.model.`object`.ObjectCube
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.MeshFactory
+import com.cout970.modeler.core.model.ref
+import com.cout970.modeler.core.model.toPair
 import com.cout970.modeler.core.resource.ResourcePath
 import com.cout970.vector.extensions.Vector2
 import org.junit.Assert.assertEquals
@@ -62,8 +65,7 @@ class TestModel {
     @Test
     fun `Check model merge with material`() {
         val material = TexturedMaterial("name", ResourcePath.fromResourceLocation("path"))
-        val obj1 = Object("", MeshFactory.createPlane(Vector2.ONE),
-                material.ref)
+        val obj1 = Object("", MeshFactory.createPlane(Vector2.ONE), material.ref)
 
         val modelA = Model.of(mapOf(obj1.toPair()), listOf(material))
         val modelB = Model.of(mapOf(obj1.toPair()), listOf(material))

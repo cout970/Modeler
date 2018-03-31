@@ -1,5 +1,5 @@
 group 'com.cout970'
-version '1.6.2-SNAPSHOT'
+version '1.6.4-SNAPSHOT'
 
 import org.gradle.internal.os.OperatingSystem
 
@@ -17,9 +17,9 @@ switch (OperatingSystem.current()) {
 
 
 buildscript {
-    ext.kotlin_version = '1.2.21'
+    ext.kotlin_version = '1.2.31'
     ext.lwjglVersion = "3.1.3-SNAPSHOT"
-    ext.legui_version = "1.4.5-185"
+    ext.legui_version = "1.4.5-186"
 
     repositories {
         mavenCentral()
@@ -113,7 +113,12 @@ jar {
 
 compileKotlin {
     incremental = true
-    kotlinOptions.jvmTarget = "1.8"
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 kotlin {
