@@ -3,6 +3,11 @@ package com.cout970.modeler.api.model.`object`
 import com.cout970.modeler.api.model.selection.IObjectRef
 import java.util.*
 
+object RootGroup : IGroup {
+    override val name: String = "root"
+    override val id: UUID = UUID.fromString("713e7999-081e-488c-9ced-17d010bdd270")
+}
+
 interface IGroup {
     val name: String
     val id: UUID

@@ -81,6 +81,7 @@ class Initializer {
                         Profiler),
                 timer, windowHandler::shouldClose)
 
+        log(Level.FINE) { "Initializing and linking program components" }
         val state = Program(
                 resourceLoader = resourceLoader,
                 windowHandler = windowHandler,
@@ -102,17 +103,19 @@ class Initializer {
 
         modelSelectionHandler.typeGetter = gui.state::selectionType
 
-
         log(Level.FINE) { "Starting GLFW" }
         GLFWLoader.init()
+
         log(Level.FINE) { "Starting GLFW window" }
         windowHandler.create()
         windowHandler.loadIcon(resourceLoader)
+
         log(Level.FINE) { "Binding listeners and callbacks to window" }
         eventController.bindWindow(windowHandler.window)
 
         log(Level.FINE) { "Initializing renderers" }
         renderManager.initOpenGl(resourceLoader, gui)
+
         log(Level.FINE) { "Registering Input event listeners" }
         gui.listeners.initListeners(eventController, projectManager, gui)
 
@@ -120,19 +123,26 @@ class Initializer {
         gui.resources.reload(resourceLoader)
         gui.root.loadResources(gui.resources)
 
-        log(Level.FINE) { "[GuiInitializer] Binding text inputs" }
+        log(Level.FINE) { "Loading usecases" }
+        futureExecutor.programState = state
         gui.dispatcher.state = state
         gui.dispatcher.checkUseCases()
-        futureExecutor.programState = state
 
+        log(Level.FINE) { "Binding buttons" }
         gui.root.bindButtons(gui.buttonBinder)
+
+        log(Level.FINE) { "Updating gui scale" }
         gui.root.updateSizes(windowHandler.window.getFrameBufferSize())
 
-
+        log(Level.FINE) { "Processing args" }
         parseArgs(programArguments, exportManager, projectManager, windowHandler)
 
         log(Level.FINE) { "Searching for last project" }
         exportManager.loadLastProjectIfExists(projectManager, gui)
+
+        log(Level.FINE) { "Showing window" }
+        windowHandler.window.show()
+
         log(Level.FINE) { "Initialization done" }
         return state
     }

@@ -41,7 +41,7 @@ class CameraUpdater(
 
     private fun updateSelectedCanvas() {
         if (Config.keyBindings.moveCamera.check(input) ||
-            Config.keyBindings.rotateCamera.check(input)) {
+                Config.keyBindings.rotateCamera.check(input)) {
 
             if (selectedCanvas == null) {
                 val mousePos = input.mouse.getMousePos()
@@ -58,14 +58,14 @@ class CameraUpdater(
     private fun moveCamera(selectedScene: Canvas) {
 
         val move = Config.keyBindings.moveCamera.check(input) ||
-                   (input.keyboard.isKeyPressed(Keyboard.KEY_SPACE) && input.mouse.isButtonPressed(1))
+                (input.keyboard.isKeyPressed(Keyboard.KEY_SPACE) && input.mouse.isButtonPressed(1))
 
         val rotate = Config.keyBindings.rotateCamera.check(input)
 
         if (!move && !rotate) return
 
         val speed = 1 / (600 * timer.delta) *
-                    if (Config.keyBindings.slowCameraMovements.check(input)) 1 / 10f else 1f
+                if (Config.keyBindings.slowCameraMovements.check(input)) 1 / 10f else 1f
 
         if (selectedScene.viewMode == SelectionTarget.MODEL) {
             if (move) {
@@ -87,7 +87,7 @@ class CameraUpdater(
     }
 
     private fun moveModelCamera(selectedScene: Canvas, speed: Double) {
-        val camera = selectedScene.cameraHandler.camera
+        val camera = selectedScene.modelCamera.camera
         val rotations = vec2Of(camera.angleY, camera.angleX).toDegrees()
         val axisX = vec2Of(Math.cos(rotations.x.toRads()), Math.sin(rotations.x.toRads()))
         var axisY = vec2Of(Math.cos((rotations.xd - 90).toRads()), Math.sin((rotations.xd - 90).toRads()))
@@ -99,18 +99,18 @@ class CameraUpdater(
         a = a.normalize() * (diff.xd * Config.mouseTranslateSpeedX * speed * Math.sqrt(camera.zoom))
         b = b.normalize() * (-diff.yd * Config.mouseTranslateSpeedY * speed * Math.sqrt(camera.zoom))
 
-        selectedScene.cameraHandler.translate(a + b)
+        selectedScene.modelCamera.translate(a + b)
     }
 
     fun moveTextureCamera(selectedScene: Canvas, speed: Double) {
-        val camera = selectedScene.cameraHandler.camera
+        val camera = selectedScene.textureCamera.camera
         val diff = input.mouse.getMousePosDiff()
 
-        val zoomModifier = camera.zoom * 1 / 1024f
+        val zoomModifier = Math.sqrt(camera.zoom) * 0.1
         val a = (diff.xd * Config.mouseTranslateSpeedX * speed * zoomModifier)
         val b = (-diff.yd * Config.mouseTranslateSpeedY * speed * zoomModifier)
 
-        selectedScene.cameraHandler.translate(vec3Of(a, b, 0))
+        selectedScene.textureCamera.translate(vec3Of(a, b, 0))
     }
 
     fun updateZoom(canvas: Canvas, e: EventMouseScroll) {

@@ -3,6 +3,7 @@ package com.cout970.modeler.core.log
 import com.cout970.modeler.Debugger
 import com.cout970.modeler.PathConstants
 import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.core.log.Profiler.lastTime
 import com.cout970.modeler.util.createParentsIfNeeded
 import java.io.File
 import java.io.PrintStream

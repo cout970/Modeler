@@ -3,11 +3,14 @@ package com.cout970.modeler.controller.usecases
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
+import com.cout970.modeler.api.model.selection.SelectionTarget
+import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.objects
+import com.cout970.modeler.core.model.selection.Selection
 import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.gui.GuiState
@@ -142,4 +145,20 @@ private fun removeMaterialTask(model: IModel, ref: IMaterialRef, material: IMate
             TaskUpdateModel(oldModel = model, newModel = newModel),
             TaskRemoveMaterial(ref, material)
     ))
+}
+
+
+@UseCase("material.view.inverse_select")
+fun selectByMaterial(guiState: GuiState, modelAccessor: IModelAccessor): ITask {
+    val matRef = guiState.selectedMaterial
+    val model = modelAccessor.model
+
+    val objs = model.objectMap.entries
+            .filter { it.value.material == matRef }
+            .map { it.key }
+
+    return TaskUpdateModelSelection(
+            newSelection = Selection(SelectionTarget.MODEL, SelectionType.OBJECT, objs).asNullable(),
+            oldSelection = modelAccessor.modelSelection
+    )
 }

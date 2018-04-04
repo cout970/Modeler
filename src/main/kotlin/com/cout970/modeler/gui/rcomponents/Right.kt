@@ -374,6 +374,11 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
                 it.setTooltip("Delete material")
                 it.metadata += "ref" to props.selectedMaterial()
             }
+
+            +IconButton("material.view.inverse_select", "inverse_select_material", 128f, 0f, 32f, 32f).also {
+                it.setTooltip("Select objects with this material")
+                it.metadata += "ref" to props.selectedMaterial()
+            }
         }
 
         scrollablePanel("MaterialListScrollPanel") {

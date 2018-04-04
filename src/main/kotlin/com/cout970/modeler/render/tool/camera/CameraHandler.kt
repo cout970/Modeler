@@ -27,8 +27,8 @@ class CameraHandler {
             camera = camera.copy(zoom = camera.zoom + (desiredZoom - camera.zoom) * Math.min(1.0, timer.delta * 5))
         }
 
-        if (Math.abs(desiredRotation.xd - camera.angleX) > 0.01 ||
-            Math.abs(desiredRotation.yd - camera.angleY) > 0.01) {
+        if (Math.abs(desiredRotation.xd - camera.angleX) > 0.0001 ||
+                Math.abs(desiredRotation.yd - camera.angleY) > 0.0001) {
 
             camera = camera.copy(
                     angleX = camera.angleX + (desiredRotation.xd - camera.angleX) * Math.min(1.0, timer.delta * 10),
@@ -39,7 +39,7 @@ class CameraHandler {
             val distX = distance(camera.angleX, newRotation.xd)
             val distY = distance(camera.angleY, newRotation.yd)
 
-            if (distX.absoluteValue > 0.001 || distY.absoluteValue > 0.001) {
+            if (distX.absoluteValue > 0.00001 || distY.absoluteValue > 0.00001) {
 
                 val delta = Math.min(1.0, timer.delta * 5)
 

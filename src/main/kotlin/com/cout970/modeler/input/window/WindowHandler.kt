@@ -12,6 +12,7 @@ import com.cout970.vector.extensions.vec2Of
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWImage
 import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL11.GL_TRUE
 import java.io.File
 import java.util.*
 
@@ -43,17 +44,19 @@ class WindowHandler : ITickeable {
             title = WINDOW_TITLE
             size = vec2Of(800, 600)
             vSync = true
-            properties.put(GLFW_STENCIL_BITS, 24)
-//            properties.put(GLFW_SAMPLES, 4)
+            properties[GLFW_STENCIL_BITS] = 24
+            // multisampling anti-aliasing makes a lot of artifacts on edges
+//            properties[GLFW_SAMPLES] = 4
 
-            properties.put(GLFW_CONTEXT_VERSION_MAJOR, 3)
-            properties.put(GLFW_CONTEXT_VERSION_MINOR, 3)
+            properties[GLFW_CONTEXT_VERSION_MAJOR] = 3
+            properties[GLFW_CONTEXT_VERSION_MINOR] = 3
+            properties[GLFW_VISIBLE] = 0
 
-//            properties.put(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE)
-//            properties.put(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE)
+            // ths crashes OpenGL
+//            properties[GLFW_OPENGL_PROFILE] = GLFW_OPENGL_CORE_PROFILE
+//            properties[GLFW_OPENGL_FORWARD_COMPAT] = GL_TRUE
         }
         window.center()
-        window.show()
         resetViewport()
     }
 

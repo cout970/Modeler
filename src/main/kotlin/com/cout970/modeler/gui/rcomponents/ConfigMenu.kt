@@ -167,7 +167,6 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                 textState.horizontalAlign = HorizontalAlign.LEFT
             }
 
-            println("Name: '${project.name}'")
             +StringInput("", project.name, 160f, 60f, 480f).apply {
                 background { darkestColor }
                 textState.padding.z = 10f
@@ -190,7 +189,6 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                 textState.horizontalAlign = HorizontalAlign.LEFT
             }
 
-            println("Description: '${project.description}'")
             +MultilineStringInput(project.description, 160f, 90f, 480f, 24f + 80f).apply {
                 background { darkestColor }
                 textState.padding.z = 10f
@@ -228,8 +226,6 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                 textState.horizontalAlign = HorizontalAlign.LEFT
             }
 
-            println("User name: '${user.name}'")
-
             +StringInput("", user.name, 160f, 30f, 480f).apply {
                 background { darkestColor }
                 textState.padding.z = 10f
@@ -251,7 +247,6 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                 textState.horizontalAlign = HorizontalAlign.LEFT
             }
 
-            println("User email: '${user.email}'")
             +StringInput("", user.email, 160f, 60f, 480f).apply {
                 background { darkestColor }
                 textState.padding.z = 10f
@@ -272,8 +267,6 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                 textState.fontSize = 18f
                 textState.horizontalAlign = HorizontalAlign.LEFT
             }
-
-            println("User web: '${user.web}'")
 
             +StringInput("", user.web, 160f, 90f, 480f).apply {
                 background { darkestColor }
