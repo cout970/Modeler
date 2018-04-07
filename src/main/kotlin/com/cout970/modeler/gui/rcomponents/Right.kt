@@ -4,6 +4,7 @@ import com.cout970.modeler.api.model.`object`.*
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.core.model.getRecursiveChildGroups
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.model.ref
@@ -23,6 +24,7 @@ import com.cout970.reactive.core.RStatelessComponent
 import com.cout970.reactive.dsl.*
 import com.cout970.reactive.nodes.*
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
+import org.liquidengine.legui.style.color.ColorConstants.transparent
 
 
 data class RightPanelProps(val visible: Boolean, val modelAccessor: IModelAccessor, val state: GuiState) : RProps
@@ -186,24 +188,13 @@ class ModelTree : RStatelessComponent<ModelTreeProps>() {
 
                 var index = 0
 
-                tree.getChildren(RootGroupRef).forEach { group ->
-                    group(index++, model.getGroup(group))
-                    // TODO make more generic
-                    tree.getChildren(group).forEach {
+                val allGroups = listOf(RootGroupRef) + model.getRecursiveChildGroups(RootGroupRef)
+                allGroups.forEach { group ->
+                    if (group != RootGroupRef) {
                         group(index++, model.getGroup(group))
-                        tree.getObjects(it).forEach { ref ->
-                            obj(index++, model.getObject(ref), selected(ref))
-                        }
                     }
                     tree.getObjects(group).forEach { ref ->
                         obj(index++, model.getObject(ref), selected(ref))
-                    }
-                }
-
-                // remaining objects, that are in the root object
-                objs.forEach { obj ->
-                    if (tree.getGroup(obj.ref) == RootGroupRef) {
-                        obj(index++, obj, selected(obj.ref))
                     }
                 }
 
@@ -304,6 +295,20 @@ class ModelTree : RStatelessComponent<ModelTreeProps>() {
                 horizontalAlign = HorizontalAlign.LEFT
                 textState.padding.x = 2f
                 metadata += "ref" to obj.ref
+            }
+
+            +IconButton("tree.view.move.up.item", "upIcon", 144f, 0f, 24f, 24f).apply {
+                transparent()
+                borderless()
+                metadata += "ref" to obj.ref
+                setTooltip("Move object up")
+            }
+
+            +IconButton("tree.view.move.down.item", "downIcon", 170f, 0f, 24f, 24f).apply {
+                transparent()
+                borderless()
+                metadata += "ref" to obj.ref
+                setTooltip("Move object down")
             }
 
             if (obj.visible) {

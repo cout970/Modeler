@@ -34,6 +34,8 @@ interface ImmutableBiMultimap<K, V> : BiMultimap<K, V> {
 
     fun remove(key: K): ImmutableBiMultimap<K, V>
 
+    fun set(key: K, values: Set<V>): ImmutableBiMultimap<K, V>
+
     fun removeValue(key: K, value: V): ImmutableBiMultimap<K, V>
 
     fun clear(): ImmutableBiMultimap<K, V>
@@ -49,8 +51,7 @@ class ImmutableBiMultimapImpl<K, V>(
                 emptyMap(), emptyMap())
 
         fun <K, V> biMultimapOf(vararg entries: Pair<K, List<V>>): ImmutableBiMultimap<K, V> {
-            return entries.fold(
-                    emptyBiMultimap()) { acc, entry -> acc.addAll(entry.first, entry.second) }
+            return entries.fold(emptyBiMultimap()) { acc, entry -> acc.addAll(entry.first, entry.second) }
         }
     }
 
@@ -77,6 +78,12 @@ class ImmutableBiMultimapImpl<K, V>(
             val newReverse = reverse + (value to key)
             ImmutableBiMultimapImpl(newDirect, newReverse)
         }
+    }
+
+    override fun set(key: K, values: Set<V>): ImmutableBiMultimap<K, V> {
+        val newDirect = direct + (key to values)
+        val newReverse = reverse + values.map { it to key }
+        return ImmutableBiMultimapImpl(newDirect, newReverse)
     }
 
     override fun addAll(key: K, values: Iterable<V>): ImmutableBiMultimap<K, V> {
@@ -107,8 +114,7 @@ class ImmutableBiMultimapImpl<K, V>(
         return this
     }
 
-    override fun clear(): ImmutableBiMultimap<K, V> = ImmutableBiMultimapImpl(
-            emptyMap(), emptyMap())
+    override fun clear(): ImmutableBiMultimap<K, V> = ImmutableBiMultimapImpl(emptyMap(), emptyMap())
 
     override fun iterator(): Iterator<Pair<K, List<V>>> = direct.asSequence().map { it.key to it.value.toList() }.iterator()
 

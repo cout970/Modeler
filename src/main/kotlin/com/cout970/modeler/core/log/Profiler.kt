@@ -18,7 +18,7 @@ object Profiler : ITickeable {
     var lastTime = -1L
 
     fun startSection(section: String) {
-        sectionStack.push(SectionStarted(section, Timer.secTime))
+        sectionStack.push(SectionStarted(section.replace('.', '_'), Timer.secTime))
     }
 
     fun endSection() {

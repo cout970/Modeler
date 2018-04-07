@@ -21,6 +21,7 @@ import org.liquidengine.legui.system.renderer.nvg.util.NvgText
 import org.lwjgl.nanovg.NVGColor
 import org.lwjgl.nanovg.NanoVG.*
 import java.awt.Color
+import kotlin.math.min
 
 /**
  * Created by cout970 on 2017/10/14.
@@ -56,6 +57,24 @@ class ProfilerDiagram(val timer: Timer) : Panel() {
 
             if (!Debugger.showProfiling) return
 
+            val runtime = Runtime.getRuntime()
+            val totalRam = min(runtime.maxMemory(), runtime.totalMemory()) / (1024 * 1024)
+            val ramUsage = totalRam - (runtime.freeMemory() / (1024 * 1024))
+
+            // Ram usage
+            NvgText.drawTextLineToRect(
+                    nanovg,
+                    Vector4f(parent.xf + 90f, parent.yf, 60f, 24f),
+                    false,
+                    HorizontalAlign.LEFT,
+                    VerticalAlign.MIDDLE,
+                    16f,
+                    FontRegistry.DEFAULT,
+                    "Ram: $ramUsage / $totalRam Mb (used/allocated)",
+                    ColorConstants.white()
+            )
+
+            // Profiling results
             val radius = 50f
             val textBase = component.absolutePositionV + vec2Of(10, 10)
             val pos = component.absolutePositionV + vec2Of(300 + radius, radius)
@@ -68,6 +87,7 @@ class ProfilerDiagram(val timer: Timer) : Panel() {
             val total = levels[2]!!.map { it.second }.sum()
             val toRender = levels[2]!!.map { it.first to it.second / total }
 
+            // Profiling pie 1
             toRender.forEach { (name, time) ->
                 val size = (time * Math.PI * 2).toFloat()
                 val c = col[name]!!
@@ -83,9 +103,11 @@ class ProfilerDiagram(val timer: Timer) : Panel() {
                 color.free()
             }
 
+
             val total2 = levels[3]!!.map { it.second }.sum()
             val toRender2 = levels[3]!!.map { it.first to it.second / total2 }
 
+            // Profiling pie 2
             toRender2.forEach { (name, time) ->
                 val size = (time * Math.PI * 2).toFloat()
                 val c = col[name]!!
@@ -101,6 +123,7 @@ class ProfilerDiagram(val timer: Timer) : Panel() {
                 color.free()
             }
 
+            // Time list
             pairs.sortedBy { it.first }.forEachIndexed { index, (name, time) ->
                 val parts = name.split(".")
                 val lastName = parts.last()
@@ -121,6 +144,7 @@ class ProfilerDiagram(val timer: Timer) : Panel() {
                 )
             }
 
+            // Text on top the pies
             NvgText.drawTextLineToRect(
                     nanovg,
                     Vector4f(pos.xf - 20f, 48f, 200f, 24f),

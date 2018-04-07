@@ -1,18 +1,15 @@
 package com.cout970.modeler.core.model.`object`
 
+import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.`object`.IGroupRef
 import com.cout970.modeler.api.model.`object`.IGroupTree
 import com.cout970.modeler.api.model.`object`.RootGroupRef
 import com.cout970.modeler.api.model.selection.IObjectRef
 import java.util.*
 
-data class GroupRef(override val id: UUID = UUID.randomUUID()) : IGroupRef {
 
-    override fun equals(other: Any?): Boolean = (other as? IGroupRef)?.id == id
-
-    override fun hashCode(): Int = id.hashCode()
-}
-
+// TODO fix the implementation to remove rootSet, parentMap and childMap to use another ImmutableBiMultimap
+// using RootGroupRef to access rootSet
 data class GroupTree(
         val rootSet: Set<IGroupRef>,
         val parentMap: Map<IGroupRef, IGroupRef>,
@@ -25,6 +22,20 @@ data class GroupTree(
                 emptySet(), emptyMap(), emptyMap(),
                 ImmutableBiMultimapImpl.emptyBiMultimap()
         )
+    }
+
+    override fun update(validObjs: Set<IObjectRef>): GroupTree {
+
+        val bimap = objectMapping
+                .map { (group, objs) -> group to objs.filter { it in validObjs } }
+                .filter { it.second.isEmpty() }
+                .fold(ImmutableBiMultimapImpl.emptyBiMultimap<IGroupRef, IObjectRef>()) { map, entry ->
+                    map.addAll(entry.first, entry.second)
+                }
+
+        val rootObjects = validObjs.filter { getGroup(it) == RootGroupRef }
+
+        return copy(objectMapping = bimap.set(RootGroupRef, rootObjects.toSet()))
     }
 
     override fun addGroup(parent: IGroupRef, newGroupRef: IGroupRef): GroupTree {
@@ -79,6 +90,10 @@ data class GroupTree(
             // normal node
             copy(parentMap = (parentMap - child) + (child to newParent))
         }
+    }
+
+    override fun setObjects(parent: IGroupRef, children: List<IObjectRef>): IGroupTree {
+        return copy(objectMapping = objectMapping.set(parent, children.toSet()))
     }
 
     override fun addObject(parent: IGroupRef, child: IObjectRef): GroupTree {

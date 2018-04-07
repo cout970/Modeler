@@ -57,6 +57,7 @@ class KeyboardBinder(val dispatcher: Dispatcher) {
                 e.keycode == Keyboard.KEY_F3 -> "debug.show.profiling"
             // wtf F4 doesn't work
                 e.keycode == Keyboard.KEY_F5 -> "debug.toggle.dynamic"
+                e.keycode == Keyboard.KEY_F6 -> "debug.gc"
                 else -> null
             }
             if (key != null) {

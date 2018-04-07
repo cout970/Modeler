@@ -140,3 +140,35 @@ fun showListGroup(component: Component, model: IModel): ITask {
         TaskUpdateModel(oldModel = model, newModel = newModel)
     }.getOr(TaskNone)
 }
+
+@UseCase("tree.view.move.up.item")
+fun moveItemUp(component: Component, model: IModel): ITask {
+    val ref = component.ref().asObjectRef().getOrNull() ?: return TaskNone
+    return moveItem(ref, model, true)
+}
+
+@UseCase("tree.view.move.down.item")
+fun moveItemDown(component: Component, model: IModel): ITask {
+    val ref = component.ref().asObjectRef().getOrNull() ?: return TaskNone
+    return moveItem(ref, model, false)
+}
+
+private fun moveItem(ref: IObjectRef, model: IModel, up: Boolean): ITask {
+    val tree = model.groupTree
+    val parent = tree.getGroup(ref)
+    val brothers = tree.getObjects(parent)
+
+    return if (ref in brothers) {
+        val shift = if (up) -1.5f else 1.5f
+        val newBrothers = brothers.sortedBy {
+            val index = brothers.indexOf(it)
+            index + if (it == ref) shift else 0f
+        }
+        val newTree = tree.setObjects(parent, newBrothers)
+        val newModel = model.withGroupTree(newTree)
+
+        TaskUpdateModel(oldModel = model, newModel = newModel)
+    } else {
+        TaskNone
+    }
+}

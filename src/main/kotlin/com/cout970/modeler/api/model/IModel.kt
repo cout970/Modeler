@@ -31,14 +31,15 @@ interface IModel : Comparable<IModel> {
 
     fun addObjects(objs: List<IObject>): IModel
     fun removeObjects(objs: List<IObjectRef>): IModel
-    fun modifyObjects(predicate: (IObjectRef) -> Boolean, func: (IObjectRef, IObject) -> IObject): IModel
 
+    fun modifyObjects(predicate: (IObjectRef) -> Boolean, func: (IObjectRef, IObject) -> IObject): IModel
     fun addMaterial(material: IMaterial): IModel
     fun modifyMaterial(ref: IMaterialRef, new: IMaterial): IModel
-    fun removeMaterial(materialRef: IMaterialRef): IModel
 
+    fun removeMaterial(materialRef: IMaterialRef): IModel
     fun addGroup(group: IGroup): IModel
     fun modifyGroup(ref: IGroupRef, group: IGroup): IModel
+
     fun removeGroup(ref: IGroupRef): IModel
 
     fun withGroupTree(newGroupTree: IGroupTree): IModel

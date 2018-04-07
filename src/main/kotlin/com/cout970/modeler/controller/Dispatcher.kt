@@ -61,7 +61,9 @@ class Dispatcher {
             log(Level.ERROR) { "[Dispatcher] No UseCase found for $key" }
         } else {
             try {
+                Profiler.startSection(key)
                 val task = dependencyInjector.callUseCase(state, comp, useCase)
+                Profiler.endSection()
                 state.taskHistory.processTask(task)
             } catch (e: Exception) {
                 log(Level.ERROR) { "Unable to run usecase: ${useCase::class.simpleName}" }

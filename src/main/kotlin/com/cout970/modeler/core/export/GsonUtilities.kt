@@ -2,6 +2,7 @@ package com.cout970.modeler.core.export
 
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.ITransformation
+import com.cout970.modeler.api.model.`object`.GroupRef
 import com.cout970.modeler.api.model.`object`.IGroupRef
 import com.cout970.modeler.api.model.`object`.IGroupTree
 import com.cout970.modeler.api.model.`object`.IObject

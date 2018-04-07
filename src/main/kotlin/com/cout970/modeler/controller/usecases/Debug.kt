@@ -50,3 +50,9 @@ fun changeDebugColors(): ITask {
     ProfilerDiagram.ProfilerDiagramRenderer.colors = ProfilerDiagram.ProfilerDiagramRenderer.generateColors()
     return TaskNone
 }
+
+@UseCase("debug.gc")
+fun forceGC(): ITask {
+    System.gc()
+    return TaskNone
+}

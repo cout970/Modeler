@@ -1,5 +1,6 @@
 package com.cout970.modeler.api.model.`object`
 
+import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.selection.IObjectRef
 import java.util.*
 
@@ -39,11 +40,20 @@ object RootGroupRef : IGroupRef {
     override val id: UUID = UUID.fromString("713e7999-081e-488c-9ced-17d010bdd270")
 }
 
+data class GroupRef(override val id: UUID = UUID.randomUUID()) : IGroupRef {
+
+    override fun equals(other: Any?): Boolean = (other as? IGroupRef)?.id == id
+
+    override fun hashCode(): Int = id.hashCode()
+}
+
 /**
  * This represents the links between groups and objects but doesn't depend on the
  * actual instances, so they can be changed keeping the links
  */
 interface IGroupTree {
+
+    fun update(validObjs: Set<IObjectRef>): IGroupTree
 
     fun addGroup(parent: IGroupRef, newGroupRef: IGroupRef): IGroupTree
 
@@ -52,6 +62,8 @@ interface IGroupTree {
     fun changeParent(child: IGroupRef, newParent: IGroupRef): IGroupTree
 
     fun addObject(parent: IGroupRef, child: IObjectRef): IGroupTree
+
+    fun setObjects(parent: IGroupRef, children: List<IObjectRef>): IGroupTree
 
     fun removeObject(parent: IGroupRef, child: IObjectRef): IGroupTree
 

@@ -5,7 +5,6 @@ import com.cout970.modeler.api.model.`object`.*
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.*
-import com.cout970.modeler.core.model.`object`.GroupRef
 import com.cout970.modeler.core.model.`object`.ObjectNone
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.MaterialRef
