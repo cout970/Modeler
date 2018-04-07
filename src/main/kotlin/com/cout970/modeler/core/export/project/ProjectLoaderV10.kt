@@ -55,10 +55,10 @@ object ProjectLoaderV10 {
     fun loadProject(zip: ZipFile, path: String): ProgramSave {
 
         val properties = zip.load<ProjectProperties>("project.json", gson)
-                         ?: throw IllegalStateException("Missing file 'project.json' inside '$path'")
+                ?: throw IllegalStateException("Missing file 'project.json' inside '$path'")
 
         val model = zip.load<IModel>("model.json", gson)
-                    ?: throw IllegalStateException("Missing file 'model.json' inside '$path'")
+                ?: throw IllegalStateException("Missing file 'model.json' inside '$path'")
 
         checkIntegrity(null, model.objects)
         return ProgramSave(VERSION, properties, model)
@@ -84,7 +84,7 @@ object ProjectLoaderV10 {
                 obj.withMaterial(materialList.getOrElse(materialIndex, { MaterialNone }).ref)
             }
 
-            return Model(objectsList.associateBy { it.ref }, materialList.associateBy { it.ref }, GroupTree.emptyTree())
+            return Model.of(objectsList.associateBy { it.ref }, materialList.associateBy { it.ref })
         }
     }
 

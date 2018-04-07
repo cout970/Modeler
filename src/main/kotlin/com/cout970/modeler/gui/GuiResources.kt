@@ -87,6 +87,7 @@ class GuiResources {
         iconMap["button_right"] = BufferedImage("assets/textures/right.png")
         iconMap["obj_type_cube"] = BufferedImage("assets/textures/obj_type_cube.png")
         iconMap["obj_type_mesh"] = BufferedImage("assets/textures/obj_type_mesh.png")
+        iconMap["group_icon"] = BufferedImage("assets/textures/group_icon.png")
         iconMap["material_in_use"] = BufferedImage("assets/textures/material_in_use.png")
 
         iconMap["seek_start"] = BufferedImage("assets/textures/seek_start.png")

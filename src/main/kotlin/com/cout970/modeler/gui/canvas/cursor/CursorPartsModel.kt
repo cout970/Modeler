@@ -4,7 +4,7 @@ import com.cout970.collision.IPolygon
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.selection.ISelection
-import com.cout970.modeler.core.tool.EditTool
+import com.cout970.modeler.core.helpers.TransformationHelper
 import com.cout970.modeler.gui.canvas.IRotable
 import com.cout970.modeler.gui.canvas.IScalable
 import com.cout970.modeler.gui.canvas.ITranslatable
@@ -40,7 +40,7 @@ class CursorPartTranslateModel(
     }
 
     override fun applyTranslation(offset: Float, selection: ISelection, model: IModel, material: IMaterial): IModel =
-            EditTool.translate(model, selection, translationAxis * offset)
+            TransformationHelper.translate(model, selection, translationAxis * offset)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -75,7 +75,7 @@ class CursorPartRotateModel(
     }
 
     override fun applyRotation(offset: Float, selection: ISelection, model: IModel, material: IMaterial): IModel {
-        return EditTool.rotate(model, selection, center, quatOfAxisAngled(tangent, offset))
+        return TransformationHelper.rotate(model, selection, center, quatOfAxisAngled(tangent, offset))
     }
 
     override fun equals(other: Any?): Boolean {
@@ -114,7 +114,7 @@ class CursorPartScaleModel(
     }
 
     override fun applyScale(offset: Float, selection: ISelection, model: IModel, material: IMaterial): IModel {
-        return EditTool.scale(model, selection, center, scaleAxis, offset)
+        return TransformationHelper.scale(model, selection, center, scaleAxis, offset)
     }
 
     override fun equals(other: Any?): Boolean {

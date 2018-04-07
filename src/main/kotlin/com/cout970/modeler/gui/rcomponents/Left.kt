@@ -18,6 +18,7 @@ import com.cout970.modeler.gui.event.EventSelectionUpdate
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.asNullable
+import com.cout970.modeler.util.getOr
 import com.cout970.modeler.util.toColor
 import com.cout970.reactive.core.*
 import com.cout970.reactive.dsl.*

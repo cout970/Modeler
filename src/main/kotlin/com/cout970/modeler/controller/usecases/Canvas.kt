@@ -212,7 +212,7 @@ fun IModel.getTexturePolygons(modelSelection: Nullable<ISelection>, selectionTyp
                 .map { getObject(it) to it }
                 .filter { it.first.visible && it.first.material == matRef }
 
-    }.getOr(emptyList())
+    }.flatMapList()
 
     val objs = when {
         selectedObjects.isNotEmpty() -> selectedObjects

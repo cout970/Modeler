@@ -1,4 +1,4 @@
-package com.cout970.modeler.core.tool
+package com.cout970.modeler.core.helpers
 
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.`object`.IObject
@@ -25,7 +25,7 @@ import org.joml.Vector4d
 /**
  * Created by cout970 on 2017/02/11.
  */
-object EditTool {
+object TransformationHelper {
 
     //
     // TRANSFORM
@@ -211,57 +211,6 @@ object EditTool {
     fun Matrix4d.transformVertex(it: IVector2): IVector2 {
         val vec4 = transform(Vector4d(it.xd, it.yd, 0.0, 1.0))
         return vec2Of(vec4.x, vec4.y)
-    }
-
-    //
-    // DELETE
-    //
-    fun delete(source: IModel, selection: ISelection): IModel {
-        if (selection.selectionTarget != SelectionTarget.MODEL) return source
-        return when (selection.selectionType) {
-            SelectionType.OBJECT -> {
-                source.removeObjects(selection.objects)
-            }
-            SelectionType.FACE -> {
-                val toRemove = mutableListOf<IObjectRef>()
-                val edited = mutableMapOf<IObjectRef, IObject>()
-
-                source.objectMap.forEach { objIndex, obj ->
-                    if (obj is Object) {
-                        val modifyMesh = obj.mesh.let {
-                            val newFaces = it.faces.mapIndexedNotNull { index, iFaceIndex ->
-                                val ref = objIndex.toFaceRef(index)
-                                if (selection.isSelected(ref)) null else iFaceIndex
-                            }
-                            if (newFaces == it.faces) it else Mesh(it.pos, it.tex, newFaces)
-                        }
-
-                        if (modifyMesh.faces.isNotEmpty()) {
-                            edited += objIndex to obj.copy(mesh = modifyMesh)
-                        } else {
-                            toRemove += objIndex
-                        }
-
-                    } else if (obj is ObjectCube) {
-                        val modifyMesh = obj.mesh.let {
-                            val newFaces = it.faces.mapIndexedNotNull { index, iFaceIndex ->
-                                val ref = objIndex.toFaceRef(index)
-                                if (selection.isSelected(ref)) null else iFaceIndex
-                            }
-                            if (newFaces == it.faces) it else Mesh(it.pos, it.tex, newFaces)
-                        }
-
-                        if (modifyMesh.faces.isNotEmpty()) {
-                            edited += objIndex to obj.withMesh(modifyMesh)
-                        } else {
-                            toRemove += objIndex
-                        }
-                    }
-                }
-                source.modifyObjects(edited.keys) { ref, _ -> edited[ref]!! }
-            }
-            SelectionType.EDGE, SelectionType.VERTEX -> source
-        }
     }
 
     fun splitTextures(model: IModel, selection: ISelection): IModel {

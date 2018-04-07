@@ -5,7 +5,7 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.core.collision.toTexturePolygon
-import com.cout970.modeler.core.tool.EditTool
+import com.cout970.modeler.core.helpers.TransformationHelper
 import com.cout970.modeler.gui.canvas.IRotable
 import com.cout970.modeler.gui.canvas.IScalable
 import com.cout970.modeler.gui.canvas.ITranslatable
@@ -35,7 +35,7 @@ class CursorPartTranslateTexture(
 
     override fun applyTranslation(offset: Float, selection: ISelection, model: IModel, material: IMaterial): IModel {
         val dir = translationAxis.toVector2() * vec2Of(1, -1) / material.size
-        return EditTool.translateTexture(model, selection, dir * offset)
+        return TransformationHelper.translateTexture(model, selection, dir * offset)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -66,7 +66,7 @@ class CursorPartRotateTexture(
 
     override fun applyRotation(offset: Float, selection: ISelection, model: IModel, material: IMaterial): IModel {
         val center2 = CanvasHelper.fromRenderToMaterial(center.toVector2(), material)
-        return EditTool.rotateTexture(model, selection, center2, -offset.toDegrees())
+        return TransformationHelper.rotateTexture(model, selection, center2, -offset.toDegrees())
     }
 
     override fun equals(other: Any?): Boolean {
@@ -103,7 +103,7 @@ class CursorPartScaleTexture(
     override fun applyScale(offset: Float, selection: ISelection, model: IModel, material: IMaterial): IModel {
         val dir = scaleAxis.toVector2() / material.size
         val center2 = CanvasHelper.fromRenderToMaterial(center.toVector2(), material)
-        return EditTool.scaleTexture(model, selection, center2, dir, offset)
+        return TransformationHelper.scaleTexture(model, selection, center2, dir, offset)
     }
 
     override fun equals(other: Any?): Boolean {

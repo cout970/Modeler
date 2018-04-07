@@ -10,6 +10,7 @@ import com.cout970.modeler.core.model.`object`.ObjectCubeNone
 import com.cout970.modeler.core.model.pos
 import com.cout970.modeler.core.model.size
 import com.cout970.modeler.util.asNullable
+import com.cout970.modeler.util.getOr
 import com.cout970.modeler.util.quatOfAngles
 import com.cout970.modeler.util.toAxisRotations
 import com.cout970.vector.extensions.vec2Of
@@ -43,7 +44,7 @@ fun changeCube(component: Component, model: IModel): ITask {
             }
             .map { (ref, cube) ->
                 val newModel = model.modifyObjects(setOf(ref)) { _, _ -> cube }
-                TaskUpdateModel(model, newModel) as ITask
+                TaskUpdateModel(model, newModel)
             }
             .getOr(TaskNone)
 }

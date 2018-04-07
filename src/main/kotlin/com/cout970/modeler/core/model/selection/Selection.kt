@@ -21,4 +21,10 @@ data class Selection(
     override fun isSelected(obj: IFaceRef): Boolean = obj in refs
     override fun isSelected(obj: IEdgeRef): Boolean = obj in refs
     override fun isSelected(obj: IPosRef): Boolean = obj in refs
+
+    companion object {
+        fun of(objs: List<IObjectRef>, target: SelectionTarget = SelectionTarget.MODEL): Selection {
+            return Selection(target, SelectionType.OBJECT, objs.toSet())
+        }
+    }
 }

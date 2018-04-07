@@ -15,6 +15,7 @@ import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.gui.GuiState
 import com.cout970.modeler.util.asNullable
+import com.cout970.modeler.util.getOr
 import com.cout970.modeler.util.toResourcePath
 import org.liquidengine.legui.component.Component
 import org.lwjgl.util.tinyfd.TinyFileDialogs

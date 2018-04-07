@@ -2,7 +2,7 @@ package com.cout970.modeler.core.export.project
 
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.ITransformation
-import com.cout970.modeler.api.model.`object`.IGroup
+import com.cout970.modeler.api.model.`object`.IGroupRef
 import com.cout970.modeler.api.model.`object`.IGroupTree
 import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.material.IMaterial
@@ -38,7 +38,7 @@ object ProjectLoaderV11 {
             .registerTypeAdapter(IMaterial::class.java, MaterialSerializer())
             .registerTypeAdapter(IModel::class.java, ModelSerializer())
             .registerTypeAdapter(IGroupTree::class.java, GroupTreeSerializer())
-            .registerTypeAdapter(IGroup::class.java, GroupSerializer())
+            .registerTypeAdapter(IGroupRef::class.java, GroupSerializer())
             .registerTypeAdapter(ImmutableBiMultimap::class.java, ImmutableBiMultimapSerializer())
             .registerTypeAdapter(IObject::class.java, ObjectSerializer())
             .registerTypeAdapter(IMesh::class.java, MeshSerializer())

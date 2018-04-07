@@ -1,6 +1,7 @@
 package com.cout970.modeler.util
 
 import com.cout970.modeler.api.model.mesh.IMesh
+import com.cout970.modeler.core.model.ref
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
 import com.cout970.vector.api.IVector2
@@ -13,6 +14,12 @@ import java.awt.Color
 /**
  * Created by cout970 on 2016/12/09.
  */
+
+fun <K, V> Map<K, V>.replace(key: K, newValue: V): Map<K, V> {
+    return mapValues { (thisKey, thisValue) ->
+        if (key == thisKey) newValue else thisValue
+    }
+}
 
 inline fun <T> Iterable<T>.replace(predicate: (T) -> Boolean, transform: (T) -> T): List<T> {
     val list = mutableListOf<T>()
@@ -47,14 +54,12 @@ inline fun <T> Iterable<T>.filterNotIndexed(predicate: (index: Int, T) -> Boolea
 
 inline fun <S, T> Iterable<T>.reduceAll(first: S, operation: (acc: S, T) -> S): S {
     var accumulator: S = first
-    for (it in this){
+    for (it in this) {
         accumulator = operation(accumulator, it)
     }
     return accumulator
 }
 
-
-inline fun <reified F> Iterable<*>.castTo(): List<F> = map { it as F }
 
 fun <T> List<Pair<RayTraceResult, T>>.getClosest(ray: Ray): Pair<RayTraceResult, T>? {
     return when {
@@ -112,17 +117,33 @@ fun List<String>.toPointerBuffer(): PointerBuffer {
 }
 
 fun <T> List<T>.combine(multi: Boolean, element: T): List<T> {
-    if (multi) {
-        return if (element in this) {
+    return if (multi) {
+        if (element in this) {
             this - element
         } else {
             this + element
         }
     } else {
-        return if (this.size == 1 && element in this) {
+        if (this.size == 1 && element in this) {
             emptyList()
         } else {
             listOf(element)
+        }
+    }
+}
+
+fun <T> List<T>.combine(multi: Boolean, elements: List<T>): List<T> {
+    return if (multi) {
+        if (elements.all { it in this }) {
+            this - elements
+        } else {
+            this + elements
+        }
+    } else {
+        if (this.size == elements.size && elements.all { it in this }) {
+            emptyList()
+        } else {
+            elements
         }
     }
 }

@@ -2,7 +2,7 @@ package com.cout970.modeler.core.export
 
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.ITransformation
-import com.cout970.modeler.api.model.`object`.IGroup
+import com.cout970.modeler.api.model.`object`.IGroupRef
 import com.cout970.modeler.api.model.`object`.IGroupTree
 import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.material.IMaterial
@@ -131,14 +131,14 @@ class GroupTreeSerializer : JsonSerializer<IGroupTree>, JsonDeserializer<IGroupT
     }
 }
 
-class GroupSerializer : JsonSerializer<IGroup>, JsonDeserializer<IGroup> {
+class GroupSerializer : JsonSerializer<IGroupRef>, JsonDeserializer<IGroupRef> {
 
-    override fun serialize(src: IGroup, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+    override fun serialize(src: IGroupRef, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
         return context.serialize(src)
     }
 
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IGroup {
-        return context.deserialize(json, Group::class.java)
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IGroupRef {
+        return context.deserialize(json, GroupRef::class.java)
     }
 }
 
@@ -150,7 +150,7 @@ class ImmutableBiMultimapSerializer : JsonSerializer<ImmutableBiMultimap<*, *>>,
 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): ImmutableBiMultimap<*, *> {
         if(json.isJsonNull || (json.isJsonObject && json.asJsonObject.size() == 0))
-            return ImmutableBiMultimapImpl.emptyBiMultimap<IGroup, IObjectRef>()
+            return ImmutableBiMultimapImpl.emptyBiMultimap<IGroupRef, IObjectRef>()
 
         return context.deserialize(json, ImmutableBiMultimapImpl::class.java)
     }

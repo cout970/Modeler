@@ -4,10 +4,7 @@ import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.tasks.ModifyGui
 import com.cout970.modeler.controller.tasks.TaskNone
 import com.cout970.modeler.gui.canvas.GridLines
-import com.cout970.modeler.util.asNullable
-import com.cout970.modeler.util.withX
-import com.cout970.modeler.util.withY
-import com.cout970.modeler.util.withZ
+import com.cout970.modeler.util.*
 import org.liquidengine.legui.component.Component
 import kotlin.math.roundToInt
 

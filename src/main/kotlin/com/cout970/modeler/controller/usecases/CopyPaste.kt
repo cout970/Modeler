@@ -5,13 +5,15 @@ import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.controller.tasks.*
+import com.cout970.modeler.core.helpers.DeletionHelper
 import com.cout970.modeler.core.model.getSelectedObjects
 import com.cout970.modeler.core.model.selection.*
 import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.core.project.ProjectManager
-import com.cout970.modeler.core.tool.EditTool
+import com.cout970.modeler.core.helpers.TransformationHelper
 import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.asNullable
+import com.cout970.modeler.util.getOr
 
 /**
  * Created by cout970 on 2017/07/19.
@@ -21,24 +23,17 @@ import com.cout970.modeler.util.asNullable
 fun deleteSelection(model: IModel, projectManager: ProjectManager): ITask {
     val modSel = projectManager.modelSelectionHandler.getSelection()
     val texSel = projectManager.textureSelectionHandler.getSelection()
-    return deleteSelectionInModel(modSel, texSel, model)
-}
 
-fun deleteSelectionInModel(modSel: Nullable<ISelection>, texSel: Nullable<ISelection>, model: IModel): ITask {
-    val modSel2 = modSel.getOrNull() ?: return TaskNone
-    val newModel = EditTool.delete(model, modSel2)
+    return modSel.map { sel ->
+        val newModel = DeletionHelper.delete(model, sel)
 
-    return TaskChain(listOf(
-            TaskUpdateModelSelection(
-                    oldSelection = modSel2.asNullable(),
-                    newSelection = Nullable.castNull()
-            ),
-            TaskUpdateTextureSelection(
-                    oldSelection = texSel,
-                    newSelection = Nullable.castNull()
-            ),
-            TaskUpdateModel(oldModel = model, newModel = newModel)
-    ))
+        TaskUpdateModelAndUnselect(
+                oldModel = model,
+                newModel = newModel,
+                oldModelSelection = modSel,
+                oldTextureSelection = texSel
+        )
+    }.getOr(TaskNone)
 }
 
 
@@ -73,7 +68,7 @@ fun cutSelection(accessor: IModelAccessor, clipboard: IClipboard): ITask {
     val selection = accessor.modelSelection
 
     selection.ifNotNull { sel ->
-        val newModel = EditTool.delete(model, sel)
+        val newModel = DeletionHelper.delete(model, sel)
         return TaskChain(listOf(
                 TaskUpdateClipboard(oldClipboard = clipboard, newClipboard = Clipboard(model, sel)),
                 TaskUpdateModel(oldModel = model, newModel = newModel),

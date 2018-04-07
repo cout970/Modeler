@@ -14,6 +14,7 @@ import com.cout970.modeler.render.tool.getFacePos
 import com.cout970.modeler.render.tool.removeFaces
 import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.asNullable
+import com.cout970.modeler.util.getOr
 import com.cout970.modeler.util.text
 import com.cout970.vector.extensions.*
 import org.liquidengine.legui.component.Component
@@ -45,7 +46,7 @@ fun changeObjectName(component: Component, modelAccessor: IModelAccessor): ITask
             obj.withName(name)
         }
 
-        TaskUpdateModel(newModel = newModel, oldModel = model) as ITask
+        TaskUpdateModel(newModel = newModel, oldModel = model)
     }.getOr(TaskNone)
 }
 

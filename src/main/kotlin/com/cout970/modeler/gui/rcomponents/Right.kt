@@ -1,8 +1,6 @@
 package com.cout970.modeler.gui.rcomponents
 
-import com.cout970.modeler.api.model.`object`.IGroup
-import com.cout970.modeler.api.model.`object`.IObject
-import com.cout970.modeler.api.model.`object`.IObjectCube
+import com.cout970.modeler.api.model.`object`.*
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.config.Config
@@ -15,6 +13,8 @@ import com.cout970.modeler.gui.event.EventMaterialUpdate
 import com.cout970.modeler.gui.event.EventModelUpdate
 import com.cout970.modeler.gui.event.EventSelectionUpdate
 import com.cout970.modeler.gui.leguicomp.*
+import com.cout970.modeler.util.flatMapList
+import com.cout970.modeler.util.getOr
 import com.cout970.modeler.util.toColor
 import com.cout970.reactive.core.EmptyProps
 import com.cout970.reactive.core.RBuilder
@@ -103,7 +103,7 @@ class CreateObjectPanel : RStatelessComponent<EmptyProps>() {
             it.setTooltip("Create Cube Mesh")
         }
         +IconButton("group.add", "addMeshCubeIcon", 75f, 28f, 32f, 32f).also {
-            it.setTooltip("Create Object Group")
+            it.setTooltip("Create Object GroupRef")
         }
     }
 }
@@ -182,15 +182,15 @@ class ModelTree : RStatelessComponent<ModelTreeProps>() {
                 val tree = model.groupTree
                 val selected = props.modelAccessor.modelSelection.map { sel ->
                     { obj: IObjectRef -> sel.isSelected(obj) }
-                }.getOr { false }
+                }.getOr { _: IObjectRef -> false }
 
                 var index = 0
 
-                tree.root.forEach { group ->
-                    group(index++, group)
+                tree.getChildren(RootGroupRef).forEach { group ->
+                    group(index++, model.getGroup(group))
                     // TODO make more generic
                     tree.getChildren(group).forEach {
-                        group(index++, group)
+                        group(index++, model.getGroup(group))
                         tree.getObjects(it).forEach { ref ->
                             obj(index++, model.getObject(ref), selected(ref))
                         }
@@ -202,7 +202,7 @@ class ModelTree : RStatelessComponent<ModelTreeProps>() {
 
                 // remaining objects, that are in the root object
                 objs.forEach { obj ->
-                    if (tree.getGroup(obj.ref) == null) {
+                    if (tree.getGroup(obj.ref) == RootGroupRef) {
                         obj(index++, obj, selected(obj.ref))
                     }
                 }
@@ -234,14 +234,40 @@ class ModelTree : RStatelessComponent<ModelTreeProps>() {
             }
 
 
-            +IconButton("", "", 0f, 0f, 24f, 24f)
+            +IconButton("tree.view.select.group", "group_icon", 0f, 0f, 24f, 24f).apply {
+                metadata += "ref" to group.ref
+            }
 
-            +TextButton("", group.name, 24f, 0f, 172f, 24f).apply {
+            +TextButton("tree.view.select.group", group.name, 24f, 0f, 172f, 24f).apply {
                 transparent()
                 borderless()
                 fontSize = 20f
                 horizontalAlign = HorizontalAlign.LEFT
                 textState.padding.x = 2f
+                metadata += "ref" to group.ref
+            }
+
+            if (group.visible) {
+                +IconButton("tree.view.hide.group", "hideIcon", 196f, 0f, 24f, 24f).apply {
+                    transparent()
+                    borderless()
+                    metadata += "ref" to group.ref
+                    setTooltip("Hide group")
+                }
+            } else {
+                +IconButton("tree.view.show.group", "showIcon", 196f, 0f, 24f, 24f).apply {
+                    transparent()
+                    borderless()
+                    metadata += "ref" to group.ref
+                    setTooltip("Show group")
+                }
+            }
+
+            +IconButton("tree.view.delete.group", "deleteIcon", 222f, 0f, 24f, 24f).apply {
+                transparent()
+                borderless()
+                metadata += "ref" to group.ref
+                setTooltip("Delete group")
             }
         }
     }
@@ -268,10 +294,10 @@ class ModelTree : RStatelessComponent<ModelTreeProps>() {
 
             val icon = if (obj is IObjectCube) "obj_type_cube" else "obj_type_mesh"
 
-            +IconButton("tree.view.select", icon, 0f, 0f, 24f, 24f).apply {
+            +IconButton("tree.view.select.item", icon, 0f, 0f, 24f, 24f).apply {
                 metadata += "ref" to obj.ref
             }
-            +TextButton("tree.view.select", obj.name, 24f, 0f, 172f, 24f).apply {
+            +TextButton("tree.view.select.item", obj.name, 24f, 0f, 172f, 24f).apply {
                 transparent()
                 borderless()
                 fontSize = 20f
@@ -279,20 +305,23 @@ class ModelTree : RStatelessComponent<ModelTreeProps>() {
                 textState.padding.x = 2f
                 metadata += "ref" to obj.ref
             }
-            +IconButton("tree.view.show.item", "showIcon", 196f, 0f, 24f, 24f).apply {
-                transparent()
-                borderless()
-                metadata += "ref" to obj.ref
-                if (obj.visible) hide() else show()
-                setTooltip("Show object")
+
+            if (obj.visible) {
+                +IconButton("tree.view.hide.item", "hideIcon", 196f, 0f, 24f, 24f).apply {
+                    transparent()
+                    borderless()
+                    metadata += "ref" to obj.ref
+                    setTooltip("Hide object")
+                }
+            } else {
+                +IconButton("tree.view.show.item", "showIcon", 196f, 0f, 24f, 24f).apply {
+                    transparent()
+                    borderless()
+                    metadata += "ref" to obj.ref
+                    setTooltip("Show object")
+                }
             }
-            +IconButton("tree.view.hide.item", "hideIcon", 196f, 0f, 24f, 24f).apply {
-                transparent()
-                borderless()
-                metadata += "ref" to obj.ref
-                if (!obj.visible) hide() else show()
-                setTooltip("Hide object")
-            }
+
             +IconButton("tree.view.delete.item", "deleteIcon", 222f, 0f, 24f, 24f).apply {
                 transparent()
                 borderless()
@@ -420,7 +449,7 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
                         .map { it to it.objects }
                         .map { (sel, objs) -> objs.filter(sel::isSelected) }
                         .map { it.map { model.getObject(it).material } }
-                        .getOr(emptyList())
+                        .flatMapList()
 
 
                 style {

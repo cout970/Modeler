@@ -19,6 +19,10 @@ interface IModelAccessor {
 
     val modelSelection: Nullable<ISelection> get() = modelSelectionHandler.getSelection()
     val textureSelection: Nullable<ISelection> get() = textureSelectionHandler.getSelection()
+
+    operator fun component1() = model
+    operator fun component2() = modelSelection
+    operator fun component3() = textureSelection
 }
 
 class ModelAccessor(

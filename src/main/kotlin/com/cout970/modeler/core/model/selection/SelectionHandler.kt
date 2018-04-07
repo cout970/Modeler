@@ -4,6 +4,7 @@ import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.asNullable
 import com.cout970.modeler.util.combine
+import com.cout970.modeler.util.flatMapList
 
 /**
  * Created by cout970 on 2017/10/16.
@@ -55,5 +56,22 @@ class SelectionHandler(val target: SelectionTarget) {
                 .map { Selection(target, it.selectionType, it.refs.toList().combine(multiSelection, ref)) }
                 .getOrCompute { Selection(target, type, setOf(ref)) }
                 .asNullable()
+    }
+
+    fun updateSelection(selection: Nullable<ISelection>, multiSelection: Boolean, ref: List<IRef>): Nullable<ISelection> {
+
+        if (ref.isEmpty()) return if (multiSelection) selection else Nullable.castNull()
+
+        val sel = selection.filter { it.selectionType == type && it.selectionTarget == target }
+
+        val validRefs = sel
+                .map { selec -> ref.filter { selec.selectionType == it.getSelectionType() } }
+                .flatMapList()
+
+        return sel
+                .filterIsInstance<Selection>()
+                .map { Selection(target, it.selectionType, it.refs.toList().combine(multiSelection, validRefs)) }
+                .mapNull { Selection(target, type, ref.toSet()) }
+                .filterIsInstance()
     }
 }
