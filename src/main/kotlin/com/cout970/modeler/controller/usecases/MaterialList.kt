@@ -26,7 +26,7 @@ import java.io.File
  */
 
 @UseCase("material.view.apply")
-fun applyMaterial(component: Component, modelAccessor: IModelAccessor): ITask {
+private fun applyMaterial(component: Component, modelAccessor: IModelAccessor): ITask {
     val model = modelAccessor.model
     modelAccessor.modelSelection.ifNotNull { selection ->
         component.asNullable()
@@ -43,7 +43,7 @@ fun applyMaterial(component: Component, modelAccessor: IModelAccessor): ITask {
 }
 
 @UseCase("material.view.load")
-fun loadMaterial(component: Component, projectManager: ProjectManager): ITask {
+private fun loadMaterial(component: Component, projectManager: ProjectManager): ITask {
     return component
             .asNullable()
             .map { it.metadata["ref"] }
@@ -78,7 +78,7 @@ private fun showLoadMaterialMenu(ref: IMaterialRef, projectManager: ProjectManag
 }
 
 @UseCase("material.view.import")
-fun importMaterial(): ITask = TaskAsync { returnFunc ->
+private fun importMaterial(): ITask = TaskAsync { returnFunc ->
     val file = TinyFileDialogs.tinyfd_openFileDialog("Import Texture", "",
             textureExtensions, "PNG texture (*.png)", false)
 
@@ -90,7 +90,7 @@ fun importMaterial(): ITask = TaskAsync { returnFunc ->
 }
 
 @UseCase("material.view.select")
-fun selectMaterial(component: Component): ITask {
+private fun selectMaterial(component: Component): ITask {
     return component.asNullable()
             .map { it.metadata["ref"] }
             .flatMap { it as? IMaterialRef }
@@ -99,7 +99,7 @@ fun selectMaterial(component: Component): ITask {
 }
 
 @UseCase("material.view.duplicate")
-fun duplicateMaterial(component: Component, access: IModelAccessor): ITask {
+private fun duplicateMaterial(component: Component, access: IModelAccessor): ITask {
     return component.asNullable()
             .flatMap { it.metadata["ref"] }
             .flatMap { it as? IMaterialRef }
@@ -110,7 +110,7 @@ fun duplicateMaterial(component: Component, access: IModelAccessor): ITask {
 }
 
 @UseCase("material.view.remove")
-fun removeMaterial(guiState: GuiState, projectManager: ProjectManager): ITask {
+private fun removeMaterial(guiState: GuiState, projectManager: ProjectManager): ITask {
     val matRef = guiState.selectedMaterial
     val model = projectManager.model
     val material = model.getMaterial(matRef)
@@ -150,7 +150,7 @@ private fun removeMaterialTask(model: IModel, ref: IMaterialRef, material: IMate
 
 
 @UseCase("material.view.inverse_select")
-fun selectByMaterial(guiState: GuiState, modelAccessor: IModelAccessor): ITask {
+private fun selectByMaterial(guiState: GuiState, modelAccessor: IModelAccessor): ITask {
     val matRef = guiState.selectedMaterial
     val model = modelAccessor.model
 

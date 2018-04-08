@@ -28,9 +28,8 @@ private fun Component.ref() = asNullable().flatMap { it.metadata["ref"] }
 private fun Nullable<Any>.asObjectRef() = flatMap { it as? IObjectRef }
 private fun Nullable<Any>.asGroupRef() = flatMap { it as? IGroupRef }
 
-
 @UseCase("tree.view.select.item")
-fun selectListItem(component: Component, input: IInput, modelAccessor: IModelAccessor): ITask {
+private fun selectListItem(component: Component, input: IInput, modelAccessor: IModelAccessor): ITask {
     val selection = modelAccessor.modelSelection
 
     return component.ref().asObjectRef().map { ref ->
@@ -45,7 +44,7 @@ fun selectListItem(component: Component, input: IInput, modelAccessor: IModelAcc
 }
 
 @UseCase("tree.view.delete.item")
-fun deleteListItem(component: Component, modelAccessor: IModelAccessor): ITask {
+private fun deleteListItem(component: Component, modelAccessor: IModelAccessor): ITask {
     return component.ref().asObjectRef().map {
         val (model, modSel, texSel) = modelAccessor
         val newModel = DeletionHelper.delete(model, Selection.of(listOf(it)))
@@ -60,7 +59,7 @@ fun deleteListItem(component: Component, modelAccessor: IModelAccessor): ITask {
 }
 
 @UseCase("tree.view.hide.item")
-fun hideListItem(component: Component, model: IModel): ITask {
+private fun hideListItem(component: Component, model: IModel): ITask {
     return component.ref().asObjectRef().map { ref ->
         val newModel = ModelHelper.setObjectVisible(model, ref, false)
 
@@ -69,7 +68,7 @@ fun hideListItem(component: Component, model: IModel): ITask {
 }
 
 @UseCase("tree.view.show.item")
-fun showListItem(component: Component, model: IModel): ITask {
+private fun showListItem(component: Component, model: IModel): ITask {
     return component.ref().asObjectRef().map { ref ->
         val newModel = ModelHelper.setObjectVisible(model, ref, true)
 
@@ -78,7 +77,7 @@ fun showListItem(component: Component, model: IModel): ITask {
 }
 
 @UseCase("model.toggle.visibility")
-fun toggleListItemVisibility(model: IModel, modelAccessor: IModelAccessor): ITask {
+private fun toggleListItemVisibility(model: IModel, modelAccessor: IModelAccessor): ITask {
     return modelAccessor.modelSelection
             .map { it to it.objects.first() }
             .map { toggle(it, model) }
@@ -96,7 +95,7 @@ private fun toggle(pair: Pair<ISelection, IObjectRef>, model: IModel): ITask {
 // Groups
 
 @UseCase("tree.view.select.group")
-fun selectListGroup(component: Component, input: IInput, modelAccessor: IModelAccessor): ITask {
+private fun selectListGroup(component: Component, input: IInput, modelAccessor: IModelAccessor): ITask {
     val (model, selection) = modelAccessor
 
     return component.ref().asGroupRef().map { ref ->
@@ -117,7 +116,7 @@ fun selectListGroup(component: Component, input: IInput, modelAccessor: IModelAc
 }
 
 @UseCase("tree.view.delete.group")
-fun deleteListGroup(component: Component, model: IModel, projectManager: ProjectManager): ITask {
+private fun deleteListGroup(component: Component, model: IModel, projectManager: ProjectManager): ITask {
     return component.ref().asGroupRef().map { ref ->
         val newModel = model.removeGroup(ref)
 
@@ -126,7 +125,7 @@ fun deleteListGroup(component: Component, model: IModel, projectManager: Project
 }
 
 @UseCase("tree.view.hide.group")
-fun hideListGroup(component: Component, model: IModel): ITask {
+private fun hideListGroup(component: Component, model: IModel): ITask {
     return component.ref().asGroupRef().map { ref ->
         val newModel = ModelHelper.setGroupVisible(model, ref, false)
         TaskUpdateModel(oldModel = model, newModel = newModel)
@@ -134,7 +133,7 @@ fun hideListGroup(component: Component, model: IModel): ITask {
 }
 
 @UseCase("tree.view.show.group")
-fun showListGroup(component: Component, model: IModel): ITask {
+private fun showListGroup(component: Component, model: IModel): ITask {
     return component.ref().asGroupRef().map { ref ->
         val newModel = ModelHelper.setGroupVisible(model, ref, true)
         TaskUpdateModel(oldModel = model, newModel = newModel)
@@ -142,13 +141,13 @@ fun showListGroup(component: Component, model: IModel): ITask {
 }
 
 @UseCase("tree.view.move.up.item")
-fun moveItemUp(component: Component, model: IModel): ITask {
+private fun moveItemUp(component: Component, model: IModel): ITask {
     val ref = component.ref().asObjectRef().getOrNull() ?: return TaskNone
     return moveItem(ref, model, true)
 }
 
 @UseCase("tree.view.move.down.item")
-fun moveItemDown(component: Component, model: IModel): ITask {
+private fun moveItemDown(component: Component, model: IModel): ITask {
     val ref = component.ref().asObjectRef().getOrNull() ?: return TaskNone
     return moveItem(ref, model, false)
 }

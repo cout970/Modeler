@@ -8,7 +8,7 @@ import com.cout970.modeler.controller.tasks.TaskUndo
  */
 
 @UseCase("model.undo")
-fun undo() = TaskUndo
+private fun undo() = TaskUndo
 
 @UseCase("model.redo")
-fun redo() = TaskRedo
+private fun redo() = TaskRedo

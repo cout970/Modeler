@@ -12,7 +12,7 @@ import com.cout970.modeler.render.RenderManager
  */
 
 @UseCase("debug")
-fun onDebug(modelAccessor: IModelAccessor): ITask {
+private fun onDebug(modelAccessor: IModelAccessor): ITask {
     Debugger.debug {
         //reload gui
 
@@ -33,26 +33,26 @@ fun onDebug(modelAccessor: IModelAccessor): ITask {
 }
 
 @UseCase("debug.toggle.dynamic")
-fun toggleDynamicDebug(rm: RenderManager): ITask {
+private fun toggleDynamicDebug(rm: RenderManager): ITask {
     Debugger.DYNAMIC_DEBUG = !Debugger.DYNAMIC_DEBUG
     rm.guiRenderer.context.isDebugEnabled = Debugger.DYNAMIC_DEBUG
     return TaskNone
 }
 
 @UseCase("debug.show.profiling")
-fun showDebugProfiling(): ITask {
+private fun showDebugProfiling(): ITask {
     Debugger.showProfiling = !Debugger.showProfiling
     return TaskNone
 }
 
 @UseCase("debug.changeColors")
-fun changeDebugColors(): ITask {
+private fun changeDebugColors(): ITask {
     ProfilerDiagram.ProfilerDiagramRenderer.colors = ProfilerDiagram.ProfilerDiagramRenderer.generateColors()
     return TaskNone
 }
 
 @UseCase("debug.gc")
-fun forceGC(): ITask {
+private fun forceGC(): ITask {
     System.gc()
     return TaskNone
 }

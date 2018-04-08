@@ -15,7 +15,7 @@ class Canvas : Panel() {
     var viewMode: SelectionTarget = SelectionTarget.MODEL
 
     val modelCamera = CameraHandler()
-    val textureCamera = CameraHandler()
+    val textureCamera = CameraHandler().apply { setOrtho(true) }
 
     val cameraHandler
         get() = when (viewMode) {

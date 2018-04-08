@@ -7,8 +7,13 @@ import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
+import com.cout970.modeler.gui.event.Notification
+import com.cout970.modeler.gui.event.NotificationHandler
 import org.liquidengine.legui.component.Component
 import kotlin.reflect.KFunction
+import kotlin.reflect.KVisibility
+import kotlin.reflect.jvm.isAccessible
+import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.kotlinFunction
 
 /**
@@ -35,7 +40,14 @@ class Dispatcher {
         log(Level.FINE) { "[Dispatcher] Search done, found ${instances.size} functions" }
 
         val map = instances.associate { method ->
-            method.getAnnotation(UseCase::class.java).key to method.kotlinFunction!!
+            val key = method.getAnnotation(UseCase::class.java).key
+            val func = method.kotlinFunction!!.apply { isAccessible = true }
+
+            if (func.visibility != KVisibility.PRIVATE) {
+                log(Level.DEBUG) { "non-private function: at ${func.javaMethod?.declaringClass?.simpleName}, $func" }
+            }
+
+            Pair(key, func)
         }
 
         if (map.size != instances.size) {
@@ -68,6 +80,8 @@ class Dispatcher {
             } catch (e: Exception) {
                 log(Level.ERROR) { "Unable to run usecase: ${useCase::class.simpleName}" }
                 e.print()
+                val cause = e.cause!!
+                NotificationHandler.push(Notification("Internal error", cause.message ?: cause::class.java.simpleName))
             }
         }
         Profiler.endSection()

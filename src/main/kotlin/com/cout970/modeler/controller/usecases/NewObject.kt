@@ -19,7 +19,7 @@ import com.cout970.vector.extensions.vec3Of
  */
 
 @UseCase("cube.mesh.new")
-fun newObject(model: IModel): ITask {
+private fun newObject(model: IModel): ITask {
     val mesh = MeshFactory.createCube(vec3Of(4, 16, 4), vec3Of(8, 8, 8))
     val obj = Object("Object ${model.objects.size}", mesh)
 
@@ -27,7 +27,7 @@ fun newObject(model: IModel): ITask {
 }
 
 @UseCase("cube.template.new")
-fun newObjectCube(model: IModel): ITask {
+private fun newObjectCube(model: IModel): ITask {
     val obj = ObjectCube(
             name = "Object ${model.objects.size}",
             transformation = TRSTransformation(vec3Of(4, 16, 4), Quaternion.IDENTITY, vec3Of(8, 8, 8))
@@ -41,7 +41,7 @@ private fun addObject(model: IModel, obj: IObject): TaskUpdateModel {
 }
 
 @UseCase("group.add")
-fun addGroup(model: IModel): ITask {
+private fun addGroup(model: IModel): ITask {
     val group = Group("Group ${model.groupTree.getChildren(RootGroupRef).size}")
     val newGroupTree = model.groupTree.addGroup(RootGroupRef, group.ref)
     val newModel = model.addGroup(group).withGroupTree(newGroupTree)

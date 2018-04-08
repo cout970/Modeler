@@ -24,7 +24,7 @@ import javax.script.ScriptEngineManager
 val scriptEngine = ScriptEngineManager().getEngineByName("JavaScript")!!
 
 @UseCase("update.template.cube")
-fun changeCube(component: Component, model: IModel): ITask {
+private fun changeCube(component: Component, model: IModel): ITask {
     return component
             .asNullable()
             .flatMap { comp ->

@@ -20,7 +20,7 @@ import com.cout970.modeler.util.getOr
  */
 
 @UseCase("model.selection.delete")
-fun deleteSelection(model: IModel, projectManager: ProjectManager): ITask {
+private fun deleteSelection(model: IModel, projectManager: ProjectManager): ITask {
     val modSel = projectManager.modelSelectionHandler.getSelection()
     val texSel = projectManager.textureSelectionHandler.getSelection()
 
@@ -38,7 +38,7 @@ fun deleteSelection(model: IModel, projectManager: ProjectManager): ITask {
 
 
 @UseCase("model.selection.copy")
-fun copySelection(accessor: IModelAccessor, clipboard: IClipboard): ITask {
+private fun copySelection(accessor: IModelAccessor, clipboard: IClipboard): ITask {
     val model = accessor.model
     val selection = accessor.modelSelection
 
@@ -49,7 +49,7 @@ fun copySelection(accessor: IModelAccessor, clipboard: IClipboard): ITask {
 }
 
 @UseCase("model.selection.paste")
-fun pasteSelection(accessor: IModelAccessor, clipboard: IClipboard): ITask {
+private fun pasteSelection(accessor: IModelAccessor, clipboard: IClipboard): ITask {
     val model = accessor.model
     val selection = accessor.modelSelection
 
@@ -63,7 +63,7 @@ fun pasteSelection(accessor: IModelAccessor, clipboard: IClipboard): ITask {
 }
 
 @UseCase("model.selection.cut")
-fun cutSelection(accessor: IModelAccessor, clipboard: IClipboard): ITask {
+private fun cutSelection(accessor: IModelAccessor, clipboard: IClipboard): ITask {
     val model = accessor.model
     val selection = accessor.modelSelection
 

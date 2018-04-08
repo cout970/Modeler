@@ -18,7 +18,7 @@ import java.io.File
 val textureExtensions: PointerBuffer = listOf("*.png").toPointerBuffer()
 
 @UseCase("project.edit")
-fun showConfigMenu(gui: Gui): ITask = TaskAsync {
+private fun showConfigMenu(gui: Gui): ITask = TaskAsync {
     gui.state.popup = Popup("config") {
         gui.state.popup = null
         AsyncManager.runLater { gui.root.reRender() }
@@ -28,7 +28,7 @@ fun showConfigMenu(gui: Gui): ITask = TaskAsync {
 
 
 @UseCase("model.import")
-fun showImportMenu(gui: Gui, model: IModel): ITask = TaskAsync { returnCallback: (ITask) -> Unit ->
+private fun showImportMenu(gui: Gui, model: IModel): ITask = TaskAsync { returnCallback: (ITask) -> Unit ->
     gui.state.popup = Popup("import") { prop ->
         gui.state.popup = null
         AsyncManager.runLater { gui.root.reRender() }
@@ -40,7 +40,7 @@ fun showImportMenu(gui: Gui, model: IModel): ITask = TaskAsync { returnCallback:
 }
 
 @UseCase("model.export")
-fun showExportMenu(gui: Gui, model: IModel): ITask = TaskAsync { returnCallback: (ITask) -> Unit ->
+private fun showExportMenu(gui: Gui, model: IModel): ITask = TaskAsync { returnCallback: (ITask) -> Unit ->
     gui.state.popup = Popup("export") { prop ->
         gui.state.popup = null
         AsyncManager.runLater { gui.root.reRender() }
@@ -52,7 +52,7 @@ fun showExportMenu(gui: Gui, model: IModel): ITask = TaskAsync { returnCallback:
 }
 
 @UseCase("model.export.hitboxes")
-fun showExportHitboxMenu(model: IModel): ITask {
+private fun showExportHitboxMenu(model: IModel): ITask {
     val aabb = model.objectRefs
             .map { model.getObject(it) }
             .filter { it.visible }
@@ -64,7 +64,7 @@ fun showExportHitboxMenu(model: IModel): ITask {
 }
 
 @UseCase("texture.export")
-fun showExportTextureMenu(model: IModel, guiState: GuiState): ITask = TaskAsync { returnCallback: (ITask) -> Unit ->
+private fun showExportTextureMenu(model: IModel, guiState: GuiState): ITask = TaskAsync { returnCallback: (ITask) -> Unit ->
     val file = TinyFileDialogs.tinyfd_saveFileDialog(
             "Export Texture",
             "texture.png",

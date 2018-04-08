@@ -26,7 +26,7 @@ import java.util.*
  */
 
 @UseCase("model.obj.change.name")
-fun changeObjectName(component: Component, modelAccessor: IModelAccessor): ITask {
+private fun changeObjectName(component: Component, modelAccessor: IModelAccessor): ITask {
     val model = modelAccessor.model
     val selection = modelAccessor.modelSelection
 
@@ -51,7 +51,7 @@ fun changeObjectName(component: Component, modelAccessor: IModelAccessor): ITask
 }
 
 @UseCase("model.obj.join")
-fun joinObjects(modelAccessor: IModelAccessor): ITask {
+private fun joinObjects(modelAccessor: IModelAccessor): ITask {
     val selection = modelAccessor.modelSelection.getOrNull() ?: return TaskNone
     if (selection.selectionType != SelectionType.OBJECT || selection.size < 2) return TaskNone
 
@@ -79,7 +79,7 @@ fun joinObjects(modelAccessor: IModelAccessor): ITask {
 }
 
 @UseCase("model.face.extrude")
-fun extrudeFace(modelAccessor: IModelAccessor): ITask {
+private fun extrudeFace(modelAccessor: IModelAccessor): ITask {
     val selection = modelAccessor.modelSelection.getOrNull() ?: return TaskNone
     if (selection.selectionType != SelectionType.FACE || selection.size < 1) return TaskNone
 

@@ -21,7 +21,7 @@ private val saveFileExtension: PointerBuffer = listOf("*.pff").toPointerBuffer()
 private var lastSaveFile: String? = null
 
 @UseCase("project.new")
-fun newProject(model: IModel, properties: ProjectProperties): ITask = TaskAsync { returnFunc ->
+private fun newProject(model: IModel, properties: ProjectProperties): ITask = TaskAsync { returnFunc ->
     var accepts = true
     if (model.objects.isNotEmpty()) {
         accepts = TinyFileDialogs.tinyfd_messageBox(
@@ -39,7 +39,7 @@ fun newProject(model: IModel, properties: ProjectProperties): ITask = TaskAsync 
 }
 
 @UseCase("project.load")
-fun loadProject(properties: ProjectProperties, projectManager: ProjectManager,
+private fun loadProject(properties: ProjectProperties, projectManager: ProjectManager,
                 exportManager: ExportManager): ITask = TaskAsync { returnFunc ->
 
     if (projectManager.model.objects.isNotEmpty()) {
@@ -85,14 +85,14 @@ private fun askFileLocation() = TinyFileDialogs.tinyfd_openFileDialog(
         false)
 
 @UseCase("project.save")
-fun saveProject(projectManager: ProjectManager, exportManager: ExportManager): ITask {
+private fun saveProject(projectManager: ProjectManager, exportManager: ExportManager): ITask {
 
     val path = getSavePathOrAsk() ?: return TaskNone
     return TaskSaveProject(exportManager, path, projectManager.model, projectManager.projectProperties)
 }
 
 @UseCase("project.save.as")
-fun saveProjectAs(projectManager: ProjectManager, exportManager: ExportManager): ITask {
+private fun saveProjectAs(projectManager: ProjectManager, exportManager: ExportManager): ITask {
 
     val path = getSavePathOrAsk(true) ?: return TaskNone
     return TaskSaveProject(exportManager, path, projectManager.model, projectManager.projectProperties)

@@ -15,46 +15,46 @@ import com.cout970.vector.extensions.unaryMinus
  */
 
 @UseCase("set.selection.type.object")
-fun setSelectionTypeObject(): ITask = ModifyGui { it.state.selectionType = SelectionType.OBJECT }
+private fun setSelectionTypeObject(): ITask = ModifyGui { it.state.selectionType = SelectionType.OBJECT }
 
 @UseCase("set.selection.type.face")
-fun setSelectionTypeFace(): ITask = ModifyGui { it.state.selectionType = SelectionType.FACE }
+private fun setSelectionTypeFace(): ITask = ModifyGui { it.state.selectionType = SelectionType.FACE }
 
 @UseCase("set.selection.type.edge")
-fun setSelectionTypeEdge(): ITask = ModifyGui { it.state.selectionType = SelectionType.EDGE }
+private fun setSelectionTypeEdge(): ITask = ModifyGui { it.state.selectionType = SelectionType.EDGE }
 
 @UseCase("set.selection.type.vertex")
-fun setSelectionTypeVertex(): ITask = ModifyGui { it.state.selectionType = SelectionType.VERTEX }
+private fun setSelectionTypeVertex(): ITask = ModifyGui { it.state.selectionType = SelectionType.VERTEX }
 
 @UseCase("show.left.panel")
-fun showLeftPanel(): ITask = ModifyGui { gui ->
+private fun showLeftPanel(): ITask = ModifyGui { gui ->
     gui.listeners.runGuiCommand("toggleLeft")
     gui.root.reRender()
 }
 
 @UseCase("show.right.panel")
-fun showRightPanel(): ITask = ModifyGui { gui ->
+private fun showRightPanel(): ITask = ModifyGui { gui ->
     gui.listeners.runGuiCommand("toggleRight")
     gui.root.reRender()
 }
 
 @UseCase("show.bottom.panel")
-fun showBottomPanel(): ITask = ModifyGui { gui ->
+private fun showBottomPanel(): ITask = ModifyGui { gui ->
     gui.listeners.runGuiCommand("toggleBottom")
     gui.root.reRender()
 }
 
 @UseCase("cursor.set.mode.translate")
-fun setCursorModeTranslation(): ITask = ModifyGui { it.state.transformationMode = TransformationMode.TRANSLATION }
+private fun setCursorModeTranslation(): ITask = ModifyGui { it.state.transformationMode = TransformationMode.TRANSLATION }
 
 @UseCase("cursor.set.mode.rotate")
-fun setCursorModeRotation(): ITask = ModifyGui { it.state.transformationMode = TransformationMode.ROTATION }
+private fun setCursorModeRotation(): ITask = ModifyGui { it.state.transformationMode = TransformationMode.ROTATION }
 
 @UseCase("cursor.set.mode.scale")
-fun setCursorModeScale(): ITask = ModifyGui { it.state.transformationMode = TransformationMode.SCALE }
+private fun setCursorModeScale(): ITask = ModifyGui { it.state.transformationMode = TransformationMode.SCALE }
 
 @UseCase("camera.move.to.cursor")
-fun moveCameraToCursor(canvasManager: CanvasManager, cursorManager: CursorManager): ITask {
+private fun moveCameraToCursor(canvasManager: CanvasManager, cursorManager: CursorManager): ITask {
     canvasManager.getCanvasUnderTheMouse().ifNotNull { canvas ->
         val center = if (canvas.viewMode == SelectionTarget.TEXTURE) {
             cursorManager.textureCursor?.center ?: return@ifNotNull

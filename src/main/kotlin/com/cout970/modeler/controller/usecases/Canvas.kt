@@ -12,6 +12,7 @@ import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.core.helpers.PickupHelper
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.GuiState
@@ -33,7 +34,7 @@ import org.liquidengine.legui.component.Component
  */
 
 @UseCase("view.switch.ortho")
-fun switchCameraProjection(canvasContainer: CanvasContainer): ITask {
+private fun switchCameraProjection(canvasContainer: CanvasContainer): ITask {
     canvasContainer.selectedCanvas?.cameraHandler?.let { handler ->
         return ModifyGui { handler.setOrtho(handler.camera.perspective) }
     }
@@ -41,7 +42,7 @@ fun switchCameraProjection(canvasContainer: CanvasContainer): ITask {
 }
 
 @UseCase("view.set.texture.mode")
-fun setCanvasModeTexture(canvasContainer: CanvasContainer): ITask {
+private fun setCanvasModeTexture(canvasContainer: CanvasContainer): ITask {
     canvasContainer.selectedCanvas?.let { canvas ->
         return ModifyGui { canvas.viewMode = SelectionTarget.TEXTURE }
     }
@@ -49,7 +50,7 @@ fun setCanvasModeTexture(canvasContainer: CanvasContainer): ITask {
 }
 
 @UseCase("view.set.model.mode")
-fun setCanvasModeModel(canvasContainer: CanvasContainer): ITask {
+private fun setCanvasModeModel(canvasContainer: CanvasContainer): ITask {
     canvasContainer.selectedCanvas?.let { canvas ->
         return ModifyGui { canvas.viewMode = SelectionTarget.MODEL }
     }
@@ -57,7 +58,7 @@ fun setCanvasModeModel(canvasContainer: CanvasContainer): ITask {
 }
 
 @UseCase("camera.set.isometric")
-fun setIsometricCamera(canvasContainer: CanvasContainer): ITask {
+private fun setIsometricCamera(canvasContainer: CanvasContainer): ITask {
     canvasContainer.selectedCanvas?.let { canvas ->
         if (canvas.viewMode.is3D) {
             return ModifyGui {
@@ -70,22 +71,18 @@ fun setIsometricCamera(canvasContainer: CanvasContainer): ITask {
 }
 
 @UseCase("canvas.jump.camera")
-fun jumpCameraToCanvas(component: Component, state: GuiState, input: IInput, model: IModel): ITask {
+private fun jumpCameraToCanvas(component: Component, state: GuiState, input: IInput, model: IModel): ITask {
     if (state.hoveredObject != null) return TaskNone
 
     val canvas = component as Canvas
     val pos = input.mouse.getMousePos()
-    val context = CanvasHelper.getMouseSpaceContext(canvas, pos)
-    val obstacles = model.getModelObstacles(SelectionType.OBJECT)
-    val res = obstacles.mapNotNull { (obj, ref) -> obj.rayTrace(context.mouseRay)?.let { result -> result to ref } }
-    val obj = res.getClosest(context.mouseRay)
+    val (result, _) = PickupHelper.pickup3D(canvas, pos, model, SelectionType.OBJECT) ?: return TaskNone
 
-    val point = obj?.first ?: return TaskNone
-    return ModifyGui { canvas.cameraHandler.setPosition(-point.hit) }
+    return ModifyGui { canvas.cameraHandler.setPosition(-result.hit) }
 }
 
 @UseCase("canvas.select")
-fun selectPartInCanvas(component: Component, input: IInput, model: IModel, gui: Gui): ITask {
+private fun selectPartInCanvas(component: Component, input: IInput, model: IModel, gui: Gui): ITask {
     if (gui.state.hoveredObject != null) return TaskNone
 
     val canvas = component as Canvas
@@ -99,18 +96,20 @@ private fun onModel(canvas: Canvas, gui: Gui, input: IInput): ITask {
 
     tryClickOrientationCube(gui, canvas, input)?.let { return it }
 
-    val model = gui.modelAccessor.model
-    val obj = trySelectModel(canvas, model, gui.state, input)
     val multiSelection = Config.keyBindings.multipleSelection.check(input)
-    val selection = gui.modelAccessor.modelSelectionHandler.getSelection()
+    val (model, selection) = gui.modelAccessor
+    val pos = input.mouse.getMousePos()
+    val obj = PickupHelper.pickup3D(canvas, pos, model, gui.state.selectionType)?.second
+
+    val newSelection = gui.modelAccessor.modelSelectionHandler.updateSelection(
+            selection.toNullable(),
+            multiSelection,
+            obj
+    )
 
     return TaskUpdateModelSelection(
             oldSelection = selection,
-            newSelection = gui.modelAccessor.modelSelectionHandler.updateSelection(
-                    selection.toNullable(),
-                    multiSelection,
-                    obj
-            )
+            newSelection = newSelection
     )
 }
 
@@ -146,21 +145,13 @@ private fun onTexture(canvas: Canvas, input: IInput, gui: Gui): ITask {
     )
 }
 
-private fun trySelectModel(canvas: Canvas, model: IModel, state: GuiState, input: IInput): IRef? {
-    val pos = input.mouse.getMousePos()
-    val context = CanvasHelper.getMouseSpaceContext(canvas, pos)
-    val obstacles = model.getModelObstacles(state.selectionType)
-    val res = obstacles.mapNotNull { (obj, ref) -> obj.rayTrace(context.mouseRay)?.let { result -> result to ref } }
-    return res.getClosest(context.mouseRay)?.second
-}
-
 private fun trySelectTexture(canvas: Canvas, modelSelection: Nullable<ISelection>, model: IModel, state: GuiState,
                              input: IInput): IRef? {
     val mouse = input.mouse.getMousePos()
     val clickPos = CanvasHelper.getMouseProjection(canvas, mouse)
     val materialRef = state.selectedMaterial
     val actualMaterial = model.getMaterial(materialRef)
-    val polygons = model.getTexturePolygons(modelSelection, state.selectionType, materialRef, actualMaterial)
+    val polygons = PickupHelper.getTexturePolygons(model, modelSelection, state.selectionType, actualMaterial)
 
     val finalPos = CanvasHelper.fromRenderToMaterial(clickPos, actualMaterial)
     val mouseCollisionBox = getVertexTexturePolygon(finalPos, actualMaterial)
@@ -192,19 +183,7 @@ private fun getOrientationCubeFaces(mesh: IMesh): List<Pair<IRayObstacle, IVecto
     )
 }
 
-fun IModel.getModelObstacles(selectionType: SelectionType): List<Pair<IRayObstacle, IRef>> {
-    val objs = objectRefs
-            .map { getObject(it) to it }
-            .filter { it.first.visible }
-
-    return when (selectionType) {
-        SelectionType.OBJECT -> objs.map { (obj, ref) -> obj.toRayObstacle() to ref }
-        SelectionType.FACE -> objs.flatMap { (obj, ref) -> obj.getFaceRayObstacles(ref) }
-        SelectionType.EDGE -> objs.flatMap { (obj, ref) -> obj.getEdgeRayObstacles(ref) }
-        SelectionType.VERTEX -> objs.flatMap { (obj, ref) -> obj.getVertexRayObstacles(ref) }
-    }
-}
-
+// TODO move
 fun IModel.getTexturePolygons(modelSelection: Nullable<ISelection>, selectionType: SelectionType, matRef: IMaterialRef,
                               mat: IMaterial): List<Pair<IPolygon, IRef>> {
     val selectedObjects = modelSelection.map {

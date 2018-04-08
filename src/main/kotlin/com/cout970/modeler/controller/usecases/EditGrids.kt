@@ -10,7 +10,7 @@ import kotlin.math.roundToInt
 
 @Suppress("UNCHECKED_CAST")
 @UseCase("grid.offset.change")
-fun changeGridOffset(component: Component, gridLines: GridLines): ITask {
+private fun changeGridOffset(component: Component, gridLines: GridLines): ITask {
     return component
             .asNullable()
             .flatMap { comp ->
@@ -24,7 +24,7 @@ fun changeGridOffset(component: Component, gridLines: GridLines): ITask {
 
 @Suppress("UNCHECKED_CAST")
 @UseCase("grid.size.change")
-fun changeGridSize(component: Component, gridLines: GridLines): ITask {
+private fun changeGridSize(component: Component, gridLines: GridLines): ITask {
     return component
             .asNullable()
             .flatMap { comp ->

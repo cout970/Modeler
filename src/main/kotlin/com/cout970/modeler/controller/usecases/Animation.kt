@@ -17,7 +17,7 @@ import com.cout970.vector.extensions.vec3Of
 private var lastAnimation = 0
 
 @UseCase("animation.add")
-fun addAnimation(modelAccessor: IModelAccessor): ITask {
+private fun addAnimation(modelAccessor: IModelAccessor): ITask {
     val refs = modelAccessor.modelSelection.map { it.objects }.getOrNull() ?: return TaskNone
 
     val newAnimation = animationOf(
@@ -35,7 +35,7 @@ fun addAnimation(modelAccessor: IModelAccessor): ITask {
 
 
 @UseCase("animation.state.toggle")
-fun animationTogglePlay(): ITask = ModifyGui {
+private fun animationTogglePlay(): ITask = ModifyGui {
     if (it.animator.animationState == AnimationState.STOP) {
         it.animator.animationState = AnimationState.FORWARD
     } else {
@@ -44,26 +44,26 @@ fun animationTogglePlay(): ITask = ModifyGui {
 }
 
 @UseCase("animation.state.backward")
-fun animationPlayBackwards(): ITask = ModifyGui {
+private fun animationPlayBackwards(): ITask = ModifyGui {
     it.animator.animationState = AnimationState.BACKWARD
 }
 
 @UseCase("animation.state.forward")
-fun animationPlayForward(): ITask = ModifyGui {
+private fun animationPlayForward(): ITask = ModifyGui {
     it.animator.animationState = AnimationState.FORWARD
 }
 
 @UseCase("animation.state.stop")
-fun animationStop(): ITask = ModifyGui {
+private fun animationStop(): ITask = ModifyGui {
     it.animator.animationState = AnimationState.STOP
 }
 
 @UseCase("animation.seek.start")
-fun animationSeekStart(): ITask = ModifyGui {
+private fun animationSeekStart(): ITask = ModifyGui {
     it.animator.animationTime = 0f
 }
 
 @UseCase("animation.seek.end")
-fun animationSeekEnd(): ITask = ModifyGui {
+private fun animationSeekEnd(): ITask = ModifyGui {
     it.animator.animationTime = it.animator.animationSize
 }

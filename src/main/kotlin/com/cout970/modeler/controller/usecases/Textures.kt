@@ -10,7 +10,7 @@ import com.cout970.modeler.util.getOr
 
 
 @UseCase("model.texture.split")
-fun splitTextures(model: IModel, projectManager: ProjectManager): ITask {
+private fun splitTextures(model: IModel, projectManager: ProjectManager): ITask {
     val selection = projectManager.textureSelectionHandler.getSelection()
     return selection.map { sel ->
         val newModel = TransformationHelper.splitTextures(model, sel)
