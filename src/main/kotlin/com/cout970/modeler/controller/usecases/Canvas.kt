@@ -130,38 +130,26 @@ private fun tryClickOrientationCube(gui: Gui, canvas: Canvas, input: IInput): IT
 }
 
 private fun onTexture(canvas: Canvas, input: IInput, gui: Gui): ITask {
-    val access = gui.modelAccessor
-    val obj = trySelectTexture(canvas, access.modelSelection, access.model, gui.state, input)
+    val selHandler = gui.modelAccessor.textureSelectionHandler
+    val (model, modSel) = gui.modelAccessor
+
+    val mouse = input.mouse.getMousePos()
+    val actualMaterial = model.getMaterial(gui.state.selectedMaterial)
+    val selectionType = gui.state.selectionType
+
+    val obj = PickupHelper.pickup2D(canvas, mouse, model, modSel, actualMaterial, selectionType)?.second
     val multiSelection = Config.keyBindings.multipleSelection.check(input)
-    val selection = access.textureSelectionHandler.getSelection()
+    val selection = selHandler.getSelection()
 
     return TaskUpdateTextureSelection(
             oldSelection = selection,
-            newSelection = access.textureSelectionHandler.updateSelection(
+            newSelection = selHandler.updateSelection(
                     selection.toNullable(),
                     multiSelection,
                     obj
             )
     )
 }
-
-private fun trySelectTexture(canvas: Canvas, modelSelection: Nullable<ISelection>, model: IModel, state: GuiState,
-                             input: IInput): IRef? {
-    val mouse = input.mouse.getMousePos()
-    val clickPos = CanvasHelper.getMouseProjection(canvas, mouse)
-    val materialRef = state.selectedMaterial
-    val actualMaterial = model.getMaterial(materialRef)
-    val polygons = PickupHelper.getTexturePolygons(model, modelSelection, state.selectionType, actualMaterial)
-
-    val finalPos = CanvasHelper.fromRenderToMaterial(clickPos, actualMaterial)
-    val mouseCollisionBox = getVertexTexturePolygon(finalPos, actualMaterial)
-
-    val selected = polygons.filter { it.first.collide(mouseCollisionBox) }
-    val results = selected.map { it.second }.distinct()
-
-    return results.firstOrNull()
-}
-
 
 private fun getOrientationCubeFaces(mesh: IMesh): List<Pair<IRayObstacle, IVector2>> {
     val obstacles = mesh.faces.map { face ->

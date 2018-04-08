@@ -5,14 +5,19 @@ import com.cout970.glutilities.tessellator.BufferPTNC
 import com.cout970.glutilities.tessellator.DrawMode
 import com.cout970.matrix.extensions.Matrix4
 import com.cout970.matrix.extensions.times
+import com.cout970.modeler.Debugger
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.core.helpers.PickupHelper
+import com.cout970.modeler.core.model.TRSTransformation
+import com.cout970.modeler.core.model.mesh.MeshFactory
 import com.cout970.modeler.render.tool.AutoCache
 import com.cout970.modeler.render.tool.CacheFlags.*
 import com.cout970.modeler.render.tool.RenderContext
+import com.cout970.modeler.render.tool.append
 import com.cout970.modeler.render.tool.useBlend
 import com.cout970.modeler.util.MatrixUtils
 import com.cout970.vector.api.IVector2
@@ -27,6 +32,7 @@ import java.awt.Color
 class MaterialRenderer {
 
     var areasCache = AutoCache(MODEL, MATERIAL, SELECTION_TEXTURE, TEXTURE_CURSOR)
+    val debugCache = AutoCache()
 
     val gridLinesPixel = AutoCache(MATERIAL)
     val gridLinesBlock = AutoCache(MATERIAL)
@@ -58,6 +64,10 @@ class MaterialRenderer {
 
         ctx.gui.modelAccessor.textureSelection.ifNotNull {
             renderTextureSelection(ctx, it, material)
+        }
+
+        if(Debugger.DYNAMIC_DEBUG){
+            renderDebugCursor(ctx, material)
         }
 
         GLStateMachine.depthTest.enable()
@@ -330,5 +340,23 @@ class MaterialRenderer {
         val projection = MatrixUtils.createOrthoMatrix(ctx.viewport)
         val view = ctx.camera.matrixForUV
         ctx.shader.matrixVP.setMatrix4(projection * view)
+    }
+
+    fun renderDebugCursor(ctx: RenderContext, material: IMaterial) {
+        val vao = debugCache.getOrCreate(ctx) {
+            ctx.buffer.build(DrawMode.TRIANGLES) {
+                MeshFactory.createCube(vec3Of(0.5), Vector3.ORIGIN).append(this, vec3Of(1, 0, 1))
+            }
+        }
+
+        val position = PickupHelper.getMousePosAbsolute(ctx.canvas, ctx.gui.input.mouse.getMousePos())
+
+        ctx.shader.apply {
+            useColor.setInt(1)
+            useLight.setInt(0)
+            useTexture.setInt(0)
+            matrixM.setMatrix4(TRSTransformation(translation = position.toVector3(0.0)).matrix)
+            accept(vao)
+        }
     }
 }

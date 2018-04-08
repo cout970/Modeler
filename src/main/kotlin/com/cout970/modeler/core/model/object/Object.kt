@@ -57,7 +57,12 @@ data class Object(
         }
 
         override fun scale(obj: IObject, center: IVector3, axis: IVector3, offset: Float): IObject {
-            return copy(mesh = Mesh(mesh.pos.map { it.scale(center, axis, offset) }, mesh.tex, mesh.faces))
+            val newMesh = Mesh(
+                    pos = mesh.pos.map { it.scale(center, axis, offset) },
+                    tex = mesh.tex,
+                    faces = mesh.faces
+            )
+            return copy(mesh = newMesh)
         }
 
         override fun translateTexture(obj: IObject, translation: IVector2): IObject {

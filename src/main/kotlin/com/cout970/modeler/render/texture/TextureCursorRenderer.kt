@@ -3,6 +3,7 @@ package com.cout970.modeler.render.texture
 import com.cout970.glutilities.tessellator.DrawMode
 import com.cout970.matrix.extensions.Matrix4
 import com.cout970.modeler.controller.usecases.getTexturePolygons
+import com.cout970.modeler.core.helpers.PickupHelper
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.gui.canvas.IRotable
 import com.cout970.modeler.gui.canvas.IScalable
@@ -98,23 +99,19 @@ class TextureCursorRenderer {
 
         val vao = run {
             ctx.buffer.build(DrawMode.LINES, false) {
-                //                val polygons = cursor.getSelectablePartsTexture(ctx.gui, ctx.camera, ctx.viewport)
-//                        .mapNotNull { part -> (part as? CursorPartRotateTexture)?.polygons }
-//                        .flatten()
-
                 val type = ctx.gui.state.selectionType
                 val selection = ctx.gui.modelAccessor.modelSelection
                 val model = ctx.gui.state.tmpModel ?: ctx.gui.modelAccessor.model
                 val materialRef = ctx.gui.state.selectedMaterial
                 val material = model.getMaterial(materialRef)
-                val polygons = model.getTexturePolygons(selection, type, materialRef, material)
-                        .map { it.first }
-
+                val polygons = PickupHelper.getTexturePolygons(model, selection, type, material).map { it.first }
 
                 polygons.flatMap { it.getEdges() }
                         .map {
-                            CanvasHelper.fromMaterialToRender(it.first, material) to
-                                    CanvasHelper.fromMaterialToRender(it.second, material)
+                            Pair(
+                                    PickupHelper.fromMaterialToCanvas(it.first, material),
+                                    PickupHelper.fromMaterialToCanvas(it.second, material)
+                            )
                         }
                         .forEach {
                             val color = if (ctx.gui.cursorManager.cursorDrag.hovered == null) vec3Of(0.3) else vec3Of(

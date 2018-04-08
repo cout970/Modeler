@@ -1,11 +1,13 @@
 package com.cout970.modeler.core.helpers
 
 import com.cout970.collision.IPolygon
+import com.cout970.collision.collide
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.selection.IRef
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionType
+import com.cout970.modeler.core.collision.TexturePolygon
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.gui.canvas.Canvas
@@ -74,36 +76,27 @@ object PickupHelper {
         }
     }
 
-
     fun getMousePosAbsolute(canvas: Canvas, absPos: IVector2): IVector2 {
-        val cam = canvas.textureCamera.camera
-        val aspectRatio = (canvas.size.y / canvas.size.x)
-        val camPos = vec2Of(cam.position.xd, cam.position.yd)
-
-        val center = canvas.absolutePositionV + canvas.size.toIVector() * 0.5
-        val distanceToCenter = (absPos - center) * 2
-
-        val relPos = distanceToCenter / canvas.size.toIVector() * vec2Of(1.0 / aspectRatio, 1)
-        val scaledPos = relPos * cam.zoom * vec2Of(1, -1)
-
-        return scaledPos - camPos
+        return getMousePos(canvas, absPos - canvas.absolutePositionV)
     }
 
     fun getMousePos(canvas: Canvas, mousePos: IVector2): IVector2 {
         val cam = canvas.textureCamera.camera
+        val aspectRatio = (canvas.size.x / canvas.size.y)
         val camPos = cam.position.toVector2()
-        val aspectRatio = (canvas.size.y / canvas.size.x)
-        val center = canvas.size.toIVector() * 0.5
 
-        val distanceToCenter = (mousePos - center) * 2
-
-        // (dist * 2 / size) * zoom
-
-        val relPos = distanceToCenter / canvas.size.toIVector() * vec2Of(1.0 / aspectRatio, 1)
-
-        val scaledPos = relPos * cam.zoom * vec2Of(1, -1)
+        val relative = mousePos / canvas.size.toIVector()
+        val yAdjusted = relative * vec2Of(1, -1) + vec2Of(0, 1)
+        val centered = yAdjusted * 2 - 1
+        val scaledPos = centered * vec2Of(aspectRatio, 1) * cam.zoom
 
         return scaledPos - camPos
+    }
+
+    fun <T> getFirstCollision(point: IVector2, obstacles: List<Pair<IPolygon, T>>): Pair<IPolygon, T>? {
+        val mouseCollisionBox = getPointPolygon(point)
+        val selected = obstacles.filter { it.first.collide(mouseCollisionBox) }
+        return selected.firstOrNull()
     }
 
     fun getTexturePolygons(model: IModel, selection: Nullable<ISelection>, type: SelectionType, mat: IMaterial)
@@ -128,5 +121,32 @@ object PickupHelper {
             SelectionType.EDGE -> objs.flatMap { (ref, obj) -> obj.getEdgeTexturePolygons(ref, mat) }
             SelectionType.VERTEX -> objs.flatMap { (ref, obj) -> obj.getVertexTexturePolygons(ref, mat) }
         }
+    }
+
+    fun getPointPolygon(point: IVector2): IPolygon {
+        val scale = vec2Of(0.01)
+        return TexturePolygon(listOf(
+                point + vec2Of(-scale.xd, -scale.yd), point + vec2Of(scale.xd, -scale.yd),
+                point + vec2Of(scale.xd, scale.yd), point + vec2Of(-scale.xd, scale.yd)
+        ))
+    }
+
+
+    fun fromCanvasToMaterial(pos: IVector2, material: IMaterial): IVector2 {
+        val scaled = pos / material.size
+        return vec2Of(scaled.xd, 1.0 - scaled.yd)
+    }
+
+    fun fromMaterialToCanvas(pos: IVector2, material: IMaterial): IVector2 {
+        return vec2Of(pos.xd, 1.0 - pos.yd) * material.size
+    }
+
+    fun pickup2D(canvas: Canvas, mouse: IVector2, model: IModel, selection: Nullable<ISelection>,
+                 material: IMaterial, selectionType: SelectionType): Pair<IPolygon, IRef>? {
+
+        val clickPos = getMousePosAbsolute(canvas, mouse)
+        val polygons = getTexturePolygons(model, selection, selectionType, material)
+        val finalPos = fromCanvasToMaterial(clickPos, material)
+        return getFirstCollision(finalPos, polygons)
     }
 }

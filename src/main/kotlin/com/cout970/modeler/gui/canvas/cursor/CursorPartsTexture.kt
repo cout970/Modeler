@@ -5,6 +5,7 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.core.collision.toTexturePolygon
+import com.cout970.modeler.core.helpers.PickupHelper
 import com.cout970.modeler.core.helpers.TransformationHelper
 import com.cout970.modeler.gui.canvas.IRotable
 import com.cout970.modeler.gui.canvas.IScalable
@@ -65,7 +66,7 @@ class CursorPartRotateTexture(
     override val hitbox: IRayObstacle? = null
 
     override fun applyRotation(offset: Float, selection: ISelection, model: IModel, material: IMaterial): IModel {
-        val center2 = CanvasHelper.fromRenderToMaterial(center.toVector2(), material)
+        val center2 = PickupHelper.fromCanvasToMaterial(center.toVector2(), material)
         return TransformationHelper.rotateTexture(model, selection, center2, -offset.toDegrees())
     }
 
@@ -102,7 +103,7 @@ class CursorPartScaleTexture(
 
     override fun applyScale(offset: Float, selection: ISelection, model: IModel, material: IMaterial): IModel {
         val dir = scaleAxis.toVector2() / material.size
-        val center2 = CanvasHelper.fromRenderToMaterial(center.toVector2(), material)
+        val center2 = PickupHelper.fromCanvasToMaterial(center.toVector2(), material)
         return TransformationHelper.scaleTexture(model, selection, center2, dir, offset)
     }
 

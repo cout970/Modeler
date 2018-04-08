@@ -6,6 +6,7 @@ import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.tasks.TaskUpdateModel
+import com.cout970.modeler.core.helpers.PickupHelper
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.canvas.*
 import com.cout970.modeler.gui.canvas.cursor.Cursor
@@ -68,7 +69,7 @@ class DraggingCursor {
             }
             !isDragging() -> {
                 if (texture) {
-                    val clickPos = CanvasHelper.getMouseProjection(canvas, mouse.mousePos)
+                    val clickPos = PickupHelper.getMousePosAbsolute(canvas, mouse.mousePos)
                     val model = gui.modelAccessor.model
                     val material = model.getMaterial(gui.state.selectedMaterial)
                     this.hovered = Hover.getHoveredObject(clickPos, material, targets)

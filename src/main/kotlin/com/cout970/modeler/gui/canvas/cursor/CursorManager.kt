@@ -4,6 +4,7 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.controller.ITaskProcessor
+import com.cout970.modeler.core.helpers.PickupHelper
 import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.core.model.edges
 import com.cout970.modeler.core.model.faces
@@ -124,7 +125,7 @@ class CursorManager {
 
         }.let { middle ->
             if (!middle.hasNaN()) {
-                val center = CanvasHelper.fromMaterialToRender(middle, material)
+                val center = PickupHelper.fromMaterialToCanvas(middle, material)
                 Cursor(center.toVector3(0.0))
             } else null
         }

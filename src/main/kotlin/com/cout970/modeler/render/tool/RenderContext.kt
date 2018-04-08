@@ -2,6 +2,7 @@ package com.cout970.modeler.render.tool
 
 import com.cout970.glutilities.tessellator.BufferPTNC
 import com.cout970.modeler.gui.Gui
+import com.cout970.modeler.gui.canvas.Canvas
 import com.cout970.modeler.render.tool.camera.Camera
 import com.cout970.modeler.render.tool.shader.UniversalShader
 import com.cout970.vector.api.IVector2
@@ -16,5 +17,6 @@ data class RenderContext(
         val viewportPos: IVector2,
         val lights: List<Light>,
         val shader: UniversalShader,
-        val buffer: BufferPTNC
+        val buffer: BufferPTNC,
+        val canvas: Canvas
 )

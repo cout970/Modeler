@@ -60,7 +60,8 @@ class CanvasRenderer(val renderManager: RenderManager) {
                     viewportPos = viewportPos,
                     shader = renderManager.shader,
                     gui = gui,
-                    buffer = buffer
+                    buffer = buffer,
+                    canvas = canvas
             )
 
             // change viewport
