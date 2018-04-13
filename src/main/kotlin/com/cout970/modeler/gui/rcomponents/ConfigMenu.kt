@@ -736,7 +736,7 @@ class KeyboardKeyInput : RComponent<KeyboardKeyInputProps, KeyboardKeyInput.Stat
         style {
             background { darkestColor }
             borderless()
-            style.cornerRadius.set(0f)
+            style.setBorderRadius(0f)
             position.set(props.pos)
             width = 150f
             height = 24f

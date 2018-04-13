@@ -169,7 +169,7 @@ class ModelTree : RStatelessComponent<ModelTreeProps>() {
             verticalScroll {
                 style {
                     rectCorners()
-                    style.minimumSize.x = 16f
+                    style.minWidth = 16f
                     arrowColor = color { lightBrightColor }
                     scrollColor = color { darkColor }
                     visibleAmount = 50f
@@ -435,7 +435,7 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
             verticalScroll {
                 style {
                     rectCorners()
-                    style.minimumSize.x = 16f
+                    style.minWidth = 16f
                     arrowColor = color { lightBrightColor }
                     scrollColor = color { darkColor }
                     visibleAmount = 50f

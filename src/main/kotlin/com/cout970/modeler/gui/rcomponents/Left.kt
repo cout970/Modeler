@@ -613,7 +613,7 @@ class EditGrids : RComponent<EditGridsProps, VisibleWidget>() {
 
             +CheckBox("Enable Plane X", 0f, 0f, 278f - 10f, 24f).apply {
                 defaultTextColor()
-                style.cornerRadius.set(0f)
+                style.setBorderRadius(0f)
                 fontSize = 20f
                 textState.padding.x = 24f
                 isChecked = props.gridLines.enableXPlane

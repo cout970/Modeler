@@ -32,10 +32,7 @@ class TextButton(
     }
 
     fun setImage(img: ImageIcon) {
-        backgroundIcon = img
-        focusedBackgroundIcon = img
-        hoveredBackgroundIcon = img
-        pressedBackgroundIcon = img
+        style.background.icon = img
     }
 
     fun setTextLeft() = this.apply {

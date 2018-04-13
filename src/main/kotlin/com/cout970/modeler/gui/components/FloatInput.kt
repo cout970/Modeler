@@ -26,7 +26,7 @@ class FloatInput : RComponent<FloatInput.Props, Unit>() {
     override fun build(ctx: RBuilder): Component = panel {
         background { darkestColor }
         setBorderless()
-        style.cornerRadius.set(0f)
+        style.setBorderRadius(0f)
         position = props.pos.toJoml2f()
         width = 120f
         height = 24f

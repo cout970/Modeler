@@ -67,10 +67,6 @@ class RComponentWrapper<out C : RComponent<P, S>, P : Any, S : Any>(
         subTree.isEnabled = enabled
     }
 
-    override fun setVisible(visible: Boolean) {
-        subTree.isVisible = visible
-    }
-
     override fun getMetadata(): MutableMap<String, Any> {
         return subTree.metadata
     }

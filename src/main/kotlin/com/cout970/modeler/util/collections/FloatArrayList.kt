@@ -1,68 +1,22 @@
-package com.cout970.modeler.util
+package com.cout970.modeler.util.collections
 
-import org.lwjgl.system.MemoryUtil
-import java.nio.FloatBuffer
 import java.util.*
 
 /**
  * Created by cout970 on 2017/05/17.
  */
 
-class FloatArrayList(capacity: Int = 10) : MutableList<Float>, RandomAccess {
+fun listOf(vararg values: Float) = FloatArrayList(values)
 
-    private var array: FloatArray
+class FloatArrayList internal constructor(private var array: FloatArray) : MutableList<Float>, RandomAccess {
+
     override var size: Int = 0
         private set
     private var modCount = 0
 
-    init {
-        array = FloatArray(capacity)
-    }
+    constructor(capacity: Int = 10) : this(FloatArray(capacity))
 
-    fun fillBuffer(floatBuffer: FloatBuffer) {
-        floatBuffer.put(array, 0, size)
-    }
-
-    fun useAsBuffer(function: (FloatBuffer) -> Unit) {
-        val buffer = MemoryUtil.memAlloc(size shl 2)
-        val floatBuffer = buffer.asFloatBuffer()
-
-        fillBuffer(floatBuffer)
-        floatBuffer.flip()
-        function(floatBuffer)
-        MemoryUtil.memFree(buffer)
-    }
-
-    fun useAsBuffer(b: FloatArrayList, func: (FloatBuffer, FloatBuffer) -> Unit) {
-        useAsBuffer { a ->
-            b.useAsBuffer { b ->
-                func(a, b)
-            }
-        }
-    }
-
-    fun useAsBuffer(b: FloatArrayList, c: FloatArrayList, func: (FloatBuffer, FloatBuffer, FloatBuffer) -> Unit) {
-        useAsBuffer { a ->
-            b.useAsBuffer { b ->
-                c.useAsBuffer { c ->
-                    func(a, b, c)
-                }
-            }
-        }
-    }
-
-    fun useAsBuffer(b: FloatArrayList, c: FloatArrayList, d: FloatArrayList,
-                    func: (FloatBuffer, FloatBuffer, FloatBuffer, FloatBuffer) -> Unit) {
-        useAsBuffer { a ->
-            b.useAsBuffer { b ->
-                c.useAsBuffer { c ->
-                    d.useAsBuffer { d ->
-                        func(a, b, c, d)
-                    }
-                }
-            }
-        }
-    }
+    internal fun internalArray(): FloatArray = array
 
     override fun contains(element: Float): Boolean {
         repeat(size) {
@@ -76,7 +30,7 @@ class FloatArrayList(capacity: Int = 10) : MutableList<Float>, RandomAccess {
     }
 
     override fun get(index: Int): Float {
-        require(index in 0..size - 1) { "Index $index outside bounds (0, $size)" }
+        require(index in 0 until size) { "Index $index outside bounds (0, $size)" }
         return array[index]
     }
 
@@ -116,13 +70,13 @@ class FloatArrayList(capacity: Int = 10) : MutableList<Float>, RandomAccess {
     }
 
     override fun add(index: Int, element: Float) {
-        require(index in 0..size - 1) { "Index $index outside bounds (0, $size)" }
+        require(index in 0 until size) { "Index $index outside bounds (0, $size)" }
         modCount++
         array[index] = element
     }
 
     override fun set(index: Int, element: Float): Float {
-        require(index in 0..size - 1) { "Index $index outside bounds (0, $size)" }
+        require(index in 0 until size) { "Index $index outside bounds (0, $size)" }
         modCount++
         val old = array[index]
         array[index] = element
@@ -131,7 +85,7 @@ class FloatArrayList(capacity: Int = 10) : MutableList<Float>, RandomAccess {
 
     override fun addAll(index: Int, elements: Collection<Float>): Boolean {
         elements.forEachIndexed { pos, fl ->
-            if (pos + index in 0..size - 1) {
+            if (pos + index in 0 until size) {
                 set(pos + index, fl)
             } else {
                 add(fl)
@@ -186,12 +140,12 @@ class FloatArrayList(capacity: Int = 10) : MutableList<Float>, RandomAccess {
     }
 
     override fun subList(fromIndex: Int, toIndex: Int): MutableList<Float> {
-        require(fromIndex in 0..size - 1) { "FromIndex $fromIndex outside bounds [0, $size)" }
-        require(toIndex in 0..size - 1) { "ToIndex $toIndex outside bounds [0, $size)" }
+        require(fromIndex in 0 until size) { "FromIndex $fromIndex outside bounds [0, $size)" }
+        require(toIndex in 0 until size) { "ToIndex $toIndex outside bounds [0, $size)" }
         return array.toMutableList().subList(fromIndex, toIndex)
     }
 
-    private inner open class Itr : MutableIterator<Float> {
+    private open inner class Itr : MutableIterator<Float>, FloatIterator() {
         internal var cursor: Int = 0
         internal var lastRet = -1
         internal var expectedModCount = modCount
@@ -200,7 +154,7 @@ class FloatArrayList(capacity: Int = 10) : MutableList<Float>, RandomAccess {
             return cursor != size
         }
 
-        override fun next(): Float {
+        override fun nextFloat(): Float {
             checkForComodification()
             val i = cursor
             if (i >= size)

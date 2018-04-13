@@ -24,8 +24,8 @@ class AnimationPanel(val animator: Animator, val animation: IAnimation) : Panel(
             val absPointerPos = Vector2f(absPos.x + pointerPos, absPos.y)
 
             // Background
-            NvgShapes.drawRect(nanovg, component.absolutePosition, component.size, component.style.background.color,
-                    component.style.cornerRadius)
+            NvgShapes.drawRect(nanovg, component.absolutePosition, component.size,
+                    component.style.background.color, component.style.borderRadius)
 
             val scale = (component.size.x / size).toInt()
 

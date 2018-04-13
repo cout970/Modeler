@@ -61,6 +61,10 @@ repositories {
         name = "kotlin-eap"
         url = "https://dl.bintray.com/kotlin/kotlin-eap-1.1/"
     }
+    maven {
+        name = "kotlinx"
+        url = "http://dl.bintray.com/kotlin/kotlinx"
+    }
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
 }
 
@@ -75,6 +79,7 @@ dependencies {
 
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    compile "org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1"
     compile "org.liquidengine:legui:$legui_version"
 
     compile group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-core', version: '0.22.1'

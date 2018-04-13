@@ -104,7 +104,7 @@ fun Component.setBorderless(): Component {
 
 @Deprecated(message = "use rectCorners()", replaceWith = ReplaceWith("rectCorners()", "com.cout970.reactive.dsl.rectCorners"))
 fun Component.rectangularCorners(): Component {
-    style.cornerRadius.set(0f)
+    style.setBorderRadius(0f)
     return this
 }
 
