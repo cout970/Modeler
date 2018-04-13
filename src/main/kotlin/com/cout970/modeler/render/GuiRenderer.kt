@@ -6,10 +6,8 @@ import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.gui.components.AnimationPanel
 import com.cout970.modeler.gui.leguicomp.PixelBorder
 import com.cout970.modeler.gui.leguicomp.ProfilerDiagram
-import com.cout970.modeler.gui.reactive.RComponentWrapper
 import com.cout970.modeler.input.event.CustomCallbackKeeper
 import com.cout970.modeler.render.gui.LeguiComponentRenderer
-import com.cout970.modeler.render.gui.RComponentRenderer
 import org.liquidengine.legui.animation.Animator
 import org.liquidengine.legui.component.Frame
 import org.liquidengine.legui.component.LayerContainer
@@ -49,7 +47,6 @@ class GuiRenderer(val rootFrame: Frame, window: Long) {
             it.putBorderRenderer(PixelBorder::class.java, PixelBorder.PixelBorderRenderer)
             it.putComponentRenderer(ProfilerDiagram::class.java, ProfilerDiagram.ProfilerDiagramRenderer)
             it.putComponentRenderer(AnimationPanel::class.java, AnimationPanel.Renderer)
-            it.putComponentRenderer(RComponentWrapper::class.java, RComponentRenderer)
             it.putComponentRenderer(Panel::class.java, LeguiComponentRenderer as NvgComponentRenderer<Panel>)
             it.putComponentRenderer(com.cout970.modeler.gui.leguicomp.Panel::class.java, LeguiComponentRenderer as NvgComponentRenderer<com.cout970.modeler.gui.leguicomp.Panel>)
             it.putComponentRenderer(LayerContainer::class.java, LeguiComponentRenderer as NvgComponentRenderer<LayerContainer>)

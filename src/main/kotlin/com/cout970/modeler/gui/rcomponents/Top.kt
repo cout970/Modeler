@@ -90,7 +90,7 @@ class SelectionTypeBar : RComponent<EmptyProps, SelectionTypeState>() {
         style {
             background { blackColor }
             borderless()
-            cornerRadius(5f)
+            borderRadius(5f)
             posX = 432f + 10f
             posY = 5f
             width = 143f + 8f

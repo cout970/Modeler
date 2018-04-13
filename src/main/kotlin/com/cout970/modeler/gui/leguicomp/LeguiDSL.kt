@@ -7,7 +7,6 @@ import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.gui.event.EventGuiCommand
 import com.cout970.modeler.gui.event.EventSelectionUpdate
-import com.cout970.modeler.gui.reactive.RComponentWrapper
 import com.cout970.modeler.util.forEachComponent
 import com.cout970.modeler.util.isNotEmpty
 import com.cout970.modeler.util.toColor
@@ -45,23 +44,6 @@ fun Component.printPaths(prefix: String = "") {
     println("$prefix/$name")
     forEachComponent {
         printPaths("$prefix/$name/${it.name}")
-    }
-}
-
-fun Component.printTree(prefix: String = "") {
-    val flag = this.listenerMap.getListeners(EventSelectionUpdate::class.java).isNotEmpty()
-
-    if (this.isNotEmpty) {
-        if (this is RComponentWrapper<*, *, *>) {
-            log(Level.DEBUG) { "$prefix${component.javaClass.simpleName}($flag)" }
-        } else {
-            log(Level.DEBUG) { "$prefix${this.javaClass.simpleName}($flag)" }
-        }
-        this.childs.forEach {
-            it.printTree(prefix + "|   ")
-        }
-    } else {
-        log(Level.DEBUG) { "$prefix${this.javaClass.simpleName}($flag)" }
     }
 }
 
