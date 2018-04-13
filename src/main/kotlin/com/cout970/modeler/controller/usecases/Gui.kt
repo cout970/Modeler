@@ -44,6 +44,12 @@ private fun showBottomPanel(): ITask = ModifyGui { gui ->
     gui.root.reRender()
 }
 
+@UseCase("show.search.panel")
+private fun showSearchPanel(): ITask = ModifyGui { gui ->
+    gui.listeners.runGuiCommand("showSearch", mapOf("ctx" to gui.root.context))
+    gui.root.reRender()
+}
+
 @UseCase("cursor.set.mode.translate")
 private fun setCursorModeTranslation(): ITask = ModifyGui { it.state.transformationMode = TransformationMode.TRANSLATION }
 

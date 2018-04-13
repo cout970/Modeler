@@ -17,11 +17,10 @@ import java.util.jar.JarEntry
  */
 object StackOverflowSnippets {
 
-
     /**
      * https://stackoverflow.com/a/22462785
      * Private helper method
-
+     *
      * @param directory
      * *            The directory to start with
      * *
@@ -45,7 +44,7 @@ object StackOverflowSnippets {
                 if (file.endsWith(".class")) {
                     try {
                         classes.add(Class.forName(pckgname + '.'
-                                                  + file.substring(0, file.length - 6)))
+                                + file.substring(0, file.length - 6)))
                     } catch (e: NoClassDefFoundError) {
                         // do nothing. this class hasn't been found by the
                         // loader, and we don't care.
@@ -122,7 +121,7 @@ object StackOverflowSnippets {
 
         try {
             val cld = Thread.currentThread().contextClassLoader
-                      ?: throw ClassNotFoundException("Can't get class loader.")
+                    ?: throw ClassNotFoundException("Can't get class loader.")
 
             val resources = cld.getResources(pckgname.replace('.', '/'))
             var connection: URLConnection
@@ -166,16 +165,65 @@ object StackOverflowSnippets {
         }
         return classes
     }
+
+    // https://stackoverflow.com/a/16018452
+    /**
+     * Calculates the similarity (a number within 0 and 1) between two strings.
+     */
+    fun similarity(s1: String, s2: String): Double {
+        var longer = s1
+        var shorter = s2
+        if (s1.length < s2.length) { // longer should always have greater length
+            longer = s2
+            shorter = s1
+        }
+        val longerLength = longer.length
+        return if (longerLength == 0) {
+            1.0 /* both strings are zero length */
+        } else (longerLength - editDistance(longer, shorter)) / longerLength.toDouble()
+
+    }
+
+    // Example implementation of the Levenshtein Edit Distance
+    // See http://rosettacode.org/wiki/Levenshtein_distance#Java
+    fun editDistance(s1: String, s2: String): Int {
+        var s1 = s1
+        var s2 = s2
+        s1 = s1.toLowerCase()
+        s2 = s2.toLowerCase()
+
+        val costs = IntArray(s2.length + 1)
+        for (i in 0..s1.length) {
+            var lastValue = i
+            for (j in 0..s2.length) {
+                if (i == 0)
+                    costs[j] = j
+                else {
+                    if (j > 0) {
+                        var newValue = costs[j - 1]
+                        if (s1[i - 1] != s2[j - 1])
+                            newValue = Math.min(Math.min(newValue, lastValue),
+                                    costs[j]) + 1
+                        costs[j - 1] = lastValue
+                        lastValue = newValue
+                    }
+                }
+            }
+            if (i > 0)
+                costs[s2.length] = lastValue
+        }
+        return costs[s2.length]
+    }
 }
 
 /** https://github.com/gazolla/Kotlin-Algorithm/blob/master/Shuffle/Shuffle.kt
  *
  */
-fun <T:Comparable<T>>shuffle(items:MutableList<T>):List<T>{
+fun <T : Comparable<T>> shuffle(items: MutableList<T>): List<T> {
     val rg = Random()
     for (i in 0 until items.size) {
         val randomPosition = rg.nextInt(items.size)
-        val tmp : T = items[i]
+        val tmp: T = items[i]
         items[i] = items[randomPosition]
         items[randomPosition] = tmp
     }

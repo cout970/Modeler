@@ -42,9 +42,12 @@ class KeyBindings {
     var setTextureMode = KeyBind(Keyboard.KEY_T, CTRL)
     var setModelMode = KeyBind(Keyboard.KEY_M, CTRL)
     var toggleVisibility = KeyBind(Keyboard.KEY_V, SHIFT)
+
     var showLeftPanel = KeyBind(Keyboard.KEY_L, ALT)
     var showRightPanel = KeyBind(Keyboard.KEY_R, ALT)
     var showBottomPanel = KeyBind(Keyboard.KEY_B, ALT)
+    var showSearchBar = KeyBind(Keyboard.KEY_TAB)
+
     var selectAll = KeyBind(Keyboard.KEY_A, CTRL)
     var splitTexture = KeyBind(Keyboard.KEY_P, CTRL)
     var joinObjects = KeyBind(Keyboard.KEY_J, CTRL)

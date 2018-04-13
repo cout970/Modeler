@@ -1,13 +1,15 @@
-package com.cout970.modeler.gui.search
+package com.cout970.modeler.core.search
 
+import com.cout970.modeler.controller.StackOverflowSnippets
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.config.KeyBind
+import com.cout970.modeler.gui.rcomponents.SearchResult
 
 /**
  * Created by cout970 on 2017/04/12.
  */
 
-object SearchDatabase : ISearchEngine {
+object SearchDatabase {
 
     private val keys get() = Config.keyBindings
 
@@ -43,8 +45,7 @@ object SearchDatabase : ISearchEngine {
     )
     // @formatter:on
 
-
-    override fun search(field: String): List<SearchResult> {
+    fun search(field: String): List<SearchResult> {
         val result = mutableListOf<SearchResult>()
         val text = field.trim()
 
@@ -53,7 +54,7 @@ object SearchDatabase : ISearchEngine {
                 result += SearchResult(op.text, op.keyBind.toString(), op.cmd)
             }
         }
-        return result
+        return result.sortedBy { StackOverflowSnippets.similarity(field, it.text) }
     }
 
     class Entry(val text: String, val keywords: List<String>, val keyBind: KeyBind, val cmd: String)

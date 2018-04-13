@@ -28,6 +28,7 @@ class KeyboardBinder(val dispatcher: Dispatcher) {
                 showLeftPanel.check(e) -> "show.left.panel"
                 showRightPanel.check(e) -> "show.right.panel"
                 showBottomPanel.check(e) -> "show.bottom.panel"
+                showSearchBar.check(e) -> "show.search.panel"
 
                 setObjectSelectionType.check(e) -> "set.selection.type.object"
                 setFaceSelectionType.check(e) -> "set.selection.type.face"
@@ -51,6 +52,7 @@ class KeyboardBinder(val dispatcher: Dispatcher) {
 
                 addAnimation.check(e) -> "animation.add"
                 toggleAnimation.check(e) -> "animation.state.toggle"
+
 
                 e.keycode == Keyboard.KEY_F1 -> "debug"
                 e.keycode == Keyboard.KEY_F2 -> "debug.changeColors"

@@ -43,6 +43,7 @@ class RootComp : RComponent<RootProps, RootState>() {
 
         child(BottomPanel::class, BottomPanelProps(state.bottomVisible, props.gui.animator, props.gui.modelAccessor))
 
+        child(Search::class, SearchProps())
         child(PopUp::class, PopUpProps(props.gui.state, props.gui.propertyHolder))
 
         onCmd("toggleLeft") { setState { copy(leftVisible = !leftVisible) } }
