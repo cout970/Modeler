@@ -23,9 +23,9 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
 
-object ProjectLoaderV11 {
+object ProjectLoaderV12 {
 
-    const val VERSION = "1.1"
+    const val VERSION = "1.2"
 
     val gson = GsonBuilder()
             .setExclusionStrategies(ProjectExclusionStrategy())
@@ -36,7 +36,7 @@ object ProjectLoaderV11 {
             .registerTypeAdapter(IVector2::class.java, Vector2Serializer())
             .registerTypeAdapter(IQuaternion::class.java, QuaternionSerializer())
             .registerTypeAdapter(IMaterial::class.java, MaterialSerializer())
-            .registerTypeAdapter(IModel::class.java, ModelSerializer())
+            .registerTypeAdapter(IModel::class.java, serializerOf<Model>())
             .registerTypeAdapter(IGroupTree::class.java, GroupTreeSerializer())
             .registerTypeAdapter(IGroupRef::class.java, serializerOf<GroupRef>())
             .registerTypeAdapter(IGroup::class.java, serializerOf<Group>())
@@ -75,18 +75,5 @@ object ProjectLoaderV11 {
             it.closeEntry()
         }
         zip.close()
-    }
-
-    class ModelSerializer : JsonSerializer<IModel>, JsonDeserializer<IModel> {
-
-        override fun serialize(src: IModel, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-            return context.serialize(src)
-        }
-
-        override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IModel {
-            val model: Model = context.deserialize(json, Model::class.java)
-
-            return Model.of(model.objectMap, model.materialMap)
-        }
     }
 }

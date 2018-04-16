@@ -109,17 +109,6 @@ class QuaternionSerializer : JsonSerializer<IQuaternion>, JsonDeserializer<IQuat
     }
 }
 
-class ModelSerializer : JsonSerializer<IModel>, JsonDeserializer<IModel> {
-
-    override fun serialize(src: IModel, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-        return context.serialize(src)
-    }
-
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IModel {
-        return context.deserialize(json, Model::class.java)
-    }
-}
-
 class GroupTreeSerializer : JsonSerializer<IGroupTree>, JsonDeserializer<IGroupTree> {
 
     override fun serialize(src: IGroupTree, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
@@ -132,17 +121,6 @@ class GroupTreeSerializer : JsonSerializer<IGroupTree>, JsonDeserializer<IGroupT
     }
 }
 
-class GroupSerializer : JsonSerializer<IGroupRef>, JsonDeserializer<IGroupRef> {
-
-    override fun serialize(src: IGroupRef, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-        return context.serialize(src)
-    }
-
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IGroupRef {
-        return context.deserialize(json, GroupRef::class.java)
-    }
-}
-
 class ImmutableBiMultimapSerializer : JsonSerializer<ImmutableBiMultimap<*, *>>, JsonDeserializer<ImmutableBiMultimap<*, *>> {
 
     override fun serialize(src: ImmutableBiMultimap<*, *>, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
@@ -150,7 +128,7 @@ class ImmutableBiMultimapSerializer : JsonSerializer<ImmutableBiMultimap<*, *>>,
     }
 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): ImmutableBiMultimap<*, *> {
-        if(json.isJsonNull || (json.isJsonObject && json.asJsonObject.size() == 0))
+        if (json.isJsonNull || (json.isJsonObject && json.asJsonObject.size() == 0))
             return ImmutableBiMultimapImpl.emptyBiMultimap<IGroupRef, IObjectRef>()
 
         return context.deserialize(json, ImmutableBiMultimapImpl::class.java)
@@ -289,6 +267,21 @@ class UUIDSerializer : JsonSerializer<UUID>, JsonDeserializer<UUID> {
 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): UUID {
         return UUID.fromString(json.asString)
+    }
+}
+
+interface BiSerializer<T> : JsonSerializer<T>, JsonDeserializer<T>
+
+inline fun <reified T> serializerOf(): BiSerializer<T> {
+    return object : BiSerializer<T> {
+
+        override fun serialize(src: T, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+            return context.serialize(src)
+        }
+
+        override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): T {
+            return context.deserialize(json, T::class.java)
+        }
     }
 }
 
