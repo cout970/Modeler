@@ -5,6 +5,7 @@ import com.cout970.modeler.core.export.ExportFormat
 import com.cout970.modeler.core.export.ExportProperties
 import com.cout970.modeler.core.export.ImportFormat
 import com.cout970.modeler.core.export.ImportProperties
+import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.project.IProjectPropertiesHolder
 import com.cout970.modeler.gui.GuiState
 import com.cout970.modeler.gui.leguicomp.*
@@ -65,9 +66,9 @@ class ImportDialog : RComponent<PopupReturnProps, ImportDialogState>() {
 
     companion object {
         private val options = listOf("Obj (*.obj)", "Techne (*.tcn, *.zip)", "Minecraft (*.json)",
-                "Tabula (*.tbl)", "MCX (*.mcx)", "Project (*.pff)")
+                "Tabula (*.tbl)", "MCX (*.mcx)", "Project (*.pff)", "GL Transport Format (*.gltf)")
 
-        private val extensions = listOf("*.obj", "*.tcn", "*.json", "*.tbl", "*.mcx", "*.pff")
+        private val extensions = listOf("*.obj", "*.tcn", "*.json", "*.tbl", "*.mcx", "*.pff", "*.gltf")
                 .toPointerBuffer()
     }
 
@@ -106,13 +107,17 @@ class ImportDialog : RComponent<PopupReturnProps, ImportDialogState>() {
         +TextButton("", "Select", 360f, 50f, 80f, 24f).apply {
 
             onRelease {
-                val file = TinyFileDialogs.tinyfd_openFileDialog(
-                        "Import",
-                        "",
-                        extensions,
-                        "Model Files (*.tcn, *.obj, *.json, *.tbl, *.mcx, *.pff)",
-                        false
-                )
+                val file = try {
+                    TinyFileDialogs.tinyfd_openFileDialog(
+                            "Import",
+                            "",
+                            extensions,
+                            "Model Files (*.tcn, *.obj, *.json, *.tbl, *.mcx, *.pff, *.gltf)",
+                            false
+                    )
+                } catch (e: Exception) {
+                    null
+                }
                 if (file != null) {
                     val newOption = when {
                         file.endsWith(".obj") -> 0
@@ -121,6 +126,7 @@ class ImportDialog : RComponent<PopupReturnProps, ImportDialogState>() {
                         file.endsWith(".tbl") -> 3
                         file.endsWith(".mcx") -> 4
                         file.endsWith(".pff") -> 5
+                        file.endsWith(".gltf") -> 6
                         else -> state.option
                     }
                     setState { copy(text = file, option = newOption, forceUpdate = !forceUpdate) }
@@ -284,12 +290,16 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
 
         comp(TextButton("", "Select", 360f, 100f, 80f, 24f)) {
             onRelease {
-                val file = TinyFileDialogs.tinyfd_saveFileDialog(
-                        "Export",
-                        "model." + ExportFormat.values()[state.selection].name.toLowerCase(),
-                        getExportFileExtensions(ExportFormat.values()[state.selection]),
-                        options[state.selection]
-                )
+                val file = try {
+                    TinyFileDialogs.tinyfd_saveFileDialog(
+                            "Export",
+                            "model." + ExportFormat.values()[state.selection].name.toLowerCase(),
+                            getExportFileExtensions(ExportFormat.values()[state.selection]),
+                            options[state.selection]
+                    )
+                } catch (e: Exception) {
+                    e.print(); null
+                }
 
                 if (file != null) {
                     setState { copy(text = file, forceUpdate = true) }

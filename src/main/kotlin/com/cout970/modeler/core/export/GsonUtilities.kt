@@ -1,5 +1,7 @@
 package com.cout970.modeler.core.export
 
+import com.cout970.matrix.api.IMatrix4
+import com.cout970.matrix.extensions.mat4Of
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.GroupRef
@@ -61,6 +63,23 @@ class Vector3Serializer : JsonSerializer<IVector3>, JsonDeserializer<IVector3> {
     }
 }
 
+class Vector4Serializer : JsonSerializer<IVector4>, JsonDeserializer<IVector4> {
+
+    override fun serialize(src: IVector4, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+        return JsonArray().apply {
+            add(src.x)
+            add(src.y)
+            add(src.z)
+            add(src.w)
+        }
+    }
+
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IVector4 {
+        val array = json.asJsonArray
+        return vec4Of(array[0].asNumber, array[1].asNumber, array[2].asNumber, array[3].asNumber)
+    }
+}
+
 class ColorSerializer : JsonSerializer<IVector3>, JsonDeserializer<IVector3> {
 
     override fun serialize(src: IVector3, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
@@ -106,6 +125,42 @@ class QuaternionSerializer : JsonSerializer<IQuaternion>, JsonDeserializer<IQuat
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IQuaternion {
         val array = json.asJsonArray
         return quatOf(array[0].asNumber, array[1].asNumber, array[2].asNumber, array[3].asNumber)
+    }
+}
+
+class Matrix4Serializer : JsonSerializer<IMatrix4>, JsonDeserializer<IMatrix4> {
+
+    override fun serialize(src: IMatrix4, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+        return JsonArray().apply {
+            add(src.m00d)
+            add(src.m01d)
+            add(src.m02d)
+            add(src.m03d)
+
+            add(src.m10d)
+            add(src.m11d)
+            add(src.m12d)
+            add(src.m13d)
+
+            add(src.m20d)
+            add(src.m21d)
+            add(src.m22d)
+            add(src.m23d)
+
+            add(src.m30d)
+            add(src.m31d)
+            add(src.m32d)
+            add(src.m33d)
+        }
+    }
+
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IMatrix4 {
+        val array = json.asJsonArray
+        return mat4Of(
+                array[0].asDouble, array[1].asDouble, array[2].asDouble, array[3].asDouble,
+                array[4].asDouble, array[5].asDouble, array[6].asDouble, array[7].asDouble,
+                array[8].asDouble, array[9].asDouble, array[10].asDouble, array[11].asDouble,
+                array[12].asDouble, array[13].asDouble, array[14].asDouble, array[15].asDouble)
     }
 }
 

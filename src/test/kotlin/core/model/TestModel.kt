@@ -54,9 +54,9 @@ class TestModel {
         val obj1 = Object("", MeshFactory.createPlane(Vector2.ONE),
                 MaterialRefNone)
 
-        val modelA = Model.of(mapOf(obj1.toPair()), emptyList())
-        val modelB = Model.of(mapOf(obj1.toPair()), emptyList())
-        val result = Model.of(mapOf(obj1.toPair(), obj1.toPair()), emptyList())
+        val modelA = Model.of(mapOf(obj1.toPair()))
+        val modelB = Model.of(mapOf(obj1.toPair()))
+        val result = Model.of(mapOf(obj1.toPair(), obj1.toPair()))
 
         assertEquals("Fail at merge", result.objects, modelA.merge(modelB).objects)
         assertEquals("Fail at merge", result.materials, modelA.merge(modelB).materials)
@@ -67,11 +67,11 @@ class TestModel {
         val material = TexturedMaterial("name", ResourcePath.fromResourceLocation("path"))
         val obj1 = Object("", MeshFactory.createPlane(Vector2.ONE), material.ref)
 
-        val modelA = Model.of(mapOf(obj1.toPair()), listOf(material))
-        val modelB = Model.of(mapOf(obj1.toPair()), listOf(material))
+        val modelA = Model.of(mapOf(obj1.toPair()), mapOf(material.ref to material))
+        val modelB = Model.of(mapOf(obj1.toPair()), mapOf(material.ref to material))
 
         val resultObj = obj1.withMaterial(material.ref)
-        val result = Model.of(mapOf(obj1.toPair(), resultObj.toPair()), listOf(material))
+        val result = Model.of(mapOf(obj1.toPair(), resultObj.toPair()), mapOf(material.ref to material))
 
         assertEquals("Fail at merge", result.objects, modelA.merge(modelB).objects)
         assertEquals("Fail at merge", result.materials, modelA.merge(modelB).materials)

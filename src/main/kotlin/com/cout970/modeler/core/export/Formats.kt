@@ -9,7 +9,8 @@ enum class ImportFormat {
     JSON,//minecraft models
     TBL, //tabula
     MCX, // custom format for minecraft
-    PFF  // project file
+    PFF,  // project file
+    GLTF  // GL transport format
 }
 
 enum class ExportFormat {
@@ -28,5 +29,5 @@ data class ExportProperties(
         val path: String,
         val format: ExportFormat,
         val materialLib: String = "materials",
-        val domain: String = "blacksmith"
+        val domain: String = "error"
 )

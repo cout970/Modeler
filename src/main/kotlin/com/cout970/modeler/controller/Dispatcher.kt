@@ -78,7 +78,7 @@ class Dispatcher {
                 Profiler.endSection()
                 state.taskHistory.processTask(task)
             } catch (e: Exception) {
-                log(Level.ERROR) { "Unable to run usecase: ${useCase::class.simpleName}" }
+                log(Level.ERROR) { "Unable to run usecase: ${useCase::class.simpleName}, ${useCase.name}, key: $key" }
                 e.print()
                 val cause = e.cause!!
                 NotificationHandler.push(Notification("Internal error", cause.message ?: cause::class.java.simpleName))
