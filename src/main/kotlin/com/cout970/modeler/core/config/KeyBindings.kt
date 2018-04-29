@@ -1,7 +1,44 @@
 package com.cout970.modeler.core.config
 
 import com.cout970.glutilities.device.Keyboard
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_1
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_2
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_3
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_4
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_A
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_B
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_C
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_D
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_DELETE
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_E
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_F
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_H
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_I
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_J
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_K
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_L
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_LEFT_CONTROL
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_LEFT_SHIFT
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_M
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_N
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_O
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_P
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_PAGE_DOWN
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_PAGE_UP
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_R
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_S
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_SPACE
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_T
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_TAB
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_U
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_V
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_X
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_Y
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_Z
 import com.cout970.glutilities.device.Mouse
+import com.cout970.glutilities.device.Mouse.Companion.BUTTON_LEFT
+import com.cout970.glutilities.device.Mouse.Companion.BUTTON_MIDDLE
+import com.cout970.glutilities.device.Mouse.Companion.BUTTON_RIGHT
 import com.cout970.modeler.core.config.KeyboardModifiers.*
 
 /**
@@ -9,66 +46,70 @@ import com.cout970.modeler.core.config.KeyboardModifiers.*
  */
 class KeyBindings {
 
-    var rotateCamera = MouseKeyBind(Mouse.BUTTON_RIGHT)
-    var moveCamera = MouseKeyBind(Mouse.BUTTON_MIDDLE)
-    var selectModel = MouseKeyBind(Mouse.BUTTON_LEFT)
-    var jumpCameraToCursor = MouseKeyBind(Mouse.BUTTON_RIGHT)
-    var multipleSelection = KeyBind(Keyboard.KEY_LEFT_CONTROL)
-    var disableGridMotion = KeyBind(Keyboard.KEY_LEFT_CONTROL)
-    var disablePixelGridMotion = KeyBind(Keyboard.KEY_LEFT_SHIFT)
-    var switchOrthoProjection = KeyBind(Keyboard.KEY_O)
-    var slowCameraMovements = KeyBind(Keyboard.KEY_LEFT_SHIFT)
-    var moveCameraToCursor = KeyBind(Keyboard.KEY_F)
-    var delete = KeyBind(Keyboard.KEY_DELETE)
-    var undo = KeyBind(Keyboard.KEY_Z, CTRL)
-    var redo = KeyBind(Keyboard.KEY_Y, CTRL)
-    var cut = KeyBind(Keyboard.KEY_X, CTRL)
-    var copy = KeyBind(Keyboard.KEY_C, CTRL)
-    var paste = KeyBind(Keyboard.KEY_V, CTRL)
-    var addCube = KeyBind(Keyboard.KEY_C, CTRL, ALT)
-    var addPlane = KeyBind(Keyboard.KEY_P, CTRL, ALT)
+    var rotateCamera = MouseKeyBind(BUTTON_RIGHT)
+    var moveCamera = MouseKeyBind(BUTTON_MIDDLE)
+    var selectModel = MouseKeyBind(BUTTON_LEFT)
+    var jumpCameraToCursor = MouseKeyBind(BUTTON_RIGHT)
 
-    var setObjectSelectionType = KeyBind(Keyboard.KEY_1)
-    var setFaceSelectionType = KeyBind(Keyboard.KEY_2)
-    var setEdgeSelectionType = KeyBind(Keyboard.KEY_3)
-    var setVertexSelectionType = KeyBind(Keyboard.KEY_4)
+    var multipleSelection = KeyBind(KEY_LEFT_CONTROL)
+    var disableGridMotion = KeyBind(KEY_LEFT_CONTROL)
+    var disablePixelGridMotion = KeyBind(KEY_LEFT_SHIFT)
+    var switchOrthoProjection = KeyBind(KEY_O)
+    var slowCameraMovements = KeyBind(KEY_LEFT_SHIFT)
+    var moveCameraToCursor = KeyBind(KEY_F)
+    var delete = KeyBind(KEY_DELETE)
+    var undo = KeyBind(KEY_Z, CTRL)
+    var redo = KeyBind(KEY_Y, CTRL)
+    var cut = KeyBind(KEY_X, CTRL)
+    var copy = KeyBind(KEY_C, CTRL)
+    var paste = KeyBind(KEY_V, CTRL)
+    var addCube = KeyBind(KEY_C, CTRL, ALT)
+    var addPlane = KeyBind(KEY_P, CTRL, ALT)
 
-    var setTranslationCursorMode = KeyBind(Keyboard.KEY_T)
-    var setRotationCursorMode = KeyBind(Keyboard.KEY_R)
-    var setScaleCursorMode = KeyBind(Keyboard.KEY_S)
+    var setObjectSelectionType = KeyBind(KEY_1)
+    var setFaceSelectionType = KeyBind(KEY_2)
+    var setEdgeSelectionType = KeyBind(KEY_3)
+    var setVertexSelectionType = KeyBind(KEY_4)
 
-    var importTexture = KeyBind(Keyboard.KEY_T, CTRL, ALT)
-    var exportTexture = KeyBind(Keyboard.KEY_T, CTRL, ALT, SHIFT)
-    var setTextureMode = KeyBind(Keyboard.KEY_T, CTRL)
-    var setModelMode = KeyBind(Keyboard.KEY_M, CTRL)
-    var toggleVisibility = KeyBind(Keyboard.KEY_V, SHIFT)
+    var setTranslationCursorMode = KeyBind(KEY_T)
+    var setRotationCursorMode = KeyBind(KEY_R)
+    var setScaleCursorMode = KeyBind(KEY_S)
 
-    var showLeftPanel = KeyBind(Keyboard.KEY_L, ALT)
-    var showRightPanel = KeyBind(Keyboard.KEY_R, ALT)
-    var showBottomPanel = KeyBind(Keyboard.KEY_B, ALT)
-    var showSearchBar = KeyBind(Keyboard.KEY_TAB)
+    var importTexture = KeyBind(KEY_T, CTRL, ALT)
+    var exportTexture = KeyBind(KEY_T, CTRL, ALT, SHIFT)
+    var setTextureMode = KeyBind(KEY_T, CTRL)
+    var setModelMode = KeyBind(KEY_M, CTRL)
+    var toggleVisibility = KeyBind(KEY_V, SHIFT)
 
-    var selectAll = KeyBind(Keyboard.KEY_A, CTRL)
-    var splitTexture = KeyBind(Keyboard.KEY_P, CTRL)
-    var joinObjects = KeyBind(Keyboard.KEY_J, CTRL)
-    var extrudeFace = KeyBind(Keyboard.KEY_E, CTRL)
-    var setIsometricView = KeyBind(Keyboard.KEY_I, ALT)
+    var showLeftPanel = KeyBind(KEY_L, ALT)
+    var showRightPanel = KeyBind(KEY_R, ALT)
+    var showBottomPanel = KeyBind(KEY_B, ALT)
+    var showSearchBar = KeyBind(KEY_TAB)
 
-    var addAnimation = KeyBind(Keyboard.KEY_U, CTRL)
-    var toggleAnimation = KeyBind(Keyboard.KEY_SPACE)
+    var selectAll = KeyBind(KEY_A, CTRL)
+    var splitTexture = KeyBind(KEY_P, CTRL)
+    var scaleTextureUp = KeyBind(KEY_PAGE_UP, CTRL)
+    var scaleTextureDown = KeyBind(KEY_PAGE_DOWN, CTRL)
 
-    var layoutChangeMode = KeyBind(Keyboard.KEY_M, ALT)
-    var moveLayoutSplitterLeft = KeyBind(Keyboard.KEY_J, ALT)
-    var moveLayoutSplitterRight = KeyBind(Keyboard.KEY_K, ALT)
-    var moveLayoutSplitterUp = KeyBind(Keyboard.KEY_H, ALT)
-    var moveLayoutSplitterDown = KeyBind(Keyboard.KEY_L, ALT)
-    var newCanvas = KeyBind(Keyboard.KEY_N, ALT)
-    var deleteCanvas = KeyBind(Keyboard.KEY_D, ALT)
+    var joinObjects = KeyBind(KEY_J, CTRL)
+    var extrudeFace = KeyBind(KEY_E, CTRL)
+    var setIsometricView = KeyBind(KEY_I, ALT)
 
-    var newProject = KeyBind(Keyboard.KEY_N, CTRL, ALT, SHIFT)
-    var openProject = KeyBind(Keyboard.KEY_O, CTRL, ALT, SHIFT)
-    var saveProject = KeyBind(Keyboard.KEY_S, CTRL)
-    var saveProjectAs = KeyBind(Keyboard.KEY_S, CTRL, SHIFT)
-    var importModel = KeyBind(Keyboard.KEY_I, CTRL, SHIFT)
-    var exportModel = KeyBind(Keyboard.KEY_E, CTRL, SHIFT)
+    var addAnimation = KeyBind(KEY_U, CTRL)
+    var toggleAnimation = KeyBind(KEY_SPACE)
+
+    var layoutChangeMode = KeyBind(KEY_M, ALT)
+    var moveLayoutSplitterLeft = KeyBind(KEY_J, ALT)
+    var moveLayoutSplitterRight = KeyBind(KEY_K, ALT)
+    var moveLayoutSplitterUp = KeyBind(KEY_H, ALT)
+    var moveLayoutSplitterDown = KeyBind(KEY_L, ALT)
+    var newCanvas = KeyBind(KEY_N, ALT)
+    var deleteCanvas = KeyBind(KEY_D, ALT)
+
+    var newProject = KeyBind(KEY_N, CTRL, ALT, SHIFT)
+    var openProject = KeyBind(KEY_O, CTRL, ALT, SHIFT)
+    var saveProject = KeyBind(KEY_S, CTRL)
+    var saveProjectAs = KeyBind(KEY_S, CTRL, SHIFT)
+    var importModel = KeyBind(KEY_I, CTRL, SHIFT)
+    var exportModel = KeyBind(KEY_E, CTRL, SHIFT)
 }

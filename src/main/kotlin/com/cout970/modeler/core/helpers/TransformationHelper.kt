@@ -16,6 +16,7 @@ import com.cout970.modeler.util.toJOML
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
+import com.cout970.vector.extensions.times
 import com.cout970.vector.extensions.toVector3
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.vec3Of
@@ -232,6 +233,20 @@ object TransformationHelper {
                     }
 
                     val newMesh = Mesh(pos, newTex, newFaces)
+                    obj.withMesh(newMesh)
+                }
+            }
+            else -> model
+        }
+    }
+
+    fun scaleTextures(model: IModel, selection: ISelection, scale: Float): IModel {
+        return when (selection.selectionType) {
+            SelectionType.OBJECT -> {
+                model.modifyObjects(selection::isSelected) { _, obj ->
+                    val tex = obj.mesh.tex.map { it * scale }
+                    val newMesh = Mesh(obj.mesh.pos, tex, obj.mesh.faces)
+
                     obj.withMesh(newMesh)
                 }
             }

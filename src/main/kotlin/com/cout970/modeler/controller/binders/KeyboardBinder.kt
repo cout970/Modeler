@@ -45,6 +45,8 @@ class KeyboardBinder(val dispatcher: Dispatcher) {
                 selectAll.check(e) -> "model.select.all"
                 moveCameraToCursor.check(e) -> "camera.move.to.cursor"
                 splitTexture.check(e) -> "model.texture.split"
+                scaleTextureUp.check(e) -> "model.texture.scale.up"
+                scaleTextureDown.check(e) -> "model.texture.scale.down"
 
                 joinObjects.check(e) -> "model.obj.join"
                 extrudeFace.check(e) -> "model.face.extrude"

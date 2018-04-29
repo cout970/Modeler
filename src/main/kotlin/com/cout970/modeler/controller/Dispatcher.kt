@@ -74,7 +74,7 @@ class Dispatcher {
         } else {
             try {
                 Profiler.startSection(key)
-                val task = dependencyInjector.callUseCase(state, comp, useCase)
+                val task = dependencyInjector.callUseCase(state, comp, useCase.apply { isAccessible = true })
                 Profiler.endSection()
                 state.taskHistory.processTask(task)
             } catch (e: Exception) {

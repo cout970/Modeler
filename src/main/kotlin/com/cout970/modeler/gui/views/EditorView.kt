@@ -13,7 +13,7 @@ import com.cout970.reactive.dsl.transparent
 import com.cout970.reactive.nodes.child
 import com.cout970.vector.api.IVector2
 import org.liquidengine.legui.component.Component
-import org.liquidengine.legui.layout.LayoutManager
+import org.liquidengine.legui.system.layout.LayoutManager
 
 /**
  * Created by cout970 on 2017/06/09.
