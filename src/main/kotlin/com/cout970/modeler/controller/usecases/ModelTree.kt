@@ -164,7 +164,7 @@ private fun nodeMoved(model: IModel, component: Component): ITask {
     val childObj = child.obj
 
     if (childGroup != null) {
-        if (tree.getParent(childGroup) != parent) {
+        if (tree.getParent(childGroup) != parent && childGroup != parent) {
 
             val newTree = tree.changeParent(childGroup, parent)
             val newModel = model.withGroupTree(newTree.update(model.objectMap.keys))
