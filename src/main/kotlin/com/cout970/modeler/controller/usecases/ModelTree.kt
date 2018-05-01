@@ -13,6 +13,7 @@ import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.model.selection.Selection
 import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.core.project.ProjectManager
+import com.cout970.modeler.gui.rcomponents.Slot
 import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.asNullable
@@ -150,6 +151,37 @@ private fun moveItemUp(component: Component, model: IModel): ITask {
 private fun moveItemDown(component: Component, model: IModel): ITask {
     val ref = component.ref().asObjectRef().getOrNull() ?: return TaskNone
     return moveItem(ref, model, false)
+}
+
+@UseCase("model.tree.node.moved")
+private fun nodeMoved(model: IModel, component: Component): ITask {
+
+    val parent = component.metadata["parent"] as IGroupRef
+    val child = component.metadata["child"] as Slot
+    val tree = model.groupTree
+
+    val childGroup = child.group
+    val childObj = child.obj
+
+    if (childGroup != null) {
+        if (tree.getParent(childGroup) != parent) {
+
+            val newTree = tree.changeParent(childGroup, parent)
+            val newModel = model.withGroupTree(newTree.update(model.objectMap.keys))
+
+            return TaskUpdateModel(oldModel = model, newModel = newModel)
+        }
+    } else if (childObj != null) {
+        val oldParent = tree.getGroup(childObj)
+
+        if (oldParent != parent) {
+            val newTree = tree.removeObject(oldParent, childObj).addObject(parent, childObj)
+            val newModel = model.withGroupTree(newTree.update(model.objectMap.keys))
+
+            return TaskUpdateModel(oldModel = model, newModel = newModel)
+        }
+    }
+    return TaskNone
 }
 
 private fun moveItem(ref: IObjectRef, model: IModel, up: Boolean): ITask {

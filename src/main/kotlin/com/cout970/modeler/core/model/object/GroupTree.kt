@@ -101,7 +101,7 @@ data class GroupTree(
     }
 
     override fun removeObject(parent: IGroupRef, child: IObjectRef): GroupTree {
-        return copy(objectMapping = objectMapping.remove(parent))
+        return copy(objectMapping = objectMapping.removeValue(parent, child))
     }
 
     override fun getParent(child: IGroupRef): IGroupRef = parentMap[child] ?: RootGroupRef

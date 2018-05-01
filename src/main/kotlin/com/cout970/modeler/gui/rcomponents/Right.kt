@@ -1,33 +1,47 @@
 package com.cout970.modeler.gui.rcomponents
 
+import com.cout970.glutilities.structure.Timer
+import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.`object`.*
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.IObjectRef
+import com.cout970.modeler.controller.Dispatcher
+import com.cout970.modeler.controller.ITaskProcessor
+import com.cout970.modeler.controller.tasks.ITask
+import com.cout970.modeler.controller.tasks.TaskUpdateModel
 import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.core.model.getRecursiveChildGroups
+import com.cout970.modeler.core.log.Logger.level
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.model.ref
+import com.cout970.modeler.core.model.selection.ObjectRefNone
 import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.gui.GuiState
 import com.cout970.modeler.gui.event.EventMaterialUpdate
 import com.cout970.modeler.gui.event.EventModelUpdate
 import com.cout970.modeler.gui.event.EventSelectionUpdate
 import com.cout970.modeler.gui.leguicomp.*
-import com.cout970.modeler.util.flatMapList
-import com.cout970.modeler.util.getOr
-import com.cout970.modeler.util.toColor
-import com.cout970.reactive.core.EmptyProps
-import com.cout970.reactive.core.RBuilder
-import com.cout970.reactive.core.RProps
-import com.cout970.reactive.core.RStatelessComponent
+import com.cout970.modeler.input.event.IInput
+import com.cout970.modeler.util.*
+import com.cout970.reactive.core.*
 import com.cout970.reactive.dsl.*
 import com.cout970.reactive.nodes.*
+import com.cout970.vector.api.IVector2
+import com.cout970.vector.extensions.Vector2
+import com.cout970.vector.extensions.minus
+import com.cout970.vector.extensions.plus
+import org.joml.Vector2f
+import org.joml.Vector2i
+import org.liquidengine.legui.animation.Animation
+import org.liquidengine.legui.component.Component
+import org.liquidengine.legui.component.Panel
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
-import org.liquidengine.legui.style.color.ColorConstants.transparent
+import org.liquidengine.legui.style.border.SimpleLineBorder
+import org.liquidengine.legui.style.color.ColorConstants
+import com.cout970.glutilities.device.Mouse as LibMouse
 
 
-data class RightPanelProps(val visible: Boolean, val modelAccessor: IModelAccessor, val state: GuiState) : RProps
+data class RightPanelProps(val visible: Boolean, val modelAccessor: IModelAccessor, val state: GuiState, val input: IInput, val dispatcher: Dispatcher) : RProps
 
 class RightPanel : RStatelessComponent<RightPanelProps>() {
 
@@ -60,7 +74,7 @@ class RightPanel : RStatelessComponent<RightPanelProps>() {
                 sizeY = parent.sizeY - posY
             }
             child(CreateObjectPanel::class)
-            child(ModelTree::class, ModelTreeProps(props.modelAccessor))
+            child(ModelTree::class, ModelTreeProps(props.modelAccessor, props.input, props.dispatcher))
             child(MaterialList::class, MaterialListProps(props.modelAccessor, { props.state.selectedMaterial }))
         }
     }
@@ -110,9 +124,46 @@ class CreateObjectPanel : RStatelessComponent<EmptyProps>() {
     }
 }
 
-data class ModelTreeProps(val modelAccessor: IModelAccessor) : RProps
+data class Slot(val obj: IObjectRef?, val group: IGroupRef?, val level: Int)
 
-class ModelTree : RStatelessComponent<ModelTreeProps>() {
+data class ModelTreeProps(val modelAccessor: IModelAccessor, val input: IInput, val dispatcher: Dispatcher) : RProps
+data class ModelTreeState(val selectedObj: IObjectRef) : RState
+
+class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
+
+    var animation: Animation? = null
+
+    override fun getInitialState() = ModelTreeState(ObjectRefNone)
+
+    fun generateObjectMap(): List<Slot> {
+
+        val model = props.modelAccessor.model
+        val tree = model.groupTree
+        val map = mutableListOf<Slot>()
+
+        tree.getObjects(RootGroupRef).forEach { ref ->
+            map += Slot(ref, null, 0)
+        }
+
+        tree.getChildren(RootGroupRef).forEach {
+            addGroupAndChildren(tree, it, map, 0)
+        }
+
+        return map
+    }
+
+    fun addGroupAndChildren(tree: IGroupTree, group: IGroupRef, map: MutableList<Slot>, level: Int) {
+
+        map += Slot(null, group, level)
+
+        tree.getObjects(group).forEach { ref ->
+            map += Slot(ref, null, 1)
+        }
+
+        tree.getChildren(group).forEach {
+            addGroupAndChildren(tree, it, map, level + 1)
+        }
+    }
 
     override fun RBuilder.render() = div("ModelTree") {
 
@@ -150,6 +201,7 @@ class ModelTree : RStatelessComponent<ModelTreeProps>() {
         }
 
         scrollablePanel("ModeTreeScrollPanel") {
+
             style {
                 transparent()
                 borderless()
@@ -180,29 +232,35 @@ class ModelTree : RStatelessComponent<ModelTreeProps>() {
             container {
 
                 val model = props.modelAccessor.model
-                val objs = model.objectMap.values
-                val tree = model.groupTree
                 val selected = props.modelAccessor.modelSelection.map { sel ->
                     { obj: IObjectRef -> sel.isSelected(obj) }
                 }.getOr { _: IObjectRef -> false }
+                val objectMap = generateObjectMap()
 
-                var index = 0
+                objectMap.forEachIndexed { index, slot ->
+                    val group = slot.group
+                    val obj = slot.obj
 
-                val allGroups = listOf(RootGroupRef) + model.getRecursiveChildGroups(RootGroupRef)
-                allGroups.forEach { group ->
-                    if (group != RootGroupRef) {
-                        group(index++, model.getGroup(group))
-                    }
-                    tree.getObjects(group).forEach { ref ->
-                        obj(index++, model.getObject(ref), selected(ref))
+                    if (group != null) {
+                        group(index, model.getGroup(group))
+                    } else if (obj != null) {
+                        obj(index, model.getObject(obj), selected(obj))
                     }
                 }
 
                 style {
                     transparent()
                     borderless()
-                    height = index * 26f
+                    height = objectMap.size * 26f
                     width = 251f
+                }
+
+                postMount {
+                    animation?.stopAnimation()
+                    val anim = ModelTreeAnimation(props.modelAccessor.model, objectMap,
+                            this, props.input, this@ModelTree::rerender, props.dispatcher)
+
+                    animation = anim.apply { startAnimation() }
                 }
             }
         }
@@ -288,6 +346,7 @@ class ModelTree : RStatelessComponent<ModelTreeProps>() {
             +IconButton("tree.view.select.item", icon, 0f, 0f, 24f, 24f).apply {
                 metadata += "ref" to obj.ref
             }
+
             +TextButton("tree.view.select.item", obj.name, 24f, 0f, 172f, 24f).apply {
                 transparent()
                 borderless()
@@ -511,5 +570,109 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
                 }
             }
         }
+    }
+}
+
+class ModelTreeAnimation(val model: IModel, val objMap: List<Slot>, val component: Component, val input: IInput, val reset: () -> Unit, val dispatcher: Dispatcher) : Animation() {
+    var pressTime = 0L
+    var unPressTime = 0L
+    var selected: Int? = null
+    var initialMousePos: IVector2 = Vector2.ORIGIN
+    var initialCompPos: IVector2 = Vector2.ORIGIN
+
+    override fun animate(delta: Double): Boolean {
+        val now = Timer.miliTime.toLong()
+
+        if (input.mouse.isButtonPressed(LibMouse.BUTTON_LEFT)) {
+            pressTime = now
+        } else {
+            if (selected != null) {
+                applyChanges()
+                selected = null
+                initialMousePos = Vector2.ORIGIN
+                initialCompPos = Vector2.ORIGIN
+            }
+            unPressTime = now
+        }
+
+        if (selected == null && pressTime - unPressTime > 500) {
+            val mPos = input.mouse.getMousePos().toJoml2f()
+
+            component.childComponents.forEachIndexed { index, comp ->
+                if (comp.intersects(mPos)) {
+                    selected = index
+                    initialCompPos = comp.position.toIVector()
+                    initialMousePos = mPos.toIVector()
+                }
+            }
+
+            if (selected == null) {
+                // try again later
+                unPressTime = pressTime
+            } else {
+                println("Selecting $selected!")
+            }
+        }
+
+        selected?.let { selected ->
+            val item = component.childComponents[selected]
+            val (coords, pos) = calculateNewPosition(item)
+
+            item.position = pos
+            item.style.border = SimpleLineBorder(ColorConstants.blue(), 2f)
+
+            component.childComponents.forEachIndexed { i, component ->
+                if (i != selected) {
+                    val j = if (i < selected) i else i - 1
+                    if (j >= coords.y) {
+                        component.position.y = (j + 1) * (component.sizeY + 2f)
+                    } else {
+                        component.position.y = j * (component.sizeY + 2f)
+                    }
+                }
+            }
+        }
+        return false
+    }
+
+    private fun calculateNewPosition(item: Component): Pair<Vector2i, Vector2f> {
+        val mPos = input.mouse.getMousePos()
+        val diff = mPos - initialMousePos
+        val newPosY = (initialCompPos + diff).yf
+
+        val index = Math.ceil((newPosY / item.sizeY).toDouble() + 0.5).toInt() - 1
+
+        val slot = objMap.getOrNull(index)
+        val level = if (slot != null) if (slot.group != null) slot.level + 1 else slot.level else 0
+
+        val newPosX = level * 24f
+
+        return Vector2i(level, index) to Vector2f(newPosX, newPosY)
+    }
+
+    fun applyChanges() {
+        selected?.let { selected ->
+            val tree = model.groupTree
+            val item = component.childComponents[selected]
+            val (coords, _) = calculateNewPosition(item)
+
+            val child = objMap[selected]
+
+            val replaced = objMap.getOrNull(coords.y) ?: return@let
+            val replacedGroup = replaced.group
+            val replacedObj = replaced.obj
+
+            val parent = when {
+                replacedGroup != null -> replacedGroup
+                replacedObj != null -> tree.getGroup(replacedObj)
+                else -> return@let
+            }
+
+            dispatcher.onEvent("model.tree.node.moved", Panel().apply {
+                metadata += "parent" to parent
+                metadata += "child" to child
+            })
+        }
+        reset()
     }
 }

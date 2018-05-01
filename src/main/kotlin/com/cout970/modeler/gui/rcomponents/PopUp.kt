@@ -219,7 +219,7 @@ class ImportDialog : RComponent<PopupReturnProps, ImportDialogState>() {
     }
 }
 
-data class ExportDialogState(val text: String, val selection: Int, var forceUpdate: Boolean) : RState
+data class ExportDialogState(val text: String, val prefix: String, val selection: Int, var forceUpdate: Boolean) : RState
 
 class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
 
@@ -234,7 +234,7 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
         }
     }
 
-    override fun getInitialState() = ExportDialogState("", 1, false)
+    override fun getInitialState() = ExportDialogState("", "magneticraft:blocks/", 1, false)
 
     override fun RBuilder.render() = div("ExportDialog") {
         style {
@@ -307,6 +307,17 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
         }
 
         //fourth line
+
+        +FixedLabel("Prefix", 25f, 150f, 400f, 24f).apply {
+            textState.fontSize = 20f
+            textState.horizontalAlign = HorizontalAlign.LEFT
+        }
+
+        comp(TextInput(state.prefix, 90f, 150f, 350f, 24f)) {
+            on<TextInputContentChangeEvent<TextInput>> {
+                setState { copy(prefix = it.newValue, forceUpdate = false) }
+            }
+        }
 
         //fifth line
         +TextButton("", "Export", 270f, 200f, 80f, 24f).apply {
