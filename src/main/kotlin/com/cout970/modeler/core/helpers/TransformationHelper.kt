@@ -2,6 +2,7 @@ package com.cout970.modeler.core.helpers
 
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.`object`.IObject
+import com.cout970.modeler.api.model.`object`.IObjectCube
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.core.model.*
@@ -244,10 +245,14 @@ object TransformationHelper {
         return when (selection.selectionType) {
             SelectionType.OBJECT -> {
                 model.modifyObjects(selection::isSelected) { _, obj ->
-                    val tex = obj.mesh.tex.map { it * scale }
-                    val newMesh = Mesh(obj.mesh.pos, tex, obj.mesh.faces)
+                    if (obj is IObjectCube) {
+                        obj.withTextureSize(obj.textureSize * scale)
+                    } else {
+                        val tex = obj.mesh.tex.map { it * scale }
+                        val newMesh = Mesh(obj.mesh.pos, tex, obj.mesh.faces)
 
-                    obj.withMesh(newMesh)
+                        obj.withMesh(newMesh)
+                    }
                 }
             }
             else -> model

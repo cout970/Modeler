@@ -4,15 +4,16 @@ import com.cout970.modeler.PathConstants
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.export.ExportProperties
+import com.cout970.modeler.core.export.ExportTextureProperties
 import com.cout970.modeler.core.export.ImportProperties
 import com.cout970.modeler.core.model.AABB
+import com.cout970.modeler.core.model.material.MaterialNone.size
 import com.cout970.modeler.gui.Gui
-import com.cout970.modeler.gui.GuiState
 import com.cout970.modeler.gui.Popup
 import com.cout970.modeler.util.toPointerBuffer
 import com.cout970.reactive.core.AsyncManager
+import com.cout970.vector.extensions.vec2Of
 import org.lwjgl.PointerBuffer
-import org.lwjgl.util.tinyfd.TinyFileDialogs
 import java.io.File
 
 val textureExtensions: PointerBuffer = listOf("*.png").toPointerBuffer()
@@ -64,15 +65,17 @@ private fun showExportHitboxMenu(model: IModel): ITask {
 }
 
 @UseCase("texture.export")
-private fun showExportTextureMenu(model: IModel, guiState: GuiState): ITask = TaskAsync { returnCallback: (ITask) -> Unit ->
-    val file = TinyFileDialogs.tinyfd_saveFileDialog(
-            "Export Texture",
-            "texture.png",
-            textureExtensions,
-            "PNG texture (*.png)"
-    ) ?: return@TaskAsync
+private fun showExportTextureMenu(model: IModel, gui: Gui): ITask = TaskAsync { returnCallback: (ITask) -> Unit ->
+    val guiState = gui.state
 
-    val size = model.getMaterial(guiState.selectedMaterial).size
+    guiState.popup = Popup("export_texture") {
+        guiState.popup = null
 
-    returnCallback(TaskExportTexture(file, size, model, guiState.selectedMaterial))
+        AsyncManager.runLater { gui.root.reRender() }
+
+        (it as? ExportTextureProperties)?.let { props ->
+            returnCallback(TaskExportTexture(props.path, vec2Of(props.size), model, guiState.selectedMaterial))
+        }
+    }
+    AsyncManager.runLater { gui.root.reRender() }
 }

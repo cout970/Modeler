@@ -1,12 +1,10 @@
 package com.cout970.modeler.gui.rcomponents
 
 import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.core.export.ExportFormat
-import com.cout970.modeler.core.export.ExportProperties
-import com.cout970.modeler.core.export.ImportFormat
-import com.cout970.modeler.core.export.ImportProperties
+import com.cout970.modeler.core.export.*
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.project.IProjectPropertiesHolder
+import com.cout970.modeler.core.search.SearchDatabase.options
 import com.cout970.modeler.gui.GuiState
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.util.toColor
@@ -51,6 +49,7 @@ class PopUp : RStatelessComponent<PopUpProps>() {
             when (it.name) {
                 "import" -> child(ImportDialog::class, PopupReturnProps(it.returnFunc))
                 "export" -> child(ExportDialog::class, PopupReturnProps(it.returnFunc))
+                "export_texture" -> child(ExportTextureDialog::class, PopupReturnProps(it.returnFunc))
                 "config" -> child(ConfigMenu::class, ConfigMenuProps(it.returnFunc, props.propertyHolder))
             }
         }
@@ -330,5 +329,104 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
 
     override fun shouldComponentUpdate(nextProps: PopupReturnProps, nextState: ExportDialogState): Boolean {
         return state.selection != nextState.selection || nextState.forceUpdate
+    }
+}
+
+data class ExportTextureDialogState(val text: String, val size: Int, var forceUpdate: Boolean) : RState
+
+class ExportTextureDialog : RComponent<PopupReturnProps, ExportTextureDialogState>() {
+
+    companion object {
+        private val exportExtensionsPng = listOf("*.png").toPointerBuffer()
+    }
+
+    override fun getInitialState() = ExportTextureDialogState("", 64, false)
+
+    override fun RBuilder.render() = div("ExportDialog") {
+        style {
+            background { darkestColor }
+            style.border = SimpleLineBorder(Config.colorPalette.greyColor.toColor(), 2f)
+            width = 460f
+            height = 240f
+        }
+
+        postMount {
+            center()
+        }
+
+        // first line
+        +FixedLabel("Export Texture Template", 0f, 8f, 460f, 24f).apply {
+            textState.fontSize = 22f
+        }
+
+        //second line
+        +FixedLabel("Scale", 25f, 50f, 400f, 24f).apply {
+            textState.fontSize = 20f
+            textState.horizontalAlign = HorizontalAlign.LEFT
+        }
+
+        comp(TextInput(state.size.toString(), 90f, 50f, 250f, 24f)) {
+            style {
+                horizontalAlign = HorizontalAlign.RIGHT
+                fontSize(20f)
+            }
+
+            on<TextInputContentChangeEvent<TextInput>> {
+                setState { copy(size = it.newValue.toIntOrNull() ?: size) }
+            }
+        }
+
+        //third line
+        +FixedLabel("Path", 25f, 100f, 400f, 24f).apply {
+            textState.fontSize = 20f
+            textState.horizontalAlign = HorizontalAlign.LEFT
+        }
+
+        comp(TextInput(state.text, 90f, 100f, 250f, 24f)) {
+            on<TextInputContentChangeEvent<TextInput>> {
+                setState { copy(text = it.newValue, forceUpdate = false) }
+            }
+        }
+
+        comp(TextButton("", "Select", 360f, 100f, 80f, 24f)) {
+            onRelease {
+                val file = try {
+                    TinyFileDialogs.tinyfd_saveFileDialog(
+                            "Export Texture Template",
+                            "template.png",
+                            exportExtensionsPng,
+                            "PNG texture (*.png)"
+                    )
+                } catch (e: Exception) {
+                    e.print(); null
+                }
+
+                if (file != null) {
+                    setState { copy(text = file, forceUpdate = true) }
+                }
+            }
+        }
+
+        //fourth line
+
+        //fifth line
+        +TextButton("", "Export", 270f, 200f, 80f, 24f).apply {
+            onClick {
+                props.returnFunc(ExportTextureProperties(
+                        path = state.text,
+                        size = state.size
+                ))
+            }
+        }
+
+        +TextButton("", "Cancel", 360f, 200f, 80f, 24f).apply {
+            onClick {
+                props.returnFunc(null)
+            }
+        }
+    }
+
+    override fun shouldComponentUpdate(nextProps: PopupReturnProps, nextState: ExportTextureDialogState): Boolean {
+        return state.size != nextState.size || nextState.forceUpdate
     }
 }

@@ -1,20 +1,5 @@
 group 'com.cout970'
-version '1.6.4-SNAPSHOT'
-
-import org.gradle.internal.os.OperatingSystem
-
-switch (OperatingSystem.current()) {
-    case OperatingSystem.WINDOWS:
-        project.ext.lwjglNatives = "natives-windows"
-        break
-    case OperatingSystem.LINUX:
-        project.ext.lwjglNatives = "natives-linux"
-        break
-    case OperatingSystem.MAC_OS:
-        project.ext.lwjglNatives = "natives-macos"
-        break
-}
-
+version '1.6.6-SNAPSHOT'
 
 buildscript {
     ext.kotlin_version = '1.2.31'
@@ -97,13 +82,15 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
 
     // Native bindings
-    runtime "org.lwjgl:lwjgl:${lwjglVersion}:${lwjglNatives}"
-    runtime "org.lwjgl:lwjgl-glfw:${lwjglVersion}:${lwjglNatives}"
-    runtime "org.lwjgl:lwjgl-nanovg:${lwjglVersion}:${lwjglNatives}"
-    runtime "org.lwjgl:lwjgl-sse:${lwjglVersion}:${lwjglNatives}"
-    runtime "org.lwjgl:lwjgl-stb:${lwjglVersion}:${lwjglNatives}"
-    runtime "org.lwjgl:lwjgl-tinyfd:${lwjglVersion}:${lwjglNatives}"
-    runtime "org.lwjgl:lwjgl-xxhash:${lwjglVersion}:${lwjglNatives}"
+    ["natives-windows", "natives-linux", "natives-macos"].each { lwjglNatives ->
+        runtime "org.lwjgl:lwjgl:${lwjglVersion}:${lwjglNatives}"
+        runtime "org.lwjgl:lwjgl-glfw:${lwjglVersion}:${lwjglNatives}"
+        runtime "org.lwjgl:lwjgl-nanovg:${lwjglVersion}:${lwjglNatives}"
+        runtime "org.lwjgl:lwjgl-sse:${lwjglVersion}:${lwjglNatives}"
+        runtime "org.lwjgl:lwjgl-stb:${lwjglVersion}:${lwjglNatives}"
+        runtime "org.lwjgl:lwjgl-tinyfd:${lwjglVersion}:${lwjglNatives}"
+        runtime "org.lwjgl:lwjgl-xxhash:${lwjglVersion}:${lwjglNatives}"
+    }
 }
 
 jar {

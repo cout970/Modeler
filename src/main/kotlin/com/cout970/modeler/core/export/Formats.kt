@@ -31,3 +31,8 @@ data class ExportProperties(
         val materialLib: String = "materials",
         val domain: String = "error"
 )
+
+data class ExportTextureProperties(
+        val path: String,
+        val size: Int
+)

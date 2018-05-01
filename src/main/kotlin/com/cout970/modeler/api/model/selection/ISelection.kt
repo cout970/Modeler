@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package com.cout970.modeler.api.model.selection
 
 import com.cout970.modeler.core.model.selection.EdgeRef
