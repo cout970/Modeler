@@ -72,11 +72,11 @@ object GLTF {
             val camera: Int?            = null,                 // The index of the camera referenced by this node.
             val children: List<Int>     = emptyList(),          // The indices of this node's children.
             val skin: Int?              = null,                 // The index of the skin referenced by this node.
-            val matrix: IMatrix4        = Matrix4.IDENTITY,     // A floating-point 4x4 transformation matrix stored in column-major order.
+            val matrix: IMatrix4?       = Matrix4.IDENTITY,     // A floating-point 4x4 transformation matrix stored in column-major order.
             val mesh: Int?              = null,                 // The index of the mesh in this node.
-            val rotation: IQuaternion   = Quaternion.IDENTITY,  // The node's unit quaternion rotation in the order (x, y, z, w), where w is the scalar.
-            val scale: IVector3         = Vector3.ONE,          // The node's non-uniform scale, given as the scaling factors along the x, y, and z axes.
-            val translation: IVector3   = Vector3.ZERO,         // The node's translation along the x, y, and z axes.
+            val rotation: IQuaternion?  = Quaternion.IDENTITY,  // The node's unit quaternion rotation in the order (x, y, z, w), where w is the scalar.
+            val scale: IVector3?        = Vector3.ONE,          // The node's non-uniform scale, given as the scaling factors along the x, y, and z axes.
+            val translation: IVector3?  = Vector3.ZERO,         // The node's translation along the x, y, and z axes.
             val weights: List<Double>   = emptyList(),          // The weights of the instantiated Morph Target. Number of elements must match number of Morph Targets of used mesh.
             val name: String?           = null,                 // The user-defined name of this object. This is not necessarily unique, e.g., an accessor and a buffer could have the same name, or two accessors could even have the same name.
             val extensions: String?     = null,                 // Dictionary object with extension-specific objects.
@@ -324,7 +324,7 @@ object GLTF {
         MAT4(16)
     }
 
-    enum class GLMode(val mode: Int) {
+    enum class GLMode(val code: Int) {
         POINTS(0x0),
         LINES(0x1),
         LINE_LOOP(0x2),
@@ -337,7 +337,7 @@ object GLTF {
         POLYGON(0x9);
 
         companion object {
-            val conversionMap: Map<Int, GLMode> = GLMode.values().associateBy { it.mode }
+            val conversionMap: Map<Int, GLMode> = GLMode.values().associateBy { it.code }
 
             fun fromId(value: Int) = conversionMap[value] ?: error("Invalid GL mode: $value")
         }

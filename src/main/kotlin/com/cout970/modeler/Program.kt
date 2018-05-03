@@ -14,6 +14,9 @@ import com.cout970.modeler.render.RenderManager
 /**
  * Created by cout970 on 2017/05/26.
  */
+
+const val NAME = "TO_BE_NAMED"
+
 data class Program(
         val resourceLoader: ResourceLoader,
         val eventController: EventController,
