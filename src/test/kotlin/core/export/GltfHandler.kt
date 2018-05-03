@@ -1,6 +1,6 @@
 package core.export
 
-import com.cout970.modeler.core.export.ModelImporters.glftImporter
+import com.cout970.modeler.core.export.ModelImporters.gltfImporter
 import com.cout970.modeler.util.toResourcePath
 import org.junit.Test
 import java.io.File
@@ -16,7 +16,7 @@ class GltfHandler {
         println(File(".").absolutePath)
         val path = File("run/box.gltf").toResourcePath()
 
-        val model = glftImporter.import(path)
+        val model = gltfImporter.import(path)
 
         print(model)
     }

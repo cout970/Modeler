@@ -16,6 +16,7 @@ import com.cout970.reactive.nodes.comp
 import com.cout970.reactive.nodes.div
 import com.cout970.reactive.nodes.style
 import org.joml.Vector4f
+import org.liquidengine.legui.component.Button
 import org.liquidengine.legui.component.CheckBox
 import org.liquidengine.legui.component.TextInput
 import org.liquidengine.legui.component.event.checkbox.CheckBoxChangeValueEvent
@@ -224,13 +225,15 @@ data class ExportDialogState(val text: String, val prefix: String, val selection
 class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
 
     companion object {
-        private val options = listOf("Obj (*.obj)", "MCX (*.mcx)")
+        private val options = listOf("Obj (*.obj)", "MCX (*.mcx)", "GLTF (*.gltf)")
         private val exportExtensionsObj = listOf("*.obj").toPointerBuffer()
         private val exportExtensionsMcx = listOf("*.mcx").toPointerBuffer()
+        private val exportExtensionsGltf = listOf("*.gltf").toPointerBuffer()
 
         private fun getExportFileExtensions(format: ExportFormat): PointerBuffer = when (format) {
             ExportFormat.OBJ -> exportExtensionsObj
             ExportFormat.MCX -> exportExtensionsMcx
+            ExportFormat.GLTF -> exportExtensionsGltf
         }
     }
 
@@ -259,19 +262,28 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
             textState.horizontalAlign = HorizontalAlign.LEFT
         }
 
-        comp(DropDown(90f, 50f, 350f, 24f)) {
-            style {
-                elementHeight = 22f
-                buttonWidth = 22f
-                visibleCount = 2
-                options.forEach { addElement(it) }
-                setSelected(state.selection, true)
+
+        +TextButton("", "Obj (*.obj)", 90f, 50f, 110f, 24f).apply {
+            if (state.selection != 0) background { darkColor }
+
+            onClick {
+                setState { copy(selection = 0) }
             }
+        }
 
-            childrenAsNodes()
+        +TextButton("", "MCX (*.mcx)", 210f, 50f, 110f, 24f).apply {
+            if (state.selection != 1) background { darkColor }
 
-            on<SelectBoxChangeSelectionEvent<DropDown>> {
-                setState { copy(selection = options.indexOf(it.newValue)) }
+            onClick {
+                setState { copy(selection = 1) }
+            }
+        }
+
+        +TextButton("", "GLTF (*.gltf)", 330f, 50f, 110f, 24f).apply {
+            if (state.selection != 2) background { darkColor }
+
+            onClick {
+                setState { copy(selection = 2) }
             }
         }
 

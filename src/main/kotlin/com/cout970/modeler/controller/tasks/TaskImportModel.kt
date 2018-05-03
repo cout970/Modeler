@@ -88,7 +88,7 @@ class TaskImportModel(
                 exportManager.import(properties.path)
             }
             ImportFormat.GLTF -> {
-                ModelImporters.glftImporter.import(file)
+                ModelImporters.gltfImporter.import(file)
             }
         }
     }

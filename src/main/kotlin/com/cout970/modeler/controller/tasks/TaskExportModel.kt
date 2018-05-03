@@ -28,6 +28,9 @@ class TaskExportModel(
                 ExportFormat.MCX -> {
                     ModelImporters.mcxExporter.export(file.outputStream(), model, prop.domain)
                 }
+                ExportFormat.GLTF -> {
+                    ModelImporters.gltfExporter.export(file, model)
+                }
             }
             NotificationHandler.push(Notification("Model exported successfully",
                     "The model has been exported successfully to '${prop.path}'"))

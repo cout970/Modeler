@@ -5,83 +5,69 @@ import com.cout970.matrix.api.IMatrix2
 import com.cout970.matrix.api.IMatrix3
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.modeler.NAME
-import com.cout970.modeler.api.model.IModel
-import com.cout970.modeler.core.export.ModelImporters
-import com.cout970.modeler.util.toResourcePath
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.api.IVector4
 import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.vec3Of
-import com.google.gson.GsonBuilder
 import org.lwjgl.BufferUtils
-import java.io.File
 import java.nio.ByteBuffer
 
-fun testExporter() {
-    val model = glftModel {
-        useExtensions("myExtension")
-        requireExtensions("myExtrensionLoader")
+fun testExporter() = glftModel {
 
-        asset {
-            copyright = "GNU GPL v3"
+    useExtensions("myExtension")
+    requireExtensions("myExtrensionLoader")
+
+    asset {
+        copyright = "GNU GPL v3"
+    }
+
+    node {
+        name = "root"
+
+        transformation {
+            translation = Vector3.ZERO
+            scale = Vector3.ONE
         }
 
         node {
-            name = "root"
+            name = "child1"
+            mesh {
+                name = "Cube"
 
-            transformation {
-                translation = Vector3.ZERO
-                scale = Vector3.ONE
-            }
+                primitive {
+                    mode = TRIANGLES
 
-            node {
-                name = "child1"
-                mesh {
-                    name = "Cube"
+                    attributes[POSITION] = buffer(FLOAT, listOf(
+                            vec3Of(-1.0f, 1.0f, 1.0f),
+                            vec3Of(1.0f, 1.0f, 1.0f),
+                            vec3Of(-1.0f, -1.0f, 1.0f),
+                            vec3Of(1.0f, -1.0f, 1.0f),
+                            vec3Of(-1.0f, 1.0f, -1.0f),
+                            vec3Of(1.0f, 1.0f, -1.0f),
+                            vec3Of(-1.0f, -1.0f, -1.0f),
+                            vec3Of(1.0f, -1.0f, -1.0f)
+                    ))
 
-                    primitive {
-                        mode = TRIANGLES
-
-                        attributes[POSITION] = buffer(FLOAT, listOf(
-                                vec3Of(-1.0f, 1.0f, 1.0f),
-                                vec3Of(1.0f, 1.0f, 1.0f),
-                                vec3Of(-1.0f, -1.0f, 1.0f),
-                                vec3Of(1.0f, -1.0f, 1.0f),
-                                vec3Of(-1.0f, 1.0f, -1.0f),
-                                vec3Of(1.0f, 1.0f, -1.0f),
-                                vec3Of(-1.0f, -1.0f, -1.0f),
-                                vec3Of(1.0f, -1.0f, -1.0f)
-                        ))
-
-                        indices = buffer(UNSIGNED_INT, listOf(
-                                0, 1, 2, // 0
-                                1, 3, 2,
-                                4, 6, 5, // 2
-                                5, 6, 7,
-                                0, 2, 4, // 4
-                                4, 2, 6,
-                                1, 5, 3, // 6
-                                5, 7, 3,
-                                0, 4, 1, // 8
-                                4, 5, 1,
-                                2, 3, 6, // 10
-                                6, 3, 7
-                        ))
-                    }
+                    indices = buffer(UNSIGNED_INT, listOf(
+                            0, 1, 2, // 0
+                            1, 3, 2,
+                            4, 6, 5, // 2
+                            5, 6, 7,
+                            0, 2, 4, // 4
+                            4, 2, 6,
+                            1, 5, 3, // 6
+                            5, 7, 3,
+                            0, 4, 1, // 8
+                            4, 5, 1,
+                            2, 3, 6, // 10
+                            6, 3, 7
+                    ))
                 }
             }
         }
     }
-
-    File(model.first.buffers[0].uri).writeBytes(model.second)
-    val file = File("model.gltf")
-    val gson = GsonBuilder().setPrettyPrinting().create()
-    file.writeBytes(gson.toJson(model.first).toByteArray())
-//    val nextModel = GLTFParser.parse(model.first, file.toResourcePath())
-
-//    return ModelImporters.glftImporter.import(file.toResourcePath())
 }
 
 fun glftModel(func: GLTFBuilder.() -> Unit): Pair<GLTF.File, ByteArray> {
@@ -101,6 +87,7 @@ class GLTFBuilder {
     private var buffer = BufferUtils.createByteBuffer(16)
     private val bakedBufferViews = mutableListOf<GLTF.BufferView>()
     private val bakedAccessors = mutableListOf<GLTF.Accessor>()
+    var bufferName = "model.bin"
 
     fun useExtensions(vararg extensionsUsed: String) {
         this.extensionsUsed.addAll(extensionsUsed)
@@ -120,7 +107,7 @@ class GLTFBuilder {
                 meshes = bakedMeshes,
                 bufferViews = bakedBufferViews,
                 accessors = bakedAccessors,
-                buffers = listOf(GLTF.Buffer(uri = "data.bin", byteLength = binary.size))
+                buffers = listOf(GLTF.Buffer(uri = bufferName, byteLength = binary.size))
         ) to binary
     }
 

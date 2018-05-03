@@ -15,7 +15,8 @@ enum class ImportFormat {
 
 enum class ExportFormat {
     OBJ, //wavefront models
-    MCX
+    MCX,
+    GLTF
 }
 
 data class ImportProperties(
