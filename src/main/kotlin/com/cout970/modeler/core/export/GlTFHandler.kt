@@ -22,8 +22,9 @@ import com.cout970.vector.extensions.Vector2
 import com.cout970.vector.extensions.times
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.vec3Of
-import com.google.gson.GsonBuilder
+import com.google.gson.*
 import java.io.File
+import java.lang.reflect.Type
 
 private val GSON = GsonBuilder()
         .registerTypeAdapter(IVector4::class.java, Vector4Serializer())
@@ -31,7 +32,90 @@ private val GSON = GsonBuilder()
         .registerTypeAdapter(IVector2::class.java, Vector2Serializer())
         .registerTypeAdapter(IQuaternion::class.java, QuaternionSerializer())
         .registerTypeAdapter(IMatrix4::class.java, Matrix4Serializer())
+        .registerTypeAdapter(GLTF.Accessor::class.java, AccessorSerializer)
+        .registerTypeAdapter(GLTF.BufferView::class.java, BufferViewSerializer)
+        .registerTypeAdapter(List::class.java, EmptyListAdapter)
+        .registerTypeAdapter(Map::class.java, EmptyMapAdapter)
+        .setPrettyPrinting()
         .create()
+
+private object EmptyListAdapter : JsonSerializer<List<*>> {
+
+    override fun serialize(src: List<*>?, typeOfSrc: Type, context: JsonSerializationContext): JsonElement? {
+        if (src == null || src.isEmpty())
+            return null
+
+        return context.serialize(src)
+    }
+}
+
+private object EmptyMapAdapter : JsonSerializer<Map<*, *>> {
+
+    override fun serialize(src: Map<*, *>?, typeOfSrc: Type, context: JsonSerializationContext): JsonElement? {
+        if (src == null || src.isEmpty())
+            return null
+
+        return context.serialize(src)
+    }
+}
+
+private object AccessorSerializer : JsonSerializer<GLTF.Accessor> {
+
+    override fun serialize(src: GLTF.Accessor, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+        return JsonObject().apply {
+
+            addProperty("bufferView", src.bufferView)
+
+            if (src.byteOffset != null && src.byteOffset != 0)
+                addProperty("byteOffset", src.byteOffset)
+
+            addProperty("componentType", src.componentType)
+
+            if (src.normalized != null && src.normalized)
+                addProperty("normalized", src.normalized)
+
+            addProperty("count", src.count)
+
+            add("type", context.serialize(src.type))
+
+            if (src.max.isNotEmpty())
+                add("max", context.serialize(src.max))
+
+            if (src.min.isNotEmpty())
+                add("min", context.serialize(src.min))
+
+            if (src.sparse != null)
+                add("sparse", context.serialize(src.sparse))
+
+            if (src.name != null)
+                addProperty("name", src.name)
+        }
+    }
+}
+
+private object BufferViewSerializer : JsonSerializer<GLTF.BufferView> {
+
+    override fun serialize(src: GLTF.BufferView, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+        return JsonObject().apply {
+
+            addProperty("buffer", src.buffer)
+
+            if (src.byteOffset != null && src.byteOffset != 0)
+                addProperty("byteOffset", src.byteOffset)
+
+            addProperty("byteLength", src.byteLength)
+
+            if (src.byteStride != null)
+                addProperty("byteStride", src.byteStride)
+
+            if (src.target != null)
+                addProperty("target", src.target)
+
+            if (src.name != null)
+                addProperty("name", src.name)
+        }
+    }
+}
 
 class GlTFExporter {
 
@@ -42,12 +126,10 @@ class GlTFExporter {
     }
 
     fun IModel.toGlTF(buffer: String) = glftModel {
-        bufferName = buffer
+        bufferName = "$buffer.bin"
 
         objectMap.values.forEach { obj ->
             node {
-                name = obj.name
-
                 mesh {
                     name = obj.name
 

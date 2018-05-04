@@ -147,13 +147,6 @@ class Initializer {
         log(Level.FINE) { "Showing window" }
         windowHandler.window.show()
 
-        testExporter()
-        futureExecutor.doTask(
-                TaskImportModel(projectManager.model, ImportProperties(
-                        "model.gltf", ImportFormat.GLTF, false, false
-                ))
-        )
-
         log(Level.FINE) { "Initialization done" }
         return state
     }
