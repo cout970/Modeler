@@ -104,8 +104,8 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
 
         child(TinyFloatInput::class, TinyFloatInputProps(
                 pos = Vector2f(32f * 6f, 4f),
-                getter = props.animator::animationSize,
-                setter = props.animator::animationSize.setter
+                getter = { props.animator.animation.timeLength },
+                setter = { TODO("add use case to change animation time") }
         ))
     }
 
@@ -119,7 +119,7 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
         postMount { width = parent.width }
 
         var index = 0
-        val operations = props.modelAccessor.animation.operations.values
+        val operations = props.modelAccessor.animation.channels.values
 
         operations.forEach { op ->
             div {

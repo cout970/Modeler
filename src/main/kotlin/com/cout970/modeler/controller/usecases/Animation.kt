@@ -1,17 +1,16 @@
 package com.cout970.modeler.controller.usecases
 
 import com.cout970.modeler.api.animation.AnimationState
+import com.cout970.modeler.api.animation.InterpolationMethod
 import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.tasks.ModifyGui
 import com.cout970.modeler.controller.tasks.TaskNone
 import com.cout970.modeler.controller.tasks.TaskUpdateAnimation
-import com.cout970.modeler.core.animation.Operation
-import com.cout970.modeler.core.animation.TranslationDescription
-import com.cout970.modeler.core.animation.animationOf
-import com.cout970.modeler.core.animation.plus
+import com.cout970.modeler.core.animation.Channel
+import com.cout970.modeler.core.animation.Keyframe
+import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.project.IModelAccessor
-import com.cout970.vector.extensions.vec3Of
 
 
 private var lastAnimation = 0
@@ -19,16 +18,19 @@ private var lastAnimation = 0
 @UseCase("animation.add")
 private fun addAnimation(modelAccessor: IModelAccessor): ITask {
     val refs = modelAccessor.modelSelection.map { it.objects }.getOrNull() ?: return TaskNone
+    val anim = modelAccessor.animation
 
-    val newAnimation = animationOf(
-            Operation(
-                    description = TranslationDescription(translation = vec3Of(0, 16, 0)),
+    val newAnimation = anim.addChannels(listOf(
+            Channel(
                     name = "Anim${lastAnimation++}",
-                    startTime = 0.0f,
-                    endTime = 1.0f,
+                    interpolation = InterpolationMethod.LINEAR,
+                    keyframes = listOf(
+                            Keyframe(0f, TRSTransformation.IDENTITY),
+                            Keyframe(anim.timeLength, TRSTransformation.IDENTITY)
+                    ),
                     objects = refs
             )
-    ) + modelAccessor.animation
+    ))
 
     return TaskUpdateAnimation(modelAccessor.animation, newAnimation)
 }
@@ -65,5 +67,5 @@ private fun animationSeekStart(): ITask = ModifyGui {
 
 @UseCase("animation.seek.end")
 private fun animationSeekEnd(): ITask = ModifyGui {
-    it.animator.animationTime = it.animator.animationSize
+    it.animator.animationTime = it.modelAccessor.animation.timeLength
 }

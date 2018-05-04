@@ -1,17 +1,17 @@
 package com.cout970.modeler.render.tool
 
 import com.cout970.glutilities.structure.Timer
-import com.cout970.modeler.api.animation.*
+import com.cout970.modeler.api.animation.AnimationState
+import com.cout970.modeler.api.animation.IAnimation
+import com.cout970.modeler.api.animation.IChannel
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.render.tool.shader.UniversalShader
-import com.cout970.modeler.util.lerp
 import com.cout970.modeler.util.reduceAll
 import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.minus
 import com.cout970.vector.extensions.plus
-import com.cout970.vector.extensions.times
 
 class Animator {
 
@@ -23,53 +23,43 @@ class Animator {
         set(value) {
             gui.listeners.onAnimatorChange(this); field = value
         }
-    var animationSize = 1f
-        set(value) {
-            gui.listeners.onAnimatorChange(this); field = value
-        }
+
+    val animation get() = gui.modelAccessor.animation
 
     fun updateTime(timer: Timer) {
         when (animationState) {
             AnimationState.FORWARD -> {
                 animationTime += timer.delta.toFloat()
-                animationTime %= animationSize
+                animationTime %= animation.timeLength
             }
             AnimationState.BACKWARD -> {
                 animationTime -= timer.delta.toFloat()
                 if (animationTime < 0) {
-                    animationTime += animationSize
+                    animationTime += animation.timeLength
                 }
             }
             else -> Unit
         }
     }
 
-    fun animate(animation: IAnimation, obj: IObjectRef, shader: UniversalShader) {
-        val validOperations = animation.operations.values.filter { op ->
-            op.startTime <= animationTime && op.endTime >= animationTime && obj in op.objects
+    fun animate(anim: IAnimation, obj: IObjectRef, shader: UniversalShader) {
+
+        val now = animationTime
+        val activeChannels = anim.channels.values.filter { obj in it.objects }
+
+        val m = activeChannels.fold(TRSTransformation.IDENTITY) { acc, c ->
+
+            val next = c.keyframes.firstOrNull { it.time > now } ?: c.keyframes.first()
+            val prev = c.keyframes.lastOrNull { it.time <= now } ?: c.keyframes.last()
+
+            val size = next.time - prev.time
+            val step = (now - prev.time) / size
+
+            val t = prev.value.lerp(next.value, step)
+
+            acc.merge(t)
         }
 
-        if (validOperations.isNotEmpty()) {
-            applyOperations(validOperations, animationTime, shader)
-        }
-    }
-
-    private fun applyOperations(operations: List<IOperation>, time: Float, shader: UniversalShader) {
-
-        operations.reduceAll(TRSTransformation.IDENTITY) { acc, op ->
-            val step = ((time - op.startTime) / (op.endTime - op.startTime)).toDouble()
-            val description = op.description
-
-            when (description) {
-                is ITranslationDescription -> acc.merge(TRSTransformation(translation = description.translation * step))
-                is IRotationDescription -> acc.merge(TRSTransformation(rotation = description.rotation.lerp(step)))
-                is IScaleDescription -> {
-                    val diff = Vector3.ONE - description.scale
-                    acc.merge(TRSTransformation(scale = Vector3.ONE + diff * step))
-                }
-                else -> acc
-            }
-
-        }.let { trans -> shader.matrixM.setMatrix4(trans.matrix) }
+        shader.matrixM.setMatrix4(m.matrix)
     }
 }

@@ -2,6 +2,9 @@ package com.cout970.modeler.gui.rcomponents
 
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.leguicomp.onCmd
+import com.cout970.modeler.gui.rcomponents.left.LeftPanel
+import com.cout970.modeler.gui.rcomponents.left.LeftPanelProps
+import com.cout970.modeler.gui.rcomponents.left.ModelAccessorProps
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
 import com.cout970.reactive.core.RProps

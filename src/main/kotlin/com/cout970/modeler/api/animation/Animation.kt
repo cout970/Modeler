@@ -1,44 +1,38 @@
 package com.cout970.modeler.api.animation
 
 import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.vector.api.IQuaternion
-import com.cout970.vector.api.IVector3
+import com.cout970.modeler.core.model.TRSTransformation
 import java.util.*
 
 interface IAnimation {
-    val operations: Map<IOperationRef, IOperation>
+    val channels: Map<IChannelRef, IChannel>
+    val timeLength: Float
 
-    fun addOperations(list: List<IOperation>): IAnimation
-    fun removeOperations(list: List<IOperationRef>): IAnimation
+    fun addChannels(list: List<IChannel>): IAnimation
+    fun removeChannels(list: List<IChannelRef>): IAnimation
 
-    fun getOperations(obj: IObjectRef): List<IOperation>
+    fun getChannels(obj: IObjectRef): List<IChannel>
 }
 
-interface IOperationRef {
-    val operationId: UUID
+interface IChannelRef {
+    val id: UUID
 }
 
-interface IOperation {
+interface IChannel {
     val id: UUID
     val name: String
-    val startTime: Float
-    val endTime: Float
+    val interpolation: InterpolationMethod
+    val keyframes: List<IKeyframe>
     val objects: List<IObjectRef>
-    val description: IOperationDescription
 }
 
-interface IOperationDescription
-
-interface ITranslationDescription : IOperationDescription {
-    val translation: IVector3
+interface IKeyframe {
+    val time: Float
+    val value: TRSTransformation
 }
 
-interface IRotationDescription : IOperationDescription {
-    val rotation: IQuaternion
-}
-
-interface IScaleDescription : IOperationDescription {
-    val scale: IVector3
+enum class InterpolationMethod {
+    LINEAR, COSINE
 }
 
 enum class AnimationState {

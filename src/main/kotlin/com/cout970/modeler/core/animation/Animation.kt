@@ -2,6 +2,7 @@ package com.cout970.modeler.core.animation
 
 import com.cout970.modeler.api.animation.*
 import com.cout970.modeler.api.model.selection.IObjectRef
+import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
 import java.util.*
@@ -11,39 +12,40 @@ import java.util.*
  */
 
 data class Animation(
-        override val operations: Map<IOperationRef, IOperation>
+        override val channels: Map<IChannelRef, IChannel>,
+        override val timeLength: Float
 ) : IAnimation {
 
-    override fun addOperations(list: List<IOperation>): IAnimation {
-        return Animation(operations + list.associateBy { OperationRef(it.id) })
+    override fun addChannels(list: List<IChannel>): IAnimation {
+        return copy(channels = channels + list.associateBy { ChannelRef(it.id) })
     }
 
-    override fun removeOperations(list: List<IOperationRef>): IAnimation {
-        return Animation(operations.filterKeys { it !in list })
+    override fun removeChannels(list: List<IChannelRef>): IAnimation {
+        return copy(channels = channels.filterKeys { it !in list })
     }
 
-    override fun getOperations(obj: IObjectRef): List<IOperation> {
-        return operations.values.filter { obj in it.objects }
+    override fun getChannels(obj: IObjectRef): List<IChannel> {
+        return channels.values.filter { obj in it.objects }
     }
 }
 
-data class OperationRef(override val operationId: UUID) : IOperationRef
+data class ChannelRef(override val id: UUID) : IChannelRef
 
-data class Operation(
-        override val description: IOperationDescription,
+data class Channel(
         override val name: String,
-        override val startTime: Float,
-        override val endTime: Float,
+        override val interpolation: InterpolationMethod,
+        override val keyframes: List<IKeyframe>,
         override val objects: List<IObjectRef>,
         override val id: UUID = UUID.randomUUID()
-) : IOperation
+) : IChannel
 
-data class TranslationDescription(override val translation: IVector3) : ITranslationDescription
-data class RotationDescription(override val rotation: IQuaternion) : IRotationDescription
-data class ScaleDescription(override val scale: IVector3) : IScaleDescription
+data class Keyframe(
+        override val time: Float,
+        override val value: TRSTransformation
+) : IKeyframe
 
-inline val IOperation.ref get() = OperationRef(id)
+inline val IChannel.ref get() = ChannelRef(id)
 
-inline fun animationOf(vararg operations: IOperation) = Animation(operations.associateBy { it.ref })
+inline fun animationOf(vararg channels: IChannel, time: Float = 1f) = Animation(channels.associateBy { it.ref }, time)
 
-operator fun IAnimation.plus(other: IAnimation) = addOperations(other.operations.values.toList())
+operator fun IAnimation.plus(other: IAnimation) = addChannels(other.channels.values.toList())

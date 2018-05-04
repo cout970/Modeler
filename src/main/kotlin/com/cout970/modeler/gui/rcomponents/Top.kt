@@ -3,6 +3,7 @@ package com.cout970.modeler.gui.rcomponents
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.gui.event.EventModelUpdate
 import com.cout970.modeler.gui.leguicomp.*
+import com.cout970.modeler.gui.rcomponents.left.ModelAccessorProps
 import com.cout970.modeler.util.IPropertyBind
 import com.cout970.modeler.util.PropertyManager
 import com.cout970.reactive.core.*

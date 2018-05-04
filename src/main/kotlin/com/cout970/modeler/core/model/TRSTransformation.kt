@@ -56,4 +56,12 @@ data class TRSTransformation(
                 scale = this.scale * other.scale
         )
     }
+
+    fun lerp(other: TRSTransformation, step: Float): TRSTransformation {
+        return TRSTransformation(
+                translation = this.translation.interpolate(other.translation, step.toDouble()),
+                rotation = this.rotation.lerp(other.rotation, step.toDouble()),
+                scale = this.scale.interpolate(other.scale, step.toDouble())
+        )
+    }
 }
