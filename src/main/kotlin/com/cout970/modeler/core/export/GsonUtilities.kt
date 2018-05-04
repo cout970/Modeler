@@ -176,17 +176,22 @@ class GroupTreeSerializer : JsonSerializer<IGroupTree>, JsonDeserializer<IGroupT
     }
 }
 
-class ImmutableBiMultimapSerializer : JsonSerializer<ImmutableBiMultimap<*, *>>, JsonDeserializer<ImmutableBiMultimap<*, *>> {
+class BiMultimapSerializer : JsonSerializer<BiMultimap<Any, Any>>, JsonDeserializer<BiMultimap<*, *>> {
 
-    override fun serialize(src: ImmutableBiMultimap<*, *>, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-        return context.serialize(src)
+    data class Aux(val key: Any, val value: List<Any>)
+
+    override fun serialize(src: BiMultimap<Any, Any>, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+        return context.serialize(src.toList().map { Aux(it.first, it.second) })
     }
 
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): ImmutableBiMultimap<*, *> {
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): BiMultimap<Any, Any> {
         if (json.isJsonNull || (json.isJsonObject && json.asJsonObject.size() == 0))
-            return ImmutableBiMultimapImpl.emptyBiMultimap<IGroupRef, IObjectRef>()
+            return emptyBiMultimap()
 
-        return context.deserialize(json, ImmutableBiMultimapImpl::class.java)
+        val array = json.asJsonArray
+        val list = array.map { context.deserialize(it, Aux::class.java) as Aux }
+
+        return biMultimapOf(*list.map { it.key to it.value }.toTypedArray())
     }
 }
 

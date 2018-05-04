@@ -37,7 +37,7 @@ fun IModel.getSelectedObjects(sel: ISelection): List<IObject> =
         sel.refs.filterIsInstance<IObjectRef>().map { getObject(it) }
 
 fun IModel.getRecursiveChildObjects(group: IGroupRef): List<IObjectRef> {
-    return groupTree.getObjects(group) + groupTree.getChildren(group).flatMap { getRecursiveChildObjects(it) }
+    return getGroupObjects(group).toList() + groupTree.getChildren(group).flatMap { getRecursiveChildObjects(it) }
 }
 
 fun IModel.getRecursiveChildGroups(group: IGroupRef): List<IGroupRef> {

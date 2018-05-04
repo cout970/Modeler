@@ -5,9 +5,10 @@ import com.cout970.modeler.api.model.`object`.*
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.modeler.core.helpers.DeletionHelper
+import com.cout970.modeler.core.model.`object`.BiMultimap
 import com.cout970.modeler.core.model.`object`.GroupTree
 import com.cout970.modeler.core.model.`object`.ObjectNone
+import com.cout970.modeler.core.model.`object`.biMultimapOf
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.MaterialRefNone
 
@@ -21,6 +22,7 @@ data class Model(
         override val objectMap: Map<IObjectRef, IObject>,
         override val materialMap: Map<IMaterialRef, IMaterial>,
         override val groupMap: Map<IGroupRef, IGroup>,
+        override val groupObjects: BiMultimap<IGroupRef, IObjectRef>,
         override val groupTree: IGroupTree
 ) : IModel {
 
@@ -39,15 +41,16 @@ data class Model(
         fun of(objectMap: Map<IObjectRef, IObject> = emptyMap(),
                materialMap: Map<IMaterialRef, IMaterial> = emptyMap(),
                groupMap: Map<IGroupRef, IGroup> = emptyMap(),
+               groupObjects: BiMultimap<IGroupRef, IObjectRef> = biMultimapOf(RootGroupRef to emptySet()),
                groupTree: IGroupTree = GroupTree.emptyTree()
         ): IModel {
-            return Model(objectMap, materialMap, groupMap, groupTree.update(objectMap.keys))
+            return Model(objectMap, materialMap, groupMap, groupObjects, groupTree)
         }
 
         fun empty() = Model()
     }
 
-    private constructor() : this(emptyMap(), emptyMap(), emptyMap(), GroupTree.emptyTree())
+    private constructor() : this(emptyMap(), emptyMap(), emptyMap(), biMultimapOf(RootGroupRef to emptySet()), GroupTree.emptyTree())
 
     override fun getObject(ref: IObjectRef): IObject {
         if (ref in objectMap) {
@@ -74,7 +77,7 @@ data class Model(
         val newObjs = objectMap + objs.map { it.toPair() }
         return copy(
                 objectMap = newObjs,
-                groupTree = groupTree.update(newObjs.keys)
+                groupObjects = groupObjects.addAll(RootGroupRef, objs.map { it.ref }.toSet())
         )
     }
 
@@ -83,7 +86,7 @@ data class Model(
         val newObjs = objectMap.filter { (index, _) -> index !in toRemove }
         return copy(
                 objectMap = newObjs,
-                groupTree = groupTree.update(newObjs.keys)
+                groupObjects = groupObjects.removeAll(toRemove)
         )
     }
 
@@ -97,10 +100,7 @@ data class Model(
             }
         }.toMap()
 
-        return copy(
-                objectMap = newObjs,
-                groupTree = groupTree.update(newObjs.keys)
-        )
+        return copy(objectMap = newObjs)
     }
 
     override fun addMaterial(material: IMaterial): IModel {
@@ -141,15 +141,23 @@ data class Model(
 
     override fun removeGroup(ref: IGroupRef): IModel {
         val groups = getRecursiveChildGroups(ref) + ref
-        val objs = getRecursiveChildObjects(ref) + groupTree.getObjects(ref)
+        val objs = getRecursiveChildObjects(ref) + groupObjects[ref]
         val tree = groupTree.removeGroup(groupTree.getParent(ref), ref)
         val newObjs = objectMap - objs
 
         return copy(
                 objectMap = newObjs,
                 groupMap = groupMap - groups,
-                groupTree = tree.update(newObjs.keys)
+                groupObjects = groupObjects.remove(ref)
         )
+    }
+
+    override fun getGroupObjects(group: IGroupRef): Set<IObjectRef> = groupObjects[group]
+
+    override fun getObjectGroup(obj: IObjectRef): IGroupRef = groupObjects.getReverse(obj) ?: RootGroupRef
+
+    override fun setObjectGroup(obj: IObjectRef, newGroup: IGroupRef): IModel {
+        return copy(groupObjects = groupObjects.removeValue(getObjectGroup(obj), obj).set(newGroup, obj))
     }
 
     override fun withGroupTree(newGroupTree: IGroupTree): IModel {
@@ -157,13 +165,12 @@ data class Model(
     }
 
     override fun merge(other: IModel): IModel {
-        val newObjs = this.objectMap + other.objectMap
-
         return Model(
-                objectMap = newObjs,
+                objectMap = this.objectMap + other.objectMap,
                 materialMap = this.materialMap + other.materialMap,
                 groupMap = this.groupMap + other.groupMap,
-                groupTree = this.groupTree.merge(other.groupTree).update(newObjs.keys)
+                groupObjects = this.groupObjects + other.groupObjects,
+                groupTree = this.groupTree.merge(other.groupTree)
         )
     }
 
@@ -171,6 +178,7 @@ data class Model(
         if (this.objectMap != other.objectMap) return -1
         if (this.materialMap != other.materialMap) return -1
         if (this.groupMap != other.groupMap) return -1
+        if (this.groupObjects != other.groupObjects) return -1
 
         return 0
     }

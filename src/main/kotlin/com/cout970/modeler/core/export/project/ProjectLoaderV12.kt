@@ -40,7 +40,7 @@ object ProjectLoaderV12 {
             .registerTypeAdapter(IGroupTree::class.java, GroupTreeSerializer())
             .registerTypeAdapter(IGroupRef::class.java, serializerOf<GroupRef>())
             .registerTypeAdapter(IGroup::class.java, serializerOf<Group>())
-            .registerTypeAdapter(ImmutableBiMultimap::class.java, ImmutableBiMultimapSerializer())
+            .registerTypeAdapter(ImmutableBiMultimap::class.java, BiMultimapSerializer())
             .registerTypeAdapter(IObject::class.java, ObjectSerializer())
             .registerTypeAdapter(IMesh::class.java, MeshSerializer())
             .registerTypeAdapter(IFaceIndex::class.java, FaceSerializer())

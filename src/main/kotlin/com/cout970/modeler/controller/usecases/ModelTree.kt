@@ -141,18 +141,6 @@ private fun showListGroup(component: Component, model: IModel): ITask {
     }.getOr(TaskNone)
 }
 
-@UseCase("tree.view.move.up.item")
-private fun moveItemUp(component: Component, model: IModel): ITask {
-    val ref = component.ref().asObjectRef().getOrNull() ?: return TaskNone
-    return moveItem(ref, model, true)
-}
-
-@UseCase("tree.view.move.down.item")
-private fun moveItemDown(component: Component, model: IModel): ITask {
-    val ref = component.ref().asObjectRef().getOrNull() ?: return TaskNone
-    return moveItem(ref, model, false)
-}
-
 @UseCase("model.tree.node.moved")
 private fun nodeMoved(model: IModel, component: Component): ITask {
 
@@ -164,42 +152,22 @@ private fun nodeMoved(model: IModel, component: Component): ITask {
     val childObj = child.obj
 
     if (childGroup != null) {
-        if (tree.getParent(childGroup) != parent) {
 
+        if (tree.getParent(childGroup) != parent) {
             val newTree = tree.changeParent(childGroup, parent)
-            val newModel = model.withGroupTree(newTree.update(model.objectMap.keys))
+            val newModel = model.withGroupTree(newTree)
 
             return TaskUpdateModel(oldModel = model, newModel = newModel)
         }
+
     } else if (childObj != null) {
-        val oldParent = tree.getGroup(childObj)
+        val oldParent = model.getObjectGroup(childObj)
 
         if (oldParent != parent) {
-            val newTree = tree.removeObject(oldParent, childObj).addObject(parent, childObj)
-            val newModel = model.withGroupTree(newTree.update(model.objectMap.keys))
+            val newModel = model.setObjectGroup(childObj, parent)
 
             return TaskUpdateModel(oldModel = model, newModel = newModel)
         }
     }
     return TaskNone
-}
-
-private fun moveItem(ref: IObjectRef, model: IModel, up: Boolean): ITask {
-    val tree = model.groupTree
-    val parent = tree.getGroup(ref)
-    val brothers = tree.getObjects(parent)
-
-    return if (ref in brothers) {
-        val shift = if (up) -1.5f else 1.5f
-        val newBrothers = brothers.sortedBy {
-            val index = brothers.indexOf(it)
-            index + if (it == ref) shift else 0f
-        }
-        val newTree = tree.setObjects(parent, newBrothers)
-        val newModel = model.withGroupTree(newTree)
-
-        TaskUpdateModel(oldModel = model, newModel = newModel)
-    } else {
-        TaskNone
-    }
 }

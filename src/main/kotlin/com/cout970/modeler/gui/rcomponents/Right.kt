@@ -6,11 +6,7 @@ import com.cout970.modeler.api.model.`object`.*
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.controller.Dispatcher
-import com.cout970.modeler.controller.ITaskProcessor
-import com.cout970.modeler.controller.tasks.ITask
-import com.cout970.modeler.controller.tasks.TaskUpdateModel
 import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.core.log.Logger.level
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.model.ref
@@ -141,7 +137,7 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
         val tree = model.groupTree
         val map = mutableListOf<Slot>()
 
-        tree.getObjects(RootGroupRef).forEach { ref ->
+        model.getGroupObjects(RootGroupRef).forEach { ref ->
             map += Slot(ref, null, 0)
         }
 
@@ -354,20 +350,6 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
                 horizontalAlign = HorizontalAlign.LEFT
                 textState.padding.x = 2f
                 metadata += "ref" to obj.ref
-            }
-
-            +IconButton("tree.view.move.up.item", "upIcon", 144f, 0f, 24f, 24f).apply {
-                transparent()
-                borderless()
-                metadata += "ref" to obj.ref
-                setTooltip("Move object up")
-            }
-
-            +IconButton("tree.view.move.down.item", "downIcon", 170f, 0f, 24f, 24f).apply {
-                transparent()
-                borderless()
-                metadata += "ref" to obj.ref
-                setTooltip("Move object down")
             }
 
             if (obj.visible) {
@@ -664,7 +646,7 @@ class ModelTreeAnimation(val model: IModel, val objMap: List<Slot>, val componen
 
             val parent = when {
                 replacedGroup != null -> replacedGroup
-                replacedObj != null -> tree.getGroup(replacedObj)
+                replacedObj != null -> model.getObjectGroup(replacedObj)
                 else -> return@let
             }
 

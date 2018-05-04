@@ -53,27 +53,15 @@ data class GroupRef(override val id: UUID = UUID.randomUUID()) : IGroupRef {
  */
 interface IGroupTree {
 
-    fun update(validObjs: Set<IObjectRef>): IGroupTree
-
     fun addGroup(parent: IGroupRef, newGroupRef: IGroupRef): IGroupTree
 
     fun removeGroup(parent: IGroupRef, child: IGroupRef): IGroupTree
 
     fun changeParent(child: IGroupRef, newParent: IGroupRef): IGroupTree
 
-    fun addObject(parent: IGroupRef, child: IObjectRef): IGroupTree
-
-    fun setObjects(parent: IGroupRef, children: List<IObjectRef>): IGroupTree
-
-    fun removeObject(parent: IGroupRef, child: IObjectRef): IGroupTree
-
     fun getChildren(parent: IGroupRef): List<IGroupRef>
 
     fun getParent(child: IGroupRef): IGroupRef
-
-    fun getGroup(obj: IObjectRef): IGroupRef
-
-    fun getObjects(groupRef: IGroupRef): List<IObjectRef>
 
     fun merge(other: IGroupTree): IGroupTree
 }
