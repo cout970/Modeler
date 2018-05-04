@@ -238,9 +238,9 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
                     val obj = slot.obj
 
                     if (group != null) {
-                        group(index, model.getGroup(group))
+                        group(index, slot.level, model.getGroup(group))
                     } else if (obj != null) {
-                        obj(index, model.getObject(obj), selected(obj))
+                        obj(index, slot.level, model.getObject(obj), selected(obj))
                     }
                 }
 
@@ -262,10 +262,11 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
         }
     }
 
-    fun RBuilder.group(index: Int, group: IGroup) {
+    fun RBuilder.group(index: Int, level: Int, group: IGroup) {
         div(group.name) {
             style {
                 sizeY = 24f
+                posX = level * 24f
                 posY = index * (sizeY + 2f)
                 transparent()
                 borderless()
@@ -317,10 +318,11 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
         }
     }
 
-    fun RBuilder.obj(index: Int, obj: IObject, selected: Boolean) {
+    fun RBuilder.obj(index: Int, level: Int, obj: IObject, selected: Boolean) {
         div(obj.name) {
             style {
                 sizeY = 24f
+                posX = 24f * level
                 posY = index * (sizeY + 2f)
                 transparent()
                 borderless()
