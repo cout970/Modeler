@@ -1,10 +1,13 @@
 package com.cout970.modeler.gui.rcomponents
 
 import com.cout970.glutilities.device.Keyboard
-import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.core.search.SearchDatabase
+import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.util.focus
-import com.cout970.reactive.core.*
+import com.cout970.reactive.core.RBuilder
+import com.cout970.reactive.core.RComponent
+import com.cout970.reactive.core.RProps
+import com.cout970.reactive.core.RState
 import com.cout970.reactive.dsl.*
 import com.cout970.reactive.nodes.comp
 import com.cout970.reactive.nodes.div

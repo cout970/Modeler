@@ -7,13 +7,12 @@ import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.helpers.DeletionHelper
 import com.cout970.modeler.core.helpers.ModelHelper
-import com.cout970.modeler.core.model.getRecursiveChildGroups
 import com.cout970.modeler.core.model.getRecursiveChildObjects
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.model.selection.Selection
 import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.core.project.ProjectManager
-import com.cout970.modeler.gui.rcomponents.Slot
+import com.cout970.modeler.gui.rcomponents.right.Slot
 import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.asNullable

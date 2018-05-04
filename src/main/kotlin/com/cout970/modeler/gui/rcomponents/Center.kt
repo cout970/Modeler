@@ -5,7 +5,10 @@ import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.gui.event.EventNotificationUpdate
 import com.cout970.modeler.gui.event.NotificationHandler
-import com.cout970.modeler.gui.leguicomp.*
+import com.cout970.modeler.gui.leguicomp.FixedLabel
+import com.cout970.modeler.gui.leguicomp.Panel
+import com.cout970.modeler.gui.leguicomp.ProfilerDiagram
+import com.cout970.modeler.gui.leguicomp.background
 import com.cout970.modeler.util.toColor
 import com.cout970.reactive.core.EmptyProps
 import com.cout970.reactive.core.RBuilder

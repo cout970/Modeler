@@ -5,6 +5,10 @@ import com.cout970.modeler.gui.leguicomp.onCmd
 import com.cout970.modeler.gui.rcomponents.left.LeftPanel
 import com.cout970.modeler.gui.rcomponents.left.LeftPanelProps
 import com.cout970.modeler.gui.rcomponents.left.ModelAccessorProps
+import com.cout970.modeler.gui.rcomponents.popup.PopUp
+import com.cout970.modeler.gui.rcomponents.popup.PopUpProps
+import com.cout970.modeler.gui.rcomponents.right.RightPanel
+import com.cout970.modeler.gui.rcomponents.right.RightPanelProps
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
 import com.cout970.reactive.core.RProps
