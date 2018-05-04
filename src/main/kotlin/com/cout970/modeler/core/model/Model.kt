@@ -141,13 +141,14 @@ data class Model(
 
     override fun removeGroup(ref: IGroupRef): IModel {
         val groups = getRecursiveChildGroups(ref) + ref
-        val objs = getRecursiveChildObjects(ref) + groupObjects[ref]
+        val objs = getRecursiveChildObjects(ref)
         val tree = groupTree.removeGroup(groupTree.getParent(ref), ref)
         val newObjs = objectMap - objs
 
         return copy(
                 objectMap = newObjs,
                 groupMap = groupMap - groups,
+                groupTree = tree,
                 groupObjects = groupObjects.remove(ref)
         )
     }

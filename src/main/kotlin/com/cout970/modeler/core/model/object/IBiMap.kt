@@ -83,7 +83,7 @@ class ImmutableBiMultimap<K, V>(
         if (key in direct) {
             val values = direct.getValue(key)
             val newDirect = direct - key
-            val newReverse = reverse - values
+            val newReverse = reverse.mutate { it - values }
             return ImmutableBiMultimap(newDirect, newReverse)
         }
         return this
@@ -93,7 +93,7 @@ class ImmutableBiMultimap<K, V>(
         if (key in direct) {
             val values = direct.getValue(key) - value
             val newDirect = direct + (key to values)
-            val newReverse = reverse - value
+            val newReverse = reverse.mutate { it - values }
             return ImmutableBiMultimap(newDirect, newReverse)
         }
         return this
@@ -101,7 +101,7 @@ class ImmutableBiMultimap<K, V>(
 
     override fun removeAll(values: Set<V>): BiMultimap<K, V> {
         val newDirect = direct.mapValues { it.value - values }.toImmutableMap()
-        val newReverse = reverse - values
+        val newReverse = reverse.mutate { it - values }
         return ImmutableBiMultimap(newDirect, newReverse)
     }
 

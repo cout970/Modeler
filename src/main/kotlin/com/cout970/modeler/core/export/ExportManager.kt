@@ -4,6 +4,7 @@ import com.cout970.modeler.PathConstants
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.core.export.project.ProjectLoaderV10
 import com.cout970.modeler.core.export.project.ProjectLoaderV11
+import com.cout970.modeler.core.export.project.ProjectLoaderV12
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
@@ -29,7 +30,7 @@ import java.util.zip.ZipFile
 class ExportManager(val resourceLoader: ResourceLoader) {
 
     companion object {
-        const val CURRENT_SAVE_VERSION = "1.1"
+        const val CURRENT_SAVE_VERSION = "1.2"
         val VERSION_GSON = GsonBuilder().create()!!
     }
 
@@ -42,13 +43,14 @@ class ExportManager(val resourceLoader: ResourceLoader) {
         return when (version) {
             "1.0" -> ProjectLoaderV10.loadProject(zip, path)
             "1.1" -> ProjectLoaderV11.loadProject(zip, path)
+            "1.2" -> ProjectLoaderV12.loadProject(zip, path)
             else -> throw IllegalStateException("Invalid save version $version")
         }
     }
 
     fun saveProject(path: String, save: ProgramSave) {
         File(path).createParentsIfNeeded()
-        ProjectLoaderV11.saveProject(path, save)
+        ProjectLoaderV12.saveProject(path, save)
     }
 
     fun saveProject(path: String, manger: ProjectManager) {

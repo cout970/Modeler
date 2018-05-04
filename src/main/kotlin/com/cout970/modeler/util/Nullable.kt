@@ -82,6 +82,16 @@ sealed class Nullable<T> {
         is NonNull -> func(value)
     }
 
+    fun isNull(): Boolean = when (this) {
+        Null -> true
+        is NonNull -> false
+    }
+
+    fun isNonNull(): Boolean = when (this) {
+        Null -> false
+        is NonNull -> true
+    }
+
     inline fun filter(func: (T) -> Boolean): Nullable<T> = when (this) {
         Null -> castNull()
         is NonNull -> if (func(value)) this else castNull()

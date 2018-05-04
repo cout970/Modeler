@@ -1,5 +1,6 @@
 package com.cout970.modeler.controller.usecases
 
+import com.cout970.modeler.api.model.`object`.IGroupRef
 import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.model.`object`.Object
@@ -49,6 +50,24 @@ private fun changeObjectName(component: Component, modelAccessor: IModelAccessor
         TaskUpdateModel(newModel = newModel, oldModel = model)
     }.getOr(TaskNone)
 }
+
+@UseCase("model.group.change.name")
+private fun changeGroupName(component: Component, modelAccessor: IModelAccessor): ITask {
+    val model = modelAccessor.model
+    val groupRef = component.metadata["ref"] as IGroupRef
+
+    val name = component.asNullable()
+            .filterIsInstance<TextInput>()
+            .map { it.text }
+            .filter { !it.isBlank() }
+            .getOrNull() ?: return TaskNone
+
+    val group = model.getGroup(groupRef)
+    val newModel = model.modifyGroup(groupRef, group = group.withName(name))
+
+    return TaskUpdateModel(newModel = newModel, oldModel = model)
+}
+
 
 @UseCase("model.obj.join")
 private fun joinObjects(modelAccessor: IModelAccessor): ITask {

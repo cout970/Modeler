@@ -1,5 +1,6 @@
 package com.cout970.modeler.gui.leguicomp
 
+import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.config.ColorPalette
 import com.cout970.modeler.core.config.Config
@@ -11,6 +12,8 @@ import com.cout970.modeler.util.forEachComponent
 import com.cout970.modeler.util.isNotEmpty
 import com.cout970.modeler.util.toColor
 import com.cout970.reactive.core.Listener
+import com.cout970.reactive.core.RBuilder
+import com.cout970.reactive.dsl.onClick
 import com.cout970.reactive.dsl.posY
 import com.cout970.reactive.dsl.sizeY
 import com.cout970.vector.api.IVector3
@@ -76,6 +79,17 @@ fun Component.onClick(func: (MouseClickEvent<*>) -> Unit) {
         }
     }
 }
+
+fun RBuilder.onDoubleClick(time: Int = 500, func: (MouseClickEvent<*>) -> Unit) {
+    var timer = Timer.miliTime
+    onClick {
+        if (Timer.miliTime - timer < time) {
+            func(it)
+        }
+        timer = Timer.miliTime
+    }
+}
+
 
 fun TextComponent.defaultTextColor() {
     textState.textColor = Config.colorPalette.textColor.toColor()
@@ -150,4 +164,5 @@ fun Component.dispatch(str: String) {
 }
 
 @Deprecated("Obsolete", ReplaceWith("this.childComponents"))
-inline val Component.childs get() = childComponents!!
+inline val Component.childs
+    get() = childComponents!!

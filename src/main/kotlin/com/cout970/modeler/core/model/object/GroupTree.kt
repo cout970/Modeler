@@ -20,7 +20,10 @@ data class GroupTree(
             error("This group is not on the GroupTree, group = $parent, childToAdd = $newGroupRef")
         } else {
             val children = childMap.getValue(parent)
-            copy(childMap = childMap.put(parent, children + newGroupRef))
+            copy(
+                    childMap = childMap.put(parent, children + newGroupRef).put(newGroupRef, emptySet()),
+                    parentMap = parentMap.put(newGroupRef, parent)
+            )
         }
     }
 
@@ -28,9 +31,13 @@ data class GroupTree(
         return if (parent !in childMap) {
             error("This group is not on the GroupTree, group = $parent, childToRemove = $child")
         } else {
-            val withoutChildGroups = removeChildren(child)
-            val children = withoutChildGroups.childMap.getValue(parent)
-            withoutChildGroups.copy(childMap = withoutChildGroups.childMap.put(parent, (children - child)))
+            val children = childMap.getValue(parent)
+            removeChildren(child).let { tree ->
+                tree.copy(
+                        childMap = tree.childMap.put(parent, (children - child)),
+                        parentMap = tree.parentMap.remove(child)
+                )
+            }
         }
     }
 
@@ -39,12 +46,20 @@ data class GroupTree(
     }
 
     override fun changeParent(child: IGroupRef, newParent: IGroupRef): GroupTree {
-        return if (child !in parentMap) {
-            // child's parent is in rootSet
-            copy(parentMap = parentMap.put(child, newParent))
+        return if (child !in parentMap || child !in childMap || newParent !in childMap) {
+            error("This group is not on the GroupTree, child = $child, newParent = $newParent")
+        } else if (child == newParent) {
+            error("Error a node is trying to be a parent of itself, child: $child")
         } else {
-            // normal node
-            copy(parentMap = parentMap.remove(child).put(child, newParent))
+            val oldParent = parentMap[child]!!
+
+            val oldBrothers = childMap[oldParent]!!
+            val newBrothers = childMap[newParent]!!
+
+            copy(
+                    parentMap = parentMap.put(child, newParent),
+                    childMap = childMap.put(oldParent, oldBrothers - child).put(newParent, newBrothers + child)
+            )
         }
     }
 

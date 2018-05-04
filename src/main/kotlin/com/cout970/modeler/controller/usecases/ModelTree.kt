@@ -142,16 +142,29 @@ private fun showListGroup(component: Component, model: IModel): ITask {
 }
 
 @UseCase("model.tree.node.moved")
-private fun nodeMoved(model: IModel, component: Component): ITask {
+private fun nodeMoved(modelAccessor: IModelAccessor, component: Component): ITask {
 
+    val (model, sel) = modelAccessor
     val parent = component.metadata["parent"] as IGroupRef
     val child = component.metadata["child"] as Slot
+    val multi = component.metadata["multi"] as Boolean
     val tree = model.groupTree
 
     val childGroup = child.group
     val childObj = child.obj
 
-    if (childGroup != null) {
+    if (multi) {
+        val selection = sel.getNonNull()
+        val newModel = selection.objects.fold(model) { accModel, child ->
+            val oldParent = accModel.getObjectGroup(child)
+            if (oldParent != parent) {
+                accModel.setObjectGroup(child, parent)
+            } else accModel
+        }
+
+        return TaskUpdateModel(oldModel = model, newModel = newModel)
+
+    } else if (childGroup != null) {
 
         if (tree.getParent(childGroup) != parent && childGroup != parent) {
             val newTree = tree.changeParent(childGroup, parent)

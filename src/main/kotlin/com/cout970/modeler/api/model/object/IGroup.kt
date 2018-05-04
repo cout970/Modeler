@@ -12,6 +12,7 @@ interface IGroup {
     val visible: Boolean
 
     fun withVisibility(visible: Boolean): IGroup
+    fun withName(name: String): IGroup
 }
 
 data class Group(
@@ -20,6 +21,7 @@ data class Group(
         override val id: UUID = UUID.randomUUID()
 ) : IGroup {
     override fun withVisibility(visible: Boolean): IGroup = copy(visible = visible)
+    override fun withName(name: String): IGroup = copy(name = name)
 }
 
 object GroupNone : IGroup {
@@ -28,6 +30,7 @@ object GroupNone : IGroup {
     override val visible: Boolean = true
 
     override fun withVisibility(visible: Boolean): IGroup = this
+    override fun withName(name: String): IGroup = this
 }
 
 // GroupRefs

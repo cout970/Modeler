@@ -4,10 +4,7 @@ import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.mat4Of
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.ITransformation
-import com.cout970.modeler.api.model.`object`.GroupRef
-import com.cout970.modeler.api.model.`object`.IGroupRef
-import com.cout970.modeler.api.model.`object`.IGroupTree
-import com.cout970.modeler.api.model.`object`.IObject
+import com.cout970.modeler.api.model.`object`.*
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IFaceIndex
@@ -30,6 +27,8 @@ import com.cout970.vector.api.IVector3
 import com.cout970.vector.api.IVector4
 import com.cout970.vector.extensions.*
 import com.google.gson.*
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.immutableMapOf
 import java.awt.Color
 import java.lang.reflect.Type
 import java.net.URI
@@ -176,22 +175,55 @@ class GroupTreeSerializer : JsonSerializer<IGroupTree>, JsonDeserializer<IGroupT
     }
 }
 
-class BiMultimapSerializer : JsonSerializer<BiMultimap<Any, Any>>, JsonDeserializer<BiMultimap<*, *>> {
+class BiMultimapSerializer : JsonSerializer<BiMultimap<IGroupRef, IObjectRef>>, JsonDeserializer<BiMultimap<IGroupRef, IObjectRef>> {
 
-    data class Aux(val key: Any, val value: List<Any>)
+    data class Aux(val key: IGroupRef, val value: List<IObjectRef>)
 
-    override fun serialize(src: BiMultimap<Any, Any>, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+    override fun serialize(src: BiMultimap<IGroupRef, IObjectRef>, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
         return context.serialize(src.toList().map { Aux(it.first, it.second) })
     }
 
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): BiMultimap<Any, Any> {
-        if (json.isJsonNull || (json.isJsonObject && json.asJsonObject.size() == 0))
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): BiMultimap<IGroupRef, IObjectRef> {
+        if (json.isJsonNull || (json.isJsonArray && json.asJsonArray.size() == 0))
             return emptyBiMultimap()
 
         val array = json.asJsonArray
         val list = array.map { context.deserialize(it, Aux::class.java) as Aux }
 
         return biMultimapOf(*list.map { it.key to it.value }.toTypedArray())
+    }
+}
+
+class ImmutableMapSerializer : JsonSerializer<ImmutableMap<Any, Any>>, JsonDeserializer<ImmutableMap<Any, Any>> {
+
+    data class Aux(val key: Any, val value: Any)
+
+    override fun serialize(src: ImmutableMap<Any, Any>, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+        return context.serialize(src.toList().map { Aux(it.first, it.second) })
+    }
+
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): ImmutableMap<Any, Any> {
+        if (json.isJsonNull || (json.isJsonArray && json.asJsonArray.size() == 0))
+            return immutableMapOf()
+
+        val array = json.asJsonArray
+        val list = array.map { context.deserialize(it, Aux::class.java) as Aux }
+
+        return immutableMapOf(*list.map { it.key to it.value }.toTypedArray())
+    }
+}
+
+class GroupRefSerializer : JsonSerializer<IGroupRef>, JsonDeserializer<IGroupRef> {
+
+    override fun serialize(src: IGroupRef, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+        return context.serialize(src)
+    }
+
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IGroupRef {
+        if (json.isJsonNull || (json.isJsonObject && json.asJsonObject.size() == 0))
+            return RootGroupRef
+
+        return context.deserialize(json, GroupRef::class.java)
     }
 }
 

@@ -24,9 +24,6 @@ import com.cout970.reactive.dsl.*
 import com.cout970.reactive.nodes.*
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.Vector2
-import com.cout970.vector.extensions.minus
-import com.cout970.vector.extensions.plus
-import org.joml.Vector2f
 import org.joml.Vector2i
 import org.liquidengine.legui.animation.Animation
 import org.liquidengine.legui.component.Component
@@ -34,6 +31,8 @@ import org.liquidengine.legui.component.Panel
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.style.border.SimpleLineBorder
 import org.liquidengine.legui.style.color.ColorConstants
+import org.liquidengine.legui.style.color.ColorConstants.transparent
+import kotlin.math.min
 import com.cout970.glutilities.device.Mouse as LibMouse
 
 
@@ -137,27 +136,30 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
         val tree = model.groupTree
         val map = mutableListOf<Slot>()
 
+        tree.getChildren(RootGroupRef).forEach {
+            addGroupAndChildren(model, tree, it, map, 0)
+        }
+
         model.getGroupObjects(RootGroupRef).forEach { ref ->
             map += Slot(ref, null, 0)
         }
 
-        tree.getChildren(RootGroupRef).forEach {
-            addGroupAndChildren(tree, it, map, 0)
-        }
 
         return map
     }
 
-    fun addGroupAndChildren(tree: IGroupTree, group: IGroupRef, map: MutableList<Slot>, level: Int) {
+    fun addGroupAndChildren(model: IModel, tree: IGroupTree, group: IGroupRef, map: MutableList<Slot>, level: Int) {
 
         map += Slot(null, group, level)
 
-        tree.getObjects(group).forEach { ref ->
-            map += Slot(ref, null, 1)
+        if (!model.getGroup(group).visible) return
+
+        model.getGroupObjects(group).forEach { ref ->
+            map += Slot(ref, null, min(5, level + 1))
         }
 
         tree.getChildren(group).forEach {
-            addGroupAndChildren(tree, it, map, level + 1)
+            addGroupAndChildren(model, tree, it, map, min(5, level + 1))
         }
     }
 
@@ -173,6 +175,7 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
 
         postMount {
             marginX(5f)
+            height = (parent.height - 70f) / 2f
         }
 
         on<EventModelUpdate> { rerender() }
@@ -228,10 +231,10 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
             container {
 
                 val model = props.modelAccessor.model
-                val selected = props.modelAccessor.modelSelection.map { sel ->
-                    { obj: IObjectRef -> sel.isSelected(obj) }
-                }.getOr { _: IObjectRef -> false }
                 val objectMap = generateObjectMap()
+                val selected = props.modelAccessor.modelSelection
+                        .map { sel -> { obj: IObjectRef -> sel.isSelected(obj) } }
+                        .getOr { _: IObjectRef -> false }
 
                 objectMap.forEachIndexed { index, slot ->
                     val group = slot.group
@@ -253,7 +256,7 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
 
                 postMount {
                     animation?.stopAnimation()
-                    val anim = ModelTreeAnimation(props.modelAccessor.model, objectMap,
+                    val anim = ModelTreeAnimation(props.modelAccessor, objectMap,
                             this, props.input, this@ModelTree::rerender, props.dispatcher)
 
                     animation = anim.apply { startAnimation() }
@@ -276,40 +279,24 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
             }
 
             postMount {
-                sizeX = parent.sizeX - 5f
+                sizeX = parent.sizeX - 5f - level * 24f
             }
 
 
-            +IconButton("tree.view.select.group", "group_icon", 0f, 0f, 24f, 24f).apply {
+            val cmd = if (group.visible) "tree.view.hide.group" else "tree.view.show.group"
+            val off = level * 24f
+
+            +IconButton(cmd, "group_icon", 0f, 0f, 24f, 24f).apply {
                 metadata += "ref" to group.ref
-            }
-
-            +TextButton("tree.view.select.group", group.name, 24f, 0f, 172f, 24f).apply {
-                transparent()
-                borderless()
-                fontSize = 20f
-                horizontalAlign = HorizontalAlign.LEFT
-                textState.padding.x = 2f
-                metadata += "ref" to group.ref
-            }
-
-            if (group.visible) {
-                +IconButton("tree.view.hide.group", "hideIcon", 196f, 0f, 24f, 24f).apply {
-                    transparent()
-                    borderless()
-                    metadata += "ref" to group.ref
-                    setTooltip("Hide group")
-                }
-            } else {
-                +IconButton("tree.view.show.group", "showIcon", 196f, 0f, 24f, 24f).apply {
-                    transparent()
-                    borderless()
-                    metadata += "ref" to group.ref
-                    setTooltip("Show group")
+                if (!group.visible) {
+                    background { brightColor }
                 }
             }
 
-            +IconButton("tree.view.delete.group", "deleteIcon", 222f, 0f, 24f, 24f).apply {
+            child(ToggleName::class, ToggleName.Props(group, off, props.dispatcher))
+
+
+            +IconButton("tree.view.delete.group", "deleteIcon", 222f - off, 0f, 24f, 24f).apply {
                 transparent()
                 borderless()
                 metadata += "ref" to group.ref
@@ -336,16 +323,17 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
             }
 
             postMount {
-                sizeX = parent.sizeX - 5f
+                sizeX = parent.sizeX - 5f - level * 24f
             }
 
             val icon = if (obj is IObjectCube) "obj_type_cube" else "obj_type_mesh"
+            val off = level * 24f
 
             +IconButton("tree.view.select.item", icon, 0f, 0f, 24f, 24f).apply {
                 metadata += "ref" to obj.ref
             }
 
-            +TextButton("tree.view.select.item", obj.name, 24f, 0f, 172f, 24f).apply {
+            +TextButton("tree.view.select.item", obj.name, 24f, 0f, 172f - off, 24f).apply {
                 transparent()
                 borderless()
                 fontSize = 20f
@@ -355,14 +343,14 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
             }
 
             if (obj.visible) {
-                +IconButton("tree.view.hide.item", "hideIcon", 196f, 0f, 24f, 24f).apply {
+                +IconButton("tree.view.hide.item", "hideIcon", 196f - off, 0f, 24f, 24f).apply {
                     transparent()
                     borderless()
                     metadata += "ref" to obj.ref
                     setTooltip("Hide object")
                 }
             } else {
-                +IconButton("tree.view.show.item", "showIcon", 196f, 0f, 24f, 24f).apply {
+                +IconButton("tree.view.show.item", "showIcon", 196f - off, 0f, 24f, 24f).apply {
                     transparent()
                     borderless()
                     metadata += "ref" to obj.ref
@@ -370,7 +358,7 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
                 }
             }
 
-            +IconButton("tree.view.delete.item", "deleteIcon", 222f, 0f, 24f, 24f).apply {
+            +IconButton("tree.view.delete.item", "deleteIcon", 222f - off, 0f, 24f, 24f).apply {
                 transparent()
                 borderless()
                 metadata += "ref" to obj.ref
@@ -380,6 +368,46 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
     }
 }
 
+class ToggleName : RComponent<ToggleName.Props, ToggleName.State>() {
+
+    override fun getInitialState() = State(true)
+
+    override fun RBuilder.render() {
+
+        if (state.hidden) {
+            comp(TextButton("", props.group.name, 24f, 0f, 172f - props.offset, 24f)) {
+                style {
+                    transparent()
+                    borderless()
+                    fontSize = 20f
+                    horizontalAlign = HorizontalAlign.LEFT
+                    textState.padding.x = 2f
+                    metadata += "ref" to props.group.ref
+                }
+                onDoubleClick { setState { copy(hidden = false) } }
+                onClick { props.dispatcher.onEvent("tree.view.select.group", it.targetComponent) }
+            }
+        } else {
+            comp(StringInput("model.group.change.name", props.group.name, 24f, 0f, 172f - props.offset, 24f)) {
+                style {
+                    transparent()
+                    borderless()
+                    textState.horizontalAlign = HorizontalAlign.LEFT
+                    textState.fontSize = 20f
+                    textState.padding.x = 2f
+                    metadata += "ref" to props.group.ref
+                }
+
+                onFocus {
+                    if (!it.isFocused) setState { copy(hidden = true) }
+                }
+            }
+        }
+    }
+
+    data class State(val hidden: Boolean) : RState
+    data class Props(val group: IGroup, val offset: Float, val dispatcher: Dispatcher) : RProps
+}
 
 data class MaterialListProps(val modelAccessor: IModelAccessor, val selectedMaterial: () -> IMaterialRef) : RProps
 
@@ -396,6 +424,8 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
 
         postMount {
             marginX(5f)
+            posY = (parent.height - 70f) / 2f + 70f
+            height = (parent.height - 70f) / 2f
         }
 
         on<EventModelUpdate> { rerender() }
@@ -557,15 +587,16 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
     }
 }
 
-class ModelTreeAnimation(val model: IModel, val objMap: List<Slot>, val component: Component, val input: IInput, val reset: () -> Unit, val dispatcher: Dispatcher) : Animation() {
+class ModelTreeAnimation(val modelAccessor: IModelAccessor, val objMap: List<Slot>, val component: Component, val input: IInput, val reset: () -> Unit, val dispatcher: Dispatcher) : Animation() {
     var pressTime = 0L
     var unPressTime = 0L
     var selected: Int? = null
     var initialMousePos: IVector2 = Vector2.ORIGIN
-    var initialCompPos: IVector2 = Vector2.ORIGIN
+    var containerStartHeight: Float = 0f
 
     override fun animate(delta: Double): Boolean {
         val now = Timer.miliTime.toLong()
+        val mousePos = input.mouse.getMousePos()
 
         if (input.mouse.isButtonPressed(LibMouse.BUTTON_LEFT)) {
             pressTime = now
@@ -573,90 +604,94 @@ class ModelTreeAnimation(val model: IModel, val objMap: List<Slot>, val componen
             if (selected != null) {
                 applyChanges()
                 selected = null
-                initialMousePos = Vector2.ORIGIN
-                initialCompPos = Vector2.ORIGIN
+                containerStartHeight = 0f
             }
+            initialMousePos = mousePos
             unPressTime = now
         }
 
         if (selected == null && pressTime - unPressTime > 500) {
-            val mPos = input.mouse.getMousePos().toJoml2f()
+            if (initialMousePos == mousePos) {
+                val mPos = mousePos.toJoml2f()
 
-            component.childComponents.forEachIndexed { index, comp ->
-                if (comp.intersects(mPos)) {
-                    selected = index
-                    initialCompPos = comp.position.toIVector()
-                    initialMousePos = mPos.toIVector()
+                component.childComponents.forEachIndexed { index, comp ->
+                    if (comp.intersects(mPos)) {
+                        selected = index
+                        containerStartHeight = comp.absolutePosition.y - comp.position.y
+                        initialMousePos = mPos.toIVector()
+                    }
                 }
             }
 
             if (selected == null) {
                 // try again later
+                initialMousePos = mousePos
                 unPressTime = pressTime
-            } else {
-                println("Selecting $selected!")
             }
         }
 
-        selected?.let { selected ->
-            val item = component.childComponents[selected]
-            val (coords, pos) = calculateNewPosition(item)
+        selected?.let { sel ->
+            val coords = calculateMouseCoords()
+            val selected: (Int, Slot) -> Boolean
 
-            item.position = pos
-            item.style.border = SimpleLineBorder(ColorConstants.blue(), 2f)
+            selected = if (isMultiSelect(sel))
+                { _, obj -> modelAccessor.modelSelection.eval { obj.obj != null && it.isSelected(obj.obj) } }
+            else
+                { i, _ -> i == sel }
 
-            component.childComponents.forEachIndexed { i, component ->
-                if (i != selected) {
-                    val j = if (i < selected) i else i - 1
-                    if (j >= coords.y) {
-                        component.position.y = (j + 1) * (component.sizeY + 2f)
-                    } else {
-                        component.position.y = j * (component.sizeY + 2f)
+            component.childComponents.forEachIndexed { index, component ->
+                component.borderless()
+
+                objMap.getOrNull(index)?.let { slot ->
+                    if (selected(index, slot)) {
+                        component.style.border = SimpleLineBorder(ColorConstants.blue(), 2f)
                     }
                 }
+            }
+            component.childComponents.getOrNull(coords.y)?.let { comp ->
+                comp.style.border = SimpleLineBorder(ColorConstants.red(), 2f)
             }
         }
         return false
     }
 
-    private fun calculateNewPosition(item: Component): Pair<Vector2i, Vector2f> {
-        val mPos = input.mouse.getMousePos()
-        val diff = mPos - initialMousePos
-        val newPosY = (initialCompPos + diff).yf
+    private fun isMultiSelect(sel: Int): Boolean {
+        return objMap[sel].obj != null && modelAccessor.modelSelection.eval { it.isSelected(objMap[sel].obj!!) }
+    }
 
-        val index = Math.ceil((newPosY / item.sizeY).toDouble() + 0.5).toInt() - 1
+    private fun calculateMouseCoords(): Vector2i {
+        val mPos = input.mouse.getMousePos()
+        val itemUnderMouseHeight = mPos.yf - containerStartHeight
+        val index = (itemUnderMouseHeight / 26f).toInt()
 
         val slot = objMap.getOrNull(index)
         val level = if (slot != null) if (slot.group != null) slot.level + 1 else slot.level else 0
 
-        val newPosX = level * 24f
-
-        return Vector2i(level, index) to Vector2f(newPosX, newPosY)
+        return Vector2i(level, index)
     }
 
     fun applyChanges() {
-        selected?.let { selected ->
-            val tree = model.groupTree
-            val item = component.childComponents[selected]
-            val (coords, _) = calculateNewPosition(item)
+        reset()
 
-            val child = objMap[selected]
+        selected?.let { sel ->
+            val coords = calculateMouseCoords()
+            val slot = objMap[sel]
 
-            val replaced = objMap.getOrNull(coords.y) ?: return@let
+            val replaced = objMap.getOrNull(coords.y) ?: return
             val replacedGroup = replaced.group
             val replacedObj = replaced.obj
 
             val parent = when {
                 replacedGroup != null -> replacedGroup
-                replacedObj != null -> model.getObjectGroup(replacedObj)
-                else -> return@let
+                replacedObj != null -> modelAccessor.model.getObjectGroup(replacedObj)
+                else -> return
             }
 
             dispatcher.onEvent("model.tree.node.moved", Panel().apply {
                 metadata += "parent" to parent
-                metadata += "child" to child
+                metadata += "child" to slot
+                metadata += "multi" to isMultiSelect(sel)
             })
         }
-        reset()
     }
 }
