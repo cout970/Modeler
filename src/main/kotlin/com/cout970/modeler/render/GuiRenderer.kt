@@ -3,8 +3,8 @@ package com.cout970.modeler.render
 import com.cout970.glutilities.tessellator.BufferPTNC
 import com.cout970.modeler.Debugger
 import com.cout970.modeler.core.log.Profiler
-import com.cout970.modeler.gui.components.AnimationPanel
-import com.cout970.modeler.gui.components.AnimationPanelHead
+import com.cout970.modeler.gui.leguicomp.AnimationPanel
+import com.cout970.modeler.gui.leguicomp.AnimationPanelHead
 import com.cout970.modeler.gui.leguicomp.PixelBorder
 import com.cout970.modeler.gui.leguicomp.ProfilerDiagram
 import com.cout970.modeler.input.event.CustomCallbackKeeper

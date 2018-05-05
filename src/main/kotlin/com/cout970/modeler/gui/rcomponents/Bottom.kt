@@ -4,10 +4,9 @@ import com.cout970.glutilities.device.Keyboard
 import com.cout970.modeler.api.animation.AnimationState
 import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.animation.ref
-import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.project.IModelAccessor
-import com.cout970.modeler.gui.components.AnimationPanel
-import com.cout970.modeler.gui.components.AnimationPanelHead
+import com.cout970.modeler.gui.leguicomp.AnimationPanel
+import com.cout970.modeler.gui.leguicomp.AnimationPanelHead
 import com.cout970.modeler.gui.event.EventAnimatorUpdate
 import com.cout970.modeler.gui.event.EventSelectionUpdate
 import com.cout970.modeler.gui.leguicomp.*
@@ -20,7 +19,6 @@ import com.cout970.reactive.core.RStatelessComponent
 import com.cout970.reactive.dsl.*
 import com.cout970.reactive.nodes.*
 import org.joml.Vector2f
-import org.joml.Vector4f
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.event.ScrollEvent
@@ -126,11 +124,19 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
         ))
 
         +IconButton("animation.add.keyframe", "add_keyframe", 120f + 256f, 3f, 26f, 26f).apply {
-            if(props.animator.selectedChannel == null) {
+            if (props.animator.selectedChannel == null) {
                 disable()
                 disableInput()
             }
             setTooltip("Add keyframe to the current position")
+        }
+
+        +IconButton("animation.delete.keyframe", "remove_keyframe", 120f + 256f + 30f, 3f, 26f, 26f).apply {
+            if (props.animator.selectedKeyframe == null) {
+                disable()
+                disableInput()
+            }
+            setTooltip("Remove selected keyframe")
         }
     }
 

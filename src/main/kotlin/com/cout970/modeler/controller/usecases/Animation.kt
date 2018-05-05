@@ -3,16 +3,17 @@ package com.cout970.modeler.controller.usecases
 import com.cout970.modeler.api.animation.AnimationState
 import com.cout970.modeler.api.animation.IChannelRef
 import com.cout970.modeler.api.animation.InterpolationMethod
-import com.cout970.modeler.controller.tasks.ITask
-import com.cout970.modeler.controller.tasks.ModifyGui
-import com.cout970.modeler.controller.tasks.TaskNone
-import com.cout970.modeler.controller.tasks.TaskUpdateAnimation
+import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.animation.Channel
 import com.cout970.modeler.core.animation.Keyframe
+import com.cout970.modeler.core.animation.ref
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.render.tool.Animator
+import com.cout970.modeler.util.absolutePositionV
+import com.cout970.reactive.dsl.width
 import org.liquidengine.legui.component.Component
 
 
@@ -23,19 +24,21 @@ private fun addAnimationChannel(modelAccessor: IModelAccessor): ITask {
     val refs = modelAccessor.modelSelection.map { it.objects }.getOrNull() ?: return TaskNone
     val anim = modelAccessor.animation
 
-    val newAnimation = anim.withChannel(
-            Channel(
-                    name = "Channel ${lastAnimation++}",
-                    interpolation = InterpolationMethod.LINEAR,
-                    keyframes = listOf(
-                            Keyframe(0f, TRSTransformation.IDENTITY),
-                            Keyframe(anim.timeLength, TRSTransformation.IDENTITY)
-                    ),
-                    objects = refs
-            )
+    val channel = Channel(
+            name = "Channel ${lastAnimation++}",
+            interpolation = InterpolationMethod.LINEAR,
+            keyframes = listOf(
+                    Keyframe(0f, TRSTransformation.IDENTITY),
+                    Keyframe(anim.timeLength, TRSTransformation.IDENTITY)
+            ),
+            objects = refs
     )
+    val newAnimation = anim.withChannel(channel)
 
-    return TaskUpdateAnimation(modelAccessor.animation, newAnimation)
+    return TaskChain(listOf(
+            TaskUpdateAnimation(modelAccessor.animation, newAnimation),
+            ModifyGui { it.animator.selectedChannel = channel.ref }
+    ))
 }
 
 
@@ -90,10 +93,41 @@ private fun setAnimationLength(comp: Component, modelAccessor: IModelAccessor): 
 }
 
 @UseCase("animation.panel.click")
-private fun onAnimationPanelClick(comp: Component, modelAccessor: IModelAccessor): ITask {
-    // TODO keyframe selection
+private fun onAnimationPanelClick(comp: Component, animator: Animator, input: IInput): ITask {
+    val mousePos = input.mouse.getMousePos()
+    val compPos = comp.absolutePositionV
+    val diffX = mousePos.xf - compPos.xf
+    val diffY = mousePos.yf - compPos.yf
 
-    return TaskNone
+    val zoom = animator.zoom
+    val timeToPixel = comp.width / zoom
+    val pixelOffset = animator.offset * timeToPixel
+
+    val channels = animator.animation.channels.values
+
+    channels.forEachIndexed { i, channel ->
+        if (diffY > i * 26 && diffY <= (i + 1) * 26f) {
+
+            channel.keyframes.forEachIndexed { index, keyframe ->
+                val pos = keyframe.time * timeToPixel + pixelOffset
+
+                if (diffX > pos - 12f && diffX <= pos + 12f) {
+                    return ModifyGui {
+                        animator.selectedKeyframe = index
+                        animator.selectedChannel = channel.ref
+                    }
+                }
+            }
+        }
+    }
+
+    val time = (diffX - pixelOffset) / timeToPixel
+    val roundTime = (time * 60f).toInt() / 60f
+
+    return ModifyGui {
+        animator.selectedKeyframe = null
+        animator.animationTime = roundTime
+    }
 }
 
 @UseCase("animation.add.keyframe")
@@ -101,7 +135,7 @@ private fun addKeyframe(animator: Animator): ITask {
     val channelRef = animator.selectedChannel ?: return TaskNone
     val channel = animator.animation.channels[channelRef]!!
 
-    val now = animator.animationTime
+    val now = (animator.animationTime * 60f).toInt() / 60f
     if (channel.keyframes.any { it.time == now }) return TaskNone
 
     val prev = channel.keyframes.filter { it.time <= now }
@@ -118,6 +152,24 @@ private fun addKeyframe(animator: Animator): ITask {
     return TaskUpdateAnimation(oldAnimation = animator.animation, newAnimation = newAnimation)
 }
 
+@UseCase("animation.delete.keyframe")
+private fun removeKeyframe(animator: Animator): ITask {
+    val channelRef = animator.selectedChannel ?: return TaskNone
+    val keyframeIndex = animator.selectedKeyframe ?: return TaskNone
+
+    val channel = animator.animation.channels[channelRef]!!
+    val keyframe = channel.keyframes[keyframeIndex]
+
+    if (channel.keyframes.size <= 1) return TaskNone
+
+    val newChannel = channel.withKeyframes(channel.keyframes - keyframe)
+    val newAnimation = animator.animation.withChannel(newChannel)
+
+    return TaskChain(listOf(
+            ModifyGui { it.animator.selectedKeyframe = null },
+            TaskUpdateAnimation(oldAnimation = animator.animation, newAnimation = newAnimation)
+    ))
+}
 
 @UseCase("animation.state.toggle")
 private fun animationTogglePlay(): ITask = ModifyGui {
@@ -151,4 +203,28 @@ private fun animationSeekStart(): ITask = ModifyGui {
 @UseCase("animation.seek.end")
 private fun animationSeekEnd(): ITask = ModifyGui {
     it.animator.animationTime = it.modelAccessor.animation.timeLength
+}
+
+@UseCase("animation.prev.keyframe")
+private fun prevKeyframe(animator: Animator): ITask {
+    val selected = animator.selectedChannel ?: return TaskNone
+    val channel = animator.animation.channels[selected]!!
+
+    val prev = channel.keyframes.findLast { it.time < animator.animationTime } ?: return TaskNone
+
+    return ModifyGui {
+        it.animator.animationTime = prev.time
+    }
+}
+
+@UseCase("animation.next.keyframe")
+private fun nextKeyframe(animator: Animator): ITask {
+    val selected = animator.selectedChannel ?: return TaskNone
+    val channel = animator.animation.channels[selected]!!
+
+    val next = channel.keyframes.find { it.time > animator.animationTime } ?: return TaskNone
+
+    return ModifyGui {
+        it.animator.animationTime = next.time
+    }
 }

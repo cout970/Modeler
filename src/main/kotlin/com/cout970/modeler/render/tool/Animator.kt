@@ -24,9 +24,6 @@ class Animator {
         }
 
     var selectedKeyframe: Int? = null
-        set(value) {
-            field = value; gui.listeners.onAnimatorChange(this)
-        }
 
     var animationState = AnimationState.STOP
         set(value) {
@@ -65,6 +62,8 @@ class Animator {
     }
 
     fun interpolate(time: Float, prev: IKeyframe, next: IKeyframe): TRSTransformation {
+        if (next.time == prev.time) return next.value
+
         val size = next.time - prev.time
         val step = (time - prev.time) / size
 
