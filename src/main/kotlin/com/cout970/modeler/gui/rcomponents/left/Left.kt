@@ -85,6 +85,7 @@ class LeftPanel : RStatelessComponent<LeftPanelProps>() {
                 child(EditorControls::class)
                 child(EditObjectName::class, ModelAccessorProps(props.modelAccessor))
                 child(EditCubePanel::class, ModelAccessorProps(props.modelAccessor))
+                child(EditAnimation::class, ModelAccessorProps(props.modelAccessor))
                 child(EditGrids::class, EditGridsProps(props.grids))
             }
         }

@@ -16,8 +16,8 @@ data class Animation(
         override val timeLength: Float
 ) : IAnimation {
 
-    override fun addChannels(list: List<IChannel>): IAnimation {
-        return copy(channels = channels + list.associateBy { ChannelRef(it.id) })
+    override fun withChannel(channel: IChannel): IAnimation {
+        return copy(channels = channels + (channel.ref to channel))
     }
 
     override fun removeChannels(list: List<IChannelRef>): IAnimation {
@@ -26,6 +26,10 @@ data class Animation(
 
     override fun getChannels(obj: IObjectRef): List<IChannel> {
         return channels.values.filter { obj in it.objects }
+    }
+
+    override fun plus(other: IAnimation): IAnimation {
+        return copy(channels = channels + other.channels)
     }
 }
 
@@ -36,16 +40,24 @@ data class Channel(
         override val interpolation: InterpolationMethod,
         override val keyframes: List<IKeyframe>,
         override val objects: List<IObjectRef>,
+        override val enabled: Boolean = true,
         override val id: UUID = UUID.randomUUID()
-) : IChannel
+) : IChannel {
+
+    override fun withName(name: String): IChannel = copy(name = name)
+
+    override fun withEnable(enabled: Boolean): IChannel = copy(enabled = enabled)
+
+    override fun withInterpolation(method: InterpolationMethod): IChannel = copy(interpolation = interpolation)
+
+    override fun withKeyframes(keyframes: List<IKeyframe>): IChannel = copy(keyframes = keyframes)
+}
 
 data class Keyframe(
         override val time: Float,
         override val value: TRSTransformation
 ) : IKeyframe
 
-inline val IChannel.ref get() = ChannelRef(id)
+inline val IChannel.ref: IChannelRef get() = ChannelRef(id)
 
-inline fun animationOf(vararg channels: IChannel, time: Float = 1f) = Animation(channels.associateBy { it.ref }, time)
-
-operator fun IAnimation.plus(other: IAnimation) = addChannels(other.channels.values.toList())
+fun animationOf(vararg channels: IChannel, time: Float = 1f) = Animation(channels.associateBy { it.ref }, time)

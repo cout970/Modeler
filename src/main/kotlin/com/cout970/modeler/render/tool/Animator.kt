@@ -3,25 +3,28 @@ package com.cout970.modeler.render.tool
 import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.api.animation.AnimationState
 import com.cout970.modeler.api.animation.IAnimation
-import com.cout970.modeler.api.animation.IChannel
+import com.cout970.modeler.api.animation.IChannelRef
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.render.tool.shader.UniversalShader
-import com.cout970.modeler.util.reduceAll
-import com.cout970.vector.extensions.Vector3
-import com.cout970.vector.extensions.minus
-import com.cout970.vector.extensions.plus
 
 class Animator {
 
     lateinit var gui: Gui
 
+    var zoom = 1f
+    var offset = 0f
     var animationTime = 0f
+
+    var selectedChannel: IChannelRef? = null
+        set(value) {
+            field = value; gui.listeners.onAnimatorChange(this)
+        }
 
     var animationState = AnimationState.STOP
         set(value) {
-            gui.listeners.onAnimatorChange(this); field = value
+            field = value; gui.listeners.onAnimatorChange(this)
         }
 
     val animation get() = gui.modelAccessor.animation

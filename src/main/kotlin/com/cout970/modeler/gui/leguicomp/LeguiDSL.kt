@@ -38,15 +38,12 @@ fun panel(func: Panel.() -> Unit): Panel {
     return panel
 }
 
-val Component.name: String
-    get() = if (this is Panel) {
-        name ?: throw IllegalStateException("$this")
-    } else javaClass.simpleName
+val Component.key: String get() = metadata["key"].toString()
 
 fun Component.printPaths(prefix: String = "") {
-    println("$prefix/$name")
+    println("$prefix/$key")
     forEachComponent {
-        printPaths("$prefix/$name/${it.name}")
+        printPaths("$prefix/$key/${it.key}")
     }
 }
 
@@ -90,7 +87,6 @@ fun RBuilder.onDoubleClick(time: Int = 500, func: (MouseClickEvent<*>) -> Unit) 
     }
 }
 
-
 fun TextComponent.defaultTextColor() {
     textState.textColor = Config.colorPalette.textColor.toColor()
 }
@@ -127,12 +123,6 @@ inline fun TextArea.focusedStrokeColor(f: ColorPalette.() -> IVector3) {
     style.focusedStrokeColor = Config.colorPalette.f().toColor()
 }
 
-var Component.onScroll: ((ScrollEvent<*>) -> Unit)?
-    get() = null
-    set(value) {
-        listenerMap.addListener(ScrollEvent::class.java, value)
-    }
-
 fun debugPixelBorder() = PixelBorder().apply {
     enableBottom = true
     enableTop = true
@@ -146,7 +136,7 @@ fun Component.forEachRecursive(func: (Component) -> Unit) {
     childComponents.forEach { it.forEachRecursive(func) }
 }
 
-fun com.cout970.reactive.core.RBuilder.onCmd(cmd: String, func: (args: Map<String, Any>) -> Unit) {
+fun RBuilder.onCmd(cmd: String, func: (args: Map<String, Any>) -> Unit) {
     listeners.add(Listener(EventGuiCommand::class.java) { command ->
         if (command.command == cmd) {
             func(command.args)

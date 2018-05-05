@@ -4,6 +4,7 @@ import com.cout970.glutilities.tessellator.BufferPTNC
 import com.cout970.modeler.Debugger
 import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.gui.components.AnimationPanel
+import com.cout970.modeler.gui.components.AnimationPanelHead
 import com.cout970.modeler.gui.leguicomp.PixelBorder
 import com.cout970.modeler.gui.leguicomp.ProfilerDiagram
 import com.cout970.modeler.input.event.CustomCallbackKeeper
@@ -47,6 +48,7 @@ class GuiRenderer(val rootFrame: Frame, window: Long) {
             it.putBorderRenderer(PixelBorder::class.java, PixelBorder.PixelBorderRenderer)
             it.putComponentRenderer(ProfilerDiagram::class.java, ProfilerDiagram.ProfilerDiagramRenderer)
             it.putComponentRenderer(AnimationPanel::class.java, AnimationPanel.Renderer)
+            it.putComponentRenderer(AnimationPanelHead::class.java, AnimationPanelHead.Renderer)
             it.putComponentRenderer(Panel::class.java, LeguiComponentRenderer as NvgComponentRenderer<Panel>)
             it.putComponentRenderer(com.cout970.modeler.gui.leguicomp.Panel::class.java, LeguiComponentRenderer as NvgComponentRenderer<com.cout970.modeler.gui.leguicomp.Panel>)
             it.putComponentRenderer(LayerContainer::class.java, LeguiComponentRenderer as NvgComponentRenderer<LayerContainer>)

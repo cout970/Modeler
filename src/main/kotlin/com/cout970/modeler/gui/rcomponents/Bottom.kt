@@ -1,28 +1,35 @@
 package com.cout970.modeler.gui.rcomponents
 
+import com.cout970.glutilities.device.Keyboard
 import com.cout970.modeler.api.animation.AnimationState
+import com.cout970.modeler.core.animation.ref
+import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.gui.components.AnimationPanel
+import com.cout970.modeler.gui.components.AnimationPanelHead
 import com.cout970.modeler.gui.event.EventAnimatorUpdate
+import com.cout970.modeler.gui.event.EventSelectionUpdate
 import com.cout970.modeler.gui.leguicomp.*
+import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.render.tool.Animator
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RProps
 import com.cout970.reactive.core.RStatelessComponent
 import com.cout970.reactive.dsl.*
-import com.cout970.reactive.nodes.child
-import com.cout970.reactive.nodes.comp
-import com.cout970.reactive.nodes.div
-import com.cout970.reactive.nodes.style
+import com.cout970.reactive.nodes.*
 import org.joml.Vector2f
 import org.joml.Vector4f
+import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
+import org.liquidengine.legui.event.ScrollEvent
+import kotlin.math.max
 
-data class BottomPanelProps(val visible: Boolean, val animator: Animator, val modelAccessor: IModelAccessor) : RProps
+data class BottomPanelProps(val visible: Boolean, val animator: Animator, val modelAccessor: IModelAccessor, val input: IInput) : RProps
 
 class BottomPanel : RStatelessComponent<BottomPanelProps>() {
 
     override fun RBuilder.render() = div("BottomPanel") {
+
         style {
             background { darkColor }
             borderless()
@@ -39,7 +46,7 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
             sizeX = parent.sizeX - left - right
         }
 
-        div {
+        div("Control bar") {
             style {
                 height = 32f
                 background { darkestColor }
@@ -52,34 +59,36 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
             controlPanel()
         }
 
-        operationList()
-
-        div {
+        div("Time bar") {
             style {
-                height = 24f
                 posY = 32f
-                background { darkColor }
-                border { blackColor }
+                height = 20f
+                background { lightDarkColor }
+                style.border = PixelBorder().apply { enableBottom = true }
             }
 
             postMount {
                 width = parent.width
             }
+
+            comp(AnimationPanelHead(props.animator, props.modelAccessor.animation)) {
+
+                style {
+                    transparent()
+                }
+
+                postMount {
+                    posX = 200f
+                    sizeX = parent.sizeX - 200f
+                    sizeY = parent.sizeY
+                }
+            }
         }
 
-        comp(AnimationPanel(props.animator, props.modelAccessor.animation)) {
-            style {
-                background { darkColor }
-                posY = 32f + 24f
-                posX = 100f
-            }
+        timeline()
 
-            postMount {
-                width = parent.sizeX - posX
-                height = parent.sizeY - posY
-            }
-        }
         on<EventAnimatorUpdate> { rerender() }
+        on<EventSelectionUpdate> { rerender() }
     }
 
     fun RBuilder.controlPanel() = div("Control panel") {
@@ -109,36 +118,151 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
         ))
     }
 
-    fun RBuilder.operationList() = div {
+    fun RBuilder.channelList() = div {
+        val anim = props.modelAccessor.animation
         style {
-            posY = 32f + 24f
-            height = 200f - 32f
+            height = anim.channels.size * 26f
             transparent()
         }
 
         postMount { width = parent.width }
 
-        var index = 0
-        val operations = props.modelAccessor.animation.channels.values
-
-        operations.forEach { op ->
+        anim.channels.values.forEachIndexed { index, c ->
             div {
                 style {
                     posY = index * 24f
-                    width = 100f
+                    width = 200f
                     height = 24f
-                    background { greyColor }
+
+                    if (props.animator.selectedChannel == c.ref) {
+                        background { lightBrightColor }
+                    } else {
+                        background { lightDarkColor }
+                    }
+
                     style.border = PixelBorder().apply {
                         enableBottom = true
                         color = Vector4f(0f, 0f, 0f, 1f)
                     }
                 }
 
-                +TextButton(text = op.name, posX = 5f, sizeX = 100f).apply {
-                    textState.horizontalAlign = HorizontalAlign.LEFT
+                +IconButton("animation.channel.select", "obj_type_cube", 0f, 0f, 24f, 24f).apply {
+                    metadata += "ref" to c.ref
+                }
+
+                +TextButton("animation.channel.select", c.name, 24f, 0f, 172f - 24f - 24f - 2f, 24f).apply {
+                    transparent()
+                    borderless()
+                    fontSize = 20f
+                    horizontalAlign = HorizontalAlign.LEFT
+                    textState.padding.x = 2f
+                    metadata += "ref" to c.ref
+                }
+
+                val icon = if (c.enabled) "hideIcon" else "showIcon"
+                val cmd = if (c.enabled) "animation.channel.disable" else "animation.channel.enable"
+                val tooltip = if (c.enabled) "Disable channel" else "Enable channel"
+
+                +IconButton(cmd, icon, 146f, 0f, 24f, 24f).apply {
+                    transparent()
+                    borderless()
+                    metadata += "ref" to c.ref
+                    setTooltip(tooltip)
+                }
+
+                +IconButton("animation.channel.delete", "deleteIcon", 172f, 0f, 24f, 24f).apply {
+                    transparent()
+                    borderless()
+                    metadata += "ref" to c.ref
+                    setTooltip("Delete channel")
                 }
             }
-            index++
+        }
+    }
+
+    fun RBuilder.timeline() = scrollablePanel("Timeline") {
+        val anim = props.modelAccessor.animation
+
+        style {
+            transparent()
+            borderless()
+        }
+
+        postMount {
+            posY = 52f
+            posX = 0f
+            sizeX = parent.sizeX
+            sizeY = parent.sizeY - posY
+        }
+
+        horizontalScroll {
+            style { hide() }
+        }
+
+        verticalScroll {
+            style {
+                rectCorners()
+                style.minWidth = 16f
+                style.bottom = 0f
+                arrowColor = color { lightBrightColor }
+                scrollColor = color { darkColor }
+                visibleAmount = 50f
+                backgroundColor { color { lightBrightColor } }
+            }
+        }
+
+        viewport {
+            postMount {
+                style.right = 16f
+                style.bottom = 0f
+                listenerMap.clear(ScrollEvent::class.java)
+            }
+        }
+
+        container {
+
+            style {
+                transparent()
+                borderless()
+            }
+
+            postMount {
+                sizeX = parent.parent.sizeX - 20f
+                sizeY = max(250f, anim.channels.size * 26f)
+            }
+
+            channelList()
+
+            comp(AnimationPanel(props.animator, anim)) {
+                style {
+                    background { darkColor }
+                    posX = 200f
+                    style.border = debugPixelBorder()
+                }
+
+                postMount {
+                    width = parent.sizeX - posX
+                    height = parent.sizeY - posY
+                }
+
+                onScroll(this@BottomPanel::handleScroll)
+            }
+        }
+    }
+
+    fun handleScroll(it: ScrollEvent<Component>) {
+        if (props.input.keyboard.isKeyPressed(Keyboard.KEY_LEFT_CONTROL)) {
+            props.animator.zoom += when {
+                it.yoffset < 0 -> 1 / 16f
+                props.animator.zoom > 1 / 16f -> -1 / 16f
+                else -> 0f
+            }
+        } else {
+            props.animator.offset += when {
+                it.yoffset < 0 -> 1 / 16f
+                props.animator.zoom > 1 / 16f -> -1 / 16f
+                else -> 0f
+            }
         }
     }
 }

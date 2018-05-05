@@ -8,10 +8,13 @@ interface IAnimation {
     val channels: Map<IChannelRef, IChannel>
     val timeLength: Float
 
-    fun addChannels(list: List<IChannel>): IAnimation
+    fun withChannel(channel: IChannel): IAnimation
+
     fun removeChannels(list: List<IChannelRef>): IAnimation
 
     fun getChannels(obj: IObjectRef): List<IChannel>
+
+    operator fun plus(other: IAnimation): IAnimation
 }
 
 interface IChannelRef {
@@ -24,6 +27,12 @@ interface IChannel {
     val interpolation: InterpolationMethod
     val keyframes: List<IKeyframe>
     val objects: List<IObjectRef>
+    val enabled: Boolean
+
+    fun withName(name: String): IChannel
+    fun withEnable(enabled: Boolean): IChannel
+    fun withInterpolation(method: InterpolationMethod): IChannel
+    fun withKeyframes(keyframes: List<IKeyframe>): IChannel
 }
 
 interface IKeyframe {

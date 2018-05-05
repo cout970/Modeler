@@ -27,8 +27,8 @@ class IconButton(
     }
 
     override fun loadResources(resources: GuiResources) {
-        resources.getIcon(icon)?.let {
-            setImage(ImageIcon(it))
+        if (icon.isNotBlank()) {
+            setImage(ImageIcon(resources.getIcon(icon)))
         }
     }
 

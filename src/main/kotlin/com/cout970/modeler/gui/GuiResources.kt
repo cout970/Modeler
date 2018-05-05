@@ -103,9 +103,12 @@ class GuiResources {
         iconMap["active_selection_mode_edge"] = BufferedImage("assets/textures/selection_mode_edge.png")
         iconMap["active_selection_mode_vertex"] = BufferedImage("assets/textures/selection_mode_vertex.png")
 
+        iconMap["missing"] = BufferedImage("assets/textures/missing.png")
+
         MaterialNone.loadTexture(loader)
         log(Level.FINE) { "[GuiResources] Gui resources loaded" }
     }
 
-    fun getIcon(name: String): BufferedImage? = iconMap[name]
+    fun getIcon(name: String): BufferedImage = iconMap[name] ?: iconMap["missing"]!!
+    fun getIconOrNull(name: String): BufferedImage? = iconMap[name]
 }

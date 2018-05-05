@@ -19,9 +19,9 @@ import com.cout970.reactive.nodes.div
 import com.cout970.reactive.nodes.style
 
 data class RootState(
-        var leftVisible: Boolean = true,
-        var rightVisible: Boolean = true,
-        var bottomVisible: Boolean = false
+        var leftVisible: Boolean = false,
+        var rightVisible: Boolean = false,
+        var bottomVisible: Boolean = true
 ) : RState
 
 data class RootProps(val gui: Gui) : RProps
@@ -48,7 +48,7 @@ class RootComp : RComponent<RootProps, RootState>() {
         child(LeftPanel::class, LeftPanelProps(state.leftVisible, props.gui.modelAccessor, props.gui.gridLines))
         child(RightPanel::class, RightPanelProps(state.rightVisible, props.gui.modelAccessor, props.gui.state, props.gui.input, props.gui.dispatcher))
 
-        child(BottomPanel::class, BottomPanelProps(state.bottomVisible, props.gui.animator, props.gui.modelAccessor))
+        child(BottomPanel::class, BottomPanelProps(state.bottomVisible, props.gui.animator, props.gui.modelAccessor, props.gui.input))
 
         child(Search::class, SearchProps())
         child(PopUp::class, PopUpProps(props.gui.state, props.gui.propertyHolder))

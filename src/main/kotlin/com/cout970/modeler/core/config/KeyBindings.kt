@@ -81,7 +81,7 @@ class KeyBindings {
     var setModelMode = KeyBind(KEY_M, CTRL)
     var toggleVisibility = KeyBind(KEY_V, SHIFT)
 
-    var showLeftPanel = KeyBind(KEY_L, ALT)
+    var showLeftPanel = KeyBind(KEY_E, ALT)
     var showRightPanel = KeyBind(KEY_R, ALT)
     var showBottomPanel = KeyBind(KEY_B, ALT)
     var showSearchBar = KeyBind(KEY_TAB)
