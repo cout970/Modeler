@@ -77,6 +77,48 @@ private fun removeAnimationChannel(comp: Component, modelAccessor: IModelAccesso
 }
 
 
+@UseCase("animation.set.length")
+private fun setAnimationLength(comp: Component, modelAccessor: IModelAccessor): ITask {
+    val animation = modelAccessor.animation
+    val time = comp.metadata["time"] as Float
+
+    if (time <= 0) return TaskNone
+
+    val newAnimation = animation.withTimeLength(time)
+
+    return TaskUpdateAnimation(modelAccessor.animation, newAnimation)
+}
+
+@UseCase("animation.panel.click")
+private fun onAnimationPanelClick(comp: Component, modelAccessor: IModelAccessor): ITask {
+    // TODO keyframe selection
+
+    return TaskNone
+}
+
+@UseCase("animation.add.keyframe")
+private fun addKeyframe(animator: Animator): ITask {
+    val channelRef = animator.selectedChannel ?: return TaskNone
+    val channel = animator.animation.channels[channelRef]!!
+
+    val now = animator.animationTime
+    if (channel.keyframes.any { it.time == now }) return TaskNone
+
+    val prev = channel.keyframes.filter { it.time <= now }
+    val next = channel.keyframes.filter { it.time >= now }
+
+    val pair = animator.getPrevAndNext(now, channel.keyframes)
+    val value = animator.interpolate(now, pair.first, pair.second)
+    val keyframe = Keyframe(now, value)
+
+    val newList = prev + keyframe + next
+    val newChannel = channel.withKeyframes(newList)
+    val newAnimation = animator.animation.withChannel(newChannel)
+
+    return TaskUpdateAnimation(oldAnimation = animator.animation, newAnimation = newAnimation)
+}
+
+
 @UseCase("animation.state.toggle")
 private fun animationTogglePlay(): ITask = ModifyGui {
     if (it.animator.animationState == AnimationState.STOP) {

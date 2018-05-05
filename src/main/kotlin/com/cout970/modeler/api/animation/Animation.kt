@@ -9,6 +9,7 @@ interface IAnimation {
     val timeLength: Float
 
     fun withChannel(channel: IChannel): IAnimation
+    fun withTimeLength(newLength: Float): IAnimation
 
     fun removeChannels(list: List<IChannelRef>): IAnimation
 

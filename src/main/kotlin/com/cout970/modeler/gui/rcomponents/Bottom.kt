@@ -2,6 +2,7 @@ package com.cout970.modeler.gui.rcomponents
 
 import com.cout970.glutilities.device.Keyboard
 import com.cout970.modeler.api.animation.AnimationState
+import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.animation.ref
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.project.IModelAccessor
@@ -12,6 +13,7 @@ import com.cout970.modeler.gui.event.EventSelectionUpdate
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.render.tool.Animator
+import com.cout970.modeler.util.disableInput
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RProps
 import com.cout970.reactive.core.RStatelessComponent
@@ -24,7 +26,12 @@ import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.event.ScrollEvent
 import kotlin.math.max
 
-data class BottomPanelProps(val visible: Boolean, val animator: Animator, val modelAccessor: IModelAccessor, val input: IInput) : RProps
+data class BottomPanelProps(
+        val visible: Boolean,
+        val animator: Animator,
+        val modelAccessor: IModelAccessor,
+        val input: IInput,
+        val disptcher: Dispatcher) : RProps
 
 class BottomPanel : RStatelessComponent<BottomPanelProps>() {
 
@@ -93,11 +100,12 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
 
     fun RBuilder.controlPanel() = div("Control panel") {
         style {
-            width = 32f * 6f + 120f
             height = 32f
             transparent()
             borderless()
         }
+
+        postMount { fillX() }
 
         +IconButton("animation.seek.start", "seek_start", 3f + 0f, 3f, 26f, 26f)
         +IconButton("animation.prev.keyframe", "prev_keyframe", 3f + 32f, 3f, 26f, 26f)
@@ -112,20 +120,30 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
         }
 
         child(TinyFloatInput::class, TinyFloatInputProps(
-                pos = Vector2f(32f * 6f, 4f),
+                pos = Vector2f(32f * 6f + 60f, 4f),
                 getter = { props.animator.animation.timeLength },
-                setter = { TODO("add use case to change animation time") }
+                setter = { props.disptcher.onEvent("animation.set.length", Panel().apply { metadata["time"] = it }) }
         ))
+
+        +IconButton("animation.add.keyframe", "add_keyframe", 120f + 256f, 3f, 26f, 26f).apply {
+            if(props.animator.selectedChannel == null) {
+                disable()
+                disableInput()
+            }
+            setTooltip("Add keyframe to the current position")
+        }
     }
 
-    fun RBuilder.channelList() = div {
+    fun RBuilder.channelList() = div("Channel list") {
         val anim = props.modelAccessor.animation
+
         style {
-            height = anim.channels.size * 26f
+            width = 200f
             transparent()
+            style.border = PixelBorder().apply { enableRight = true }
         }
 
-        postMount { width = parent.width }
+        postMount { height = parent.height }
 
         anim.channels.values.forEachIndexed { index, c ->
             div {
@@ -140,10 +158,7 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
                         background { lightDarkColor }
                     }
 
-                    style.border = PixelBorder().apply {
-                        enableBottom = true
-                        color = Vector4f(0f, 0f, 0f, 1f)
-                    }
+                    style.border = PixelBorder().apply { enableBottom = true; enableRight = true }
                 }
 
                 +IconButton("animation.channel.select", "obj_type_cube", 0f, 0f, 24f, 24f).apply {
@@ -245,6 +260,8 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
                     height = parent.sizeY - posY
                 }
 
+                onClick { props.disptcher.onEvent("animation.panel.click", it.targetComponent) }
+
                 onScroll(this@BottomPanel::handleScroll)
             }
         }
@@ -258,11 +275,7 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
                 else -> 0f
             }
         } else {
-            props.animator.offset += when {
-                it.yoffset < 0 -> 1 / 16f
-                props.animator.zoom > 1 / 16f -> -1 / 16f
-                else -> 0f
-            }
+            props.animator.offset += it.yoffset.toFloat() * -1 / 64f
         }
     }
 }

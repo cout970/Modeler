@@ -4,6 +4,7 @@ import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.api.animation.AnimationState
 import com.cout970.modeler.api.animation.IAnimation
 import com.cout970.modeler.api.animation.IChannelRef
+import com.cout970.modeler.api.animation.IKeyframe
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.gui.Gui
@@ -18,6 +19,11 @@ class Animator {
     var animationTime = 0f
 
     var selectedChannel: IChannelRef? = null
+        set(value) {
+            field = value; gui.listeners.onAnimatorChange(this)
+        }
+
+    var selectedKeyframe: Int? = null
         set(value) {
             field = value; gui.listeners.onAnimatorChange(this)
         }
@@ -51,18 +57,24 @@ class Animator {
         val activeChannels = anim.channels.values.filter { obj in it.objects }
 
         val m = activeChannels.fold(TRSTransformation.IDENTITY) { acc, c ->
-
-            val next = c.keyframes.firstOrNull { it.time > now } ?: c.keyframes.first()
-            val prev = c.keyframes.lastOrNull { it.time <= now } ?: c.keyframes.last()
-
-            val size = next.time - prev.time
-            val step = (now - prev.time) / size
-
-            val t = prev.value.lerp(next.value, step)
-
-            acc.merge(t)
+            val (prev, next) = getPrevAndNext(now, c.keyframes)
+            acc.merge(interpolate(now, prev, next))
         }
 
         shader.matrixM.setMatrix4(m.matrix)
+    }
+
+    fun interpolate(time: Float, prev: IKeyframe, next: IKeyframe): TRSTransformation {
+        val size = next.time - prev.time
+        val step = (time - prev.time) / size
+
+        return prev.value.lerp(next.value, step)
+    }
+
+    fun getPrevAndNext(time: Float, keyframes: List<IKeyframe>): Pair<IKeyframe, IKeyframe> {
+        val next = keyframes.firstOrNull { it.time > time } ?: keyframes.first()
+        val prev = keyframes.lastOrNull { it.time <= time } ?: keyframes.last()
+
+        return prev to next
     }
 }

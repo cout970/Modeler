@@ -30,6 +30,7 @@ import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.input.window.Loop
 import com.cout970.modeler.input.window.WindowHandler
 import com.cout970.modeler.render.RenderManager
+import com.cout970.modeler.render.tool.Animator
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Panel
 import java.lang.reflect.Type
@@ -78,6 +79,7 @@ class DependencyInjector {
         ButtonBinder::class.java -> gui.buttonBinder
         KeyboardBinder::class.java -> gui.keyboardBinder
         IModelAccessor::class.java -> gui.modelAccessor
+        Animator::class.java -> gui.animator
         IProjectPropertiesHolder::class.java -> gui.propertyHolder
 
         else -> null
@@ -88,7 +90,7 @@ class DependencyInjector {
         val args: Map<KParameter, Any> = useCase.valueParameters.associate { param ->
             Pair(param,
                     state.getInstance(param.type.javaType, comp)
-                    ?: throw IllegalStateException("Unable to inject ${param.type.javaType}")
+                            ?: throw IllegalStateException("Unable to inject ${param.type.javaType}")
             )
         }
 

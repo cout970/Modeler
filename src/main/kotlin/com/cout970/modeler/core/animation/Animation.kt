@@ -20,6 +20,10 @@ data class Animation(
         return copy(channels = channels + (channel.ref to channel))
     }
 
+    override fun withTimeLength(newLength: Float): IAnimation {
+        return copy(timeLength = newLength)
+    }
+
     override fun removeChannels(list: List<IChannelRef>): IAnimation {
         return copy(channels = channels.filterKeys { it !in list })
     }
