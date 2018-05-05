@@ -125,7 +125,6 @@ class ModelRenderer {
 
         val animation = ctx.gui.modelAccessor.animation
         val animator = ctx.gui.animator
-        animator.updateTime(ctx.gui.timer)
 
         map.forEach { material, list ->
             model.getMaterial(material).bind()

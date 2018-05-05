@@ -51,7 +51,10 @@ class Animator {
     fun animate(anim: IAnimation, obj: IObjectRef, shader: UniversalShader) {
 
         val now = animationTime
-        val activeChannels = anim.channels.values.filter { obj in it.objects }
+        val activeChannels = anim.channels
+                .values
+                .filter { it.enabled }
+                .filter { obj in it.objects }
 
         val m = activeChannels.fold(TRSTransformation.IDENTITY) { acc, c ->
             val (prev, next) = getPrevAndNext(now, c.keyframes)

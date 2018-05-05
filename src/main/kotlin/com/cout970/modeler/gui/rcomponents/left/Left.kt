@@ -5,6 +5,7 @@ import com.cout970.modeler.gui.canvas.GridLines
 import com.cout970.modeler.gui.leguicomp.background
 import com.cout970.modeler.gui.leguicomp.clear
 import com.cout970.modeler.gui.leguicomp.color
+import com.cout970.modeler.render.tool.Animator
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RProps
 import com.cout970.reactive.core.RState
@@ -16,7 +17,10 @@ import com.cout970.reactive.nodes.scrollablePanel
 import com.cout970.reactive.nodes.style
 import org.liquidengine.legui.event.ScrollEvent
 
-data class LeftPanelProps(val visible: Boolean, val modelAccessor: IModelAccessor, val grids: GridLines) : RProps
+data class LeftPanelProps(
+        val visible: Boolean, val modelAccessor: IModelAccessor,
+        val grids: GridLines, val animator: Animator
+) : RProps
 
 class LeftPanel : RStatelessComponent<LeftPanelProps>() {
 
@@ -85,7 +89,7 @@ class LeftPanel : RStatelessComponent<LeftPanelProps>() {
                 child(EditorControls::class)
                 child(EditObjectName::class, ModelAccessorProps(props.modelAccessor))
                 child(EditCubePanel::class, ModelAccessorProps(props.modelAccessor))
-                child(EditAnimation::class, ModelAccessorProps(props.modelAccessor))
+                child(EditAnimation::class, EditAnimationProps(props.animator, props.modelAccessor))
                 child(EditGrids::class, EditGridsProps(props.grids))
             }
         }

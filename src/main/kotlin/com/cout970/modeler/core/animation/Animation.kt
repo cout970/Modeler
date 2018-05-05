@@ -60,7 +60,10 @@ data class Channel(
 data class Keyframe(
         override val time: Float,
         override val value: TRSTransformation
-) : IKeyframe
+) : IKeyframe {
+
+    override fun withValue(trs: TRSTransformation): IKeyframe = copy(value = trs)
+}
 
 inline val IChannel.ref: IChannelRef get() = ChannelRef(id)
 

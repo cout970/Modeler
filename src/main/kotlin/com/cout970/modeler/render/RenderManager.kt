@@ -45,6 +45,7 @@ class RenderManager : ITickeable {
     override fun tick() {
         Profiler.startSection("render")
         GLStateMachine.clear()
+        gui.animator.updateTime(gui.timer)
         canvasRenderer.render(gui)
         guiRenderer.render()
         gui.windowHandler.resetViewport()

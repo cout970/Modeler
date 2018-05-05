@@ -39,6 +39,8 @@ interface IChannel {
 interface IKeyframe {
     val time: Float
     val value: TRSTransformation
+
+    fun withValue(trs: TRSTransformation): IKeyframe
 }
 
 enum class InterpolationMethod {
