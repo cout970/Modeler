@@ -281,6 +281,8 @@ class JsonImporter {
             rotate(rot.angle.toRads(), rot.axis.toJoml3d())
             translate((-rot.origin).toJoml3d())
         }.toIMatrix()
+
+        override fun plus(other: ITransformation): ITransformation = error("not supported")
     }
 
     class JsonModel(

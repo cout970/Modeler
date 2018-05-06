@@ -13,7 +13,6 @@ import com.cout970.modeler.core.model.pos
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.canvas.Canvas
 import com.cout970.modeler.gui.canvas.ISelectable
-import com.cout970.modeler.gui.canvas.helpers.CanvasHelper
 import com.cout970.modeler.gui.canvas.input.DraggingCursor
 import com.cout970.modeler.util.hasNaN
 import com.cout970.modeler.util.middle

@@ -1,6 +1,7 @@
 package com.cout970.modeler.core.animation
 
 import com.cout970.modeler.api.animation.*
+import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.vector.api.IQuaternion
@@ -59,10 +60,10 @@ data class Channel(
 
 data class Keyframe(
         override val time: Float,
-        override val value: TRSTransformation
+        override val value: ITransformation
 ) : IKeyframe {
 
-    override fun withValue(trs: TRSTransformation): IKeyframe = copy(value = trs)
+    override fun withValue(trs: ITransformation): IKeyframe = copy(value = trs)
 }
 
 inline val IChannel.ref: IChannelRef get() = ChannelRef(id)

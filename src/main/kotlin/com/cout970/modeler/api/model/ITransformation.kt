@@ -8,4 +8,6 @@ import com.cout970.matrix.api.IMatrix4
 interface ITransformation {
 
     val matrix: IMatrix4
+
+    operator fun plus(other: ITransformation): ITransformation
 }

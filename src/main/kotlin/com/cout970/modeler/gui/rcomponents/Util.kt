@@ -1,26 +1,32 @@
 package com.cout970.modeler.gui.rcomponents
 
+import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.controller.usecases.scriptEngine
+import com.cout970.modeler.core.model.TRSTransformation
+import com.cout970.modeler.core.model.TRTSTransformation
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.input.window.Loop
 import com.cout970.modeler.util.disableInput
 import com.cout970.modeler.util.text
+import com.cout970.modeler.util.toAxisRotations
 import com.cout970.modeler.util.toJoml2f
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RProps
 import com.cout970.reactive.core.RStatelessComponent
 import com.cout970.reactive.dsl.*
-import com.cout970.reactive.nodes.comp
-import com.cout970.reactive.nodes.div
-import com.cout970.reactive.nodes.style
+import com.cout970.reactive.nodes.*
 import com.cout970.vector.api.IVector2
+import com.cout970.vector.api.IVector3
+import com.cout970.vector.extensions.vec2Of
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.event.ScrollEvent
+import org.liquidengine.legui.style.color.ColorConstants.transparent
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
+import javax.management.Query.div
 
 
 data class FloatInputProps(
@@ -178,8 +184,133 @@ class TinyFloatInput : RStatelessComponent<TinyFloatInputProps>() {
     }
 }
 
+data class TransformationInputProps(val usecase: String, val transformation: ITransformation, val enable: Boolean) : RProps
+
+class TransformationInput : RStatelessComponent<TransformationInputProps>() {
+
+    override fun RBuilder.render() {
+
+        val t = props.transformation
+
+        when (t) {
+            is TRSTransformation -> {
+                position(t.translation)
+                rotation(t.rotation.toAxisRotations())
+                scale(t.scale)
+            }
+            is TRTSTransformation -> {
+                position(t.translation)
+                rotation(t.rotation)
+                pivot(t.pivot)
+                scale(t.scale)
+            }
+        }
+
+    }
+
+    fun RBuilder.position(translation: IVector3) {
+        div("Position") {
+            style {
+                transparent()
+                borderless()
+                height = 110f
+            }
+
+            postMount {
+                fillX()
+            }
+
+            +FixedLabel("Position", 0f, 0f, 278f, 18f).apply { textState.fontSize = 22f }
+            +FixedLabel("x", 10f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
+            +FixedLabel("y", 98f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
+            +FixedLabel("z", 185f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
+
+            valueInput({ translation.xf }, "pos.x", vec2Of(10f, 20f))
+            valueInput({ translation.yf }, "pos.y", vec2Of(98f, 20f))
+            valueInput({ translation.zf }, "pos.z", vec2Of(185f, 20f))
+        }
+    }
+
+    fun RBuilder.rotation(rotation: IVector3) {
+        div("Rotation") {
+            style {
+                transparent()
+                borderless()
+                height = 110f
+            }
+
+            postMount {
+                fillX()
+            }
+
+            +FixedLabel("Rotation", 0f, 0f, 278f, 18f).apply { textState.fontSize = 22f }
+            +FixedLabel("x", 10f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
+            +FixedLabel("y", 98f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
+            +FixedLabel("z", 185f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
+
+            valueInput({ rotation.xf }, "rot.x", vec2Of(10f, 20f))
+            valueInput({ rotation.yf }, "rot.y", vec2Of(98f, 20f))
+            valueInput({ rotation.zf }, "rot.z", vec2Of(185f, 20f))
+        }
+    }
+
+    fun RBuilder.pivot(translation: IVector3) {
+        div("Pivot") {
+            style {
+                transparent()
+                borderless()
+                height = 110f
+            }
+
+            postMount {
+                fillX()
+            }
+
+            +FixedLabel("Pivot", 0f, 0f, 278f, 18f).apply { textState.fontSize = 22f }
+            +FixedLabel("x", 10f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
+            +FixedLabel("y", 98f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
+            +FixedLabel("z", 185f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
+
+            valueInput({ translation.xf }, "pivot.x", vec2Of(10f, 20f))
+            valueInput({ translation.yf }, "pivot.y", vec2Of(98f, 20f))
+            valueInput({ translation.zf }, "pivot.z", vec2Of(185f, 20f))
+        }
+    }
 
 
+    fun RBuilder.scale(scale: IVector3) {
+        div("Scale") {
+            style {
+                transparent()
+                borderless()
+                height = 110f
+            }
+
+            postMount {
+                fillX()
+            }
+
+            +FixedLabel("Scale", 0f, 0f, 278f, 18f).apply { fontSize = 22f }
+            +FixedLabel("x", 10f, 90f, 75f, 20f).apply { fontSize = 18f }
+            +FixedLabel("y", 98f, 90f, 75f, 20f).apply { fontSize = 18f }
+            +FixedLabel("z", 185f, 90f, 75f, 20f).apply { fontSize = 18f }
+
+            valueInput({ scale.xf }, "size.x", vec2Of(10f, 20f))
+            valueInput({ scale.yf }, "size.y", vec2Of(98f, 20f))
+            valueInput({ scale.zf }, "size.z", vec2Of(185f, 20f))
+        }
+    }
+
+    fun DivBuilder.valueInput(getter: () -> Float, cmd: String, pos: IVector2) {
+        child(FloatInput::class, FloatInputProps(
+                getter = getter,
+                command = props.usecase,
+                metadata = mapOf("command" to cmd),
+                enabled = props.enable,
+                pos = pos)
+        )
+    }
+}
 
 
 

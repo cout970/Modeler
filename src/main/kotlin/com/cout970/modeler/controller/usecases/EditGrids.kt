@@ -71,11 +71,3 @@ private fun changeGridOffsetHelper(gridLines: GridLines, axis: String, offset: F
 
     return ModifyGui { it.gridLines.gridOffset = vec; listener() }
 }
-
-private fun getValue(input: String, default: Float): Float {
-    return try {
-        (scriptEngine.eval(input) as? Number)?.toFloat() ?: default
-    } catch (e: Exception) {
-        default
-    }
-}

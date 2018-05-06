@@ -1,5 +1,6 @@
 package com.cout970.modeler.api.animation
 
+import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.model.TRSTransformation
 import java.util.*
@@ -38,9 +39,9 @@ interface IChannel {
 
 interface IKeyframe {
     val time: Float
-    val value: TRSTransformation
+    val value: ITransformation
 
-    fun withValue(trs: TRSTransformation): IKeyframe
+    fun withValue(trs: ITransformation): IKeyframe
 }
 
 enum class InterpolationMethod {

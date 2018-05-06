@@ -5,8 +5,10 @@ import com.cout970.modeler.api.animation.AnimationState
 import com.cout970.modeler.api.animation.IAnimation
 import com.cout970.modeler.api.animation.IChannelRef
 import com.cout970.modeler.api.animation.IKeyframe
+import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.model.TRSTransformation
+import com.cout970.modeler.core.model.TRTSTransformation
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.render.tool.shader.UniversalShader
 
@@ -20,10 +22,15 @@ class Animator {
 
     var selectedChannel: IChannelRef? = null
         set(value) {
-            field = value; gui.listeners.onAnimatorChange(this)
+            field = value
+            gui.listeners.onAnimatorChange(this)
+            selectedKeyframe = null
         }
 
     var selectedKeyframe: Int? = null
+        set(value) {
+            field = value; gui.listeners.onAnimatorChange(this)
+        }
 
     var animationState = AnimationState.STOP
         set(value) {
@@ -56,21 +63,31 @@ class Animator {
                 .filter { it.enabled }
                 .filter { obj in it.objects }
 
-        val m = activeChannels.fold(TRSTransformation.IDENTITY) { acc, c ->
+        val m = activeChannels.fold(TRSTransformation.IDENTITY as ITransformation) { acc, c ->
             val (prev, next) = getPrevAndNext(now, c.keyframes)
-            acc.merge(interpolate(now, prev, next))
+            acc + interpolate(now, prev, next)
         }
 
         shader.matrixM.setMatrix4(m.matrix)
     }
 
-    fun interpolate(time: Float, prev: IKeyframe, next: IKeyframe): TRSTransformation {
+    fun interpolate(time: Float, prev: IKeyframe, next: IKeyframe): ITransformation {
         if (next.time == prev.time) return next.value
 
         val size = next.time - prev.time
         val step = (time - prev.time) / size
 
-        return prev.value.lerp(next.value, step)
+        return interpolate(prev.value, next.value, step)
+    }
+
+    fun interpolate(a: ITransformation, b: ITransformation, delta: Float): ITransformation {
+        return when {
+            a is TRSTransformation && b is TRSTransformation -> a.lerp(b, delta)
+            a is TRTSTransformation && b is TRTSTransformation -> a.lerp(b, delta)
+            a is TRTSTransformation && b is TRSTransformation -> a.lerp(b.toTRTS(), delta)
+            a is TRTSTransformation && b is TRSTransformation -> a.lerp(b.toTRTS(), delta)
+            else -> error("Unknown ITransformation pair: $a, $b")
+        }
     }
 
     fun getPrevAndNext(time: Float, keyframes: List<IKeyframe>): Pair<IKeyframe, IKeyframe> {

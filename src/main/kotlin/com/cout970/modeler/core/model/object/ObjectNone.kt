@@ -1,5 +1,6 @@
 package com.cout970.modeler.core.model.`object`
 
+import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.`object`.IObjectCube
 import com.cout970.modeler.api.model.material.IMaterialRef
@@ -69,7 +70,7 @@ object ObjectCubeNone : IObjectCube {
 
     override fun withPos(pos: IVector3): IObjectCube = this
 
-    override fun withTransformation(transform: TRSTransformation): IObjectCube = this
+    override fun withTransformation(transform: ITransformation): IObjectCube = this
 
     override fun withTextureOffset(tex: IVector2): IObjectCube = this
 

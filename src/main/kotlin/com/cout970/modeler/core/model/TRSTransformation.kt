@@ -21,13 +21,14 @@ data class TRSTransformation(
     companion object {
         val IDENTITY = TRSTransformation(Vector3.ORIGIN, Quaternion.IDENTITY, Vector3.ONE)
 
-        fun fromRotationPivot(pivot: IVector3, rotation: IVector3): TRSTransformation {
+        @Suppress("UnnecessaryVariable")
+        fun fromRotationPivot(pivot: IVector3, rotation: IQuaternion): TRSTransformation {
             val preRotation = pivot
             val postRotation = -pivot
 
             val matrix = Matrix4d().apply {
                 translate(preRotation.xd, preRotation.yd, preRotation.zd)
-                rotate(quatOfAngles(rotation).toJOML())
+                rotate(rotation.toJOML())
                 translate(postRotation.xd, postRotation.yd, postRotation.zd)
             }
 
@@ -35,6 +36,10 @@ data class TRSTransformation(
             val rot = Quaterniond().setFromUnnormalized(matrix).toIQuaternion()
 
             return TRSTransformation(pos, rot, Vector3.ONE)
+        }
+
+        fun fromRotationPivot(pivot: IVector3, rotation: IVector3): TRSTransformation {
+            return fromRotationPivot(pivot, quatOfAngles(rotation))
         }
     }
 
@@ -63,5 +68,22 @@ data class TRSTransformation(
                 rotation = this.rotation.lerp(other.rotation, step.toDouble()),
                 scale = this.scale.interpolate(other.scale, step.toDouble())
         )
+    }
+
+    fun toTRTS(): TRTSTransformation {
+        return TRTSTransformation(
+                translation = translation,
+                rotation = rotation.toAxisRotations(),
+                pivot = Vector3.ZERO,
+                scale = scale
+        )
+    }
+
+    override fun plus(other: ITransformation): ITransformation {
+        return when (other) {
+            is TRSTransformation -> this.merge(other)
+            is TRTSTransformation -> this.merge(other.toTRS())
+            else -> error("Unknown ITransformation type: $other, ${other::class.java.name}")
+        }
     }
 }

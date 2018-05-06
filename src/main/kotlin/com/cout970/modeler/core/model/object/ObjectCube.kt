@@ -1,11 +1,13 @@
 package com.cout970.modeler.core.model.`object`
 
+import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.`object`.IObjectCube
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.api.model.transformer.IObjectTransformer
 import com.cout970.modeler.core.model.TRSTransformation
+import com.cout970.modeler.core.model.TRTSTransformation
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
@@ -26,7 +28,7 @@ import java.util.*
  */
 data class ObjectCube(
         override val name: String,
-        override val transformation: TRSTransformation,
+        override val transformation: ITransformation,
         override val material: IMaterialRef = MaterialRefNone,
         override val textureOffset: IVector2 = Vector2.ORIGIN,
         override val textureSize: IVector2 = vec2Of(64),
@@ -37,9 +39,16 @@ data class ObjectCube(
 
     override val mesh: IMesh by lazy { generateMesh() }
 
-    val size: IVector3 get() = transformation.scale
+    val trs
+        get() = when (transformation) {
+            is TRSTransformation -> transformation.toTRTS()
+            is TRTSTransformation -> transformation
+            else -> error("Invalid type: $transformation")
+        }
 
-    val pos: IVector3 get() = transformation.translation
+    val size: IVector3 get() = trs.scale
+    val pos: IVector3 get() = trs.translation
+
     fun generateMesh(): IMesh {
         val cube = MeshFactory.createCube(Vector3.ONE, Vector3.ORIGIN)
         val pos = cube.pos.map { Vector4d(it.xd, it.yd, it.zd, 1.0) }
@@ -106,18 +115,17 @@ data class ObjectCube(
 
     override fun withVisibility(visible: Boolean): IObject = copy(visible = visible)
 
-    override fun withSize(size: IVector3): IObjectCube = copy(transformation = transformation.copy(scale = size))
+    override fun withSize(size: IVector3): IObjectCube = copy(transformation = trs.copy(scale = size))
 
-    override fun withPos(pos: IVector3): IObjectCube = copy(transformation = transformation.copy(translation = pos))
+    override fun withPos(pos: IVector3): IObjectCube = copy(transformation = trs.copy(translation = pos))
 
-    override fun withTransformation(transform: TRSTransformation): IObjectCube = copy(transformation = transform)
+    override fun withTransformation(transform: ITransformation): IObjectCube = copy(transformation = transform)
 
     override fun withTextureOffset(tex: IVector2): IObjectCube = copy(textureOffset = tex)
 
     override fun withTextureSize(size: IVector2): IObjectCube = copy(textureSize = size)
 
-    override fun withMesh(newMesh: IMesh): IObject = Object(name, newMesh,
-            material, visible, id)
+    override fun withMesh(newMesh: IMesh): IObject = Object(name, newMesh, material, visible, id)
 
     override fun withMaterial(materialRef: IMaterialRef): IObject = copy(material = materialRef)
 
@@ -131,18 +139,17 @@ data class ObjectCube(
 
         override fun translate(obj: IObject, translation: IVector3): IObject {
             val newPos = pos + translation
-            return copy(transformation = transformation.copy(translation = newPos))
+            return copy(transformation = trs.copy(translation = newPos))
         }
 
         override fun rotate(obj: IObject, pivot: IVector3, rot: IQuaternion): IObject {
-            val newRot = TRSTransformation.fromRotationPivot(pivot,
-                    rot.toAxisRotations())
-            return copy(transformation = transformation.merge(newRot))
+            val newRot = TRSTransformation.fromRotationPivot(pivot, rot.toAxisRotations())
+            return copy(transformation = transformation + newRot)
         }
 
         override fun scale(obj: IObject, center: IVector3, axis: IVector3, offset: Float): IObject {
             val newSize = size + axis * offset
-            return copy(transformation = transformation.copy(scale = newSize))
+            return copy(transformation = trs.copy(scale = newSize))
         }
 
         override fun translateTexture(obj: IObject, translation: IVector2): IObject {

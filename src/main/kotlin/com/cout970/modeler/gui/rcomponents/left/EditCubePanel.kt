@@ -14,6 +14,8 @@ import com.cout970.modeler.gui.event.EventSelectionUpdate
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.gui.rcomponents.FloatInput
 import com.cout970.modeler.gui.rcomponents.FloatInputProps
+import com.cout970.modeler.gui.rcomponents.TransformationInput
+import com.cout970.modeler.gui.rcomponents.TransformationInputProps
 import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.asNullable
 import com.cout970.modeler.util.getOr
@@ -47,19 +49,10 @@ class EditCubePanel : RComponent<ModelAccessorProps, VisibleWidget>() {
             alignAsColumn(5f)
         }
 
-        on<EventModelUpdate> {
-            rerender()
-        }
-        on<EventSelectionUpdate> {
-            rerender()
-        }
-
         val (ref, cube) = getObject().split { it }
         val cubeRef: IObjectRef = ref.getOr(ObjectRefNone)
 
-        val pos = { cube.map { it.pos }.getOr(Vector3.ORIGIN) }
-        val rotation = { cube.map { it.rotation }.getOr(Vector3.ORIGIN) }
-        val size = { cube.map { it.size }.getOr(Vector3.ORIGIN) }
+        val trans = cube.map { it.transformation }.getOr(TRTSTransformation.IDENTITY)
         val tex = { cube.map { it.textureOffset }.getOr(Vector2.ORIGIN) }
         val scale = { cube.map { it.textureSize }.getOr(Vector2.ORIGIN) }
 
@@ -99,68 +92,11 @@ class EditCubePanel : RComponent<ModelAccessorProps, VisibleWidget>() {
             }
         }
 
-        div("Size") {
-            style {
-                transparent()
-                borderless()
-                height = 110f
-            }
-
-            postMount {
-                fillX()
-            }
-
-            +FixedLabel("Size", 0f, 0f, 278f, 18f).apply { fontSize = 22f }
-            +FixedLabel("x", 10f, 90f, 75f, 20f).apply { fontSize = 18f }
-            +FixedLabel("y", 98f, 90f, 75f, 20f).apply { fontSize = 18f }
-            +FixedLabel("z", 185f, 90f, 75f, 20f).apply { fontSize = 18f }
-
-            valueInput({ size().xf }, "cube.size.x", cubeRef, vec2Of(10f, 20f))
-            valueInput({ size().yf }, "cube.size.y", cubeRef, vec2Of(98f, 20f))
-            valueInput({ size().zf }, "cube.size.z", cubeRef, vec2Of(185f, 20f))
-        }
-
-        div("Position") {
-            style {
-                transparent()
-                borderless()
-                height = 110f
-            }
-
-            postMount {
-                fillX()
-            }
-
-            +FixedLabel("Position", 0f, 0f, 278f, 18f).apply { textState.fontSize = 22f }
-            +FixedLabel("x", 10f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
-            +FixedLabel("y", 98f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
-            +FixedLabel("z", 185f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
-
-            valueInput({ pos().xf }, "cube.pos.x", cubeRef, vec2Of(10f, 20f))
-            valueInput({ pos().yf }, "cube.pos.y", cubeRef, vec2Of(98f, 20f))
-            valueInput({ pos().zf }, "cube.pos.z", cubeRef, vec2Of(185f, 20f))
-        }
-
-        div("Rotation") {
-            style {
-                transparent()
-                borderless()
-                height = 110f
-            }
-
-            postMount {
-                fillX()
-            }
-
-            +FixedLabel("Rotation", 0f, 0f, 278f, 18f).apply { textState.fontSize = 22f }
-            +FixedLabel("x", 10f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
-            +FixedLabel("y", 98f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
-            +FixedLabel("z", 185f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
-
-            valueInput({ rotation().xf }, "cube.rot.x", cubeRef, vec2Of(10f, 20f))
-            valueInput({ rotation().yf }, "cube.rot.y", cubeRef, vec2Of(98f, 20f))
-            valueInput({ rotation().zf }, "cube.rot.z", cubeRef, vec2Of(185f, 20f))
-        }
+        child(TransformationInput::class, TransformationInputProps(
+                usecase = "update.template.cube",
+                transformation = trans,
+                enable = cubeRef != ObjectRefNone
+        ))
 
         div("Texture") {
             style {
@@ -178,10 +114,13 @@ class EditCubePanel : RComponent<ModelAccessorProps, VisibleWidget>() {
             +FixedLabel("y", 98f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
             +FixedLabel("scale", 185f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
 
-            valueInput({ tex().xf }, "cube.tex.x", cubeRef, vec2Of(10f, 20f))
-            valueInput({ tex().yf }, "cube.tex.y", cubeRef, vec2Of(98f, 20f))
-            valueInput({ scale().xf }, "cube.tex.scale", cubeRef, vec2Of(185f, 20f))
+            valueInput({ tex().xf }, "tex.x", cubeRef, vec2Of(10f, 20f))
+            valueInput({ tex().yf }, "tex.y", cubeRef, vec2Of(98f, 20f))
+            valueInput({ scale().xf }, "tex.scale", cubeRef, vec2Of(185f, 20f))
         }
+
+        on<EventModelUpdate> { rerender() }
+        on<EventSelectionUpdate> { rerender() }
     }
 
     fun isSelectingOneCube(model: IModel, new: ISelection): Boolean {

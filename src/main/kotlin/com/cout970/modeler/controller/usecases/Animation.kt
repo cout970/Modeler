@@ -8,6 +8,7 @@ import com.cout970.modeler.core.animation.Channel
 import com.cout970.modeler.core.animation.Keyframe
 import com.cout970.modeler.core.animation.ref
 import com.cout970.modeler.core.model.TRSTransformation
+import com.cout970.modeler.core.model.TRTSTransformation
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.input.event.IInput
@@ -15,6 +16,7 @@ import com.cout970.modeler.render.tool.Animator
 import com.cout970.modeler.util.absolutePositionV
 import com.cout970.reactive.dsl.width
 import org.liquidengine.legui.component.Component
+import kotlin.math.roundToInt
 
 
 private var lastAnimation = 0
@@ -28,8 +30,8 @@ private fun addAnimationChannel(modelAccessor: IModelAccessor): ITask {
             name = "Channel ${lastAnimation++}",
             interpolation = InterpolationMethod.LINEAR,
             keyframes = listOf(
-                    Keyframe(0f, TRSTransformation.IDENTITY),
-                    Keyframe(anim.timeLength, TRSTransformation.IDENTITY)
+                    Keyframe(0f, TRTSTransformation.IDENTITY),
+                    Keyframe(anim.timeLength, TRTSTransformation.IDENTITY)
             ),
             objects = refs
     )
@@ -104,6 +106,8 @@ private fun onAnimationPanelClick(comp: Component, animator: Animator, input: II
     val pixelOffset = animator.offset * timeToPixel
 
     val channels = animator.animation.channels.values
+    val time = (diffX - pixelOffset) / timeToPixel
+    val roundTime = (time * 60f).roundToInt() / 60f
 
     channels.forEachIndexed { i, channel ->
         if (diffY > i * 26 && diffY <= (i + 1) * 26f) {
@@ -113,16 +117,14 @@ private fun onAnimationPanelClick(comp: Component, animator: Animator, input: II
 
                 if (diffX > pos - 12f && diffX <= pos + 12f) {
                     return ModifyGui {
-                        animator.selectedKeyframe = index
                         animator.selectedChannel = channel.ref
+                        animator.selectedKeyframe = index
+                        animator.animationTime = roundTime
                     }
                 }
             }
         }
     }
-
-    val time = (diffX - pixelOffset) / timeToPixel
-    val roundTime = (time * 60f).toInt() / 60f
 
     return ModifyGui {
         animator.selectedKeyframe = null
@@ -149,7 +151,10 @@ private fun addKeyframe(animator: Animator): ITask {
     val newChannel = channel.withKeyframes(newList)
     val newAnimation = animator.animation.withChannel(newChannel)
 
-    return TaskUpdateAnimation(oldAnimation = animator.animation, newAnimation = newAnimation)
+    return TaskChain(listOf(
+            TaskUpdateAnimation(oldAnimation = animator.animation, newAnimation = newAnimation),
+            ModifyGui { animator.selectedKeyframe = newList.indexOf(keyframe) }
+    ))
 }
 
 @UseCase("animation.delete.keyframe")
