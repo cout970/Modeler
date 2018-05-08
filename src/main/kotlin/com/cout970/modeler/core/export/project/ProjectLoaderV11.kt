@@ -10,12 +10,15 @@ import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.export.*
 import com.cout970.modeler.core.model.Model
-import com.cout970.modeler.core.model.`object`.ImmutableBiMultimap
+import com.cout970.modeler.core.model.`object`.BiMultimap
+import com.cout970.modeler.core.model.`object`.GroupTree
+import com.cout970.modeler.core.model.`object`.biMultimapOf
 import com.cout970.modeler.core.project.ProjectProperties
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.google.gson.*
+import kotlinx.collections.immutable.ImmutableMap
 import java.io.File
 import java.lang.reflect.Type
 import java.util.*
@@ -40,13 +43,14 @@ object ProjectLoaderV11 {
             .registerTypeAdapter(IGroupTree::class.java, GroupTreeSerializer())
             .registerTypeAdapter(IGroupRef::class.java, serializerOf<GroupRef>())
             .registerTypeAdapter(IGroup::class.java, serializerOf<Group>())
-            .registerTypeAdapter(ImmutableBiMultimap::class.java, BiMultimapSerializer())
             .registerTypeAdapter(IObject::class.java, ObjectSerializer())
             .registerTypeAdapter(IMesh::class.java, MeshSerializer())
             .registerTypeAdapter(IFaceIndex::class.java, FaceSerializer())
             .registerTypeAdapter(ITransformation::class.java, TransformationSerializer())
             .registerTypeAdapter(IMaterialRef::class.java, MaterialRefSerializer())
             .registerTypeAdapter(IObjectRef::class.java, ObjectRefSerializer())
+            .registerTypeAdapter(BiMultimap::class.java, BiMultimapSerializer())
+            .registerTypeAdapter(ImmutableMap::class.java, ImmutableMapSerializer())
             .create()!!
 
     fun loadProject(zip: ZipFile, path: String): ProgramSave {
@@ -57,7 +61,7 @@ object ProjectLoaderV11 {
         val model = zip.load<IModel>("model.json", gson)
                 ?: throw IllegalStateException("Missing file 'model.json' inside '$path'")
 
-        checkIntegrity(null, listOf(model.objectMap, model.materialMap, model.groupMap, model.groupTree))
+        checkIntegrity(null, listOf(model.objectMap, model.materialMap))
         return ProgramSave(VERSION, properties, model)
     }
 
@@ -85,8 +89,20 @@ object ProjectLoaderV11 {
 
         override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IModel {
             val model: Model = context.deserialize(json, Model::class.java)
-
-            return Model.of(model.objectMap, model.materialMap)
+            return Model.of(model.objectMap, model.materialMap, emptyMap(), biMultimapOf(RootGroupRef to model.objectRefs))
         }
     }
+
+    class GroupTreeSerializer : JsonSerializer<IGroupTree>, JsonDeserializer<IGroupTree> {
+
+        override fun serialize(src: IGroupTree, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+            return context.serialize(src)
+        }
+
+        override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IGroupTree {
+            if (json.isJsonNull) return GroupTree.emptyTree()
+            return context.deserialize(json, GroupTree::class.java)
+        }
+    }
+
 }

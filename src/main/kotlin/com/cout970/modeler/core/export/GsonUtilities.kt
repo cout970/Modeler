@@ -2,7 +2,6 @@ package com.cout970.modeler.core.export
 
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.mat4Of
-import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.*
 import com.cout970.modeler.api.model.material.IMaterial
@@ -10,7 +9,6 @@ import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.`object`.*
 import com.cout970.modeler.core.model.material.MaterialNone
@@ -163,18 +161,6 @@ class Matrix4Serializer : JsonSerializer<IMatrix4>, JsonDeserializer<IMatrix4> {
     }
 }
 
-class GroupTreeSerializer : JsonSerializer<IGroupTree>, JsonDeserializer<IGroupTree> {
-
-    override fun serialize(src: IGroupTree, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-        return context.serialize(src)
-    }
-
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IGroupTree {
-        if (json.isJsonNull) return GroupTree.emptyTree()
-        return context.deserialize(json, GroupTree::class.java)
-    }
-}
-
 class BiMultimapSerializer : JsonSerializer<BiMultimap<IGroupRef, IObjectRef>>, JsonDeserializer<BiMultimap<IGroupRef, IObjectRef>> {
 
     data class Aux(val key: IGroupRef, val value: List<IObjectRef>)
@@ -203,7 +189,7 @@ class ImmutableMapSerializer : JsonSerializer<ImmutableMap<Any, Any>>, JsonDeser
     }
 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): ImmutableMap<Any, Any> {
-        if (json.isJsonNull || (json.isJsonArray && json.asJsonArray.size() == 0))
+        if (json.isJsonNull || !json.isJsonArray || (json.isJsonArray && json.asJsonArray.size() == 0))
             return immutableMapOf()
 
         val array = json.asJsonArray
