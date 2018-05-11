@@ -1,5 +1,6 @@
 package com.cout970.modeler.core.export.project
 
+import com.cout970.modeler.api.animation.IAnimation
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.*
@@ -8,6 +9,8 @@ import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.api.model.selection.IObjectRef
+import com.cout970.modeler.core.animation.Animation
+import com.cout970.modeler.core.animation.animationOf
 import com.cout970.modeler.core.export.*
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.`object`.BiMultimap
@@ -62,8 +65,12 @@ object ProjectLoaderV12 {
         val model = zip.load<IModel>("model.json", gson)
                 ?: throw IllegalStateException("Missing file 'model.json' inside '$path'")
 
+        val animation = zip.load<IAnimation>("animation.json", gson)
+                ?: animationOf()
+
         checkIntegrity(null, listOf(model.objectMap, model.materialMap, model.groupMap, model.groupTree, model.groupObjects))
-        return ProgramSave(VERSION, properties, model)
+        checkIntegrity(null, listOf(animation))
+        return ProgramSave(VERSION, properties, model, animation)
     }
 
     fun saveProject(path: String, save: ProgramSave) {
@@ -77,6 +84,9 @@ object ProjectLoaderV12 {
             it.closeEntry()
             it.putNextEntry(ZipEntry("model.json"))
             it.write(gson.toJson(save.model).toByteArray())
+            it.closeEntry()
+            it.putNextEntry(ZipEntry("animation.json"))
+            it.write(gson.toJson(save.animation).toByteArray())
             it.closeEntry()
         }
         zip.close()

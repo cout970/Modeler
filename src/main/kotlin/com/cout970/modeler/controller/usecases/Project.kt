@@ -40,7 +40,7 @@ private fun newProject(model: IModel, properties: ProjectProperties): ITask = Ta
 
 @UseCase("project.load")
 private fun loadProject(properties: ProjectProperties, projectManager: ProjectManager,
-                exportManager: ExportManager): ITask = TaskAsync { returnFunc ->
+                        exportManager: ExportManager): ITask = TaskAsync { returnFunc ->
 
     if (projectManager.model.objects.isNotEmpty()) {
 
@@ -88,14 +88,16 @@ private fun askFileLocation() = TinyFileDialogs.tinyfd_openFileDialog(
 private fun saveProject(projectManager: ProjectManager, exportManager: ExportManager): ITask {
 
     val path = getSavePathOrAsk() ?: return TaskNone
-    return TaskSaveProject(exportManager, path, projectManager.model, projectManager.projectProperties)
+    return TaskSaveProject(exportManager, path, projectManager.model, projectManager.projectProperties,
+            projectManager.animation)
 }
 
 @UseCase("project.save.as")
 private fun saveProjectAs(projectManager: ProjectManager, exportManager: ExportManager): ITask {
 
     val path = getSavePathOrAsk(true) ?: return TaskNone
-    return TaskSaveProject(exportManager, path, projectManager.model, projectManager.projectProperties)
+    return TaskSaveProject(exportManager, path, projectManager.model, projectManager.projectProperties,
+            projectManager.animation)
 }
 
 private fun getSavePathOrAsk(force: Boolean = false): String? {

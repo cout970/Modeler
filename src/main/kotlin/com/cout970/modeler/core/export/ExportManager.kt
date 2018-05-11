@@ -1,6 +1,7 @@
 package com.cout970.modeler.core.export
 
 import com.cout970.modeler.PathConstants
+import com.cout970.modeler.api.animation.IAnimation
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.core.export.project.ProjectLoaderV10
 import com.cout970.modeler.core.export.project.ProjectLoaderV11
@@ -9,7 +10,6 @@ import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.Model
-import com.cout970.modeler.core.model.`object`.GroupTree
 import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.model.selection.ClipboardNone.Companion.model
 import com.cout970.modeler.core.project.ProjectManager
@@ -53,8 +53,8 @@ class ExportManager(val resourceLoader: ResourceLoader) {
         ProjectLoaderV12.saveProject(path, save)
     }
 
-    fun saveProject(path: String, manger: ProjectManager) {
-        saveProject(path, ProgramSave(CURRENT_SAVE_VERSION, manger.projectProperties, manger.model))
+    fun saveProject(path: String, manager: ProjectManager) {
+        saveProject(path, ProgramSave(CURRENT_SAVE_VERSION, manager.projectProperties, manager.model, manager.animation))
     }
 
     fun import(file: String): IModel {
@@ -90,4 +90,9 @@ class ExportManager(val resourceLoader: ResourceLoader) {
     }
 }
 
-data class ProgramSave(val version: String, val projectProperties: ProjectProperties, val model: IModel)
+data class ProgramSave(
+        val version: String,
+        val projectProperties: ProjectProperties,
+        val model: IModel,
+        val animation: IAnimation
+)

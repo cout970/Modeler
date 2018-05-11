@@ -7,6 +7,7 @@ import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
+import com.cout970.modeler.core.animation.animationOf
 import com.cout970.modeler.core.export.*
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.TRSTransformation
@@ -61,7 +62,7 @@ object ProjectLoaderV10 {
                 ?: throw IllegalStateException("Missing file 'model.json' inside '$path'")
 
         checkIntegrity(null, model.objects)
-        return ProgramSave(VERSION, properties, model)
+        return ProgramSave(VERSION, properties, model, animationOf())
     }
 
     class ModelDeserializer : JsonDeserializer<IModel> {

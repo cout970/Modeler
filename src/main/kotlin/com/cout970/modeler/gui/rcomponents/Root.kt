@@ -19,9 +19,9 @@ import com.cout970.reactive.nodes.div
 import com.cout970.reactive.nodes.style
 
 data class RootState(
-        var leftVisible: Boolean = false,
-        var rightVisible: Boolean = false,
-        var bottomVisible: Boolean = true
+        var leftVisible: Boolean = true,
+        var rightVisible: Boolean = true,
+        var bottomVisible: Boolean = false
 ) : RState
 
 data class RootProps(val gui: Gui) : RProps
