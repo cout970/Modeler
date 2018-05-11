@@ -14,11 +14,12 @@ import com.cout970.modeler.core.model.selection.Selection
 import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.gui.GuiState
+import com.cout970.modeler.input.dialogs.FileDialogs
+import com.cout970.modeler.input.dialogs.MessageDialogs
 import com.cout970.modeler.util.asNullable
 import com.cout970.modeler.util.getOr
 import com.cout970.modeler.util.toResourcePath
 import org.liquidengine.legui.component.Component
-import org.lwjgl.util.tinyfd.TinyFileDialogs
 import java.io.File
 
 /**
@@ -58,12 +59,10 @@ private fun loadMaterial(component: Component, projectManager: ProjectManager): 
 }
 
 private fun showLoadMaterialMenu(ref: IMaterialRef, projectManager: ProjectManager): ITask = TaskAsync { returnFunc ->
-    val path = TinyFileDialogs.tinyfd_openFileDialog(
-            "Import Texture",
-            "",
-            textureExtensions,
-            "PNG texture (*.png)",
-            false
+    val path = FileDialogs.openFile(
+            title = "Import Texture",
+            description = "PNG texture (*.png)",
+            filters = listOf("*.png")
     )
     if (path != null) {
 
@@ -79,8 +78,11 @@ private fun showLoadMaterialMenu(ref: IMaterialRef, projectManager: ProjectManag
 
 @UseCase("material.view.import")
 private fun importMaterial(): ITask = TaskAsync { returnFunc ->
-    val file = TinyFileDialogs.tinyfd_openFileDialog("Import Texture", "",
-            textureExtensions, "PNG texture (*.png)", false)
+    val file = FileDialogs.openFile(
+            title = "Import Texture",
+            description = "PNG texture (*.png)",
+            filters = listOf("*.png")
+    )
 
     if (file != null) {
         val archive = File(file)
@@ -122,12 +124,10 @@ private fun removeMaterial(guiState: GuiState, projectManager: ProjectManager): 
     if (used) {
         //ask
         return TaskAsync { returnFunc ->
-            val result = TinyFileDialogs.tinyfd_messageBox(
-                    "Remove material",
-                    "Are you sure you want to remove this material?",
-                    "yesno",
-                    "warning",
-                    false
+            val result = MessageDialogs.warningBoolean(
+                    title = "Remove material",
+                    message = "Are you sure you want to remove this material?",
+                    default = false
             )
             if (result) {
                 returnFunc(removeMaterialTask(model, matRef, material))

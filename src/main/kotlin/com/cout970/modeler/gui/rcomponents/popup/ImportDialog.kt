@@ -4,11 +4,10 @@ import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.export.ImportFormat
 import com.cout970.modeler.core.export.ImportProperties
 import com.cout970.modeler.gui.leguicomp.*
+import com.cout970.modeler.input.dialogs.FileDialogs
 import com.cout970.modeler.util.toColor
-import com.cout970.modeler.util.toPointerBuffer
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
-import com.cout970.reactive.core.RProps
 import com.cout970.reactive.core.RState
 import com.cout970.reactive.dsl.*
 import com.cout970.reactive.nodes.comp
@@ -21,7 +20,6 @@ import org.liquidengine.legui.component.event.selectbox.SelectBoxChangeSelection
 import org.liquidengine.legui.component.event.textinput.TextInputContentChangeEvent
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.icon.CharIcon
-import org.lwjgl.util.tinyfd.TinyFileDialogs
 
 
 data class ImportDialogState(val text: String, val option: Int, val flipUV: Boolean, val forceUpdate: Boolean) : RState
@@ -31,9 +29,6 @@ class ImportDialog : RComponent<PopupReturnProps, ImportDialogState>() {
     companion object {
         private val options = listOf("Obj (*.obj)", "Techne (*.tcn, *.zip)", "Minecraft (*.json)",
                 "Tabula (*.tbl)", "MCX (*.mcx)", "Project (*.pff)", "GL Transport Format (*.gltf)")
-
-        private val extensions = listOf("*.obj", "*.tcn", "*.json", "*.tbl", "*.mcx", "*.pff", "*.gltf")
-                .toPointerBuffer()
     }
 
     override fun getInitialState() = ImportDialogState("", 0, false, false)
@@ -71,17 +66,12 @@ class ImportDialog : RComponent<PopupReturnProps, ImportDialogState>() {
         +TextButton("", "Select", 360f, 50f, 80f, 24f).apply {
 
             onRelease {
-                val file = try {
-                    TinyFileDialogs.tinyfd_openFileDialog(
-                            "Import",
-                            "",
-                            extensions,
-                            "Model Files (*.tcn, *.obj, *.json, *.tbl, *.mcx, *.pff, *.gltf)",
-                            false
-                    )
-                } catch (e: Exception) {
-                    null
-                }
+                val file = FileDialogs.openFile(
+                        title = "Import",
+                        description = "Model Files (*.tcn, *.obj, *.json, *.tbl, *.mcx, *.pff, *.gltf)",
+                        filters = listOf("*.obj", "*.tcn", "*.json", "*.tbl", "*.mcx", "*.pff", "*.gltf")
+                )
+
                 if (file != null) {
                     val newOption = when {
                         file.endsWith(".obj") -> 0

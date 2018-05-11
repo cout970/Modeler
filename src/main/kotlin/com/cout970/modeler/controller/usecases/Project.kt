@@ -9,27 +9,24 @@ import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.project.ProjectProperties
 import com.cout970.modeler.gui.event.Notification
 import com.cout970.modeler.gui.event.NotificationHandler
-import com.cout970.modeler.util.toPointerBuffer
-import org.lwjgl.PointerBuffer
-import org.lwjgl.util.tinyfd.TinyFileDialogs
+import com.cout970.modeler.input.dialogs.FileDialogs
+import com.cout970.modeler.input.dialogs.MessageDialogs
 
 /**
  * Created by cout970 on 2017/07/17.
  */
 
-private val saveFileExtension: PointerBuffer = listOf("*.pff").toPointerBuffer()
 private var lastSaveFile: String? = null
 
 @UseCase("project.new")
 private fun newProject(model: IModel, properties: ProjectProperties): ITask = TaskAsync { returnFunc ->
     var accepts = true
-    if (model.objects.isNotEmpty()) {
-        accepts = TinyFileDialogs.tinyfd_messageBox(
-                "New Project",
-                "Do you want to create a new project? \nAll unsaved changes will be lost!",
-                "okcancel",
-                "warning",
-                false
+    if (model.objects.isNotEmpty() || model.groupMap.isNotEmpty()) {
+        accepts = MessageDialogs.warningBoolean(
+                title = "New Project",
+                message = "Do you want to create a new project? \n" +
+                        "All unsaved changes will be lost!",
+                default = false
         )
     }
     if (accepts) {
@@ -44,12 +41,12 @@ private fun loadProject(properties: ProjectProperties, projectManager: ProjectMa
 
     if (projectManager.model.objects.isNotEmpty()) {
 
-        val result = TinyFileDialogs.tinyfd_messageBox(
-                "Load Project",
-                "Do you want to load a new project? \nAll unsaved changes will be lost!",
-                "okcancel",
-                "warning",
-                false)
+        val result = MessageDialogs.warningBoolean(
+                title = "Load Project",
+                message = "Do you want to load a new project? \n" +
+                        "All unsaved changes will be lost!",
+                default = false
+        )
 
         if (result) {
             askFileLocation()?.let { loadProjectWithoutAsking(it, exportManager, projectManager, returnFunc) }
@@ -77,12 +74,13 @@ private fun loadProjectWithoutAsking(file: String, exportManager: ExportManager,
     }
 }
 
-private fun askFileLocation() = TinyFileDialogs.tinyfd_openFileDialog(
-        "Load",
-        "",
-        saveFileExtension,
-        "Project File Format (*.pff)",
-        false)
+private fun askFileLocation(): String? {
+    return FileDialogs.openFile(
+            title = "Load Project",
+            description = "Project File Format (*.pff)",
+            filters = listOf("*.pff")
+    )
+}
 
 @UseCase("project.save")
 private fun saveProject(projectManager: ProjectManager, exportManager: ExportManager): ITask {
@@ -102,10 +100,15 @@ private fun saveProjectAs(projectManager: ProjectManager, exportManager: ExportM
 
 private fun getSavePathOrAsk(force: Boolean = false): String? {
     if (force || lastSaveFile == null) {
-        val file = TinyFileDialogs.tinyfd_saveFileDialog("Save As", "", saveFileExtension,
-                "Project File Format (*.pff)")
+        val file = FileDialogs.saveFile(
+                title = "Save As",
+                description = "Project File Format (*.pff)",
+                filters = listOf("*.pff"),
+                defaultPath = ""
+        )
+
         if (file != null) {
-            lastSaveFile = if (file.endsWith(".pff")) file else file + ".pff"
+            lastSaveFile = if (file.endsWith(".pff")) file else "$file.pff"
         } else {
             return null
         }

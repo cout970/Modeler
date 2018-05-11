@@ -16,7 +16,6 @@ import com.cout970.vector.extensions.vec2Of
 import org.lwjgl.PointerBuffer
 import java.io.File
 
-val textureExtensions: PointerBuffer = listOf("*.png").toPointerBuffer()
 
 @UseCase("project.edit")
 private fun showConfigMenu(gui: Gui): ITask = TaskAsync {

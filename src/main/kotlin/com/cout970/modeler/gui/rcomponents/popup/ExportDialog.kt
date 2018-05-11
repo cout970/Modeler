@@ -3,13 +3,12 @@ package com.cout970.modeler.gui.rcomponents.popup
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.export.ExportFormat
 import com.cout970.modeler.core.export.ExportProperties
-import com.cout970.modeler.core.log.print
 import com.cout970.modeler.gui.leguicomp.FixedLabel
 import com.cout970.modeler.gui.leguicomp.TextButton
 import com.cout970.modeler.gui.leguicomp.background
 import com.cout970.modeler.gui.leguicomp.onClick
+import com.cout970.modeler.input.dialogs.FileDialogs
 import com.cout970.modeler.util.toColor
-import com.cout970.modeler.util.toPointerBuffer
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
 import com.cout970.reactive.core.RState
@@ -21,8 +20,6 @@ import org.liquidengine.legui.component.TextInput
 import org.liquidengine.legui.component.event.textinput.TextInputContentChangeEvent
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.style.border.SimpleLineBorder
-import org.lwjgl.PointerBuffer
-import org.lwjgl.util.tinyfd.TinyFileDialogs
 
 data class ExportDialogState(val text: String, val prefix: String, val selection: Int, var forceUpdate: Boolean) : RState
 
@@ -30,14 +27,11 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
 
     companion object {
         private val options = listOf("Obj (*.obj)", "MCX (*.mcx)", "GLTF (*.gltf)")
-        private val exportExtensionsObj = listOf("*.obj").toPointerBuffer()
-        private val exportExtensionsMcx = listOf("*.mcx").toPointerBuffer()
-        private val exportExtensionsGltf = listOf("*.gltf").toPointerBuffer()
 
-        private fun getExportFileExtensions(format: ExportFormat): PointerBuffer = when (format) {
-            ExportFormat.OBJ -> exportExtensionsObj
-            ExportFormat.MCX -> exportExtensionsMcx
-            ExportFormat.GLTF -> exportExtensionsGltf
+        private fun getExportFileExtensions(format: ExportFormat): List<String> = when (format) {
+            ExportFormat.OBJ -> listOf("*.obj")
+            ExportFormat.MCX -> listOf("*.mcx")
+            ExportFormat.GLTF -> listOf("*.gltf")
         }
     }
 
@@ -105,17 +99,13 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
 
         comp(TextButton("", "Select", 360f, 100f, 80f, 24f)) {
             onRelease {
-                val file = try {
-                    TinyFileDialogs.tinyfd_saveFileDialog(
-                            "Export",
-                            "model." + ExportFormat.values()[state.selection].name.toLowerCase(),
-                            getExportFileExtensions(ExportFormat.values()[state.selection]),
-                            options[state.selection]
-                    )
-                } catch (e: Exception) {
-                    e.print(); null
-                }
 
+                val file = FileDialogs.saveFile(
+                        title = "Export",
+                        description = options[state.selection],
+                        defaultPath = "model." + ExportFormat.values()[state.selection].name.toLowerCase(),
+                        filters = getExportFileExtensions(ExportFormat.values()[state.selection])
+                )
                 if (file != null) {
                     setState { copy(text = file, forceUpdate = true) }
                 }

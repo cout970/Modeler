@@ -2,10 +2,9 @@ package com.cout970.modeler.gui.rcomponents.popup
 
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.export.ExportTextureProperties
-import com.cout970.modeler.core.log.print
 import com.cout970.modeler.gui.leguicomp.*
+import com.cout970.modeler.input.dialogs.FileDialogs
 import com.cout970.modeler.util.toColor
-import com.cout970.modeler.util.toPointerBuffer
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
 import com.cout970.reactive.core.RState
@@ -17,15 +16,10 @@ import org.liquidengine.legui.component.TextInput
 import org.liquidengine.legui.component.event.textinput.TextInputContentChangeEvent
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.style.border.SimpleLineBorder
-import org.lwjgl.util.tinyfd.TinyFileDialogs
 
 data class ExportTextureDialogState(val text: String, val size: Int, var forceUpdate: Boolean) : RState
 
 class ExportTextureDialog : RComponent<PopupReturnProps, ExportTextureDialogState>() {
-
-    companion object {
-        private val exportExtensionsPng = listOf("*.png").toPointerBuffer()
-    }
 
     override fun getInitialState() = ExportTextureDialogState("", 64, false)
 
@@ -77,16 +71,12 @@ class ExportTextureDialog : RComponent<PopupReturnProps, ExportTextureDialogStat
 
         comp(TextButton("", "Select", 360f, 100f, 80f, 24f)) {
             onRelease {
-                val file = try {
-                    TinyFileDialogs.tinyfd_saveFileDialog(
-                            "Export Texture Template",
-                            "template.png",
-                            exportExtensionsPng,
-                            "PNG texture (*.png)"
-                    )
-                } catch (e: Exception) {
-                    e.print(); null
-                }
+                val file = FileDialogs.saveFile(
+                        title = "Export Texture Template",
+                        description = "PNG texture (*.png)",
+                        defaultPath = "template.png",
+                        filters = listOf("*.png")
+                )
 
                 if (file != null) {
                     setState { copy(text = file, forceUpdate = true) }
