@@ -8,10 +8,10 @@ import com.cout970.modeler.core.project.Author
  */
 object Config {
 
-    var keyBindings = KeyBindings()
-    var user: Author = Author()
+    // Options: Swing, NativeFileDialog, TinyFileDialog (Default)
+    var fileDialog: String = "TinyFileDialog"
+
     var logLevel: Level = Level.FINE
-    var colorPalette = ColorPalette.defaultPalette
 
     var backupPath: String = "data/backups"
 
@@ -53,4 +53,8 @@ object Config {
 
     @ConfigComment("Amount of milliseconds between backups")
     var backupInterval: Int = 60_000
+
+    var user: Author = Author()
+    var colorPalette = ColorPalette.defaultPalette
+    var keyBindings = KeyBindings()
 }
