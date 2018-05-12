@@ -1,6 +1,7 @@
 package com.cout970.modeler.gui.leguicomp
 
 import com.cout970.modeler.util.rectangularCorners
+import com.cout970.reactive.dsl.rectCorners
 import org.liquidengine.legui.component.Component as LeguiComponent
 import org.liquidengine.legui.component.Panel as LeguiPanel
 
@@ -13,7 +14,7 @@ open class Panel : LeguiComponent() {
     var name: String? = null
 
     init {
-        rectangularCorners()
+        rectCorners()
     }
 
     operator fun LeguiComponent.unaryPlus() {
@@ -21,6 +22,6 @@ open class Panel : LeguiComponent() {
     }
 
     override fun toString(): String {
-        return "Panel(${childs.joinToString { it.toString() }})"
+        return "Panel(${childComponents.joinToString { it.toString() }})"
     }
 }

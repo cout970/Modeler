@@ -5,6 +5,8 @@ import com.cout970.modeler.gui.leguicomp.Panel
 import com.cout970.modeler.render.tool.camera.CameraHandler
 import com.cout970.modeler.util.setBorderless
 import com.cout970.modeler.util.setTransparent
+import com.cout970.reactive.dsl.borderless
+import com.cout970.reactive.dsl.transparent
 
 /**
  * Created by cout970 on 2017/05/02.
@@ -24,7 +26,7 @@ class Canvas : Panel() {
         }
 
     init {
-        setTransparent()
-        setBorderless()
+        transparent()
+        borderless()
     }
 }

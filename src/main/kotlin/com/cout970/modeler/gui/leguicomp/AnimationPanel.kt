@@ -39,12 +39,12 @@ class AnimationPanel(val animator: Animator, val animation: IAnimation) : Panel(
             createScissorByParent(nanovg, comp)
             val style = comp.style
             NvgShapes.drawRect(nanovg, comp.absolutePosition, comp.size, style.background.color, style.borderRadius)
-            comp.render(context, nanovg)
+            comp.render(nanovg)
             resetScissor(nanovg)
         }
 
 
-        fun AnimationPanel.render(context: Context, nanovg: Long) {
+        fun AnimationPanel.render(nanovg: Long) {
             val absPos = absolutePosition
             val time = animator.animationTime
             val zoom = animator.zoom
@@ -126,11 +126,11 @@ class AnimationPanelHead(val animator: Animator, val animation: IAnimation) : Pa
             createScissorByParent(nanovg, comp)
             val style = comp.style
             NvgShapes.drawRect(nanovg, comp.absolutePosition, comp.size, style.background.color, style.borderRadius)
-            comp.render(context, nanovg)
+            comp.render(nanovg)
             resetScissor(nanovg)
         }
 
-        fun AnimationPanelHead.render(context: Context, nanovg: Long) {
+        fun AnimationPanelHead.render(nanovg: Long) {
             val absPos = absolutePosition
             val zoom = animator.zoom
             val width = parent.sizeX - 16f - 200f

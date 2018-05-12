@@ -13,7 +13,7 @@ import com.cout970.modeler.render.RenderManager
  */
 
 @UseCase("debug")
-private fun onDebug(modelAccessor: IModelAccessor): ITask {
+private fun onDebug(): ITask {
     Debugger.debug {
         //reload gui
 

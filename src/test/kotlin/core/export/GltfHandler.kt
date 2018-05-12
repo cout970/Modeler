@@ -13,10 +13,10 @@ class GltfHandler {
 
     @Test
     fun `Try importing a cube mode`() {
-        val path = File("src//box.gltf").toResourcePath()
+        val path = File("src/test/resources/model/box.gltf").toResourcePath()
 
         val model = gltfImporter.import(path)
 
-        print(model)
+        println(model)
     }
 }

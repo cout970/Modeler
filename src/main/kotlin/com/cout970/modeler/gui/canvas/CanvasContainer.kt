@@ -2,7 +2,6 @@ package com.cout970.modeler.gui.canvas
 
 import com.cout970.modeler.gui.canvas.layout.*
 import com.cout970.modeler.gui.leguicomp.Panel
-import com.cout970.modeler.gui.leguicomp.childs
 
 /**
  * Created by cout970 on 2017/05/03.
@@ -47,7 +46,7 @@ class CanvasContainer(var panel: Panel) {
     }
 
     fun refreshCanvas() {
-        val nonCanvas = panel.childs.filter { it !is Canvas }
+        val nonCanvas = panel.childComponents.filter { it !is Canvas }
         panel.clearChildComponents()
         nonCanvas.forEach { panel.add(it) }
         canvas.forEach { panel.add(it) }

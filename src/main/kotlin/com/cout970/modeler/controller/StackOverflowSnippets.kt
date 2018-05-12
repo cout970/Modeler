@@ -86,7 +86,7 @@ object StackOverflowSnippets {
         val entries = jarFile.entries()
         var name: String
 
-        var jarEntry: JarEntry? = null
+        var jarEntry: JarEntry?
         while (entries.hasMoreElements()) {
             jarEntry = entries.nextElement()
             if (jarEntry == null) break
@@ -187,21 +187,19 @@ object StackOverflowSnippets {
     // Example implementation of the Levenshtein Edit Distance
     // See http://rosettacode.org/wiki/Levenshtein_distance#Java
     fun editDistance(s1: String, s2: String): Int {
-        var s1 = s1
-        var s2 = s2
-        s1 = s1.toLowerCase()
-        s2 = s2.toLowerCase()
+        val varS1 = s1.toLowerCase()
+        val varS2 = s2.toLowerCase()
 
-        val costs = IntArray(s2.length + 1)
-        for (i in 0..s1.length) {
+        val costs = IntArray(varS2.length + 1)
+        for (i in 0..varS1.length) {
             var lastValue = i
-            for (j in 0..s2.length) {
+            for (j in 0..varS2.length) {
                 if (i == 0)
                     costs[j] = j
                 else {
                     if (j > 0) {
                         var newValue = costs[j - 1]
-                        if (s1[i - 1] != s2[j - 1])
+                        if (varS1[i - 1] != varS2[j - 1])
                             newValue = Math.min(Math.min(newValue, lastValue),
                                     costs[j]) + 1
                         costs[j - 1] = lastValue
@@ -210,9 +208,9 @@ object StackOverflowSnippets {
                 }
             }
             if (i > 0)
-                costs[s2.length] = lastValue
+                costs[varS2.length] = lastValue
         }
-        return costs[s2.length]
+        return costs[varS2.length]
     }
 }
 

@@ -117,7 +117,7 @@ private fun selectListGroup(component: Component, input: IInput, modelAccessor: 
 }
 
 @UseCase("tree.view.delete.group")
-private fun deleteListGroup(component: Component, model: IModel, projectManager: ProjectManager): ITask {
+private fun deleteListGroup(component: Component, model: IModel): ITask {
     return component.ref().asGroupRef().map { ref ->
         val newModel = model.removeGroup(ref)
 
@@ -155,10 +155,10 @@ private fun nodeMoved(modelAccessor: IModelAccessor, component: Component): ITas
 
     if (multi) {
         val selection = sel.getNonNull()
-        val newModel = selection.objects.fold(model) { accModel, child ->
-            val oldParent = accModel.getObjectGroup(child)
+        val newModel = selection.objects.fold(model) { accModel, childObjRef ->
+            val oldParent = accModel.getObjectGroup(childObjRef)
             if (oldParent != parent) {
-                accModel.setObjectGroup(child, parent)
+                accModel.setObjectGroup(childObjRef, parent)
             } else accModel
         }
 

@@ -1,6 +1,5 @@
 package com.cout970.modeler.util
 
-import com.cout970.modeler.gui.leguicomp.childs
 import com.cout970.reactive.core.Renderer
 import com.cout970.vector.api.IVector2
 import org.joml.Vector2f
@@ -29,14 +28,14 @@ fun Component.child(key: String) = childComponents.find { it.metadata[Renderer.M
 fun Component.disable() {
     isEnabled = false
     if (this.isNotEmpty) {
-        this.childs.forEach(Component::disable)
+        this.childComponents.forEach(Component::disable)
     }
 }
 
 fun Component.enable() {
     isEnabled = true
     if (this.isNotEmpty) {
-        this.childs.forEach(Component::enable)
+        this.childComponents.forEach(Component::enable)
     }
 }
 
@@ -79,7 +78,7 @@ inline fun <reified T : Event<Component>> Component.getListeners(): List<Pair<Co
 @Suppress("UNCHECKED_CAST")
 fun Component.forEachChild(func: (Component) -> Unit) {
     when {
-        this.isNotEmpty -> childs.forEach { it.forEachChild(func) }
+        this.isNotEmpty -> childComponents.forEach { it.forEachChild(func) }
         else -> func(this)
     }
 }
@@ -89,7 +88,7 @@ fun Component.forEachComponent(func: (Component) -> Unit) {
     when {
         this.isNotEmpty -> {
             func(this)
-            childs.forEach { it.forEachComponent(func) }
+            childComponents.forEach { it.forEachComponent(func) }
         }
         else -> func(this)
     }
@@ -125,6 +124,6 @@ fun Component.disableInput() {
             this.isEnabled = false
             this.isEditable = false
         }
-        isNotEmpty -> childs.forEach { it.disableInput() }
+        isNotEmpty -> childComponents.forEach { it.disableInput() }
     }
 }

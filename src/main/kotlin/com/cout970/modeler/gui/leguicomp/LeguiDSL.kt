@@ -147,7 +147,3 @@ fun Component.dispatch(str: String) {
     val dispatcher = metadata["Dispatcher"] as Dispatcher
     dispatcher.onEvent(str, this)
 }
-
-@Deprecated("Obsolete", ReplaceWith("this.childComponents"))
-inline val Component.childs
-    get() = childComponents!!

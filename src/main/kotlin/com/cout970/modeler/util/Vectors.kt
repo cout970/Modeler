@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package com.cout970.modeler.util
 
 import com.cout970.matrix.api.IMatrix4

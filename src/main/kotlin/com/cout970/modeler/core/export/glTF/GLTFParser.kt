@@ -118,6 +118,7 @@ object GLTFParser {
         }
     }
 
+    @Suppress("NOTHING_TO_INLINE")
     private inline fun ByteBuffer.next(type: GLTF.ComponentType): Number {
         return when (type) {
             GLTF.ComponentType.BYTE, GLTF.ComponentType.UNSIGNED_BYTE -> get()

@@ -112,7 +112,7 @@ fun IObject.getVertexRayObstacles(objRef: IObjectRef): List<Pair<IRayObstacle, I
 
 
 fun IObject.getTexturePolygon(objRef: IObjectRef): List<Pair<IPolygon, IRef>> =
-        mesh.faces.mapIndexed { ref, faceIndex ->
+        mesh.faces.mapIndexed { _, faceIndex ->
             TexturePolygon(faceIndex.getTextureVertex(mesh)) to objRef
         }
 

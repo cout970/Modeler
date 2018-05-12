@@ -282,6 +282,7 @@ class GLTFBuilder {
             val data: List<*>
     )
 
+    @Suppress("UNCHECKED_CAST")
     fun UnpackedBuffer.build(): Int {
 
         val size = elementType.size * containerType.numComponents * data.size
