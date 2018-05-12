@@ -21,7 +21,6 @@ import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.google.gson.*
 import kotlinx.collections.immutable.ImmutableMap
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 import java.io.File
 import java.lang.reflect.Type
@@ -47,14 +46,14 @@ object ProjectLoaderV12 {
             .registerTypeAdapter(IGroupTree::class.java, GroupTreeSerializer())
             .registerTypeAdapter(IGroupRef::class.java, GroupRefSerializer())
             .registerTypeAdapter(IGroup::class.java, serializerOf<Group>())
-            .registerTypeAdapter(BiMultimap::class.java, BiMultimapSerializer())
-            .registerTypeAdapter(ImmutableMap::class.java, ImmutableMapSerializer())
             .registerTypeAdapter(IObject::class.java, ObjectSerializer())
             .registerTypeAdapter(IMesh::class.java, MeshSerializer())
             .registerTypeAdapter(IFaceIndex::class.java, FaceSerializer())
             .registerTypeAdapter(ITransformation::class.java, TransformationSerializer())
             .registerTypeAdapter(IMaterialRef::class.java, MaterialRefSerializer())
             .registerTypeAdapter(IObjectRef::class.java, ObjectRefSerializer())
+            .registerTypeAdapter(BiMultimap::class.java, BiMultimapSerializer())
+            .registerTypeAdapter(ImmutableMap::class.java, ImmutableMapSerializer())
             .create()!!
 
     fun loadProject(zip: ZipFile, path: String): ProgramSave {

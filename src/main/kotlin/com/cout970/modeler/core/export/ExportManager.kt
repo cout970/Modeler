@@ -62,7 +62,7 @@ class ExportManager(val resourceLoader: ResourceLoader) {
         // Make sure the id of the imported model are different from the current model
         val objs = model.objectMap.toList().map { it.second.withId(UUID.randomUUID()) }.associateBy { it.ref }
 
-        return Model.of(objs, model.materialMap)
+        return model.withObjects(objs)
     }
 
     fun loadLastProjectIfExists(projectManager: ProjectManager, gui: Gui) {
