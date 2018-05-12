@@ -73,7 +73,7 @@ object ProjectLoaderV10 {
                 ?: throw IllegalStateException("Missing file 'model.json' inside '$path'")
 
         checkIntegrity(model.objects)
-        return ProgramSave(VERSION, properties, model, animationOf())
+        return ProgramSave(VERSION, properties, model, animationOf(), emptyList())
     }
 
     class ModelDeserializer : JsonDeserializer<IModel> {

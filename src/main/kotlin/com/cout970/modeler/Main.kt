@@ -20,7 +20,7 @@ fun main(args: Array<String>) {
         val state = init.init(args.toList())
         init.start(state)
         state.apply {
-            exportManager.saveProject(PathConstants.LAST_BACKUP_FILE_PATH, projectManager)
+            exportManager.saveProject(PathConstants.LAST_BACKUP_FILE_PATH, projectManager, true)
         }
     } catch (e: kotlin.Throwable) {
         e.print()

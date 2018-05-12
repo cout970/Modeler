@@ -26,7 +26,9 @@ class TaskSaveProject(
     override fun run(state: Program) {
         try {
             log(Level.FINE) { "Saving project..." }
-            exportManager.saveProject(path, ProgramSave(ExportManager.CURRENT_SAVE_VERSION, properties, model, animation))
+            exportManager.saveProject(path, ProgramSave(ExportManager.CURRENT_SAVE_VERSION, properties, model,
+                    animation, state.projectManager.materialPaths))
+
             log(Level.FINE) { "Saving done" }
             NotificationHandler.push(Notification("Project saved",
                     "Project saved successfully"))

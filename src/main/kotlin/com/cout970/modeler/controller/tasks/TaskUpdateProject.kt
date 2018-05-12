@@ -22,6 +22,8 @@ class TaskUpdateProject(
         state.projectManager.updateModel(newModel)
         state.projectManager.updateAnimation(newAnimation)
         state.windowHandler.updateTitle(newProjectProperties.name)
+
+        newModel.materialMap.forEach { _, u -> u.loadTexture(state.resourceLoader) }
     }
 
     override fun undo(state: Program) {
@@ -29,5 +31,7 @@ class TaskUpdateProject(
         state.projectManager.updateModel(oldModel)
         state.projectManager.updateAnimation(oldAnimation)
         state.windowHandler.updateTitle(oldProjectProperties.name)
+
+        oldModel.materialMap.forEach { _, u -> u.loadTexture(state.resourceLoader) }
     }
 }

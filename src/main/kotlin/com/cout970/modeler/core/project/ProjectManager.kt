@@ -7,6 +7,7 @@ import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.animation.animationOf
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.Model
+import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.model.selection.ClipboardNone
 import com.cout970.modeler.core.model.selection.IClipboard
@@ -32,6 +33,8 @@ class ProjectManager(val modelSelectionHandler: SelectionHandler, val textureSel
 
     val modelChangeListeners: MutableList<(old: IModel, new: IModel) -> Unit> = mutableListOf()
     val materialChangeListeners: MutableList<(old: IMaterial?, new: IMaterial?) -> Unit> = mutableListOf()
+
+    val materialPaths get() = loadedMaterials.values.filterIsInstance<TexturedMaterial>()
 
     fun loadMaterial(material: IMaterial) {
         if (material.ref !in loadedMaterials) {

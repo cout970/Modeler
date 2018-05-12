@@ -9,7 +9,7 @@ import com.cout970.modeler.core.export.project.ProjectLoaderV12
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
-import com.cout970.modeler.core.model.selection.ClipboardNone.Companion.model
+import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.project.ProjectProperties
 import com.cout970.modeler.core.resource.ResourceLoader
@@ -53,8 +53,9 @@ class ExportManager(val resourceLoader: ResourceLoader) {
         log(Level.FINE) { "Project saved" }
     }
 
-    fun saveProject(path: String, manager: ProjectManager) {
-        saveProject(path, ProgramSave(CURRENT_SAVE_VERSION, manager.projectProperties, manager.model, manager.animation))
+    fun saveProject(path: String, manager: ProjectManager, saveImages: Boolean) {
+        saveProject(path, ProgramSave(CURRENT_SAVE_VERSION, manager.projectProperties, manager.model,
+                manager.animation, if (saveImages) manager.materialPaths else emptyList()))
     }
 
     fun import(file: String): IModel {
@@ -67,11 +68,14 @@ class ExportManager(val resourceLoader: ResourceLoader) {
             try {
                 log(Level.FINE) { "Found last project, loading..." }
                 val save = loadProject(path.path)
+
                 projectManager.loadProjectProperties(save.projectProperties)
                 projectManager.updateModel(save.model)
                 projectManager.updateAnimation(save.animation)
                 gui.windowHandler.updateTitle(save.projectProperties.name)
-                model.materials.forEach { it.loadTexture(resourceLoader) }
+
+                save.model.materials.forEach { it.loadTexture(resourceLoader) }
+
                 log(Level.FINE) { "Last project loaded" }
                 NotificationHandler.push(Notification("Project loaded",
                         "Loaded project from last execution"))
@@ -91,5 +95,6 @@ data class ProgramSave(
         val version: String,
         val projectProperties: ProjectProperties,
         val model: IModel,
-        val animation: IAnimation
+        val animation: IAnimation,
+        val textures: List<TexturedMaterial>
 )

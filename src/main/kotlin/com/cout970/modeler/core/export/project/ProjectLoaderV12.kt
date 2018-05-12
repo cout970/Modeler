@@ -11,6 +11,7 @@ import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.animation.*
 import com.cout970.modeler.core.export.*
+import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.`object`.BiMultimap
@@ -21,22 +22,28 @@ import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
+import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.project.ProjectProperties
 import com.cout970.modeler.core.resource.ResourcePath
+import com.cout970.modeler.util.toResourcePath
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.google.gson.*
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableMap
+import org.apache.commons.io.FilenameUtils
+import org.apache.commons.io.IOUtils
 import java.io.File
 import java.lang.reflect.Type
 import java.net.URI
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
-import kotlin.collections.ArrayList
+
 
 object ProjectLoaderV12 {
 
@@ -78,26 +85,55 @@ object ProjectLoaderV12 {
 
         checkIntegrity(listOf(model.objectMap, model.materialMap, model.groupMap, model.groupTree, model.groupObjects))
         checkIntegrity(listOf(animation))
-        return ProgramSave(VERSION, properties, model, animation)
+
+        return ProgramSave(VERSION, properties, model, animation, emptyList())
     }
 
     fun saveProject(path: String, save: ProgramSave) {
-        val zip = ZipOutputStream(File(path).outputStream())
+        val file = File(path)
+        val tmp = createTempFile(directory = file.parentFile)
+        val zip = ZipOutputStream(tmp.outputStream())
+
         zip.let {
+
+            save.textures.forEach { mat ->
+                try {
+                    val name = FilenameUtils.getName(mat.path.uri.toURL().path)
+                    it.putNextEntry(ZipEntry("textures/$name"))
+                    IOUtils.copy(mat.path.inputStream(), it)
+                } catch (e: Exception) {
+                    e.print()
+                } finally {
+                    it.closeEntry()
+                }
+            }
+
             it.putNextEntry(ZipEntry("version.json"))
             it.write(gson.toJson(save.version).toByteArray())
             it.closeEntry()
+
             it.putNextEntry(ZipEntry("project.json"))
             it.write(gson.toJson(save.projectProperties).toByteArray())
             it.closeEntry()
+
+            val model = save.textures.fold(save.model) { acc, mat ->
+                val name = FilenameUtils.getName(mat.path.uri.toURL().path)
+                val newPath = File(path).toResourcePath().enterZip("textures/$name")
+
+                acc.modifyMaterial(mat.ref, mat.copy(path = newPath))
+            }
+
             it.putNextEntry(ZipEntry("model.json"))
-            it.write(gson.toJson(save.model, IModel::class.java).toByteArray())
+            it.write(gson.toJson(model, IModel::class.java).toByteArray())
             it.closeEntry()
+
             it.putNextEntry(ZipEntry("animation.json"))
             it.write(gson.toJson(save.animation, IAnimation::class.java).toByteArray())
             it.closeEntry()
         }
         zip.close()
+
+        Files.copy(tmp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING)
     }
 
     class ModelSerializer : JsonSerializer<IModel>, JsonDeserializer<IModel> {
