@@ -17,7 +17,8 @@ import org.liquidengine.legui.style.color.ColorConstants.*
 import org.liquidengine.legui.style.font.FontRegistry
 import org.liquidengine.legui.system.context.Context
 import org.liquidengine.legui.system.renderer.nvg.NvgComponentRenderer
-import org.liquidengine.legui.system.renderer.nvg.util.NvgRenderUtils.*
+import org.liquidengine.legui.system.renderer.nvg.util.NvgRenderUtils.createScissorByParent
+import org.liquidengine.legui.system.renderer.nvg.util.NvgRenderUtils.resetScissor
 import org.liquidengine.legui.system.renderer.nvg.util.NvgShapes
 import org.liquidengine.legui.system.renderer.nvg.util.NvgText
 import kotlin.math.max

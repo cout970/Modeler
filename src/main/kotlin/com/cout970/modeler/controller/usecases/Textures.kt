@@ -4,9 +4,9 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.tasks.TaskNone
 import com.cout970.modeler.controller.tasks.TaskUpdateModel
-import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.helpers.TransformationHelper
 import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.util.getOr
 
 

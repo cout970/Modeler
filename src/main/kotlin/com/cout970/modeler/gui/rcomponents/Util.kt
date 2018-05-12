@@ -22,11 +22,9 @@ import org.joml.Vector2f
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.event.ScrollEvent
-import org.liquidengine.legui.style.color.ColorConstants.transparent
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
-import javax.management.Query.div
 
 
 data class FloatInputProps(

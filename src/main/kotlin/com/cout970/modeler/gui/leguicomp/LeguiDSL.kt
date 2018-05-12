@@ -4,12 +4,8 @@ import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.config.ColorPalette
 import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.core.log.Level
-import com.cout970.modeler.core.log.log
 import com.cout970.modeler.gui.event.EventGuiCommand
-import com.cout970.modeler.gui.event.EventSelectionUpdate
 import com.cout970.modeler.util.forEachComponent
-import com.cout970.modeler.util.isNotEmpty
 import com.cout970.modeler.util.toColor
 import com.cout970.reactive.core.Listener
 import com.cout970.reactive.core.RBuilder
@@ -24,7 +20,6 @@ import org.liquidengine.legui.component.TextComponent
 import org.liquidengine.legui.component.TextInput
 import org.liquidengine.legui.event.Event
 import org.liquidengine.legui.event.MouseClickEvent
-import org.liquidengine.legui.event.ScrollEvent
 import org.liquidengine.legui.listener.ListenerMap
 import org.liquidengine.legui.style.border.SimpleLineBorder
 

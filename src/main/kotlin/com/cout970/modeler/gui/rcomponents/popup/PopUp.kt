@@ -4,8 +4,13 @@ import com.cout970.modeler.core.project.IProjectPropertiesHolder
 import com.cout970.modeler.gui.GuiState
 import com.cout970.modeler.gui.rcomponents.ConfigMenu
 import com.cout970.modeler.gui.rcomponents.ConfigMenuProps
-import com.cout970.reactive.core.*
-import com.cout970.reactive.dsl.*
+import com.cout970.reactive.core.RBuilder
+import com.cout970.reactive.core.RProps
+import com.cout970.reactive.core.RStatelessComponent
+import com.cout970.reactive.dsl.backgroundColor
+import com.cout970.reactive.dsl.fill
+import com.cout970.reactive.dsl.hide
+import com.cout970.reactive.dsl.postMount
 import com.cout970.reactive.nodes.child
 import com.cout970.reactive.nodes.div
 import com.cout970.reactive.nodes.style

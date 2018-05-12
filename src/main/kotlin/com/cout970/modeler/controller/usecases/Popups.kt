@@ -7,13 +7,10 @@ import com.cout970.modeler.core.export.ExportProperties
 import com.cout970.modeler.core.export.ExportTextureProperties
 import com.cout970.modeler.core.export.ImportProperties
 import com.cout970.modeler.core.model.AABB
-import com.cout970.modeler.core.model.material.MaterialNone.size
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.Popup
-import com.cout970.modeler.util.toPointerBuffer
 import com.cout970.reactive.core.AsyncManager
 import com.cout970.vector.extensions.vec2Of
-import org.lwjgl.PointerBuffer
 import java.io.File
 
 

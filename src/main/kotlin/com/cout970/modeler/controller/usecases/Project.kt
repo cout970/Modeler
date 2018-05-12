@@ -1,7 +1,9 @@
 package com.cout970.modeler.controller.usecases
 
+import com.cout970.modeler.api.animation.IAnimation
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.controller.tasks.*
+import com.cout970.modeler.core.animation.animationOf
 import com.cout970.modeler.core.export.ExportManager
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.Model
@@ -19,7 +21,7 @@ import com.cout970.modeler.input.dialogs.MessageDialogs
 private var lastSaveFile: String? = null
 
 @UseCase("project.new")
-private fun newProject(model: IModel, properties: ProjectProperties): ITask = TaskAsync { returnFunc ->
+private fun newProject(model: IModel, animation: IAnimation, properties: ProjectProperties): ITask = TaskAsync { returnFunc ->
     var accepts = true
     if (model.objects.isNotEmpty() || model.groupMap.isNotEmpty()) {
         accepts = MessageDialogs.warningBoolean(
@@ -31,7 +33,14 @@ private fun newProject(model: IModel, properties: ProjectProperties): ITask = Ta
     }
     if (accepts) {
         val newProject = ProjectProperties(properties.owner, properties.name)
-        returnFunc(TaskUpdateProject(properties, newProject, model, Model.empty()))
+        returnFunc(TaskUpdateProject(
+                oldProjectProperties = properties,
+                newProjectProperties = newProject,
+                oldModel = model,
+                newModel = Model.empty(),
+                oldAnimation = animation,
+                newAnimation = animationOf()
+        ))
     }
 }
 
@@ -65,7 +74,9 @@ private fun loadProjectWithoutAsking(file: String, exportManager: ExportManager,
                 oldProjectProperties = projectManager.projectProperties,
                 newProjectProperties = save.projectProperties,
                 oldModel = projectManager.model,
-                newModel = save.model
+                newModel = save.model,
+                oldAnimation = projectManager.animation,
+                newAnimation = save.animation
         ))
         NotificationHandler.push(Notification("Project loaded successfully", "Project loaded from '$file'"))
     } catch (e: Exception) {

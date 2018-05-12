@@ -1,7 +1,6 @@
 package com.cout970.modeler.api.model.`object`
 
 import com.cout970.modeler.api.model.ITransformation
-import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 

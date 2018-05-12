@@ -80,8 +80,13 @@ class Dispatcher {
             } catch (e: Exception) {
                 log(Level.ERROR) { "Unable to run usecase: ${useCase::class.simpleName}, ${useCase.name}, key: $key" }
                 e.print()
-                val cause = e.cause!!
-                NotificationHandler.push(Notification("Internal error", cause.message ?: cause::class.java.simpleName))
+                val cause = e.cause
+
+                val msg = if (cause != null)
+                    cause.message ?: cause::class.java.simpleName
+                else e.message ?: e::class.java.simpleName
+
+                NotificationHandler.push(Notification("Internal error", msg))
             }
         }
         Profiler.endSection()

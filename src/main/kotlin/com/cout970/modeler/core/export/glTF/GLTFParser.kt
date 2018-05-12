@@ -1,14 +1,12 @@
 package com.cout970.modeler.core.export.glTF
 
 import com.cout970.modeler.core.resource.ResourcePath
-import com.cout970.modeler.util.next
 import com.cout970.vector.extensions.vec2Of
 import com.cout970.vector.extensions.vec3Of
 import com.cout970.vector.extensions.vec4Of
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.*
-import java.util.jar.Attributes
 
 typealias PairList<A, B> = List<Pair<A, B>>
 

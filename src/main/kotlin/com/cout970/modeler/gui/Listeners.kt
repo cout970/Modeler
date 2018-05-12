@@ -7,13 +7,11 @@ import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.gui.event.*
-import com.cout970.modeler.gui.leguicomp.childs
 import com.cout970.modeler.input.event.EventController
 import com.cout970.modeler.render.tool.Animator
 import com.cout970.modeler.render.tool.camera.CameraUpdater
 import com.cout970.modeler.util.*
 import com.cout970.reactive.core.AsyncManager
-import com.cout970.reactive.core.RContext
 import com.cout970.reactive.core.SyncManager
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.vec2Of

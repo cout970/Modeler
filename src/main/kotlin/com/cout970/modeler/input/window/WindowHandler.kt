@@ -12,7 +12,6 @@ import com.cout970.vector.extensions.vec2Of
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWImage
 import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL11.GL_TRUE
 import java.io.File
 import java.util.*
 

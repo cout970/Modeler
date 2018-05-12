@@ -1,7 +1,6 @@
 package com.cout970.modeler.controller.usecases
 
 import com.cout970.collision.IPolygon
-import com.cout970.collision.collide
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef

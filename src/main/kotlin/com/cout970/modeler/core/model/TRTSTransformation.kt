@@ -3,11 +3,12 @@ package com.cout970.modeler.core.model
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.util.*
-import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.*
+import com.cout970.vector.extensions.Vector3
+import com.cout970.vector.extensions.interpolate
+import com.cout970.vector.extensions.plus
+import com.cout970.vector.extensions.times
 import org.joml.Matrix4d
-import org.joml.Quaterniond
 
 /**
  * Created by cout970 on 2017/05/14.

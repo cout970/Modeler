@@ -6,8 +6,10 @@ import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
-import com.cout970.modeler.core.model.*
+import com.cout970.modeler.core.model.TRTSTransformation
 import com.cout970.modeler.core.model.`object`.ObjectCube
+import com.cout970.modeler.core.model.getSelectedObjects
+import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.model.selection.ObjectRefNone
 import com.cout970.modeler.gui.event.EventModelUpdate
 import com.cout970.modeler.gui.event.EventSelectionUpdate
@@ -25,7 +27,6 @@ import com.cout970.reactive.dsl.*
 import com.cout970.reactive.nodes.*
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.Vector2
-import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.vec2Of
 import org.joml.Vector2f
 import org.liquidengine.legui.icon.CharIcon

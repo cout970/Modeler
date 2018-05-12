@@ -3,8 +3,8 @@ package com.cout970.modeler.core.export
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.model.Model
-import com.cout970.modeler.core.model.`object`.ObjectCube
 import com.cout970.modeler.core.model.TRSTransformation
+import com.cout970.modeler.core.model.`object`.ObjectCube
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.resource.ResourcePath

@@ -1,7 +1,6 @@
 package com.cout970.modeler.util
 
 import com.cout970.modeler.api.model.mesh.IMesh
-import com.cout970.modeler.core.model.ref
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
 import com.cout970.vector.api.IVector2

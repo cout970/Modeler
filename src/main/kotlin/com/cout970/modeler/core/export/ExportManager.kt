@@ -9,8 +9,6 @@ import com.cout970.modeler.core.export.project.ProjectLoaderV12
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
-import com.cout970.modeler.core.model.Model
-import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.model.selection.ClipboardNone.Companion.model
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.project.ProjectProperties
@@ -38,7 +36,7 @@ class ExportManager(val resourceLoader: ResourceLoader) {
         val zip = ZipFile(path)
 
         val version = zip.load<String>("version.json", VERSION_GSON)
-                      ?: throw IllegalStateException("Missing file 'version.json' inside '$path'")
+                ?: throw IllegalStateException("Missing file 'version.json' inside '$path'")
 
         return when (version) {
             "1.0" -> ProjectLoaderV10.loadProject(zip, path)
@@ -49,8 +47,10 @@ class ExportManager(val resourceLoader: ResourceLoader) {
     }
 
     fun saveProject(path: String, save: ProgramSave) {
+        log(Level.FINE) { "Starting project save" }
         File(path).createParentsIfNeeded()
         ProjectLoaderV12.saveProject(path, save)
+        log(Level.FINE) { "Project saved" }
     }
 
     fun saveProject(path: String, manager: ProjectManager) {
@@ -58,11 +58,7 @@ class ExportManager(val resourceLoader: ResourceLoader) {
     }
 
     fun import(file: String): IModel {
-        val model = loadProject(file).model
-        // Make sure the id of the imported model are different from the current model
-        val objs = model.objectMap.toList().map { it.second.withId(UUID.randomUUID()) }.associateBy { it.ref }
-
-        return model.withObjects(objs)
+        return loadProject(file).model.modifyObjects({ true }) { _, obj -> obj.withId(UUID.randomUUID()) }
     }
 
     fun loadLastProjectIfExists(projectManager: ProjectManager, gui: Gui) {
@@ -73,6 +69,7 @@ class ExportManager(val resourceLoader: ResourceLoader) {
                 val save = loadProject(path.path)
                 projectManager.loadProjectProperties(save.projectProperties)
                 projectManager.updateModel(save.model)
+                projectManager.updateAnimation(save.animation)
                 gui.windowHandler.updateTitle(save.projectProperties.name)
                 model.materials.forEach { it.loadTexture(resourceLoader) }
                 log(Level.FINE) { "Last project loaded" }

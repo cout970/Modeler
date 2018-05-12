@@ -1,6 +1,5 @@
 package com.cout970.modeler.core.config
 
-import com.cout970.glutilities.device.Keyboard
 import com.cout970.glutilities.device.Keyboard.Companion.KEY_1
 import com.cout970.glutilities.device.Keyboard.Companion.KEY_2
 import com.cout970.glutilities.device.Keyboard.Companion.KEY_3
@@ -35,7 +34,6 @@ import com.cout970.glutilities.device.Keyboard.Companion.KEY_V
 import com.cout970.glutilities.device.Keyboard.Companion.KEY_X
 import com.cout970.glutilities.device.Keyboard.Companion.KEY_Y
 import com.cout970.glutilities.device.Keyboard.Companion.KEY_Z
-import com.cout970.glutilities.device.Mouse
 import com.cout970.glutilities.device.Mouse.Companion.BUTTON_LEFT
 import com.cout970.glutilities.device.Mouse.Companion.BUTTON_MIDDLE
 import com.cout970.glutilities.device.Mouse.Companion.BUTTON_RIGHT

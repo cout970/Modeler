@@ -10,7 +10,6 @@ import com.cout970.modeler.core.helpers.TransformationHelper
 import com.cout970.modeler.gui.canvas.IRotable
 import com.cout970.modeler.gui.canvas.IScalable
 import com.cout970.modeler.gui.canvas.ITranslatable
-import com.cout970.modeler.gui.canvas.helpers.CanvasHelper
 import com.cout970.modeler.util.RenderUtil
 import com.cout970.modeler.util.toDegrees
 import com.cout970.modeler.util.toVector2

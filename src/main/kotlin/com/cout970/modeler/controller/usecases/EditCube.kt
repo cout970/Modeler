@@ -9,15 +9,12 @@ import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.tasks.TaskNone
 import com.cout970.modeler.controller.tasks.TaskUpdateModel
-import com.cout970.modeler.core.model.*
 import com.cout970.modeler.core.model.`object`.ObjectCube
-import com.cout970.modeler.core.model.`object`.ObjectCubeNone
+import com.cout970.modeler.core.model.getSelectedObjects
+import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.project.IModelAccessor
-import com.cout970.modeler.util.*
 import com.cout970.vector.extensions.vec2Of
-import com.cout970.vector.extensions.vec3Of
 import org.liquidengine.legui.component.Component
-import javax.script.ScriptEngineManager
 
 /**
  * Created by cout970 on 2017/07/20.

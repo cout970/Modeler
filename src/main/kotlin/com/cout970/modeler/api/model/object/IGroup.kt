@@ -1,7 +1,5 @@
 package com.cout970.modeler.api.model.`object`
 
-import com.cout970.modeler.api.model.IModel
-import com.cout970.modeler.api.model.selection.IObjectRef
 import java.util.*
 
 // Groups

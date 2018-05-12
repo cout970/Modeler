@@ -1,14 +1,10 @@
 package com.cout970.modeler.core.helpers
 
 import com.cout970.modeler.api.model.IModel
-import com.cout970.modeler.api.model.`object`.IGroupRef
 import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.selection.*
-import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.`object`.Object
 import com.cout970.modeler.core.model.`object`.ObjectCube
-import com.cout970.modeler.core.model.getRecursiveChildGroups
-import com.cout970.modeler.core.model.getRecursiveChildObjects
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.objects
 

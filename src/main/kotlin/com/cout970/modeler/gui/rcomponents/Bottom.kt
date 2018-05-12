@@ -5,8 +5,6 @@ import com.cout970.modeler.api.animation.AnimationState
 import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.animation.ref
 import com.cout970.modeler.core.project.IModelAccessor
-import com.cout970.modeler.gui.leguicomp.AnimationPanel
-import com.cout970.modeler.gui.leguicomp.AnimationPanelHead
 import com.cout970.modeler.gui.event.EventAnimatorUpdate
 import com.cout970.modeler.gui.event.EventSelectionUpdate
 import com.cout970.modeler.gui.leguicomp.*

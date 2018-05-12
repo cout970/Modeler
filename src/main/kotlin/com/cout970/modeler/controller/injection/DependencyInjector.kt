@@ -2,6 +2,7 @@ package com.cout970.modeler.controller.injection
 
 import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.Program
+import com.cout970.modeler.api.animation.IAnimation
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.controller.FutureExecutor
@@ -49,6 +50,7 @@ class DependencyInjector {
         IModel::class.java -> projectManager.model
         ProjectProperties::class.java -> projectManager.projectProperties
         IClipboard::class.java -> projectManager.clipboard
+        IAnimation::class.java -> projectManager.animation
         Component::class.java -> comp ?: Panel()
 
         ResourceLoader::class.java -> resourceLoader

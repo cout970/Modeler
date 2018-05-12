@@ -8,8 +8,8 @@ import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.Model
-import com.cout970.modeler.core.model.`object`.ObjectCube
 import com.cout970.modeler.core.model.TRSTransformation
+import com.cout970.modeler.core.model.`object`.ObjectCube
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.ref

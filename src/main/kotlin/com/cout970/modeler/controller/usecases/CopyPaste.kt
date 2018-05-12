@@ -10,7 +10,6 @@ import com.cout970.modeler.core.model.getSelectedObjects
 import com.cout970.modeler.core.model.selection.*
 import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.core.project.ProjectManager
-import com.cout970.modeler.core.helpers.TransformationHelper
 import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.asNullable
 import com.cout970.modeler.util.getOr

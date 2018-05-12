@@ -11,7 +11,6 @@ import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.selection.ObjectRef
 import com.cout970.modeler.core.model.selection.ObjectRefNone
-import com.cout970.modeler.util.toAxisRotations
 
 /**
  * Created by cout970 on 2017/06/09.

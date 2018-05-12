@@ -6,12 +6,8 @@ import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.controller.AutoRunner
 import com.cout970.modeler.controller.FutureExecutor
 import com.cout970.modeler.controller.TaskHistory
-import com.cout970.modeler.controller.tasks.TaskImportModel
 import com.cout970.modeler.core.config.ConfigManager
 import com.cout970.modeler.core.export.ExportManager
-import com.cout970.modeler.core.export.ImportFormat
-import com.cout970.modeler.core.export.ImportProperties
-import com.cout970.modeler.core.export.glTF.testExporter
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.core.log.log

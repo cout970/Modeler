@@ -7,7 +7,6 @@ import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.animation.Channel
 import com.cout970.modeler.core.animation.Keyframe
 import com.cout970.modeler.core.animation.ref
-import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.TRTSTransformation
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.project.IModelAccessor

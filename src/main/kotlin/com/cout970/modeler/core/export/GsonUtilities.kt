@@ -3,33 +3,31 @@ package com.cout970.modeler.core.export
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.mat4Of
 import com.cout970.modeler.api.model.ITransformation
-import com.cout970.modeler.api.model.`object`.*
-import com.cout970.modeler.api.model.material.IMaterial
+import com.cout970.modeler.api.model.`object`.GroupRef
+import com.cout970.modeler.api.model.`object`.IGroupRef
+import com.cout970.modeler.api.model.`object`.RootGroupRef
 import com.cout970.modeler.api.model.material.IMaterialRef
-import com.cout970.modeler.api.model.mesh.IFaceIndex
-import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.model.TRSTransformation
-import com.cout970.modeler.core.model.`object`.*
-import com.cout970.modeler.core.model.material.MaterialNone
+import com.cout970.modeler.core.model.TRTSTransformation
+import com.cout970.modeler.core.model.`object`.BiMultimap
+import com.cout970.modeler.core.model.`object`.biMultimapOf
+import com.cout970.modeler.core.model.`object`.emptyBiMultimap
 import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.material.MaterialRefNone
-import com.cout970.modeler.core.model.material.TexturedMaterial
-import com.cout970.modeler.core.model.mesh.FaceIndex
-import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.selection.ObjectRef
-import com.cout970.modeler.core.resource.ResourcePath
+import com.cout970.modeler.core.model.selection.ObjectRefNone
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.api.IVector4
 import com.cout970.vector.extensions.*
 import com.google.gson.*
+import com.google.gson.reflect.TypeToken
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.immutableMapOf
 import java.awt.Color
 import java.lang.reflect.Type
-import java.net.URI
 import java.util.*
 
 /**
@@ -41,6 +39,21 @@ class ProjectExclusionStrategy : ExclusionStrategy {
 
     override fun shouldSkipField(f: FieldAttributes): Boolean {
         return f.declaredClass == kotlin.Lazy::class.java
+    }
+}
+
+class Vector2Serializer : JsonSerializer<IVector2>, JsonDeserializer<IVector2> {
+
+    override fun serialize(src: IVector2, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+        return JsonArray().apply {
+            add(src.x)
+            add(src.y)
+        }
+    }
+
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IVector2 {
+        val array = json.asJsonArray
+        return vec2Of(array[0].asNumber, array[1].asNumber)
     }
 }
 
@@ -58,6 +71,7 @@ class Vector3Serializer : JsonSerializer<IVector3>, JsonDeserializer<IVector3> {
         val array = json.asJsonArray
         return vec3Of(array[0].asNumber, array[1].asNumber, array[2].asNumber)
     }
+
 }
 
 class Vector4Serializer : JsonSerializer<IVector4>, JsonDeserializer<IVector4> {
@@ -75,6 +89,7 @@ class Vector4Serializer : JsonSerializer<IVector4>, JsonDeserializer<IVector4> {
         val array = json.asJsonArray
         return vec4Of(array[0].asNumber, array[1].asNumber, array[2].asNumber, array[3].asNumber)
     }
+
 }
 
 class ColorSerializer : JsonSerializer<IVector3>, JsonDeserializer<IVector3> {
@@ -91,21 +106,7 @@ class ColorSerializer : JsonSerializer<IVector3>, JsonDeserializer<IVector3> {
         val color = Color(str.toInt(16))
         return vec3Of(color.red, color.green, color.blue) / 255f
     }
-}
 
-class Vector2Serializer : JsonSerializer<IVector2>, JsonDeserializer<IVector2> {
-
-    override fun serialize(src: IVector2, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-        return JsonArray().apply {
-            add(src.x)
-            add(src.y)
-        }
-    }
-
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IVector2 {
-        val array = json.asJsonArray
-        return vec2Of(array[0].asNumber, array[1].asNumber)
-    }
 }
 
 class QuaternionSerializer : JsonSerializer<IQuaternion>, JsonDeserializer<IQuaternion> {
@@ -199,86 +200,49 @@ class ImmutableMapSerializer : JsonSerializer<ImmutableMap<Any, Any>>, JsonDeser
     }
 }
 
+class TransformationSerializer : JsonSerializer<ITransformation>, JsonDeserializer<ITransformation> {
+
+    override fun serialize(src: ITransformation, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+        return context.serialize(src).apply {
+            this.asJsonObject.addProperty("class", when (src) {
+                is TRSTransformation -> "trs"
+                is TRTSTransformation -> "trts"
+                else -> error("Invalid type: ${src::class.java}, $src")
+            })
+        }
+    }
+
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): ITransformation {
+        val obj = json.asJsonObject
+
+        if (!obj.has("class")) return context.deserialize(json, TRSTransformation::class.java)
+
+        return when (obj["class"].asString) {
+            "trs" -> context.deserialize(json, TRSTransformation::class.java)
+            "trts" -> context.deserialize(json, TRTSTransformation::class.java)
+            else -> error("Invalid transformation class: ${obj["class"]}, in obj: $obj")
+        }
+    }
+}
+
 class GroupRefSerializer : JsonSerializer<IGroupRef>, JsonDeserializer<IGroupRef> {
 
     override fun serialize(src: IGroupRef, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-        return context.serialize(src)
+        return JsonPrimitive(src.id.toString())
     }
 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IGroupRef {
         if (json.isJsonNull || (json.isJsonObject && json.asJsonObject.size() == 0))
             return RootGroupRef
 
-        return context.deserialize(json, GroupRef::class.java)
-    }
-}
-
-class MeshSerializer : JsonSerializer<IMesh>, JsonDeserializer<IMesh> {
-
-    override fun serialize(src: IMesh, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-        return context.serialize(src)
-    }
-
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IMesh {
-        return context.deserialize(json, Mesh::class.java)
-    }
-}
-
-class FaceSerializer : JsonSerializer<IFaceIndex>, JsonDeserializer<IFaceIndex> {
-
-    override fun serialize(src: IFaceIndex, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-        return context.serialize(src)
-    }
-
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IFaceIndex {
-        return context.deserialize(json, FaceIndex::class.java)
-    }
-}
-
-class TransformationSerializer : JsonSerializer<ITransformation>, JsonDeserializer<ITransformation> {
-
-    override fun serialize(src: ITransformation, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-        return context.serialize(src)
-    }
-
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): ITransformation {
-        return context.deserialize(json, TRSTransformation::class.java)
-    }
-}
-
-class ObjectSerializer : JsonSerializer<IObject>, JsonDeserializer<IObject> {
-
-    override fun serialize(src: IObject, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-        return context.serialize(src).asJsonObject.apply {
-            addProperty("class", src.javaClass.simpleName)
-        }
-    }
-
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IObject {
-        val obj = json.asJsonObject
-        return when (obj["class"].asString) {
-            "ObjectCube" -> {
-                ObjectCube(
-                        name = context.deserialize(obj["name"], String::class.java),
-                        transformation = context.deserialize(obj["transformation"], TRSTransformation::class.java),
-                        material = context.deserialize(obj["material"], IMaterialRef::class.java),
-                        textureOffset = context.deserialize(obj["textureOffset"], IVector2::class.java),
-                        textureSize = context.deserialize(obj["textureSize"], IVector2::class.java),
-                        mirrored = context.deserialize(obj["mirrored"], Boolean::class.java),
-                        visible = context.deserialize(obj["visible"], Boolean::class.java),
-                        id = context.deserialize(obj["id"], UUID::class.java)
-                )
-            }
-            "Object" -> Object(
-                    name = context.deserialize(obj["name"], String::class.java),
-                    mesh = context.deserialize(obj["mesh"], IMesh::class.java),
-                    material = context.deserialize(obj["material"], IMaterialRef::class.java),
-                    visible = context.deserialize(obj["visible"], Boolean::class.java),
-                    id = context.deserialize(obj["id"], UUID::class.java)
-            )
-
-
-            else -> throw IllegalStateException("Unknown Class: ${obj["class"]}")
+        if (json.isJsonObject) {
+            val ref = context.deserialize<GroupRef>(json, GroupRef::class.java)
+            if (ref.id == RootGroupRef.id) return RootGroupRef
+            return ref
+        } else {
+            val uuid = UUID.fromString(json.asString)
+            if (uuid == RootGroupRef.id) return RootGroupRef
+            return GroupRef(uuid)
         }
     }
 }
@@ -286,34 +250,18 @@ class ObjectSerializer : JsonSerializer<IObject>, JsonDeserializer<IObject> {
 class ObjectRefSerializer : JsonSerializer<IObjectRef>, JsonDeserializer<IObjectRef> {
 
     override fun serialize(src: IObjectRef, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-        return context.serialize(src.objectId)
+        return JsonPrimitive(src.objectId.toString())
     }
 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IObjectRef {
-        return ObjectRef(context.deserialize(json, UUID::class.java))
-    }
-}
-
-class MaterialSerializer : JsonSerializer<IMaterial>, JsonDeserializer<IMaterial> {
-
-    override fun serialize(src: IMaterial, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-        return JsonObject().apply {
-            addProperty("name", src.name)
-            if (src is TexturedMaterial) {
-                addProperty("path", src.path.uri.toString())
-                add("id", context.serialize(src.id))
-            }
-        }
-    }
-
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IMaterial {
-        val obj = json.asJsonObject
-        return when {
-            obj["name"].asString == "noTexture" -> MaterialNone
-            else -> {
-                val id = context.deserialize<UUID>(obj["id"], UUID::class.java)
-                TexturedMaterial(obj["name"].asString, ResourcePath(URI(obj["path"].asString)), id)
-            }
+        if (json.isJsonObject) {
+            val ref = context.deserialize<ObjectRef>(json, ObjectRef::class.java)
+            if (ref.objectId == ObjectRefNone.objectId) return ObjectRefNone
+            return ref
+        } else {
+            val uuid = UUID.fromString(json.asString)
+            if (uuid == ObjectRefNone.objectId) return ObjectRefNone
+            return ObjectRef(uuid)
         }
     }
 }
@@ -348,21 +296,6 @@ class UUIDSerializer : JsonSerializer<UUID>, JsonDeserializer<UUID> {
     }
 }
 
-interface BiSerializer<T> : JsonSerializer<T>, JsonDeserializer<T>
-
-inline fun <reified T> serializerOf(): BiSerializer<T> {
-    return object : BiSerializer<T> {
-
-        override fun serialize(src: T, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-            return context.serialize(src)
-        }
-
-        override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): T {
-            return context.deserialize(json, T::class.java)
-        }
-    }
-}
-
 class QuadIndicesSerializer : JsonSerializer<QuadIndices>, JsonDeserializer<QuadIndices> {
 
     override fun serialize(src: QuadIndices, typeOfSrc: Type?,
@@ -384,6 +317,29 @@ class QuadIndicesSerializer : JsonSerializer<QuadIndices>, JsonDeserializer<Quad
     }
 }
 
+interface BiSerializer<T> : JsonSerializer<T>, JsonDeserializer<T>
+
+inline fun <reified T> serializerOf(): BiSerializer<T> {
+    return object : BiSerializer<T> {
+
+        override fun serialize(src: T, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+            return context.serialize(src)
+        }
+
+        override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): T {
+            return context.deserialize(json, T::class.java)
+        }
+    }
+}
+
+inline fun <T> Iterable<T>.toJsonArray(func: (T) -> JsonElement): JsonArray {
+    return JsonArray().also {
+        forEach { value ->
+            it.add(func(value))
+        }
+    }
+}
+
 fun JsonArray.toVector2(): IVector2 = vec2Of(this[0].asNumber, this[1].asNumber)
 fun JsonArray.toVector3(): IVector3 = vec3Of(this[0].asNumber, this[1].asNumber, this[2].asNumber)
 fun JsonArray.toVector4(): IVector4 = vec4Of(this[0].asNumber, this[1].asNumber, this[2].asNumber, this[3].asNumber)
@@ -391,3 +347,11 @@ fun JsonArray.toVector4(): IVector4 = vec4Of(this[0].asNumber, this[1].asNumber,
 val JsonElement.asVector2: IVector2 get() = this.asJsonArray.toVector2()
 val JsonElement.asVector3: IVector3 get() = this.asJsonArray.toVector3()
 val JsonElement.asVector4: IVector4 get() = this.asJsonArray.toVector4()
+
+inline fun <reified T> JsonDeserializationContext.deserializeT(json: JsonElement): T {
+    return deserialize(json, object : TypeToken<T>() {}.type)
+}
+
+inline fun <reified T> JsonSerializationContext.serializeT(obj: T): JsonElement {
+    return serialize(obj, object : TypeToken<T>() {}.type)
+}

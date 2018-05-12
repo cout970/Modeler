@@ -2,21 +2,27 @@ package com.cout970.modeler.core.export.project
 
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.ITransformation
+import com.cout970.modeler.api.model.`object`.IGroupRef
 import com.cout970.modeler.api.model.`object`.IObject
+import com.cout970.modeler.api.model.`object`.RootGroupRef
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
+import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.animation.animationOf
 import com.cout970.modeler.core.export.*
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.TRSTransformation
-import com.cout970.modeler.core.model.`object`.GroupTree
+import com.cout970.modeler.core.model.`object`.BiMultimap
 import com.cout970.modeler.core.model.`object`.Object
 import com.cout970.modeler.core.model.`object`.ObjectCube
+import com.cout970.modeler.core.model.`object`.biMultimapOf
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
+import com.cout970.modeler.core.model.mesh.FaceIndex
+import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.project.ProjectProperties
 import com.cout970.modeler.core.resource.ResourcePath
@@ -27,6 +33,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
+import kotlinx.collections.immutable.ImmutableMap
 import java.lang.reflect.Type
 import java.net.URI
 import java.util.*
@@ -43,13 +50,17 @@ object ProjectLoaderV10 {
             .registerTypeAdapter(IVector3::class.java, Vector3Serializer())
             .registerTypeAdapter(IVector2::class.java, Vector2Serializer())
             .registerTypeAdapter(IQuaternion::class.java, QuaternionSerializer())
-            .registerTypeAdapter(IMaterial::class.java, MaterialDeserializer())
+            .registerTypeAdapter(IGroupRef::class.java, GroupRefSerializer())
+            .registerTypeAdapter(IMaterialRef::class.java, MaterialRefSerializer())
+            .registerTypeAdapter(IObjectRef::class.java, ObjectRefSerializer())
+            .registerTypeAdapter(ITransformation::class.java, TransformationSerializer())
+            .registerTypeAdapter(BiMultimap::class.java, BiMultimapSerializer())
+            .registerTypeAdapter(ImmutableMap::class.java, ImmutableMapSerializer())
             .registerTypeAdapter(IModel::class.java, ModelDeserializer())
+            .registerTypeAdapter(IMaterial::class.java, MaterialDeserializer())
             .registerTypeAdapter(IObject::class.java, ObjectDeserializer())
             .registerTypeAdapter(IMesh::class.java, MeshSerializer())
             .registerTypeAdapter(IFaceIndex::class.java, FaceSerializer())
-            .registerTypeAdapter(ITransformation::class.java, TransformationSerializer())
-            .registerTypeAdapter(IMaterialRef::class.java, MaterialRefSerializer())
             .create()!!
 
 
@@ -61,7 +72,7 @@ object ProjectLoaderV10 {
         val model = zip.load<IModel>("model.json", gson)
                 ?: throw IllegalStateException("Missing file 'model.json' inside '$path'")
 
-        checkIntegrity(null, model.objects)
+        checkIntegrity(model.objects)
         return ProgramSave(VERSION, properties, model, animationOf())
     }
 
@@ -69,9 +80,8 @@ object ProjectLoaderV10 {
 
         override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IModel {
             val objs = json.asJsonObject
-            val objects = objs.get("objects").asJsonArray
-            val materials = objs.get("materials").asJsonArray
-            // visibilities is ignored, and set to true
+            val objects = objs["objects"].asJsonArray
+            val materials = objs["materials"].asJsonArray
 
             val materialList = materials.map {
                 context.deserialize<IMaterial>(it, IMaterial::class.java)
@@ -85,11 +95,16 @@ object ProjectLoaderV10 {
                 obj.withMaterial(materialList.getOrElse(materialIndex, { MaterialNone }).ref)
             }
 
-            return Model.of(objectsList.associateBy { it.ref }, materialList.associateBy { it.ref })
+            return Model.of(
+                    objectsList.associateBy { it.ref },
+                    materialList.associateBy { it.ref },
+                    emptyMap(), biMultimapOf(RootGroupRef to objectsList.map { it.ref })
+            )
         }
     }
 
     class MaterialDeserializer : JsonDeserializer<IMaterial> {
+
         override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IMaterial {
             val obj = json.asJsonObject
             return when {
@@ -100,7 +115,6 @@ object ProjectLoaderV10 {
                 )
             }
         }
-
     }
 
     class ObjectDeserializer : JsonDeserializer<IObject> {
@@ -131,6 +145,31 @@ object ProjectLoaderV10 {
                 }
                 else -> throw IllegalStateException("Unknown Class: ${obj["class"]}")
             }
+        }
+    }
+
+    class MeshSerializer : JsonDeserializer<IMesh> {
+
+        override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IMesh {
+            val obj = json.asJsonObject
+
+            return Mesh(
+                    pos = context.deserializeT(obj["pos"]),
+                    tex = context.deserializeT(obj["tex"]),
+                    faces = context.deserializeT(obj["faces"])
+            )
+        }
+    }
+
+    class FaceSerializer : JsonDeserializer<IFaceIndex> {
+
+        override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IFaceIndex {
+            val obj = json.asJsonObject
+
+            return FaceIndex(
+                    pos = context.deserializeT(obj["pos"]),
+                    tex = context.deserializeT(obj["tex"])
+            )
         }
     }
 }

@@ -2,13 +2,11 @@ package com.cout970.modeler.render.texture
 
 import com.cout970.glutilities.tessellator.DrawMode
 import com.cout970.matrix.extensions.Matrix4
-import com.cout970.modeler.controller.usecases.getTexturePolygons
 import com.cout970.modeler.core.helpers.PickupHelper
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.gui.canvas.IRotable
 import com.cout970.modeler.gui.canvas.IScalable
 import com.cout970.modeler.gui.canvas.ITranslatable
-import com.cout970.modeler.gui.canvas.helpers.CanvasHelper
 import com.cout970.modeler.render.tool.AutoCache
 import com.cout970.modeler.render.tool.RenderContext
 import com.cout970.modeler.render.tool.createVao

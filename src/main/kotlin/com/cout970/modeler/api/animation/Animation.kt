@@ -2,7 +2,6 @@ package com.cout970.modeler.api.animation
 
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.modeler.core.model.TRSTransformation
 import java.util.*
 
 interface IAnimation {

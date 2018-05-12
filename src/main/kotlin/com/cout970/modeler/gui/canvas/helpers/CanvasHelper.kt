@@ -1,6 +1,5 @@
 package com.cout970.modeler.gui.canvas.helpers
 
-import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.core.helpers.PickupHelper
 import com.cout970.modeler.gui.canvas.Canvas
 import com.cout970.modeler.gui.canvas.SceneSpaceContext
@@ -10,7 +9,8 @@ import com.cout970.modeler.util.toJOML
 import com.cout970.modeler.util.toJoml3d
 import com.cout970.raytrace.Ray
 import com.cout970.vector.api.IVector2
-import com.cout970.vector.extensions.*
+import com.cout970.vector.extensions.minus
+import com.cout970.vector.extensions.vec3Of
 import org.joml.Vector3d
 
 /**
