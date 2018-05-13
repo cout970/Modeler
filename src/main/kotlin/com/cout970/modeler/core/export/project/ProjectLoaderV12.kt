@@ -13,7 +13,6 @@ import com.cout970.modeler.core.animation.*
 import com.cout970.modeler.core.export.*
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.Model
-import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.`object`.BiMultimap
 import com.cout970.modeler.core.model.`object`.GroupTree
 import com.cout970.modeler.core.model.`object`.Object
@@ -198,7 +197,7 @@ object ProjectLoaderV12 {
                 "ObjectCube" -> {
                     ObjectCube(
                             name = context.deserialize(obj["name"], String::class.java),
-                            transformation = context.deserialize(obj["transformation"], TRSTransformation::class.java),
+                            transformation = context.deserialize(obj["transformation"], ITransformation::class.java),
                             material = context.deserialize(obj["material"], IMaterialRef::class.java),
                             textureOffset = context.deserialize(obj["textureOffset"], IVector2::class.java),
                             textureSize = context.deserialize(obj["textureSize"], IVector2::class.java),

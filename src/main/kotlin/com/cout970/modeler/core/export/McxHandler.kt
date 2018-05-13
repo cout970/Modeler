@@ -50,8 +50,7 @@ class McxExporter {
         model.objects.forEach { obj ->
 
             val name = model.getMaterial(obj.material).name.replace("\\.png$".toRegex(), "")
-            // TODO FIXME not everyone want magneticraft models
-            val texture = "trebuchet:blocks/$name"
+            val texture = "$prefix$name"
             val mesh = obj.mesh
             val localIndices = mesh.faces.map { face ->
                 val (ap, bp, cp, dp) = face.pos

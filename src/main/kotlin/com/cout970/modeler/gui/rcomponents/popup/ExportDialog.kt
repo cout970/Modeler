@@ -131,7 +131,7 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
                 props.returnFunc(ExportProperties(
                         path = state.text,
                         format = ExportFormat.values()[state.selection],
-                        domain = "domain",
+                        domain = state.prefix,
                         materialLib = "materials"
                 ))
             }
