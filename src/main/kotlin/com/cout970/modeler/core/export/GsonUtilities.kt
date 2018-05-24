@@ -355,3 +355,7 @@ inline fun <reified T> JsonDeserializationContext.deserializeT(json: JsonElement
 inline fun <reified T> JsonSerializationContext.serializeT(obj: T): JsonElement {
     return serialize(obj, object : TypeToken<T>() {}.type)
 }
+
+inline fun <reified T> Gson.fromJson(json: String): T {
+    return fromJson(json, object : TypeToken<T>() {}.type)
+}

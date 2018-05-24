@@ -7,6 +7,7 @@ import com.cout970.modeler.api.animation.IChannelRef
 import com.cout970.modeler.api.animation.IKeyframe
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.selection.IObjectRef
+import com.cout970.modeler.core.animation.ref
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.TRTSTransformation
 import com.cout970.modeler.gui.Gui
@@ -61,7 +62,7 @@ class Animator {
         val activeChannels = anim.channels
                 .values
                 .filter { it.enabled }
-                .filter { obj in it.objects }
+                .filter { obj in anim.objectMapping[it.ref] }
 
         val m = activeChannels.fold(TRSTransformation.IDENTITY as ITransformation) { acc, c ->
             val (prev, next) = getPrevAndNext(now, c.keyframes)

@@ -9,6 +9,7 @@ import com.cout970.matrix.extensions.toMutable
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.TRSTransformation
+import com.cout970.modeler.core.model.TRTSTransformation
 import com.cout970.modeler.render.tool.AutoCache
 import com.cout970.modeler.render.tool.CacheFlags
 import com.cout970.modeler.render.tool.RenderContext
@@ -32,6 +33,7 @@ class WorldRenderer {
     var gridLinesBlock = AutoCache(CacheFlags.GRID_LINES)
     var lights = AutoCache()
     var skybox = AutoCache()
+    var pivot = AutoCache()
 
     fun renderWorld(ctx: RenderContext, model: IModel) {
 
@@ -55,6 +57,7 @@ class WorldRenderer {
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
         renderOrientationCube(ctx)
 
+        renderPivot(ctx)
 
         cursorRenderer.renderCursor(ctx)
     }
@@ -67,6 +70,21 @@ class WorldRenderer {
             val transform = TRSTransformation(translation = light.pos, scale = Vector3.ONE * 8)
             ctx.shader.render(vao, transform.matrix, ShaderFlag.LIGHT, ShaderFlag.COLOR)
         }
+    }
+
+    fun renderPivot(ctx: RenderContext) {
+        val vao = pivot.getOrCreate(ctx) {
+            ctx.gui.resources.lightMesh.createVao(ctx.buffer, vec3Of(0, 0, 1))
+        }
+        val acc = ctx.gui.animator
+        val channel = acc.selectedChannel ?: return
+        val keyframe = acc.selectedKeyframe ?: return
+
+        val key = acc.animation.channels[channel]!!.keyframes[keyframe]
+        val value = key.value as? TRTSTransformation ?: return
+
+        val transform = TRSTransformation(translation = value.pivot, scale = Vector3.ONE * 0.25)
+        ctx.shader.render(vao, transform.matrix, ShaderFlag.LIGHT, ShaderFlag.COLOR)
     }
 
     fun renderBaseBlock(ctx: RenderContext) {

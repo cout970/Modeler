@@ -5,8 +5,13 @@ import com.cout970.glutilities.device.Mouse
 import com.cout970.glutilities.event.*
 import com.cout970.glutilities.window.GLFWWindow
 import com.cout970.modeler.core.log.Profiler
+import com.cout970.modeler.core.log.print
 import com.cout970.modeler.util.ITickeable
 import java.util.*
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
+
 
 /**
  * Created by cout970 on 2016/11/29.
@@ -15,8 +20,8 @@ class EventController : ITickeable, IEventController, IInput {
 
     private val listeners = mutableMapOf<Class<Event>, MutableList<IEventListener<Event>>>()
     private val eventQueue = Collections.synchronizedCollection(mutableListOf<() -> Unit>())
-    lateinit override var keyboard: Keyboard
-    lateinit override var mouse: Mouse
+    override lateinit var keyboard: Keyboard
+    override lateinit var mouse: Mouse
 
     init {
         EventManager.registerListener(this::onEvent)
@@ -43,7 +48,27 @@ class EventController : ITickeable, IEventController, IInput {
         val events = eventQueue.toList()
         eventQueue.clear()
         events.forEach { it() }
-        mouse.update()
+
+        // Fuck X11, glfwGetCursorPos sometimes get stuck, this is the only way to avoid it, and it sucks
+        runWithTimeout { mouse.update() }
+
+        Profiler.endSection()
+    }
+
+    val executor = Executors.newCachedThreadPool()
+
+    fun runWithTimeout(func: () -> Unit) {
+        Profiler.startSection("hacks")
+        val future = executor.submit(func)
+        try {
+            future.get(2, TimeUnit.MILLISECONDS)
+        } catch (e: TimeoutException) {
+            // ignored
+        } catch (e: Exception) {
+            e.print()
+        } finally {
+            future.cancel(true)
+        }
         Profiler.endSection()
     }
 

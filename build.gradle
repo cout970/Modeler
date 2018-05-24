@@ -1,5 +1,5 @@
 group 'com.cout970'
-version '1.6.7-SNAPSHOT'
+version '1.7.0-SNAPSHOT'
 
 buildscript {
     ext.kotlin_version = '1.2.31'

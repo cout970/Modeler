@@ -1,6 +1,7 @@
 package com.cout970.modeler.core.export.project
 
 import com.cout970.modeler.api.animation.IAnimation
+import com.cout970.modeler.api.animation.IChannelRef
 import com.cout970.modeler.api.animation.InterpolationMethod
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.ITransformation
@@ -13,10 +14,7 @@ import com.cout970.modeler.core.animation.*
 import com.cout970.modeler.core.export.*
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.Model
-import com.cout970.modeler.core.model.`object`.BiMultimap
-import com.cout970.modeler.core.model.`object`.GroupTree
-import com.cout970.modeler.core.model.`object`.Object
-import com.cout970.modeler.core.model.`object`.ObjectCube
+import com.cout970.modeler.core.model.`object`.*
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.FaceIndex
@@ -133,6 +131,10 @@ object ProjectLoaderV12 {
         zip.close()
 
         Files.copy(tmp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING)
+
+        if (tmp != file) {
+            tmp.delete()
+        }
     }
 
     class ModelSerializer : JsonSerializer<IModel>, JsonDeserializer<IModel> {
@@ -318,8 +320,6 @@ object ProjectLoaderV12 {
             return JsonObject().apply {
                 addProperty("timeLength", src.timeLength)
 
-                val objMap = mutableMapOf<UUID, List<IObjectRef>>()
-
                 add("channels", src.channels.values.toJsonArray { v ->
                     JsonObject().apply {
                         add("id", context.serializeT(v.id))
@@ -334,14 +334,13 @@ object ProjectLoaderV12 {
                             }
                         })
 
-                        objMap[v.id] = v.objects
                     }
                 })
 
-                add("mapping", objMap.entries.toJsonArray {
+                add("mapping", src.objectMapping.toJsonArray { (key, value) ->
                     JsonObject().apply {
-                        add("key", context.serializeT(it.key))
-                        add("value", context.serializeT(it.value))
+                        add("key", context.serializeT(key))
+                        add("value", context.serializeT(value))
                     }
                 })
             }
@@ -352,14 +351,16 @@ object ProjectLoaderV12 {
 
             val obj = json.asJsonObject
 
-            val objMap = obj["mapping"].asJsonArray.map { it.asJsonObject }.map {
-                context.deserializeT<UUID>(it["key"]) to context.deserializeT<List<IObjectRef>>(it["value"])
-            }.toMap()
+            val pairs = obj["mapping"].asJsonArray
+                    .map { it.asJsonObject }
+                    .map { context.deserializeT<UUID>(it["key"]) to context.deserializeT<List<IObjectRef>>(it["value"]) }
+                    .map { (ChannelRef(it.first) as IChannelRef) to it.second }
+
+            val objectMapping = multimapOf(*pairs.toTypedArray())
 
             val channels = obj["channels"].asJsonArray.map {
                 val channel = it.asJsonObject
 
-                val id = context.deserializeT<UUID>(channel["id"])
                 val interName = channel["interpolation"].asString
                 val keyframesJson = channel["keyframes"].asJsonArray
 
@@ -375,14 +376,14 @@ object ProjectLoaderV12 {
                         interpolation = InterpolationMethod.valueOf(interName),
                         enabled = channel["enabled"].asBoolean,
                         keyframes = keyframes,
-                        objects = objMap[id] ?: emptyList(),
                         id = context.deserializeT(channel["id"])
                 )
             }
 
             return Animation(
                     channels = channels.associateBy { it.ref },
-                    timeLength = obj["timeLength"].asFloat
+                    timeLength = obj["timeLength"].asFloat,
+                    objectMapping = objectMapping
             )
         }
     }

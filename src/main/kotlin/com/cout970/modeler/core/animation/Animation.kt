@@ -3,15 +3,21 @@ package com.cout970.modeler.core.animation
 import com.cout970.modeler.api.animation.*
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.selection.IObjectRef
+import com.cout970.modeler.core.model.`object`.Multimap
+import com.cout970.modeler.core.model.`object`.emptyMultimap
 import java.util.*
 
 /**
  * Created by cout970 on 2017/08/20.
  */
 
+data class AnimationRef(override val id: UUID) : IAnimationRef
+
 data class Animation(
         override val channels: Map<IChannelRef, IChannel>,
-        override val timeLength: Float
+        override val objectMapping: Multimap<IChannelRef, IObjectRef>,
+        override val timeLength: Float,
+        override val id: UUID = UUID.randomUUID()
 ) : IAnimation {
 
     override fun withChannel(channel: IChannel): IAnimation {
@@ -22,12 +28,16 @@ data class Animation(
         return copy(timeLength = newLength)
     }
 
+    override fun withMapping(channel: IChannelRef, objects: List<IObjectRef>): IAnimation {
+        return copy(objectMapping = objectMapping.set(channel, objects))
+    }
+
     override fun removeChannels(list: List<IChannelRef>): IAnimation {
         return copy(channels = channels.filterKeys { it !in list })
     }
 
     override fun getChannels(obj: IObjectRef): List<IChannel> {
-        return channels.values.filter { obj in it.objects }
+        return objectMapping.filter { obj in it.second }.map { it.first }.map { channels[it]!! }
     }
 
     override fun plus(other: IAnimation): IAnimation {
@@ -41,7 +51,6 @@ data class Channel(
         override val name: String,
         override val interpolation: InterpolationMethod,
         override val keyframes: List<IKeyframe>,
-        override val objects: List<IObjectRef>,
         override val enabled: Boolean = true,
         override val id: UUID = UUID.randomUUID()
 ) : IChannel {
@@ -64,5 +73,7 @@ data class Keyframe(
 }
 
 inline val IChannel.ref: IChannelRef get() = ChannelRef(id)
+inline val IAnimation.ref: IAnimationRef get() = AnimationRef(id)
 
-fun animationOf(vararg channels: IChannel, time: Float = 1f) = Animation(channels.associateBy { it.ref }, time)
+fun animationOf(vararg channels: IChannel, time: Float = 1f) =
+        Animation(channels.associateBy { it.ref }, emptyMultimap(), time)

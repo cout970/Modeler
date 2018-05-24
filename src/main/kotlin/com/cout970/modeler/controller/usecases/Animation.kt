@@ -31,10 +31,9 @@ private fun addAnimationChannel(modelAccessor: IModelAccessor): ITask {
             keyframes = listOf(
                     Keyframe(0f, TRTSTransformation.IDENTITY),
                     Keyframe(anim.timeLength, TRTSTransformation.IDENTITY)
-            ),
-            objects = refs
+            )
     )
-    val newAnimation = anim.withChannel(channel)
+    val newAnimation = anim.withChannel(channel).withMapping(channel.ref, refs)
 
     return TaskChain(listOf(
             TaskUpdateAnimation(modelAccessor.animation, newAnimation),
