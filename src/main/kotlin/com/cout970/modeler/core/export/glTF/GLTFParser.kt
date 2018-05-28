@@ -13,23 +13,23 @@ typealias PairList<A, B> = List<Pair<A, B>>
 object GLTFParser {
 
     data class Result(
-            val buffers: PairList<GLTF.Buffer, ByteArray>,
-            val bufferViews: PairList<GLTF.BufferView, ByteArray>,
-            val accessors: PairList<GLTF.Accessor, List<*>>,
-            val meshes: PairList<GLTF.Mesh, ResultMesh>
+            val buffers: PairList<GltfBuffer, ByteArray>,
+            val bufferViews: PairList<GltfBufferView, ByteArray>,
+            val accessors: PairList<GltfAccessor, List<*>>,
+            val meshes: PairList<GltfMesh, ResultMesh>
     )
 
     data class ResultMesh(
-            val primitives: PairList<GLTF.Primitive, ResultPrimitive>
+            val primitives: PairList<GltfPrimitive, ResultPrimitive>
     )
 
     data class ResultPrimitive(
-            val attributes: Map<GLTF.Attribute, Pair<GLTF.Type, List<Any>>>,
-            val indices: Pair<GLTF.Type, List<Any>>?,
-            val mode: GLTF.GLMode
+            val attributes: Map<GltfAttribute, Pair<GltfType, List<Any>>>,
+            val indices: Pair<GltfType, List<Any>>?,
+            val mode: GltfMode
     )
 
-    fun parse(file: GLTF.File, folder: ResourcePath): Result {
+    fun parse(file: GltfFile, folder: ResourcePath): Result {
 
         val buffers = file.buffers.map { buff ->
 
@@ -65,7 +65,7 @@ object GLTFParser {
             val (_, buffer) = bufferViews[viewIndex]
 
             val offset = accessor.byteOffset ?: 0
-            val type = GLTF.ComponentType.fromId(accessor.componentType)
+            val type = GltfComponentType.fromId(accessor.componentType)
 
             val buff = ByteBuffer.wrap(buffer, offset, buffer.size - offset).order(ByteOrder.LITTLE_ENDIAN)
             val list: List<Any> = intoList(accessor.type, type, accessor.count, buff)
@@ -79,14 +79,14 @@ object GLTFParser {
             val primitives = mesh.primitives.map { prim ->
 
                 val attr = prim.attributes.map { (k, v) ->
-                    Pair(GLTF.Attribute.valueOf(k), accessors[v].first.type to accessors[v].second)
+                    Pair(GltfAttribute.valueOf(k), accessors[v].first.type to accessors[v].second)
                 }.toMap()
 
                 val indices = prim.indices?.let { accessors[it] }?.let { (acc, list) ->
                     acc.type to list
                 }
 
-                val mode = GLTF.GLMode.fromId(prim.mode)
+                val mode = GltfMode.fromId(prim.mode)
 
                 Pair(prim, ResultPrimitive(attr, indices, mode))
             }
@@ -104,27 +104,27 @@ object GLTFParser {
         )
     }
 
-    private fun intoList(listType: GLTF.Type, componentType: GLTF.ComponentType, count: Int, buffer: ByteBuffer): List<Any> {
+    private fun intoList(listType: GltfType, componentType: GltfComponentType, count: Int, buffer: ByteBuffer): List<Any> {
         val t = componentType
         val b = buffer
         return when (listType) {
-            GLTF.Type.SCALAR -> List(count) { b.next(t) }
-            GLTF.Type.VEC2 -> List(count) { vec2Of(b.next(t), b.next(t)) }
-            GLTF.Type.VEC3 -> List(count) { vec3Of(b.next(t), b.next(t), b.next(t)) }
-            GLTF.Type.VEC4 -> List(count) { vec4Of(b.next(t), b.next(t), b.next(t), b.next(t)) }
-            GLTF.Type.MAT2 -> TODO()
-            GLTF.Type.MAT3 -> TODO()
-            GLTF.Type.MAT4 -> TODO()
+            GltfType.SCALAR -> List(count) { b.next(t) }
+            GltfType.VEC2 -> List(count) { vec2Of(b.next(t), b.next(t)) }
+            GltfType.VEC3 -> List(count) { vec3Of(b.next(t), b.next(t), b.next(t)) }
+            GltfType.VEC4 -> List(count) { vec4Of(b.next(t), b.next(t), b.next(t), b.next(t)) }
+            GltfType.MAT2 -> TODO()
+            GltfType.MAT3 -> TODO()
+            GltfType.MAT4 -> TODO()
         }
     }
 
     @Suppress("NOTHING_TO_INLINE")
-    private inline fun ByteBuffer.next(type: GLTF.ComponentType): Number {
+    private inline fun ByteBuffer.next(type: GltfComponentType): Number {
         return when (type) {
-            GLTF.ComponentType.BYTE, GLTF.ComponentType.UNSIGNED_BYTE -> get()
-            GLTF.ComponentType.SHORT, GLTF.ComponentType.UNSIGNED_SHORT -> short
-            GLTF.ComponentType.UNSIGNED_INT -> int
-            GLTF.ComponentType.FLOAT -> float
+            GltfComponentType.BYTE, GltfComponentType.UNSIGNED_BYTE -> get()
+            GltfComponentType.SHORT, GltfComponentType.UNSIGNED_SHORT -> short
+            GltfComponentType.UNSIGNED_INT -> int
+            GltfComponentType.FLOAT -> float
         }
     }
 }
