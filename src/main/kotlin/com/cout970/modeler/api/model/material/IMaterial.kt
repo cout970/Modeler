@@ -11,6 +11,6 @@ interface IMaterial {
     val size: IVector2
     fun bind()
     fun hasChanged(): Boolean
-    fun loadTexture(resourceLoader: ResourceLoader)
+    fun loadTexture(resourceLoader: ResourceLoader): Boolean
 }
 

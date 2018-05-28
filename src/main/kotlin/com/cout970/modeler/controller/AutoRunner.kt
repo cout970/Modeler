@@ -1,6 +1,7 @@
 package com.cout970.modeler.controller
 
 import com.cout970.modeler.controller.tasks.TaskExportModel
+import com.cout970.modeler.controller.tasks.TaskReloadMaterial
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.export.BackupManager
 import com.cout970.modeler.core.export.ExportFormat
@@ -50,8 +51,8 @@ class AutoRunner(
         }
         if (enableAutoImport) {
             Profiler.startSection("autoImport")
-            val mat = projectManager.model.materials
-            mat.filter { it.hasChanged() }.forEach { it.loadTexture(resourceLoader) }
+            val mat = projectManager.model.materials.filter { it.hasChanged() }
+            processor.processTask(TaskReloadMaterial(mat))
             Profiler.endSection()
         }
     }

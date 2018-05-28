@@ -19,10 +19,12 @@ class TexturedMaterial(override val name: String, val path: ResourcePath,
 
     var texture: Texture? = null
     var loadingError = false
+    var tries = 0
+
     private var lastModified = -1L
     override val size: IVector2 get() = texture?.size ?: vec2Of(1)
 
-    override fun loadTexture(resourceLoader: ResourceLoader) {
+    override fun loadTexture(resourceLoader: ResourceLoader): Boolean {
         try {
             texture?.close()
             texture = resourceLoader.getTexture(path.inputStream()).apply {
@@ -33,20 +35,31 @@ class TexturedMaterial(override val name: String, val path: ResourcePath,
             }
             lastModified = path.lastModifiedTime()
             loadingError = false
+            tries = 0
         } catch (e: FileNotFoundException) {
             log(Level.ERROR) { "Unable to find material, name: $name, path: $path" }
             NotificationHandler.push(
                     Notification("Material not found", "Unable to find material $name at path '$path'"))
             texture = null
             loadingError = true
+            tries = 0
         } catch (e: Exception) {
-            log(Level.ERROR) { "Error loading material, name: $name, path: $path" }
-            NotificationHandler.push(
-                    Notification("Material load error", "Unable to load material $name at path '$path'"))
-            e.print()
-            texture = null
-            loadingError = true
+            log(Level.ERROR) { "Error loading material, name: $name, path: $path, try: $tries" }
+            tries++
+            Thread.sleep(50)
+            if (tries > 60) {
+                NotificationHandler.push(Notification(
+                        "Material load error",
+                        "Unable to load material $name at path '$path'"
+                ))
+                e.print()
+                texture = null
+                loadingError = true
+            } else {
+                return true
+            }
         }
+        return false
     }
 
     override fun hasChanged(): Boolean {

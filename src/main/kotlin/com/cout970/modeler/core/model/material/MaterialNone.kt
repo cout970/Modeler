@@ -16,8 +16,9 @@ object MaterialNone : IMaterial {
     lateinit var whiteTexture: Texture
         private set
 
-    override fun loadTexture(resourceLoader: ResourceLoader) {
+    override fun loadTexture(resourceLoader: ResourceLoader): Boolean {
         whiteTexture = resourceLoader.getTexture("assets/textures/debug.png")
+        return false
     }
 
     override fun hasChanged(): Boolean = false
