@@ -72,7 +72,7 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
         if (!model.getGroup(group).visible) return
 
         model.getGroupObjects(group).forEach { ref ->
-            map += Slot(ref, null, min(5, level + 1))
+            map += Slot(ref, null, min(5, level + 2))
         }
 
         tree.getChildren(group).forEach {
@@ -83,16 +83,14 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
     override fun RBuilder.render() = div("ModelTree") {
 
         style {
-            transparent()
-            border(2f) { greyColor }
-            rectCorners()
-            height = 300f
-            posY = 70f
+            classes("left_panel_model_tree")
+            posY = 0f
         }
 
         postMount {
             marginX(5f)
-            height = (parent.height - 70f) / 2f
+            height = (parent.height) / 2f
+            alignAsColumn(5f)
         }
 
         on<EventModelUpdate> { rerender() }
@@ -109,10 +107,29 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
             }
 
             postMount {
-                posX = 50f
-                posY = 0f
-                sizeX = parent.sizeX - 100f
                 sizeY = 24f
+                marginX(0f)
+            }
+        }
+
+        div("Buttons") {
+            style {
+                sizeY = 32f
+                borderless()
+                transparent()
+            }
+            postMount {
+                marginX(5f)
+            }
+
+            +IconButton("cube.template.new", "addTemplateCubeIcon", 5f, 0f, 32f, 32f).also {
+                it.setTooltip("Create Template Cube")
+            }
+            +IconButton("cube.mesh.new", "addMeshCubeIcon", 40f, 0f, 32f, 32f).also {
+                it.setTooltip("Create Cube Mesh")
+            }
+            +IconButton("group.add", "addMeshCubeIcon", 75f, 0f, 32f, 32f).also {
+                it.setTooltip("Create Object GroupRef")
             }
         }
 
@@ -125,9 +142,8 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
 
             postMount {
                 posX = 5f
-                posY = 24f + 5f
-                sizeX = parent.sizeX - 10f
-                sizeY = parent.sizeY - posY - 5f
+                sizeX = parent.sizeX - 5f
+                sizeY = parent.sizeY - posY - 10f
             }
 
             horizontalScroll {
@@ -136,12 +152,21 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
 
             verticalScroll {
                 style {
-                    rectCorners()
+                    borderless()
                     style.minWidth = 16f
-                    arrowColor = color { lightBrightColor }
-                    scrollColor = color { darkColor }
+                    arrowColor = color { bright1 }
                     visibleAmount = 50f
-                    backgroundColor { color { lightBrightColor } }
+                    style.top = 0f
+                    style.bottom = 0f
+                    classes("left_panel_model_tree_scroll")
+                }
+            }
+
+            viewport {
+                style {
+                    style.right = 18f
+                    style.bottom = 0f
+                    classes("left_panel_model_tree_box")
                 }
             }
 
@@ -153,21 +178,10 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
                         .map { sel -> { obj: IObjectRef -> sel.isSelected(obj) } }
                         .getOr { _: IObjectRef -> false }
 
-                objectMap.forEachIndexed { index, slot ->
-                    val group = slot.group
-                    val obj = slot.obj
-
-                    if (group != null) {
-                        group(index, slot.level, model.getGroup(group))
-                    } else if (obj != null) {
-                        obj(index, slot.level, model.getObject(obj), selected(obj))
-                    }
-                }
-
                 style {
                     transparent()
                     borderless()
-                    height = objectMap.size * 26f
+                    height = objectMap.size * 26f + 10f
                     width = 251f
                 }
 
@@ -178,46 +192,61 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
 
                     animation = anim.apply { startAnimation() }
                 }
+
+                objectMap.forEachIndexed { index, slot ->
+                    val group = slot.group
+                    val obj = slot.obj
+
+                    if (group != null) {
+                        group(index, slot.level, model.getGroup(group), model.groupObjects[group].isNotEmpty())
+                    } else if (obj != null) {
+                        obj(index, slot.level, model.getObject(obj), selected(obj))
+                    }
+                }
             }
         }
     }
 
-    fun RBuilder.group(index: Int, level: Int, group: IGroup) {
+    fun RBuilder.group(index: Int, level: Int, group: IGroup, hasChilds: Boolean) {
+        val cmd = if (group.visible) "tree.view.hide.group" else "tree.view.show.group"
+        val off = (level + 1) * 24f
+
+        if (hasChilds) {
+            val icon = if (group.visible) "button_down" else "button_right"
+
+            +IconButton(cmd, icon, 0f, 0f, 24f, 24f).apply {
+                sizeY = 24f
+                posX = 5f + level * 24f
+                posY = 5f + index * (sizeY + 2f)
+                metadata += "ref" to group.ref
+            }
+        }
+
         div(group.name) {
             style {
                 sizeY = 24f
-                posX = level * 24f
-                posY = index * (sizeY + 2f)
-                transparent()
-                borderless()
-                rectCorners()
-
-                background { lightDarkColor }
+                posX = 5f + off
+                posY = 5f + index * (sizeY + 2f)
+                classes("model_tree_item")
             }
 
             postMount {
                 sizeX = parent.sizeX - 5f - level * 24f
             }
 
-
-            val cmd = if (group.visible) "tree.view.hide.group" else "tree.view.show.group"
-            val off = level * 24f
-
             +IconButton(cmd, "group_icon", 0f, 0f, 24f, 24f).apply {
                 metadata += "ref" to group.ref
-                if (!group.visible) {
-                    background { brightColor }
-                }
+                hoveredStyle.background.color.set(0f)
             }
 
             child(ToggleName::class, ToggleName.Props(group, off, props.dispatcher))
-
 
             +IconButton("tree.view.delete.group", "deleteIcon", 222f - off, 0f, 24f, 24f).apply {
                 transparent()
                 borderless()
                 metadata += "ref" to group.ref
                 setTooltip("Delete group")
+                hoveredStyle.background.color.set(0f)
             }
         }
     }
@@ -226,16 +255,13 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
         div(obj.name) {
             style {
                 sizeY = 24f
-                posX = 24f * level
-                posY = index * (sizeY + 2f)
-                transparent()
-                borderless()
-                rectCorners()
+                posX = 5f + 24f * level
+                posY = 5f + index * (sizeY + 2f)
+
+                classes("model_tree_item")
 
                 if (selected) {
-                    background { lightBrightColor }
-                } else {
-                    background { lightDarkColor }
+                    classes("model_tree_item_selected")
                 }
             }
 
@@ -247,12 +273,14 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
             val off = level * 24f
 
             +IconButton("tree.view.select.item", icon, 0f, 0f, 24f, 24f).apply {
+                hoveredStyle.background.color.set(0f)
                 metadata += "ref" to obj.ref
             }
 
             +TextButton("tree.view.select.item", obj.name, 24f, 0f, 172f - off, 24f).apply {
                 transparent()
                 borderless()
+                hoveredStyle.background.color.set(0f)
                 fontSize = 20f
                 horizontalAlign = HorizontalAlign.LEFT
                 textState.padding.x = 2f
@@ -264,6 +292,7 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
                     transparent()
                     borderless()
                     metadata += "ref" to obj.ref
+                    hoveredStyle.background.color.set(0f)
                     setTooltip("Hide object")
                 }
             } else {
@@ -271,6 +300,7 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
                     transparent()
                     borderless()
                     metadata += "ref" to obj.ref
+                    hoveredStyle.background.color.set(0f)
                     setTooltip("Show object")
                 }
             }
@@ -278,6 +308,7 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
             +IconButton("tree.view.delete.item", "deleteIcon", 222f - off, 0f, 24f, 24f).apply {
                 transparent()
                 borderless()
+                hoveredStyle.background.color.set(0f)
                 metadata += "ref" to obj.ref
                 setTooltip("Delete object")
             }

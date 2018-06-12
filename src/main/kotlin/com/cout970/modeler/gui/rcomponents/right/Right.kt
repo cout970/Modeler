@@ -3,7 +3,7 @@ package com.cout970.modeler.gui.rcomponents.right
 import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.project.IModelAccessor
 import com.cout970.modeler.gui.GuiState
-import com.cout970.modeler.gui.leguicomp.background
+import com.cout970.modeler.gui.leguicomp.classes
 import com.cout970.modeler.input.event.IInput
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RProps
@@ -21,12 +21,9 @@ class RightPanel : RStatelessComponent<RightPanelProps>() {
 
     override fun RBuilder.render() = div("RightPanel") {
         style {
-            background { darkestColor }
-            borderless()
             posY = 48f
 
-            if (!props.visible)
-                hide()
+            classes(if (!props.visible) "right_panel_hide" else "right_panel")
         }
 
         postMount {
@@ -47,7 +44,6 @@ class RightPanel : RStatelessComponent<RightPanelProps>() {
                 posY = 5f
                 sizeY = parent.sizeY - posY
             }
-            child(CreateObjectPanel::class)
             child(ModelTree::class, ModelTreeProps(props.modelAccessor, props.input, props.dispatcher))
             child(MaterialList::class, MaterialListProps(props.modelAccessor, { props.state.selectedMaterial }))
         }

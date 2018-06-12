@@ -35,8 +35,8 @@ class ImportDialog : RComponent<PopupReturnProps, ImportDialogState>() {
 
     override fun RBuilder.render() = div("ImportPopup") {
         style {
-            background { darkestColor }
-            borderColor { color { greyColor } }
+            background { dark3 }
+            borderColor { color { grey } }
             borderSize = 2f
             width = 460f
             height = 240f
@@ -125,13 +125,13 @@ class ImportDialog : RComponent<PopupReturnProps, ImportDialogState>() {
 
             if (state.option != 0) { // disable
                 isEnabled = false
-                textState.textColor = Config.colorPalette.darkestColor.toColor()
-                (iconChecked as CharIcon).color = Config.colorPalette.darkestColor.toColor()
-                (iconUnchecked as CharIcon).color = Config.colorPalette.darkestColor.toColor()
+                textState.textColor = Config.colorPalette.dark3.toColor()
+                (iconChecked as CharIcon).color = Config.colorPalette.dark3.toColor()
+                (iconUnchecked as CharIcon).color = Config.colorPalette.dark3.toColor()
             } else { // enable
                 textState.textColor = Config.colorPalette.textColor.toColor()
-                (iconChecked as CharIcon).color = Config.colorPalette.whiteColor.toColor()
-                (iconUnchecked as CharIcon).color = Config.colorPalette.whiteColor.toColor()
+                (iconChecked as CharIcon).color = Config.colorPalette.bright4.toColor()
+                (iconUnchecked as CharIcon).color = Config.colorPalette.bright4.toColor()
             }
 
             on<CheckBoxChangeValueEvent<CheckBox>> {

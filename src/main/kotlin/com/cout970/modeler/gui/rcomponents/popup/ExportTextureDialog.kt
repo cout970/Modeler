@@ -25,8 +25,8 @@ class ExportTextureDialog : RComponent<PopupReturnProps, ExportTextureDialogStat
 
     override fun RBuilder.render() = div("ExportDialog") {
         style {
-            background { darkestColor }
-            style.border = SimpleLineBorder(Config.colorPalette.greyColor.toColor(), 2f)
+            background { dark3 }
+            style.border = SimpleLineBorder(Config.colorPalette.grey.toColor(), 2f)
             width = 460f
             height = 240f
         }

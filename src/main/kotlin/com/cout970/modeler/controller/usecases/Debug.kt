@@ -3,7 +3,7 @@ package com.cout970.modeler.controller.usecases
 import com.cout970.modeler.Debugger
 import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.tasks.TaskNone
-import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.gui.CSSTheme
 import com.cout970.modeler.gui.leguicomp.ProfilerDiagram
 import com.cout970.modeler.gui.leguicomp.key
 import com.cout970.modeler.render.RenderManager
@@ -17,6 +17,7 @@ private fun onDebug(): ITask {
     Debugger.debug {
         //reload gui
 
+        CSSTheme.loadCss()
         gui.root.reRender()
         gui.resources.reload(resourceLoader)
         gui.root.loadResources(gui.resources)

@@ -42,7 +42,6 @@ class RootComp : RComponent<RootProps, RootState>() {
             sizeY = parent.sizeY
         }
 
-        child(TopBar::class, ModelAccessorProps(props.gui.modelAccessor))
         child(CenterPanel::class, CenterPanelProps(props.gui.canvasContainer, props.gui.timer))
 
         child(LeftPanel::class, LeftPanelProps(state.leftVisible, props.gui.modelAccessor,
@@ -54,7 +53,10 @@ class RootComp : RComponent<RootProps, RootState>() {
         child(BottomPanel::class, BottomPanelProps(state.bottomVisible, props.gui.animator,
                 props.gui.modelAccessor, props.gui.input, props.gui.dispatcher))
 
+        child(TopBar::class, ModelAccessorProps(props.gui.modelAccessor))
+
         child(Search::class, SearchProps())
+
         child(PopUp::class, PopUpProps(props.gui.state, props.gui.propertyHolder))
 
         onCmd("toggleLeft") { setState { copy(leftVisible = !leftVisible) } }

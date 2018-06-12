@@ -22,6 +22,7 @@ import org.liquidengine.legui.event.Event
 import org.liquidengine.legui.event.MouseClickEvent
 import org.liquidengine.legui.listener.ListenerMap
 import org.liquidengine.legui.style.border.SimpleLineBorder
+import org.liquidengine.legui.theme.Themes
 
 /**
  * Created by cout970 on 2017/09/07.
@@ -46,8 +47,8 @@ fun spaces(amount: Int): String = buildString {
     (0 until amount).forEach { append(' ') }
 }
 
-fun Component.alignAsColumn(padding: Float) {
-    var y = 0f
+fun Component.alignAsColumn(padding: Float, margin: Float = 0f) {
+    var y = margin
     childComponents.forEach {
         it.posY = y
         y += it.sizeY + padding
@@ -62,6 +63,15 @@ inline fun Component.background(f: ColorPalette.() -> IVector3) {
 
 inline fun Component.border(size: Float = 1f, f: ColorPalette.() -> IVector3) {
     style.border = SimpleLineBorder(Config.colorPalette.f().toColor(), size)
+}
+
+fun Component.classes(vararg classes: String) {
+    metadata["classes"] = if (metadata["classes"] is String) {
+        (metadata["classes"] as String) + "," + classes.joinToString(",")
+    } else {
+        classes.joinToString(",")
+    }
+    Themes.getDefaultTheme().applyAll(this)
 }
 
 fun Component.onClick(func: (MouseClickEvent<*>) -> Unit) {

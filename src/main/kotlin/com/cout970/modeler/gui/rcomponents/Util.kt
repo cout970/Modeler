@@ -57,14 +57,14 @@ class FloatInput : RStatelessComponent<FloatInputProps>() {
         comp(StringInput(null)) {
             style {
                 defaultTextColor()
-                background { greyColor }
-                horizontalAlign = HorizontalAlign.CENTER
                 fontSize = 24f
                 posX = 0f
                 posY = 16f
                 sizeX = 75f
                 sizeY = 40f
                 text = formatter.format(props.getter())
+                classes("float_input")
+                horizontalAlign = HorizontalAlign.CENTER
 
                 onLoseFocus = {
                     dispatch(this, 0f, text)
@@ -85,7 +85,7 @@ class FloatInput : RStatelessComponent<FloatInputProps>() {
                 sizeX = 75f
                 sizeY = 16f
                 icon = "button_up"
-                background { lightDarkColor }
+                classes("float_input_button")
                 onRelease {
                     dispatch(this, 1f, formatter.format(props.getter()))
                 }
@@ -98,7 +98,7 @@ class FloatInput : RStatelessComponent<FloatInputProps>() {
                 sizeX = 75f
                 sizeY = 16f
                 icon = "button_down"
-                background { lightDarkColor }
+                classes("float_input_button")
                 onRelease {
                     dispatch(this, -1f, formatter.format(props.getter()))
                 }
@@ -128,7 +128,7 @@ class TinyFloatInput : RStatelessComponent<TinyFloatInputProps>() {
 
     override fun RBuilder.render() = div("TinyFloatInput") {
         style {
-            background { darkestColor }
+            background { dark3 }
             borderless()
             rectCorners()
             position.set(props.pos)

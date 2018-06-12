@@ -39,8 +39,8 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
 
     override fun RBuilder.render() = div("ExportDialog") {
         style {
-            background { darkestColor }
-            style.border = SimpleLineBorder(Config.colorPalette.greyColor.toColor(), 2f)
+            background { dark3 }
+            style.border = SimpleLineBorder(Config.colorPalette.grey.toColor(), 2f)
             width = 460f
             height = 240f
         }
@@ -62,7 +62,7 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
 
 
         +TextButton("", "Obj (*.obj)", 90f, 50f, 110f, 24f).apply {
-            if (state.selection != 0) background { darkColor }
+            if (state.selection != 0) background { dark2 }
 
             onClick {
                 setState { copy(selection = 0) }
@@ -70,7 +70,7 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
         }
 
         +TextButton("", "MCX (*.mcx)", 210f, 50f, 110f, 24f).apply {
-            if (state.selection != 1) background { darkColor }
+            if (state.selection != 1) background { dark2 }
 
             onClick {
                 setState { copy(selection = 1) }
@@ -78,7 +78,7 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
         }
 
         +TextButton("", "GLTF (*.gltf)", 330f, 50f, 110f, 24f).apply {
-            if (state.selection != 2) background { darkColor }
+            if (state.selection != 2) background { dark2 }
 
             onClick {
                 setState { copy(selection = 2) }

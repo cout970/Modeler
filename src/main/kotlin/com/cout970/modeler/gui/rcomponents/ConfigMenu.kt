@@ -43,10 +43,9 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
 
     override fun RBuilder.render() = div("ConfigMenu") {
         style {
-            border(2f) { greyColor }
-            background { darkestColor }
             width = 700f
             height = 550f
+            classes("popup_back")
         }
 
         postMount {
@@ -81,7 +80,7 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
         +TextButton("", "Apply", 600f, 505f, 90f, 24f).apply {
             if (state.editingConfig == ConfigManager.getConfigAsJson()) {
                 isEnabled = false
-                background { darkColor }
+                background { dark2 }
                 onCursorEnter {
                     isHovered = false
                 }
@@ -97,34 +96,33 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
     fun RBuilder.tabs() {
         div("Tabs") {
             style {
-                background { darkestColor }
-                borderless()
                 posX = 20f
                 posY = 20f
                 width = 660f
                 height = 32f
+                classes("popup_section")
             }
 
             +TextButton("", "Project", 0f, 0f, 80f, 32f).apply {
-                if (state.tab == Tab.PROJECT) background { greyColor } else background { darkColor }
+                if (state.tab == Tab.PROJECT) background { grey } else background { dark2 }
                 textState.fontSize = 18f
                 style.border = PixelBorder().apply { enableRight = true }
                 onClick { setState { copy(tab = Tab.PROJECT) } }
             }
             +TextButton("", "Parameters", 80f, 0f, 80f, 32f).apply {
-                if (state.tab == Tab.PARAMETERS) background { greyColor } else background { darkColor }
+                if (state.tab == Tab.PARAMETERS) background { grey } else background { dark2 }
                 textState.fontSize = 18f
                 style.border = PixelBorder().apply { enableRight = true }
                 onClick { setState { copy(tab = Tab.PARAMETERS) } }
             }
             +TextButton("", "Controls", 160f, 0f, 80f, 32f).apply {
-                if (state.tab == Tab.CONTROLS) background { greyColor } else background { darkColor }
+                if (state.tab == Tab.CONTROLS) background { grey } else background { dark2 }
                 textState.fontSize = 18f
                 style.border = PixelBorder().apply { enableRight = true }
                 onClick { setState { copy(tab = Tab.CONTROLS) } }
             }
             +TextButton("", "About", 240f, 0f, 80f, 32f).apply {
-                if (state.tab == Tab.ABOUT) background { greyColor } else background { darkColor }
+                if (state.tab == Tab.ABOUT) background { grey } else background { dark2 }
                 textState.fontSize = 18f
                 onClick { setState { copy(tab = Tab.ABOUT) } }
             }
@@ -138,7 +136,7 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                 posY = 80f
                 width = 660f
                 height = 125f + 80f
-                background { darkColor }
+                classes("popup_section")
             }
 
             val project = props.propertyHolder.projectProperties
@@ -154,7 +152,7 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
             }
 
             +FixedLabel(project.owner.name, 160f, 30f, 480f).apply {
-                background { darkestColor }
+                background { dark3 }
                 textState.padding.z = 10f
                 textState.fontSize = 20f
                 textState.textColor = ColorConstants.lightBlue()
@@ -168,7 +166,7 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
             }
 
             +StringInput("", project.name, 160f, 60f, 480f).apply {
-                background { darkestColor }
+                background { dark3 }
                 textState.padding.z = 10f
                 textState.fontSize = 20f
                 textState.horizontalAlign = HorizontalAlign.RIGHT
@@ -190,7 +188,7 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
             }
 
             +MultilineStringInput(project.description, 160f, 90f, 480f, 24f + 80f).apply {
-                background { darkestColor }
+                background { dark3 }
                 textState.padding.z = 10f
                 textState.fontSize = 20f
                 onTextChange = {
@@ -207,11 +205,11 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
 
         div("UsedData") {
             style {
-                background { darkColor }
                 posX = 20f
                 posY = 130f + 180f
                 width = 660f
                 height = 125f
+                classes("popup_section")
             }
 
             val user = Config.user
@@ -227,7 +225,7 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
             }
 
             +StringInput("", user.name, 160f, 30f, 480f).apply {
-                background { darkestColor }
+                background { dark3 }
                 textState.padding.z = 10f
                 textState.fontSize = 20f
                 textState.horizontalAlign = HorizontalAlign.RIGHT
@@ -248,7 +246,7 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
             }
 
             +StringInput("", user.email, 160f, 60f, 480f).apply {
-                background { darkestColor }
+                background { dark3 }
                 textState.padding.z = 10f
                 textState.fontSize = 20f
                 textState.horizontalAlign = HorizontalAlign.RIGHT
@@ -269,7 +267,7 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
             }
 
             +StringInput("", user.web, 160f, 90f, 480f).apply {
-                background { darkestColor }
+                background { dark3 }
                 textState.padding.z = 10f
                 textState.fontSize = 20f
                 textState.horizontalAlign = HorizontalAlign.RIGHT
@@ -290,11 +288,12 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
     fun RBuilder.parametersTab() {
         scrollablePanel {
             style {
-                background { darkColor }
                 posX = 20f
                 posY = 60f
                 sizeX = 660f
                 sizeY = 430f
+                transparent()
+                classes("popup_section")
             }
 
             horizontalScroll { style { hide() } }
@@ -303,12 +302,16 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
 
             verticalScroll {
                 style {
-                    if (properties.size * 30f + 10f > 430f) {
-                        visibleAmount = 50f
-                    } else {
-                        hide()
-                    }
+                    //                                        if (properties.size * 30f + 10f > 430f) {
+                    visibleAmount = 50f
+//                    } else {
+//                        hide()
+//                    }
                 }
+            }
+
+            viewport {
+                style { classes("popup_section") }
             }
 
             container {
@@ -317,18 +320,18 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                     transparent()
                     width = 650f
                     height = properties.size * 30f + 10f
+                    classes("popup_section")
                 }
 
                 properties.sortedBy { it.first }.forEachIndexed { index, (name, tooltip, prop) ->
 
-                    div {
+                    div("Item") {
                         style {
-                            background { darkestColor }
-                            borderless()
                             posX = 5f
                             posY = 6f + index * 30f
                             width = 631f
                             height = 24f
+                            classes("popup_parameter_item")
                         }
 
                         +FixedLabel(name.capitalize(), 10f, 0f, 100f, 24f).apply {
@@ -357,11 +360,11 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
     fun RBuilder.controlsTab() {
         scrollablePanel {
             style {
-                background { darkColor }
                 posX = 20f
                 posY = 60f
                 sizeX = 660f
                 sizeY = 430f
+                classes("popup_section")
             }
 
             horizontalScroll { style { hide() } }
@@ -369,21 +372,17 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
             verticalScroll {
                 style {
                     visibleAmount = 10f
+                    classes("popup_section")
                 }
             }
 
             container {
 
-                style {
-                    transparent()
-                    borderless()
-                }
-
                 val mouseKeybinds = getMouseKeyBinds()
                 val keybinds = getKeyBinds()
 
                 style {
-                    transparent()
+                    classes("popup_section")
                     width = 650f
                     height = mouseKeybinds.size * 30f + keybinds.size * 30f + 10f
                 }
@@ -392,12 +391,11 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
 
                     div {
                         style {
-                            background { darkestColor }
-                            borderless()
                             posX = 5f
                             posY = 6f + index * 30f
                             width = 631f
                             height = 24f
+                            classes("popup_parameter_item")
                         }
 
                         +FixedLabel(name.capitalize(), 10f, 0f, 100f, 24f).apply {
@@ -416,12 +414,11 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
 
                     div {
                         style {
-                            background { darkestColor }
-                            borderless()
                             posX = 5f
                             posY = 6f + index * 30f + mouseKeybinds.size * 30f
                             width = 631f
                             height = 24f
+                            classes("popup_parameter_item")
                         }
 
                         +FixedLabel(name.capitalize(), 10f, 0f, 100f, 24f).apply {
@@ -448,72 +445,81 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
     fun RBuilder.aboutTab() {
         val width = 700f
 
-        +FixedLabel("Modeler made by Cout970",
-                0f, 60f, width, 24f).apply {
-            fontSize(22f)
-            textState.horizontalAlign = HorizontalAlign.CENTER
-        }
-        +FixedLabel("Special thanks to:",
-                20f, 90f, width - 40f, 24f).apply {
-            fontSize(22f)
-            textState.horizontalAlign = HorizontalAlign.LEFT
-        }
-        +FixedLabel("- MechWarrior99 for the inspiration to start the project, the initial gui design and testing",
-                20f, 110f, width - 40f, 24f).apply {
-            fontSize(22f)
-            textState.horizontalAlign = HorizontalAlign.LEFT
-        }
-        +FixedLabel("- ShchAlexander for develop Legui and support the project",
-                20f, 130f, width - 40f, 24f).apply {
-            fontSize(22f)
-            textState.horizontalAlign = HorizontalAlign.LEFT
-        }
-        +FixedLabel("Technologies used:",
-                20f, 160f, width - 40f, 24f).apply {
-            fontSize(22f)
-            textState.horizontalAlign = HorizontalAlign.LEFT
-        }
-        +FixedLabel("- Kotlin: made by Jetbrains",
-                20f, 180f, width - 40f, 24f).apply {
-            fontSize(22f)
-            textState.horizontalAlign = HorizontalAlign.LEFT
-        }
-        +FixedLabel("- Legui: made by ShchAlexander",
-                20f, 200f, width - 40f, 24f).apply {
-            fontSize(22f)
-            textState.horizontalAlign = HorizontalAlign.LEFT
-        }
-        +FixedLabel("- LWJGL: from the LWJGL Team",
-                20f, 220f, width - 40f, 24f).apply {
-            fontSize(22f)
-            textState.horizontalAlign = HorizontalAlign.LEFT
-        }
-        +FixedLabel("Source code:",
-                20f, 250f, width - 40f, 24f).apply {
-            fontSize(22f)
-            textState.horizontalAlign = HorizontalAlign.LEFT
-        }
-        +FixedLabel("https://github.com/cout970/Modeler",
-                20f, 270f, width - 40f, 24f).apply {
-            fontSize(22f)
-            textState.horizontalAlign = HorizontalAlign.LEFT
-            textState.textColor = Vector4f(0f, 119f / 255f, 204f / 255f, 1.0f)
-            onClick {
-                openLink("https://github.com/cout970/Modeler")
+        div {
+            style {
+                posX = 20f
+                posY = 60f
+                sizeX = 660f
+                sizeY = 430f
+                classes("popup_section")
             }
-        }
-        +FixedLabel("You can ask for support at the Magneticraft discord:",
-                20f, 310f, width - 40f, 24f).apply {
-            fontSize(22f)
-            textState.horizontalAlign = HorizontalAlign.LEFT
-        }
-        +FixedLabel("Discord",
-                20f, 330f, width - 40f, 24f).apply {
-            fontSize(22f)
-            textState.horizontalAlign = HorizontalAlign.LEFT
-            textState.textColor = Vector4f(0f, 119f / 255f, 204f / 255f, 1.0f)
-            onClick {
-                openLink("https://discord.gg/EhYbA97")
+            +FixedLabel("Modeler made by Cout970",
+                    0f, 10f, width, 24f).apply {
+                fontSize(22f)
+                textState.horizontalAlign = HorizontalAlign.CENTER
+            }
+            +FixedLabel("Special thanks to:",
+                    10f, 40f, width - 40f, 24f).apply {
+                fontSize(22f)
+                textState.horizontalAlign = HorizontalAlign.LEFT
+            }
+            +FixedLabel("- MechWarrior99 for the inspiration to start the project, the initial gui design and testing",
+                    10f, 60f, width - 40f, 24f).apply {
+                fontSize(22f)
+                textState.horizontalAlign = HorizontalAlign.LEFT
+            }
+            +FixedLabel("- ShchAlexander for develop Legui and support the project",
+                    10f, 80f, width - 40f, 24f).apply {
+                fontSize(22f)
+                textState.horizontalAlign = HorizontalAlign.LEFT
+            }
+            +FixedLabel("Technologies used:",
+                    10f, 110f, width - 40f, 24f).apply {
+                fontSize(22f)
+                textState.horizontalAlign = HorizontalAlign.LEFT
+            }
+            +FixedLabel("- Kotlin: made by Jetbrains",
+                    10f, 130f, width - 40f, 24f).apply {
+                fontSize(22f)
+                textState.horizontalAlign = HorizontalAlign.LEFT
+            }
+            +FixedLabel("- Legui: made by ShchAlexander",
+                    10f, 150f, width - 40f, 24f).apply {
+                fontSize(22f)
+                textState.horizontalAlign = HorizontalAlign.LEFT
+            }
+            +FixedLabel("- LWJGL: from the LWJGL Team",
+                    10f, 170f, width - 40f, 24f).apply {
+                fontSize(22f)
+                textState.horizontalAlign = HorizontalAlign.LEFT
+            }
+            +FixedLabel("Source code:",
+                    10f, 200f, width - 40f, 24f).apply {
+                fontSize(22f)
+                textState.horizontalAlign = HorizontalAlign.LEFT
+            }
+            +FixedLabel("https://github.com/cout970/Modeler",
+                    10f, 220f, width - 40f, 24f).apply {
+                fontSize(22f)
+                textState.horizontalAlign = HorizontalAlign.LEFT
+                textState.textColor = Vector4f(0f, 119f / 255f, 204f / 255f, 1.0f)
+                onClick {
+                    openLink("https://github.com/cout970/Modeler")
+                }
+            }
+            +FixedLabel("You can ask for support at the Magneticraft discord:",
+                    10f, 260f, width - 40f, 24f).apply {
+                fontSize(22f)
+                textState.horizontalAlign = HorizontalAlign.LEFT
+            }
+            +FixedLabel("Discord",
+                    10f, 280f, width - 40f, 24f).apply {
+                fontSize(22f)
+                textState.horizontalAlign = HorizontalAlign.LEFT
+                textState.textColor = Vector4f(0f, 119f / 255f, 204f / 255f, 1.0f)
+                onClick {
+                    openLink("https://discord.gg/EhYbA97")
+                }
             }
         }
     }
@@ -541,9 +547,9 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
 
     fun KMutableProperty<*>.getTooltip(): String? {
         return annotations
-                       .filterIsInstance<ConfigComment>()
-                       .firstOrNull()
-                       ?.run { comment } ?: return null
+                .filterIsInstance<ConfigComment>()
+                .firstOrNull()
+                ?.run { comment } ?: return null
     }
 
     fun getProperties(): List<Triple<String, String?, Pair<() -> Float, (Float) -> Unit>>> {
@@ -657,19 +663,17 @@ class MouseButtonInput : RComponent<MouseButtonInputProps, MouseButtonInput.Stat
 
     override fun RBuilder.render() = div("MouseButtonInput") {
         style {
-            background { darkestColor }
-            borderless()
-            rectCorners()
             position.set(props.pos)
             width = 150f
             height = 24f
+            classes("popup_parameter_item_value")
         }
 
         val text = if (state.showMode) getMouseButtonName(props.getter().button) else "Press new button"
 
         comp(TextButton("", text, 0f, 0f, 150f, 24f)) {
             style {
-                background { greyColor }
+                background { grey }
                 horizontalAlign = HorizontalAlign.LEFT
                 fontSize = 20f
                 textState.padding.x = 5f
@@ -734,19 +738,17 @@ class KeyboardKeyInput : RComponent<KeyboardKeyInputProps, KeyboardKeyInput.Stat
 
     override fun RBuilder.render() = div("KeyboardKeyInput") {
         style {
-            background { darkestColor }
-            borderless()
-            style.setBorderRadius(0f)
             position.set(props.pos)
             width = 150f
             height = 24f
+            classes("popup_parameter_item_value")
         }
 
         val text = if (state.showMode) props.getter().getName() else "Press new key"
 
         comp(StringInput("", text, 0f, 0f, 150f, 24f)) {
             style {
-                background { greyColor }
+                background { grey }
             }
 
             postMount {

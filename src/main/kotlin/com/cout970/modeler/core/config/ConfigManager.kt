@@ -30,9 +30,9 @@ object ConfigManager {
 
     fun loadConfig() {
         val file = File(PathConstants.CONFIG_FILE_PATH)
-        if (file.exists()) {// && !Debugger.STATIC_DEBUG
-            deserializeConfig(file.readText())
-        }
+//        if (file.exists()) {// && !Debugger.STATIC_DEBUG
+//            deserializeConfig(file.readText())
+//        }
         saveConfig()
     }
 

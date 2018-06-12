@@ -2,7 +2,9 @@
 # Loads of skyboxes "http://www.custommapmakers.org/skyboxes.php"
 
 # Current
-Add model hierarchy
+import texture template after creation
+menu to edit material properties
+add extra info into objects
 
 # TODO soom
 add binary switches

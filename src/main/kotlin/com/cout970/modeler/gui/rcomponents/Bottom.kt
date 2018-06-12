@@ -27,17 +27,16 @@ data class BottomPanelProps(
         val animator: Animator,
         val modelAccessor: IModelAccessor,
         val input: IInput,
-        val disptcher: Dispatcher) : RProps
+        val dispatcher: Dispatcher) : RProps
 
 class BottomPanel : RStatelessComponent<BottomPanelProps>() {
 
     override fun RBuilder.render() = div("BottomPanel") {
 
         style {
-            background { darkColor }
-            borderless()
+            classes("bottom_panel")
             if (!props.visible)
-                hide()
+                classes("bottom_panel_hide")
         }
 
         postMount {
@@ -52,8 +51,7 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
         div("Control bar") {
             style {
                 height = 32f
-                background { darkestColor }
-                borderless()
+                classes("bottom_panel_controls")
             }
             postMount {
                 width = parent.width
@@ -65,25 +63,44 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
         div("Time bar") {
             style {
                 posY = 32f
-                height = 20f
-                background { lightDarkColor }
-                style.border = PixelBorder().apply { enableBottom = true }
+                height = 24f
+                classes("bottom_panel_time_bar")
             }
 
             postMount {
                 width = parent.width
             }
 
+            div("Button list") {
+                style {
+                    transparent()
+                    borderless()
+                    sizeY = 24f
+                }
+
+                postMount {
+                    marginX(5f)
+                    floatLeft(5f, 0f)
+                }
+
+                +IconButton("animation.channel.add", "add_channel", 0f, 0f, 24f, 24f).apply {
+                    borderless()
+                    rectCorners()
+                    tooltip = InstantTooltip("Add new animation channel")
+                }
+            }
+
             comp(AnimationPanelHead(props.animator, props.modelAccessor.animation)) {
 
                 style {
-                    transparent()
+                    classes("bottom_panel_time_bar_left")
                 }
 
                 postMount {
                     posX = 200f
+                    posY = 2f
                     sizeX = parent.sizeX - 200f
-                    sizeY = parent.sizeY
+                    sizeY = parent.sizeY - 4f
                 }
             }
         }
@@ -118,7 +135,7 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
         child(TinyFloatInput::class, TinyFloatInputProps(
                 pos = Vector2f(32f * 6f + 60f, 4f),
                 getter = { props.animator.animation.timeLength },
-                setter = { props.disptcher.onEvent("animation.set.length", Panel().apply { metadata["time"] = it }) }
+                setter = { props.dispatcher.onEvent("animation.set.length", Panel().apply { metadata["time"] = it }) }
         ))
 
         +IconButton("animation.add.keyframe", "add_keyframe", 120f + 256f, 3f, 26f, 26f).apply {
@@ -143,8 +160,7 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
 
         style {
             width = 200f
-            transparent()
-            style.border = PixelBorder().apply { enableRight = true }
+            classes("animation_track")
         }
 
         postMount { height = parent.height }
@@ -155,14 +171,11 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
                     posY = index * 24f
                     width = 200f
                     height = 24f
+                    classes("animation_track_item")
 
                     if (props.animator.selectedChannel == c.ref) {
-                        background { lightBrightColor }
-                    } else {
-                        background { lightDarkColor }
+                        classes("animation_track_item_selected")
                     }
-
-                    style.border = PixelBorder().apply { enableBottom = true; enableRight = true }
                 }
 
                 +IconButton("animation.channel.select", "obj_type_cube", 0f, 0f, 24f, 24f).apply {
@@ -199,16 +212,16 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
         }
     }
 
+
     fun RBuilder.timeline() = scrollablePanel("Timeline") {
         val anim = props.modelAccessor.animation
 
         style {
-            transparent()
-            borderless()
+            classes("bottom_panel_timeline")
         }
 
         postMount {
-            posY = 52f
+            posY = 52f + 6f
             posX = 0f
             sizeX = parent.sizeX
             sizeY = parent.sizeY - posY
@@ -223,14 +236,19 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
                 rectCorners()
                 style.minWidth = 16f
                 style.bottom = 0f
-                arrowColor = color { lightBrightColor }
-                scrollColor = color { darkColor }
+                arrowColor = color { bright1 }
+                scrollColor = color { dark2 }
                 visibleAmount = 50f
-                backgroundColor { color { lightBrightColor } }
+                backgroundColor { color { bright1 } }
             }
         }
 
         viewport {
+            style {
+                transparent()
+                borderless()
+            }
+
             postMount {
                 style.right = 16f
                 style.bottom = 0f
@@ -254,9 +272,8 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
 
             comp(AnimationPanel(props.animator, anim)) {
                 style {
-                    background { darkColor }
                     posX = 200f
-                    style.border = debugPixelBorder()
+                    classes("animation_panel")
                 }
 
                 postMount {
@@ -264,7 +281,7 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
                     height = parent.sizeY - posY
                 }
 
-                onClick { props.disptcher.onEvent("animation.panel.click", it.targetComponent) }
+                onClick { props.dispatcher.onEvent("animation.panel.click", it.targetComponent) }
 
                 onScroll(this@BottomPanel::handleScroll)
             }

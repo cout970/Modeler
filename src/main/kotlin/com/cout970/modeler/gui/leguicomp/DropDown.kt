@@ -16,9 +16,9 @@ class DropDown(
 
     init {
         selectionListPanel.verticalScrollBar.apply {
-            background { brightestColor }
-            scrollColor = color { greyColor }
-            arrowColor = color { whiteColor }
+            background { bright3 }
+            scrollColor = color { grey }
+            arrowColor = color { bright4 }
         }
     }
 }

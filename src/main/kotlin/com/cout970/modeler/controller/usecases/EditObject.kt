@@ -6,6 +6,8 @@ import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.model.`object`.Object
 import com.cout970.modeler.core.model.faces
 import com.cout970.modeler.core.model.getSelectedObjects
+import com.cout970.modeler.core.model.mesh.FaceIndex
+import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.model.selection.Selection
 import com.cout970.modeler.core.project.IModelAccessor
@@ -17,6 +19,7 @@ import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.asNullable
 import com.cout970.modeler.util.getOr
 import com.cout970.modeler.util.text
+import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.*
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.TextInput
@@ -83,6 +86,64 @@ private fun joinObjects(modelAccessor: IModelAccessor): ITask {
             material = objs.first().material
     )
     val newModel = model.removeObjects(objsRefs).addObjects(listOf(newObj))
+
+    return TaskChain(listOf(
+            TaskUpdateModelSelection(
+                    oldSelection = modelAccessor.modelSelection,
+                    newSelection = Nullable.castNull()
+            ),
+            TaskUpdateTextureSelection(
+                    oldSelection = modelAccessor.textureSelection,
+                    newSelection = Nullable.castNull()
+            ),
+            TaskUpdateModel(oldModel = model, newModel = newModel)
+    ))
+}
+
+@UseCase("model.obj.arrange.uv")
+private fun arrangeUVs(modelAccessor: IModelAccessor): ITask {
+    val selection = modelAccessor.modelSelection.getOrNull() ?: return TaskNone
+    if (selection.selectionType != SelectionType.OBJECT) return TaskNone
+
+    val model = modelAccessor.model
+
+    val newModel = model.modifyObjects(selection.objects.toSet()) { _, obj ->
+        val mesh = obj.mesh
+        val newTex = mutableListOf<IVector2>()
+
+        val newFaces = mesh.faces.map {
+            val a = mesh.pos[it.pos[0]]
+            val b = mesh.pos[it.pos[1]]
+            val c = mesh.pos[it.pos[2]]
+            val d = mesh.pos[it.pos[3]]
+
+            val ac = c - a
+            val bd = d - b
+            val normal = (ac cross bd).normalize()
+
+            // 3d axis representing the 2d axis in the plane space
+            val orthoX = (d - c).normalize()
+            val orthoY = orthoX cross normal
+
+            repeat(4) { index ->
+                val point3d = mesh.pos[it.pos[index]]
+                val relPoint = point3d - a
+
+                val x = orthoX.dot(relPoint) * 1f / 16f
+                val y = orthoY.dot(relPoint) * 1f / 16f
+
+                newTex += vec2Of(x, y)
+            }
+
+            FaceIndex(it.pos, listOf(newTex.size - 4, newTex.size - 3, newTex.size - 2, newTex.size - 1))
+        }
+
+        obj.withMesh(Mesh(
+                pos = mesh.pos,
+                tex = newTex,
+                faces = newFaces
+        ))
+    }
 
     return TaskChain(listOf(
             TaskUpdateModelSelection(

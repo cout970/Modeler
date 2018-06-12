@@ -8,7 +8,7 @@ import com.cout970.modeler.gui.event.NotificationHandler
 import com.cout970.modeler.gui.leguicomp.FixedLabel
 import com.cout970.modeler.gui.leguicomp.Panel
 import com.cout970.modeler.gui.leguicomp.ProfilerDiagram
-import com.cout970.modeler.gui.leguicomp.background
+import com.cout970.modeler.gui.leguicomp.classes
 import com.cout970.modeler.util.toColor
 import com.cout970.reactive.core.EmptyProps
 import com.cout970.reactive.core.RBuilder
@@ -21,7 +21,6 @@ import com.cout970.reactive.nodes.div
 import com.cout970.reactive.nodes.style
 import org.liquidengine.legui.component.TextArea
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
-import org.liquidengine.legui.style.border.SimpleLineBorder
 
 data class CenterPanelProps(val canvasContainer: CanvasContainer, val timer: Timer) : RProps
 
@@ -156,11 +155,10 @@ class EventPanel : RStatelessComponent<EmptyProps>() {
         notifications.asReversed().forEachIndexed { index, notification ->
             div {
                 style {
-                    background { darkColor }
-                    style.border = SimpleLineBorder(Config.colorPalette.darkestColor.toColor(), 2f)
                     width = 330f
                     height = 65f
                     posY = index * (height + 4f)
+                    classes("notification")
                 }
 
                 +FixedLabel(notification.title, y = 0f, width = 330f, height = 24f).apply {
@@ -169,7 +167,7 @@ class EventPanel : RStatelessComponent<EmptyProps>() {
                 +TextArea(notification.text, 0f, 24f, 330f, 40f).apply {
                     isEditable = false
                     textState.textColor = Config.colorPalette.textColor.toColor()
-                    background { darkColor }
+                    transparent()
                 }
             }
         }

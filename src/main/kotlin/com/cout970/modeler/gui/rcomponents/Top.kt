@@ -12,15 +12,13 @@ import com.cout970.reactive.nodes.child
 import com.cout970.reactive.nodes.div
 import com.cout970.reactive.nodes.style
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
-import org.liquidengine.legui.style.border.SimpleLineBorder
-
 
 class TopBar : RStatelessComponent<ModelAccessorProps>() {
 
     override fun RBuilder.render() = div("TopBar") {
         style {
             style.border = PixelBorder().also { it.enableBottom = true }
-            background { darkestColor }
+            classes("top_bar")
             height = 48f
         }
 
@@ -89,9 +87,7 @@ class SelectionTypeBar : RComponent<EmptyProps, SelectionTypeState>() {
 
     override fun RBuilder.render() = div("SelectionTypeBar") {
         style {
-            background { blackColor }
-            borderless()
-            borderRadius(5f)
+            classes("selection_type_bar")
             posX = 432f + 10f
             posY = 5f
             width = 143f + 8f
@@ -145,11 +141,9 @@ class ModelStatistics : RStatelessComponent<ModelAccessorProps>() {
 
     override fun RBuilder.render() = div("ModelStatistics") {
         style {
-            background { darkestColor }
-            style.border = PixelBorder().apply { enableLeft = true }
-            rectCorners()
             width = 288f
             height = 85f
+            classes("statistics_panel")
         }
 
         postMount {
@@ -163,13 +157,10 @@ class ModelStatistics : RStatelessComponent<ModelAccessorProps>() {
         val texVertex = model.objects.map { it.mesh.tex.size }.sum()
 
         val config: FixedLabel.() -> Unit = {
-            style.border = SimpleLineBorder()
-            borderColor { color { lightDarkColor } }
-            borderSize = 1f
-            rectCorners()
             fontSize = 18f
             horizontalAlign = HorizontalAlign.LEFT
             textState.padding.x = 10f
+            classes("statistics_panel_item")
         }
 
         +FixedLabel("Objs: $objs", 5f, 7f, 135f, 16f).apply(config)

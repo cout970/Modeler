@@ -2,9 +2,6 @@ package com.cout970.modeler.gui.leguicomp
 
 import com.cout970.glutilities.device.Keyboard
 import com.cout970.modeler.util.asNullable
-import com.cout970.reactive.dsl.borderless
-import com.cout970.reactive.dsl.rectCorners
-import com.cout970.reactive.dsl.transparent
 import org.liquidengine.legui.component.TextInput
 import org.liquidengine.legui.component.event.textinput.TextInputContentChangeEvent
 import org.liquidengine.legui.component.misc.listener.textinput.TextInputMouseClickEventListener
@@ -27,12 +24,10 @@ class StringInput(
     var onTextChange: ((TextInputContentChangeEvent<*>) -> Unit)? = null
 
     init {
-        transparent()
-        borderless()
         defaultTextColor()
-        focusedStrokeColor { greyColor }
-        highlightColor { brightestColor }
-        rectCorners()
+        focusedStrokeColor { grey }
+        highlightColor { bright3 }
+        classes("string_input")
         textState.fontSize = 18f
 
         listenerMap.addListener(MouseClickEvent::class.java, MouseClickEventListener())

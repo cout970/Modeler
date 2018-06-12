@@ -20,7 +20,7 @@ class IconButton(
 ) : Button("", posX, posY, sizeX, sizeY), IResourceReloadable {
 
     init {
-        hoveredStyle.background.color = color { brightColor }
+        hoveredStyle.background.color = color { bright2 }
         borderless()
         transparent()
         rectCorners()

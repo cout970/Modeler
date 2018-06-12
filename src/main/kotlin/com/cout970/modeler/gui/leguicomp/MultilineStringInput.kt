@@ -27,8 +27,8 @@ class MultilineStringInput(
         setTransparent()
         setBorderless()
         defaultTextColor()
-        focusedStrokeColor { greyColor }
-        highlightColor { brightestColor }
+        focusedStrokeColor { grey }
+        highlightColor { bright3 }
         rectangularCorners()
         textState.fontSize = 18f
         textState.horizontalAlign = HorizontalAlign.LEFT

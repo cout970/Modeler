@@ -1,18 +1,15 @@
 package com.cout970.modeler.gui.rcomponents.left
 
-import com.cout970.modeler.gui.leguicomp.*
+import com.cout970.modeler.gui.leguicomp.InstantTooltip
+import com.cout970.modeler.gui.leguicomp.ToggleButton
+import com.cout970.modeler.gui.leguicomp.classes
 import com.cout970.reactive.core.EmptyProps
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
 import com.cout970.reactive.dsl.*
-import com.cout970.reactive.nodes.comp
+import com.cout970.reactive.nodes.child
 import com.cout970.reactive.nodes.div
 import com.cout970.reactive.nodes.style
-import org.joml.Vector2f
-import org.liquidengine.legui.component.optional.align.HorizontalAlign
-import org.liquidengine.legui.icon.CharIcon
-import org.liquidengine.legui.style.color.ColorConstants
-import org.liquidengine.legui.style.font.FontRegistry
 
 class EditorControls : RComponent<EmptyProps, VisibleWidget>() {
 
@@ -20,51 +17,21 @@ class EditorControls : RComponent<EmptyProps, VisibleWidget>() {
 
     override fun RBuilder.render() = div("EditorControls") {
         style {
-            transparent()
-            border(2f) { greyColor }
-            rectCorners()
-            height = if (state.on) 53f else 24f
+            classes("left_panel_group", "editor_controls")
+            height = if (state.on) 53f + 8f else 24f
         }
 
         postMount {
             marginX(5f)
         }
 
-        comp(FixedLabel()) {
-            style {
-                textState.apply {
-                    this.text = "Editor Controls"
-                    horizontalAlign = HorizontalAlign.CENTER
-                    fontSize = 20f
-                }
-            }
-
-            postMount {
-                posX = 50f
-                posY = 0f
-                sizeX = parent.sizeX - 100f
-                sizeY = 24f
-            }
-        }
-
-        comp(IconButton()) {
-            style {
-                val charCode = if (state.on) 'X' else 'O'
-                setImage(CharIcon(Vector2f(16f, 16f), FontRegistry.DEFAULT, charCode, ColorConstants.lightGray()))
-                background { darkColor }
-                posX = 250f
-                posY = 4f
-            }
-            onRelease {
-                setState { copy(on = !on) }
-            }
-        }
+        child(GroupTitle::class.java, GroupTitleProps("Editor Controls", state.on) { setState { copy(on = !on) } })
 
         div {
             style {
                 transparent()
                 borderless()
-                posY = 24f
+                posY = 24f + 8f
                 sizeY = 24f
             }
 

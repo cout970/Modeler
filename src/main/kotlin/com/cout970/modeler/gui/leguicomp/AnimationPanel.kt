@@ -165,7 +165,7 @@ class AnimationPanelHead(val animator: Animator, val animation: IAnimation) : Pa
                     false,
                     HorizontalAlign.CENTER,
                     VerticalAlign.MIDDLE,
-                    16f,
+                    18f,
                     FontRegistry.DEFAULT,
                     frame.toString(),
                     ColorConstants.white()

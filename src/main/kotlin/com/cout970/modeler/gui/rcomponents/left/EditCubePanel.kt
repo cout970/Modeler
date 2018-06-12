@@ -13,7 +13,9 @@ import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.model.selection.ObjectRefNone
 import com.cout970.modeler.gui.event.EventModelUpdate
 import com.cout970.modeler.gui.event.EventSelectionUpdate
-import com.cout970.modeler.gui.leguicomp.*
+import com.cout970.modeler.gui.leguicomp.FixedLabel
+import com.cout970.modeler.gui.leguicomp.alignAsColumn
+import com.cout970.modeler.gui.leguicomp.classes
 import com.cout970.modeler.gui.rcomponents.FloatInput
 import com.cout970.modeler.gui.rcomponents.FloatInputProps
 import com.cout970.modeler.gui.rcomponents.TransformationInput
@@ -24,14 +26,13 @@ import com.cout970.modeler.util.getOr
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
 import com.cout970.reactive.dsl.*
-import com.cout970.reactive.nodes.*
+import com.cout970.reactive.nodes.DivBuilder
+import com.cout970.reactive.nodes.child
+import com.cout970.reactive.nodes.div
+import com.cout970.reactive.nodes.style
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.Vector2
 import com.cout970.vector.extensions.vec2Of
-import org.joml.Vector2f
-import org.liquidengine.legui.icon.CharIcon
-import org.liquidengine.legui.style.color.ColorConstants
-import org.liquidengine.legui.style.font.FontRegistry
 
 class EditCubePanel : RComponent<ModelAccessorProps, VisibleWidget>() {
 
@@ -39,15 +40,13 @@ class EditCubePanel : RComponent<ModelAccessorProps, VisibleWidget>() {
 
     override fun RBuilder.render() = div("EditCubePanel") {
         style {
-            transparent()
-            border(2f) { greyColor }
-            rectCorners()
-            height = if (state.on) 486f else 24f
+            classes("left_panel_group", "edit_cube")
+            height = if (state.on) 600f else 24f
         }
 
         postMount {
             marginX(5f)
-            alignAsColumn(5f)
+            alignAsColumn(5f, 14f)
         }
 
         val (ref, cube) = getObject().split { it }
@@ -57,41 +56,7 @@ class EditCubePanel : RComponent<ModelAccessorProps, VisibleWidget>() {
         val tex = { cube.map { it.textureOffset }.getOr(Vector2.ORIGIN) }
         val scale = { cube.map { it.textureSize }.getOr(Vector2.ORIGIN) }
 
-        div("Title") {
-            style {
-                transparent()
-                borderless()
-                sizeY = 24f
-                posY = 1f
-            }
-
-            postMount {
-                fillX()
-            }
-
-            comp(FixedLabel()) {
-                style {
-                    textState.text = "Edit Cube"
-                    fontSize = 22f
-                    posX = 50f
-                    posY = 0f
-                    sizeY = 22f
-                }
-
-                postMount {
-                    sizeX = parent.sizeX - 100
-                }
-            }
-
-            // close button
-            +IconButton(posX = 250f, posY = 3f).apply {
-                val charCode = if (state.on) 'X' else 'O'
-                setImage(CharIcon(Vector2f(16f, 16f), FontRegistry.DEFAULT, charCode, ColorConstants.lightGray()))
-                background { darkColor }
-
-                onRelease { setState { copy(on = !on) } }
-            }
-        }
+        child(GroupTitle::class.java, GroupTitleProps("Edit Cube", state.on) { setState { copy(on = !on) } })
 
         child(TransformationInput::class, TransformationInputProps(
                 usecase = "update.template.cube",

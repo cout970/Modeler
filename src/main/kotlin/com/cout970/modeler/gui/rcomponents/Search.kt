@@ -2,7 +2,10 @@ package com.cout970.modeler.gui.rcomponents
 
 import com.cout970.glutilities.device.Keyboard
 import com.cout970.modeler.core.search.SearchDatabase
-import com.cout970.modeler.gui.leguicomp.*
+import com.cout970.modeler.gui.leguicomp.classes
+import com.cout970.modeler.gui.leguicomp.defaultTextColor
+import com.cout970.modeler.gui.leguicomp.fontSize
+import com.cout970.modeler.gui.leguicomp.onCmd
 import com.cout970.modeler.util.focus
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
@@ -53,12 +56,11 @@ class Search : RComponent<SearchProps, SearchState>() {
             centerX()
         }
 
-        div {
+        div("Search panel") {
             style {
                 posY = 4f
                 sizeY = 60f
-                background { darkColor }
-                border(4f) { darkestColor }
+                classes("search_bar")
             }
 
             postMount {
@@ -82,7 +84,7 @@ class Search : RComponent<SearchProps, SearchState>() {
                     posY = 24f
                     sizeY = 30f
                     defaultTextColor()
-                    background { lightBrightColor }
+                    classes("search_bar_input")
                 }
 
                 postMount {
@@ -94,7 +96,6 @@ class Search : RComponent<SearchProps, SearchState>() {
 
                 onFocus {
                     if (!it.isFocused) {
-                        println(it.nextFocus)
                         setState { getInitialState() }
                     }
                 }
@@ -112,8 +113,10 @@ class Search : RComponent<SearchProps, SearchState>() {
             div("SearchResults") {
 
                 style {
+                    posX = 4f
                     posY = 60f + 8f
-                    sizeX = 480f
+                    sizeX = 472f
+                    classes("search_bar_results")
                 }
 
                 postMount {
@@ -134,32 +137,35 @@ class Search : RComponent<SearchProps, SearchState>() {
 
     private fun RBuilder.searchResult(index: Int, result: SearchResult) = div {
         style {
-            background {
-                if (index == state.selected) selectedOption else greyColor
+            classes("search_bar_result")
+            if (index == state.selected) {
+                classes("search_bar_result_selected")
             }
-            sizeX = 480f
+            sizeX = 470f
             sizeY = 24f
             posY = index * sizeY
         }
 
         label(result.text) {
             style {
-                posX = 5f
+                posX = 8f
                 posY = 0f
                 sizeX = 200f
                 sizeY = 24f
                 defaultTextColor()
+                fontSize(20f)
             }
         }
 
         label(result.keyBind) {
             style {
-                posX = 270f
+                posX = 260f
                 posY = 0f
                 sizeX = 200f
                 sizeY = 24f
                 horizontalAlign = HorizontalAlign.RIGHT
                 defaultTextColor()
+                fontSize(20f)
             }
         }
 

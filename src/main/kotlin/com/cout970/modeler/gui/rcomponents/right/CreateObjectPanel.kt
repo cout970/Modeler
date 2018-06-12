@@ -19,7 +19,7 @@ class CreateObjectPanel : RStatelessComponent<EmptyProps>() {
     override fun RBuilder.render() = div("CreateObject") {
         style {
             transparent()
-            border(2f) { greyColor }
+            border(2f) { grey }
             rectCorners()
         }
 

@@ -22,7 +22,7 @@ class TextButton(
 
     init {
         textState.textColor = Config.colorPalette.textColor.toColor()
-        hoveredStyle.background.color = color { brightestColor }
+        hoveredStyle.background.color = color { bright3 }
         background { buttonColor }
         rectCorners()
         borderless()

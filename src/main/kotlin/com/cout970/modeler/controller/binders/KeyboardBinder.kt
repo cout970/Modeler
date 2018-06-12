@@ -49,6 +49,7 @@ class KeyboardBinder(val dispatcher: Dispatcher) {
                 scaleTextureDown.check(e) -> "model.texture.scale.down"
 
                 joinObjects.check(e) -> "model.obj.join"
+                arrangeUvs.check(e) -> "model.obj.arrange.uv"
                 extrudeFace.check(e) -> "model.face.extrude"
                 setIsometricView.check(e) -> "camera.set.isometric"
 

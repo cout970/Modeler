@@ -90,6 +90,7 @@ class KeyBindings {
     var scaleTextureDown = KeyBind(KEY_PAGE_DOWN, CTRL)
 
     var joinObjects = KeyBind(KEY_J, CTRL)
+    var arrangeUvs = KeyBind(KEY_L, CTRL)
     var extrudeFace = KeyBind(KEY_E, CTRL)
     var setIsometricView = KeyBind(KEY_I, ALT)
 

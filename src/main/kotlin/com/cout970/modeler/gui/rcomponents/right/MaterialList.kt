@@ -28,17 +28,15 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
 
     override fun RBuilder.render() = div("MaterialList") {
         style {
-            transparent()
-            border(2f) { greyColor }
-            rectCorners()
             height = 300f
             posY = 375f
+            classes("left_panel_material_list")
         }
 
         postMount {
             marginX(5f)
-            posY = (parent.height - 70f) / 2f + 70f
-            height = (parent.height - 70f) / 2f
+            posY = parent.height / 2f
+            height = parent.height / 2f
         }
 
         on<EventModelUpdate> { rerender() }
@@ -102,13 +100,14 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
         }
 
         scrollablePanel("MaterialListScrollPanel") {
+
             style {
                 transparent()
                 borderless()
             }
 
             postMount {
-                posX = 0f
+                posX = 5f
                 posY = 24f + 32f + 5f
                 sizeX = parent.sizeX - 5f
                 sizeY = parent.sizeY - posY - 5f
@@ -120,12 +119,20 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
 
             verticalScroll {
                 style {
-                    rectCorners()
                     style.minWidth = 16f
-                    arrowColor = color { lightBrightColor }
-                    scrollColor = color { darkColor }
+                    arrowColor = color { bright1 }
                     visibleAmount = 50f
-                    backgroundColor { color { lightBrightColor } }
+                    style.top = 0f
+                    style.bottom = 0f
+                    classes("left_panel_material_list_scroll")
+                }
+            }
+
+            viewport {
+                style {
+                    style.right = 18f
+                    style.bottom = 0f
+                    classes("left_panel_material_list_box")
                 }
             }
 
@@ -147,26 +154,21 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
                     transparent()
                     borderless()
                     sizeX = 256f
-                    sizeY = materialRefs.size * (24f + 2f)
+                    sizeY = materialRefs.size * (24f + 2f) + 10f
                 }
 
                 materialRefs.forEachIndexed { index, ref ->
                     val material = model.getMaterial(ref)
 
-                    val color = if (ref == selectedMaterial) {
-                        Config.colorPalette.brightColor.toColor()
-                    } else {
-                        Config.colorPalette.lightDarkColor.toColor()
-                    }
-
                     div(material.name) {
                         style {
                             sizeY = 24f
-                            posY = index * (sizeY + 2f)
-                            transparent()
-                            borderless()
-                            rectCorners()
-                            backgroundColor { color }
+                            posY = 5f + index * (sizeY + 2f)
+                            classes("material_list_item")
+
+                            if (ref == selectedMaterial) {
+                                classes("material_list_item_selected")
+                            }
                         }
 
                         postMount {

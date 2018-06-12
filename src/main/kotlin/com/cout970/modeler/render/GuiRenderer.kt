@@ -3,12 +3,14 @@ package com.cout970.modeler.render
 import com.cout970.glutilities.tessellator.BufferPTNC
 import com.cout970.modeler.Debugger
 import com.cout970.modeler.core.log.Profiler
+import com.cout970.modeler.gui.CSSTheme
 import com.cout970.modeler.gui.leguicomp.AnimationPanel
 import com.cout970.modeler.gui.leguicomp.AnimationPanelHead
 import com.cout970.modeler.gui.leguicomp.PixelBorder
 import com.cout970.modeler.gui.leguicomp.ProfilerDiagram
 import com.cout970.modeler.input.event.CustomCallbackKeeper
 import com.cout970.modeler.render.gui.LeguiComponentRenderer
+import org.joml.Vector4f
 import org.liquidengine.legui.animation.Animator
 import org.liquidengine.legui.component.Frame
 import org.liquidengine.legui.component.LayerContainer
@@ -22,6 +24,7 @@ import org.liquidengine.legui.system.renderer.RendererProvider
 import org.liquidengine.legui.system.renderer.nvg.NvgComponentRenderer
 import org.liquidengine.legui.system.renderer.nvg.NvgRenderer
 import org.liquidengine.legui.system.renderer.nvg.NvgRendererProvider
+import org.liquidengine.legui.theme.Themes
 
 /**
  * Created by cout970 on 2016/12/02.
@@ -42,6 +45,7 @@ class GuiRenderer(val rootFrame: Frame, window: Long) {
         RendererProvider.setRendererProvider(NvgRendererProvider.getInstance())
         renderer = NvgRenderer()
         renderer.initialize()
+        Themes.setDefaultTheme(CSSTheme)
         context.isDebugEnabled = Debugger.DYNAMIC_DEBUG
 
         (RendererProvider.getInstance() as? NvgRendererProvider)?.let {
@@ -54,6 +58,11 @@ class GuiRenderer(val rootFrame: Frame, window: Long) {
             it.putComponentRenderer(LayerContainer::class.java, LeguiComponentRenderer as NvgComponentRenderer<LayerContainer>)
         }
     }
+
+    private fun rgba(r: Int, g: Int, b: Int, a: Float): Vector4f {
+        return Vector4f(r / 255f, g / 255f, b / 255f, a)
+    }
+
 
     fun updateEvents() {
         context.updateGlfwWindow()

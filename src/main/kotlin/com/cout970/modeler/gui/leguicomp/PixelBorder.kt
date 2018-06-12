@@ -1,7 +1,6 @@
 package com.cout970.modeler.gui.leguicomp
 
-import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.util.toColor
+import com.cout970.modeler.core.config.ColorPalette.Companion.colorOf
 import org.joml.Vector2f
 import org.joml.Vector4f
 import org.liquidengine.legui.component.Component
@@ -15,7 +14,7 @@ import org.liquidengine.legui.system.renderer.nvg.util.NvgShapes
  */
 class PixelBorder : Border() {
 
-    var color: Vector4f = Config.colorPalette.blackColor.toColor()
+    var color: Vector4f = colorOf("FFF")
 
     var enableTop = false
     var enableBottom = false
