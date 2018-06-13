@@ -34,6 +34,8 @@ object SearchDatabase {
             Entry("Set cursor to rotation mode", listOf("angle", "rotate", "cursor"), keys.setRotationCursorMode, "input.cursor.rotation"),
             Entry("Set cursor to scale mode", listOf("resize", "scale", "cursor"), keys.setScaleCursorMode, "input.cursor.scale"),
 
+            Entry("Create colored material", listOf("new", "create", "color", "material"), keys.newColoredMaterial, "material.new.colored"),
+
             Entry("New project", listOf("new", "create", "project", "model"), keys.newProject, "input.file.new"),
             Entry("Open project", listOf("open", "load", "project", "model"), keys.openProject, "input.file.open"),
             Entry("Save project", listOf("save", "store", "keep", "project", "model"), keys.saveProject, "input.file.save"),

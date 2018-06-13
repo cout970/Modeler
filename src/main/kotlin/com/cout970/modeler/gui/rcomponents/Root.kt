@@ -55,7 +55,7 @@ class RootComp : RComponent<RootProps, RootState>() {
 
         child(TopBar::class, ModelAccessorProps(props.gui.modelAccessor))
 
-        child(Search::class, SearchProps())
+        child(Search::class, SearchProps(props.gui.dispatcher))
 
         child(PopUp::class, PopUpProps(props.gui.state, props.gui.propertyHolder))
 

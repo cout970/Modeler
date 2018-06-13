@@ -13,6 +13,7 @@ import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.helpers.PickupHelper
 import com.cout970.modeler.core.model.TRSTransformation
+import com.cout970.modeler.core.model.material.ColoredMaterial
 import com.cout970.modeler.core.model.mesh.MeshFactory
 import com.cout970.modeler.render.tool.AutoCache
 import com.cout970.modeler.render.tool.CacheFlags.*
@@ -66,7 +67,7 @@ class MaterialRenderer {
             renderTextureSelection(ctx, it, material)
         }
 
-        if(Debugger.DYNAMIC_DEBUG){
+        if (Debugger.DYNAMIC_DEBUG) {
             renderDebugCursor(ctx, material)
         }
 
@@ -295,7 +296,17 @@ class MaterialRenderer {
             useLight.setBoolean(false)
             useTexture.setBoolean(true)
             matrixM.setMatrix4(Matrix4.IDENTITY)
+
+            if (material is ColoredMaterial) {
+                useGlobalColor.setBoolean(true)
+                globalColor.setVector3(material.color)
+            }
+
             accept(vao)
+
+            if (material is ColoredMaterial) {
+                globalColor.setVector3(Vector3.ONE)
+            }
         }
     }
 

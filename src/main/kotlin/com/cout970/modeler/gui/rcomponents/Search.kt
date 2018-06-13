@@ -1,6 +1,7 @@
 package com.cout970.modeler.gui.rcomponents
 
 import com.cout970.glutilities.device.Keyboard
+import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.search.SearchDatabase
 import com.cout970.modeler.gui.leguicomp.classes
 import com.cout970.modeler.gui.leguicomp.defaultTextColor
@@ -28,7 +29,7 @@ import kotlin.math.min
 data class SearchResult(val text: String, val keyBind: String, val cmd: String)
 data class SearchState(val visible: Boolean, val text: String, val results: List<SearchResult>, val selected: Int) : RState
 
-class SearchProps() : RProps
+class SearchProps(val dispatcher: Dispatcher) : RProps
 
 private const val MAX_SEARCH_RESULTS = 40
 
@@ -85,6 +86,7 @@ class Search : RComponent<SearchProps, SearchState>() {
                     sizeY = 30f
                     defaultTextColor()
                     classes("search_bar_input")
+                    horizontalAlign = HorizontalAlign.RIGHT
                 }
 
                 postMount {
@@ -184,9 +186,8 @@ class Search : RComponent<SearchProps, SearchState>() {
         } else if (e.key == Keyboard.KEY_DOWN && Math.min(state.results.size, MAX_SEARCH_RESULTS) > state.selected + 1) {
             setState { copy(selected = selected + 1) }
         } else if (e.key == Keyboard.KEY_ENTER) {
+            props.dispatcher.onEvent(state.results[state.selected].cmd, null)
             setState { getInitialState() }
-
-            println("Running ${state.results[state.selected]}")
         } else if (e.key == Keyboard.KEY_ESCAPE) {
             setState { getInitialState() }
             return

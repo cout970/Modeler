@@ -30,6 +30,7 @@ class UniversalShader(resourceLoader: ResourceLoader) : Consumer<VAO> {
     val showHiddenFaces: UniformVariable
     val useTexture: UniformVariable
     val useColor: UniformVariable
+    val useGlobalColor: UniformVariable
     val useCubeMap: UniformVariable
     val lightColor: UniformVariable.UniformVariableArray
     val shineDamper: UniformVariable
@@ -59,6 +60,7 @@ class UniversalShader(resourceLoader: ResourceLoader) : Consumer<VAO> {
         showHiddenFaces = program.createUniformVariable("showHiddenFaces")
         useTexture = program.createUniformVariable("useTexture")
         useColor = program.createUniformVariable("useColor")
+        useGlobalColor = program.createUniformVariable("useGlobalColor")
         useCubeMap = program.createUniformVariable("useCubeMap")
         lightColor = program.createUniformVariableArray("lightColor")
         shineDamper = program.createUniformVariable("shineDamper")
@@ -85,6 +87,7 @@ class UniversalShader(resourceLoader: ResourceLoader) : Consumer<VAO> {
         useTexture.setInt(0)
         useColor.setInt(1)
         useLight.setInt(0)
+        useGlobalColor.setInt(0)
         globalColor.setVector3(Vector3.ONE)
         func()
         program.stop()

@@ -25,6 +25,7 @@ uniform sampler2D textureSampler;
 // Flags
 uniform bool useTexture;
 uniform bool useColor;
+uniform bool useGlobalColor;
 
 // Lights
 
@@ -63,7 +64,11 @@ void main(void){
     }
 
     if(useColor) {
-        out_color = vec4(out_color.xyz * pass_color * globalColor, out_color.w);
+        out_color = vec4(out_color.xyz * pass_color, out_color.w);
+    }
+
+    if(useGlobalColor) {
+        out_color = vec4(out_color.xyz * globalColor, out_color.w);
     }
 
     if(useLight){

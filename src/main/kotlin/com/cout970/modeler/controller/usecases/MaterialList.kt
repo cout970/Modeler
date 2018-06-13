@@ -6,6 +6,7 @@ import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.controller.tasks.*
+import com.cout970.modeler.core.model.material.ColoredMaterial
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
@@ -19,6 +20,7 @@ import com.cout970.modeler.input.dialogs.MessageDialogs
 import com.cout970.modeler.util.asNullable
 import com.cout970.modeler.util.getOr
 import com.cout970.modeler.util.toResourcePath
+import com.cout970.vector.extensions.vec3Of
 import org.liquidengine.legui.component.Component
 import java.io.File
 
@@ -89,6 +91,15 @@ private fun importMaterial(): ITask = TaskAsync { returnFunc ->
         val material = TexturedMaterial(archive.nameWithoutExtension, archive.toResourcePath())
         returnFunc(TaskImportMaterial(material))
     }
+}
+
+@UseCase("material.new.colored")
+private fun newColoredMaterial(): ITask = TaskAsync { returnFunc ->
+
+    val name = "unnamed"
+    val color = vec3Of(1, 0, 0)
+
+    returnFunc(TaskImportMaterial(ColoredMaterial(name, color)))
 }
 
 @UseCase("material.view.select")

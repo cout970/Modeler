@@ -97,6 +97,8 @@ class KeyBindings {
     var addAnimation = KeyBind(KEY_U, CTRL)
     var toggleAnimation = KeyBind(KEY_SPACE)
 
+    var newColoredMaterial = KeyBind(KEY_M, SHIFT)
+
     var layoutChangeMode = KeyBind(KEY_M, ALT)
     var moveLayoutSplitterLeft = KeyBind(KEY_J, ALT)
     var moveLayoutSplitterRight = KeyBind(KEY_K, ALT)

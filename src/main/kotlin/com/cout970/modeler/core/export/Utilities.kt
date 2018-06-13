@@ -1,5 +1,6 @@
 package com.cout970.modeler.core.export
 
+import com.cout970.modeler.core.model.material.ColoredMaterial
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
@@ -43,6 +44,12 @@ fun checkIntegrity2(parent: Any?, name: String, getter: () -> Any?, path: String
         is TexturedMaterial -> {
             check(value.name, "$path/name")
             check(value.path, "$path/path")
+            check(value.id, "$path/id")
+        }
+
+        is ColoredMaterial -> {
+            check(value.name, "$path/name")
+            check(value.color, "$path/color")
             check(value.id, "$path/id")
         }
 

@@ -8,6 +8,7 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.faces
+import com.cout970.modeler.core.model.material.ColoredMaterial
 import com.cout970.modeler.core.model.mesh.MeshFactory
 import com.cout970.modeler.render.tool.*
 import com.cout970.modeler.util.getColor
@@ -126,20 +127,30 @@ class ModelRenderer {
         val animation = ctx.gui.modelAccessor.animation
         val animator = ctx.gui.animator
 
-        map.forEach { material, list ->
-            model.getMaterial(material).bind()
-            list.forEach { (objIndex, _) ->
-                ctx.shader.apply {
-                    useCubeMap.setBoolean(false)
-                    useTexture.setBoolean(ctx.gui.state.useTexture)
-                    useColor.setBoolean(ctx.gui.state.useColor)
-                    useLight.setBoolean(ctx.gui.state.useLight)
-                    showHiddenFaces.setBoolean(ctx.gui.state.showHiddenFaces)
-                    matrixM.setMatrix4(Matrix4.IDENTITY)
+        map.forEach { materialRef, list ->
+            val material = model.getMaterial(materialRef)
+            material.bind()
+            ctx.shader.apply {
+                useCubeMap.setBoolean(false)
+                useTexture.setBoolean(ctx.gui.state.useTexture)
+                useColor.setBoolean(ctx.gui.state.useColor)
+                useLight.setBoolean(ctx.gui.state.useLight)
+                showHiddenFaces.setBoolean(ctx.gui.state.showHiddenFaces)
+                matrixM.setMatrix4(Matrix4.IDENTITY)
 
+                if (material is ColoredMaterial) {
+                    useGlobalColor.setBoolean(true)
+                    globalColor.setVector3(material.color)
+                }
+
+                list.forEach { (objIndex, _) ->
                     animator.animate(animation, objIndex, this)
                     accept(modelCache[objIndex]!!)
-                    showHiddenFaces.setBoolean(false)
+                }
+                showHiddenFaces.setBoolean(false)
+
+                if (material is ColoredMaterial) {
+                    globalColor.setVector3(Vector3.ONE)
                 }
             }
         }

@@ -15,6 +15,7 @@ import com.cout970.modeler.core.export.*
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.`object`.*
+import com.cout970.modeler.core.model.material.ColoredMaterial
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.FaceIndex
@@ -166,15 +167,37 @@ object ProjectLoaderV12 {
         override fun serialize(src: IMaterial, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
             return JsonObject().apply {
                 addProperty("name", src.name)
-                if (src is TexturedMaterial) {
-                    addProperty("path", src.path.uri.toString())
-                    add("id", context.serializeT(src.id))
+                when (src) {
+                    is TexturedMaterial -> {
+                        addProperty("type", "texture")
+                        addProperty("path", src.path.uri.toString())
+                        add("id", context.serializeT(src.id))
+                    }
+                    is ColoredMaterial -> {
+                        addProperty("type", "color")
+                        add("color", context.serializeT(src.color))
+                        add("id", context.serializeT(src.id))
+                    }
+                    else -> addProperty("type", "none")
                 }
             }
         }
 
         override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IMaterial {
             val obj = json.asJsonObject
+            if (obj.has("type")) {
+                return when (obj["type"].asString) {
+                    "texture" -> {
+                        val id = context.deserialize<UUID>(obj["id"], UUID::class.java)
+                        TexturedMaterial(obj["name"].asString, ResourcePath(URI(obj["path"].asString)), id)
+                    }
+                    "color" -> {
+                        val id = context.deserialize<UUID>(obj["id"], UUID::class.java)
+                        ColoredMaterial(obj["name"].asString, context.deserializeT(obj["color"]), id)
+                    }
+                    else -> MaterialNone
+                }
+            }
             return when {
                 obj["name"].asString == "noTexture" -> MaterialNone
                 else -> {
