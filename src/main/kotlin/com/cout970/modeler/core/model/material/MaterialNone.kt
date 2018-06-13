@@ -17,7 +17,7 @@ object MaterialNone : IMaterial {
         private set
 
     override fun loadTexture(resourceLoader: ResourceLoader): Boolean {
-        whiteTexture = resourceLoader.getTexture("assets/textures/debug.png")
+        whiteTexture = resourceLoader.getTexture("assets/textures/white.png")
         return false
     }
 
