@@ -6,4 +6,5 @@ object PathConstants {
     const val CONFIG_FILE_PATH = "./data/config.json"
     const val LOGS_FOLDER_PATH = "./data/logs/"
     const val LAST_BACKUP_FILE_PATH = "./data/backups/last.pff"
+    const val CRASH_BACKUP_FILE_PATH = "./data/backups/crash-backup.pff"
 }

@@ -53,7 +53,7 @@ class TextureCursorRenderer {
 
                 val scale = vec3Of(parameters.length / 16f)
                 val colorFunc = { col: IVector3 -> if (selected) vec3Of(1) else col }
-
+                useGlobalColor.setBoolean(true)
                 when (part) {
                     is ITranslatable -> {
 
@@ -87,6 +87,7 @@ class TextureCursorRenderer {
                         globalColor.setVector3(Vector3.ONE)
                     }
                 }
+                useGlobalColor.setBoolean(false)
             }
         }
 //        renderDebugHitbox(ctx)
