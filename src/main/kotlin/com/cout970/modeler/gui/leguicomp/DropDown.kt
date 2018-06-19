@@ -15,10 +15,11 @@ class DropDown(
     val selectedIndex get() = elements.indexOf(selection)
 
     init {
-        selectionListPanel.verticalScrollBar.apply {
-            background { bright3 }
-            scrollColor = color { grey }
-            arrowColor = color { bright4 }
-        }
+//        selectionListPanel.verticalScrollBar.apply {
+//            background { bright3 }
+//            scrollColor = color { grey }
+//            arrowColor = color { bright4 }
+//        }
+
     }
 }

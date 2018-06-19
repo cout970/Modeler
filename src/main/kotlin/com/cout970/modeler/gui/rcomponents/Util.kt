@@ -192,18 +192,17 @@ class TransformationInput : RStatelessComponent<TransformationInputProps>() {
 
         when (t) {
             is TRSTransformation -> {
+                scale(t.scale)
                 position(t.translation)
                 rotation(t.rotation.toAxisRotations())
-                scale(t.scale)
             }
             is TRTSTransformation -> {
+                scale(t.scale)
                 position(t.translation)
                 rotation(t.rotation)
                 pivot(t.pivot)
-                scale(t.scale)
             }
         }
-
     }
 
     fun RBuilder.position(translation: IVector3) {

@@ -118,27 +118,31 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
             borderless()
         }
 
-        postMount { fillX() }
-
-        +IconButton("animation.seek.start", "seek_start", 3f + 0f, 3f, 26f, 26f)
-        +IconButton("animation.prev.keyframe", "prev_keyframe", 3f + 32f, 3f, 26f, 26f)
-        +IconButton("animation.next.keyframe", "next_keyframe", 3f + 128f, 3f, 26f, 26f)
-        +IconButton("animation.seek.end", "seek_end", 3f + 160f, 3f, 26f, 26f)
-
-        if (props.animator.animationState == AnimationState.STOP) {
-            +IconButton("animation.state.backward", "play_reversed", 3f + 64f, 3f, 26f, 26f)
-            +IconButton("animation.state.forward", "play_normal", 3f + 96f, 3f, 26f, 26f)
-        } else {
-            +IconButton("animation.state.stop", "play_pause", 3f + 64f, 3f, 58f, 26f)
+        postMount {
+            fillX()
+            floatLeft(5f, 5f)
         }
 
+        +IconButton("animation.seek.start", "seek_start", 0f, 3f, 26f, 26f)
+        +IconButton("animation.prev.keyframe", "prev_keyframe", 0f, 3f, 26f, 26f)
+
+        if (props.animator.animationState == AnimationState.STOP) {
+            +IconButton("animation.state.backward", "play_reversed", 0f, 3f, 26f, 26f)
+            +IconButton("animation.state.forward", "play_normal", 0f, 3f, 26f, 26f)
+        } else {
+            +IconButton("animation.state.stop", "play_pause", 0f, 3f, 58f, 26f)
+        }
+
+        +IconButton("animation.next.keyframe", "next_keyframe", 0f, 3f, 26f, 26f)
+        +IconButton("animation.seek.end", "seek_end", 0f, 3f, 26f, 26f)
+
         child(TinyFloatInput::class, TinyFloatInputProps(
-                pos = Vector2f(32f * 6f + 60f, 4f),
+                pos = Vector2f(0f, 4f),
                 getter = { props.animator.animation.timeLength },
                 setter = { props.dispatcher.onEvent("animation.set.length", Panel().apply { metadata["time"] = it }) }
         ))
 
-        +IconButton("animation.add.keyframe", "add_keyframe", 120f + 256f, 3f, 26f, 26f).apply {
+        +IconButton("animation.add.keyframe", "add_keyframe", 0f, 3f, 26f, 26f).apply {
             if (props.animator.selectedChannel == null) {
                 disable()
                 disableInput()
@@ -146,12 +150,34 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
             setTooltip("Add keyframe to the current position")
         }
 
-        +IconButton("animation.delete.keyframe", "remove_keyframe", 120f + 256f + 30f, 3f, 26f, 26f).apply {
+        +IconButton("animation.delete.keyframe", "remove_keyframe", 0f, 3f, 26f, 26f).apply {
             if (props.animator.selectedKeyframe == null) {
                 disable()
                 disableInput()
             }
             setTooltip("Remove selected keyframe")
+        }
+
+        +IconButton("", "add_animation", 0f, 3f, 26f, 26f).apply {
+            setTooltip("Add animation")
+        }
+
+        +IconButton("", "remove_animation", 0f, 3f, 26f, 26f).apply {
+            setTooltip("Remove animation")
+            disable()
+            disableInput()
+        }
+
+        selectBox {
+            style {
+                posY = 3f
+                sizeX = 160f
+                sizeY = 26f
+
+                addElement("Animation")
+                visibleCount = 4
+                elementHeight = 26f
+            }
         }
     }
 
