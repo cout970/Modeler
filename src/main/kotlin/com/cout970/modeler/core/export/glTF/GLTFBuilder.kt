@@ -1,6 +1,5 @@
 package com.cout970.modeler.core.export.glTF
 
-import com.cout970.glutilities.memory.expand
 import com.cout970.matrix.api.IMatrix2
 import com.cout970.matrix.api.IMatrix3
 import com.cout970.matrix.api.IMatrix4
@@ -11,8 +10,8 @@ import com.cout970.vector.api.IVector3
 import com.cout970.vector.api.IVector4
 import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.vec3Of
-import org.lwjgl.BufferUtils
 import java.nio.ByteBuffer
+import java.nio.ByteOrder
 
 fun testExporter() = glftModel {
 
@@ -95,11 +94,11 @@ class GLTFBuilder {
     private val extensionsRequired = mutableListOf<String>()
     private val asset = Asset()
 
-    private val allNodes = mutableListOf<Node>()
     private val scenes = mutableListOf<Scene>()
+    private val bakedMaterials = mutableListOf<GltfMaterial>()
     private val bakedNodes = mutableListOf<GltfNode>()
     private val bakedMeshes = mutableListOf<GltfMesh>()
-    private var buffer = BufferUtils.createByteBuffer(16)
+    private var buffer = ByteBuffer.allocate(16).order(ByteOrder.LITTLE_ENDIAN)
     private val bakedBufferViews = mutableListOf<GltfBufferView>()
     private val bakedAccessors = mutableListOf<GltfAccessor>()
     var bufferName = "model.bin"
@@ -114,18 +113,18 @@ class GLTFBuilder {
 
     fun build(): Pair<GltfFile, ByteArray> {
         val scenes = scenes.build()
-        val nodes = allNodes.build()
         val binary = buffer.toArray()
 
         return GltfFile(
                 asset = asset.build(),
-                nodes = nodes,
+                nodes = bakedNodes,
                 meshes = bakedMeshes,
                 bufferViews = bakedBufferViews,
                 accessors = bakedAccessors,
                 scene = 0,
                 scenes = scenes,
-                buffers = listOf(GltfBuffer(uri = bufferName, byteLength = binary.size))
+                buffers = listOf(GltfBuffer(uri = bufferName, byteLength = binary.size)),
+                materials = bakedMaterials
         ) to binary
     }
 
@@ -139,9 +138,8 @@ class GLTFBuilder {
 
     fun Asset.build(): JsObject {
         val map = mutableMapOf(
-                "generator" to "$NAME gltf Exporter",
+                "generator" to "$NAME glTF v2 Exporter",
                 "version" to "2.0"
-                // minVersion,
         )
 
         copyright?.let { map["copyright"] = it }
@@ -149,8 +147,9 @@ class GLTFBuilder {
     }
 
     data class Scene(
-            val nodes: MutableList<Int> = mutableListOf(),
-            val name: String? = null
+            val nodes: MutableList<Node> = mutableListOf(),
+            var name: String? = null,
+            var extras: Any? = null
     )
 
     fun scene(func: Scene.() -> Unit) {
@@ -163,9 +162,15 @@ class GLTFBuilder {
     }
 
     fun Scene.build(): GltfScene {
+        val indices = nodes.map {
+            it.build()
+            bakedNodes.size - 1
+        }
+
         return GltfScene(
-                nodes = nodes,
-                name = name
+                nodes = indices,
+                name = name,
+                extras = extras
         )
     }
 
@@ -173,12 +178,8 @@ class GLTFBuilder {
             var transformation: Transformation? = null,
             var name: String? = null,
             var children: MutableList<Node>? = null,
-            var mesh: Mesh? = null
-
-//            val camera: Int? = null,                 // The index of the camera referenced by this node.
-//            val skin: Int? = null,                 // The index of the skin referenced by this node.
-
-//            val weights: List<Double> = emptyList(),          // The weights of the instantiated Morph Target. Number of elements must match number of Morph Targets of used mesh.
+            var mesh: Mesh? = null,
+            var extras: Any? = null
     )
 
     sealed class Transformation {
@@ -191,8 +192,7 @@ class GLTFBuilder {
     }
 
     fun Scene.node(func: Node.() -> Unit) {
-        nodes.add(allNodes.size)
-        allNodes.add(Node().apply(func))
+        nodes.add(Node().apply(func))
     }
 
     fun Node.node(func: Node.() -> Unit) {
@@ -228,7 +228,8 @@ class GLTFBuilder {
                 rotation = (t as? Transformation.TRS)?.rotation,
                 scale = (t as? Transformation.TRS)?.scale,
                 children = bakedChildren?.map { bakedNodes.indexOf(it) } ?: emptyList(),
-                mesh = m?.let { bakedMeshes.indexOf(it) }
+                mesh = m?.let { bakedMeshes.indexOf(it) },
+                extras = extras
         )
 
         bakedNodes.add(node)
@@ -254,7 +255,7 @@ class GLTFBuilder {
     data class Primitive(
             val attributes: MutableMap<String, UnpackedBuffer> = mutableMapOf(),
             var indices: UnpackedBuffer? = null,
-//            val material: Int? = null,
+            var material: Material? = null,
             var mode: GltfMode = GltfMode.TRIANGLES,
             val targets: MutableMap<String, Int> = mutableMapOf()
     ) {
@@ -294,7 +295,7 @@ class GLTFBuilder {
         primitives.add(Primitive().apply(func))
     }
 
-    inline fun <reified T> Primitive.buffer(type: GltfComponentType, data: List<T>): UnpackedBuffer {
+    inline fun <reified T> Primitive.buffer(type: GltfComponentType, data: List<T>, indices: Boolean = false): UnpackedBuffer {
         val container: GltfType = when {
             Number::class.java.isAssignableFrom(T::class.java) -> GltfType.SCALAR
             IVector2::class.java.isAssignableFrom(T::class.java) -> GltfType.VEC2
@@ -305,22 +306,49 @@ class GLTFBuilder {
             IMatrix4::class.java.isAssignableFrom(T::class.java) -> GltfType.MAT4
             else -> error("Invalid buffer type")
         }
-        return UnpackedBuffer(container, type, data)
+        return UnpackedBuffer(container, type, data, indices)
     }
 
     fun Primitive.build(): GltfPrimitive {
+
+        val mat = material?.build()
+        var matIndex: Int? = null
+        if (mat != null) {
+            matIndex = bakedMaterials.size
+            bakedMaterials.add(mat)
+        }
+
         return GltfPrimitive(
                 attributes = attributes.mapValues { it.value.build() },
                 indices = indices?.build(),
+                material = matIndex,
                 mode = mode.code,
                 targets = targets
+        )
+    }
+
+    fun Primitive.material(func: Material.() -> Unit) {
+        material = Material().apply(func)
+    }
+
+    fun Material.build(): GltfMaterial {
+        return GltfMaterial(
+                pbrMetallicRoughness = pbrMetallicRoughness,
+                normalTexture = normalTexture,
+                occlusionTexture = occlusionTexture,
+                emissiveTexture = emissiveTexture,
+                emissiveFactor = emissiveFactor,
+                alphaMode = alphaMode,
+                alphaCutoff = alphaCutoff,
+                doubleSided = doubleSided
         )
     }
 
     data class UnpackedBuffer(
             val containerType: GltfType,
             val elementType: GltfComponentType,
-            val data: List<*>
+            val data: List<*>,
+            val indices: Boolean
     )
 
     @Suppress("UNCHECKED_CAST")
@@ -334,7 +362,7 @@ class GLTFBuilder {
                 byteLength = size,
                 byteOffset = buffer.position(),
                 byteStride = null,
-                target = elementType.id
+                target = if (indices) 34963 else 34962
         )
         val accessor = GltfAccessor(
                 bufferView = index,
@@ -383,10 +411,25 @@ class GLTFBuilder {
         return array
     }
 
+    fun ByteBuffer.expand(newSize: Int): ByteBuffer {
+        this.flip()
+        return ByteBuffer.allocate(newSize).put(this).order(ByteOrder.LITTLE_ENDIAN)
+    }
+
+    data class Material(
+            var pbrMetallicRoughness: GltfPbrMetallicRoughness? = null,
+            var normalTexture: GltfNormalTextureInfo? = null,
+            var occlusionTexture: GltfOcclusionTextureInfo? = null,
+            var emissiveTexture: GltfTextureInfo? = null,
+            var emissiveFactor: IVector3 = Vector3.ZERO,
+            var alphaMode: GltfAlphaMode = GltfAlphaMode.OPAQUE,
+            var alphaCutoff: Double = 0.5,
+            var doubleSided: Boolean = false
+    )
+
 //    val animations: List<Animation> = emptyList(),  // An array of keyframe animations.
 //    val cameras: List<Camera> = emptyList(),  // An array of cameras. A camera defines a projection matrix.
 //    val images: List<Image> = emptyList(),  // An array of images. An image defines data used to create a texture.
-//    val materials: List<Material> = emptyList(),  // An array of materials. A material defines the appearance of a primitive.
 //    val samplers: List<Sampler> = emptyList(),  // An array of samplers. A sampler contains properties for texture filtering and wrapping modes.
 //    val scene: Int? = null,         // The index of the default scene.
 //    val scenes: List<Scene> = emptyList(),  // An array of scenes.
