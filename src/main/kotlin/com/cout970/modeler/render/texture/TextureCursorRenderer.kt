@@ -27,7 +27,7 @@ class TextureCursorRenderer {
     var scaleArrow = AutoCache()
 
     fun renderCursor(ctx: RenderContext) {
-        ctx.gui.modelAccessor.textureSelectionHandler.getSelection().ifNull { return }
+        ctx.gui.programState.textureSelectionHandler.getSelection().ifNull { return }
 
         val cursor = ctx.gui.cursorManager.textureCursor ?: return
         val parameters = cursor.getCursorParameters(ctx.camera, ctx.viewport)
@@ -99,8 +99,8 @@ class TextureCursorRenderer {
         val vao = run {
             ctx.buffer.build(DrawMode.LINES, false) {
                 val type = ctx.gui.state.selectionType
-                val selection = ctx.gui.modelAccessor.modelSelection
-                val model = ctx.gui.state.tmpModel ?: ctx.gui.modelAccessor.model
+                val selection = ctx.gui.programState.modelSelection
+                val model = ctx.gui.state.tmpModel ?: ctx.gui.programState.model
                 val materialRef = ctx.gui.state.selectedMaterial
                 val material = model.getMaterial(materialRef)
                 val polygons = PickupHelper.getTexturePolygons(model, selection, type, material).map { it.first }

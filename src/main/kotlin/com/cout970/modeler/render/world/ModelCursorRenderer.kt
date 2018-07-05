@@ -23,7 +23,7 @@ class ModelCursorRenderer {
 
     fun renderCursor(ctx: RenderContext) {
 
-        ctx.gui.modelAccessor.modelSelectionHandler.getSelection().ifNull { return }
+        ctx.gui.programState.modelSelectionHandler.getSelection().ifNull { return }
 
         val cursor = ctx.gui.cursorManager.modelCursor ?: return
         val parameters = cursor.getCursorParameters(ctx.camera, ctx.viewport)

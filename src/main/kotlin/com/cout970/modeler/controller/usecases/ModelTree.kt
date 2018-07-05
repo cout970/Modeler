@@ -10,7 +10,7 @@ import com.cout970.modeler.core.helpers.DeletionHelper
 import com.cout970.modeler.core.helpers.ModelHelper
 import com.cout970.modeler.core.model.*
 import com.cout970.modeler.core.model.selection.Selection
-import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.gui.rcomponents.right.Slot
 import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.util.Nullable
@@ -28,12 +28,12 @@ private fun Nullable<Any>.asObjectRef() = flatMap { it as? IObjectRef }
 private fun Nullable<Any>.asGroupRef() = flatMap { it as? IGroupRef }
 
 @UseCase("tree.view.select.item")
-private fun selectListItem(component: Component, input: IInput, modelAccessor: IModelAccessor): ITask {
-    val selection = modelAccessor.modelSelection
+private fun selectListItem(component: Component, input: IInput, programState: IProgramState): ITask {
+    val selection = programState.modelSelection
 
     return component.ref().asObjectRef().map { ref ->
         val multiSelection = Config.keyBindings.multipleSelection.check(input)
-        val sel = modelAccessor.modelSelectionHandler.updateSelection(selection, multiSelection, ref)
+        val sel = programState.modelSelectionHandler.updateSelection(selection, multiSelection, ref)
 
         TaskUpdateModelSelection(
                 oldSelection = selection,
@@ -43,9 +43,9 @@ private fun selectListItem(component: Component, input: IInput, modelAccessor: I
 }
 
 @UseCase("tree.view.delete.item")
-private fun deleteListItem(component: Component, modelAccessor: IModelAccessor): ITask {
+private fun deleteListItem(component: Component, programState: IProgramState): ITask {
     return component.ref().asObjectRef().map {
-        val (model, modSel, texSel) = modelAccessor
+        val (model, modSel, texSel) = programState
         val newModel = DeletionHelper.delete(model, Selection.of(listOf(it)))
 
         TaskUpdateModelAndUnselect(
@@ -76,8 +76,8 @@ private fun showListItem(component: Component, model: IModel): ITask {
 }
 
 @UseCase("model.toggle.visibility")
-private fun toggleListItemVisibility(model: IModel, modelAccessor: IModelAccessor): ITask {
-    return modelAccessor.modelSelection
+private fun toggleListItemVisibility(model: IModel, programState: IProgramState): ITask {
+    return programState.modelSelection
             .map { it to it.objects.first() }
             .map { toggle(it, model) }
             .getOr(TaskNone)
@@ -94,15 +94,15 @@ private fun toggle(pair: Pair<ISelection, IObjectRef>, model: IModel): ITask {
 // Groups
 
 @UseCase("tree.view.select.group")
-private fun selectListGroup(component: Component, input: IInput, modelAccessor: IModelAccessor): ITask {
-    val (model, selection) = modelAccessor
+private fun selectListGroup(component: Component, input: IInput, programState: IProgramState): ITask {
+    val (model, selection) = programState
 
     return component.ref().asGroupRef().map { ref ->
         val multiSelection = Config.keyBindings.multipleSelection.check(input)
         val objs = model.getRecursiveChildObjects(ref)
 
         val newSel: Nullable<ISelection> = if (multiSelection) {
-            modelAccessor.modelSelectionHandler.updateSelection(selection, multiSelection, objs)
+            programState.modelSelectionHandler.updateSelection(selection, multiSelection, objs)
         } else {
             Selection.of(objs).asNullable()
         }
@@ -140,9 +140,9 @@ private fun showListGroup(component: Component, model: IModel): ITask {
 }
 
 @UseCase("model.tree.node.moved")
-private fun nodeMoved(modelAccessor: IModelAccessor, component: Component): ITask {
+private fun nodeMoved(programState: IProgramState, component: Component): ITask {
 
-    val (model, sel) = modelAccessor
+    val (model, sel) = programState
     val parent = component.metadata["parent"] as IGroupRef
     val child = component.metadata["child"] as Slot
     val multi = component.metadata["multi"] as Boolean

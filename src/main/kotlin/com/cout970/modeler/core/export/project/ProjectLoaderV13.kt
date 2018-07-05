@@ -1,6 +1,7 @@
 package com.cout970.modeler.core.export.project
 
 import com.cout970.modeler.api.animation.IAnimation
+import com.cout970.modeler.api.animation.IAnimationRef
 import com.cout970.modeler.api.animation.IChannelRef
 import com.cout970.modeler.api.animation.InterpolationMethod
 import com.cout970.modeler.api.model.IModel
@@ -69,6 +70,7 @@ object ProjectLoaderV13 {
             .registerTypeAdapter(IGroup::class.java, serializerOf<Group>())
             .registerTypeAdapter(IMesh::class.java, MeshSerializer())
             .registerTypeAdapter(IAnimation::class.java, AnimationSerializer())
+            .registerTypeAdapter(IAnimationRef::class.java, AnimationRefSerializer())
             .create()!!
 
     fun loadProject(zip: ZipFile, path: String): ProgramSave {
@@ -146,6 +148,7 @@ object ProjectLoaderV13 {
                 add("objectMap", context.serializeT(src.objectMap))
                 add("materialMap", context.serializeT(src.materialMap))
                 add("groupMap", context.serializeT(src.groupMap))
+                add("animationMap", context.serializeT(src.animationMap))
                 add("groupTree", context.serializeT(src.tree))
             }
         }
@@ -153,10 +156,12 @@ object ProjectLoaderV13 {
         override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IModel {
             val obj = json.asJsonObject
             return Model.of(
-                    context.deserializeT(obj["objectMap"]),
-                    context.deserializeT(obj["materialMap"]),
-                    context.deserializeT(obj["groupMap"]),
-                    context.deserializeT(obj["groupTree"])
+                    objectMap = context.deserializeT(obj["objectMap"]),
+                    materialMap = context.deserializeT(obj["materialMap"]),
+                    groupMap = context.deserializeT(obj["groupMap"]),
+                    animationMap = obj["animationMap"]?.let { context.deserializeT<Map<IAnimationRef, IAnimation>>(it) }
+                            ?: emptyMap(),
+                    groupTree = context.deserializeT(obj["groupTree"])
             )
         }
     }

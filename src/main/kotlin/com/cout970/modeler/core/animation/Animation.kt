@@ -13,6 +13,10 @@ import java.util.*
 
 data class AnimationRef(override val id: UUID) : IAnimationRef
 
+object AnimationRefNone : IAnimationRef {
+    override val id: UUID = UUID.fromString("94ca9fb4-bf93-4423-b27a-6b7320b1727a")
+}
+
 data class Animation(
         override val channels: Map<IChannelRef, IChannel>,
         override val objectMapping: Multimap<IChannelRef, IObjectRef>,

@@ -8,10 +8,10 @@ class TaskUpdateTextureSelection (val oldSelection: Nullable<ISelection>,
                                   val newSelection: Nullable<ISelection>) : IUndoableTask {
 
     override fun run(state: Program) {
-        state.gui.modelAccessor.textureSelectionHandler.setSelection(newSelection)
+        state.gui.programState.textureSelectionHandler.setSelection(newSelection)
     }
 
     override fun undo(state: Program) {
-        state.gui.modelAccessor.textureSelectionHandler.setSelection(oldSelection)
+        state.gui.programState.textureSelectionHandler.setSelection(oldSelection)
     }
 }

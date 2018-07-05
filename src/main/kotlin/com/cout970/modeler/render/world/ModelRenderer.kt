@@ -49,7 +49,7 @@ class ModelRenderer {
     }
 
     fun renderModelSelection(ctx: RenderContext, modelToRender: IModel) {
-        val selectionBox = ctx.gui.modelAccessor.modelSelectionHandler.getSelection()
+        val selectionBox = ctx.gui.programState.modelSelectionHandler.getSelection()
         val selection = selectionBox.getOrNull() ?: return
 
         val vao = modelSelectionCache.getOrCreate(ctx) { buildModelSelection(ctx, modelToRender, selection) }
@@ -65,7 +65,7 @@ class ModelRenderer {
     }
 
     fun renderTextureSelection(ctx: RenderContext, modelToRender: IModel) {
-        val selectionBox = ctx.gui.modelAccessor.textureSelectionHandler.getSelection()
+        val selectionBox = ctx.gui.programState.textureSelectionHandler.getSelection()
         val selection = selectionBox.getOrNull() ?: return
         if (selection.selectionType !in setOf(SelectionType.OBJECT, SelectionType.FACE)) return
 
@@ -124,7 +124,7 @@ class ModelRenderer {
                 .entries
                 .groupBy { it.value.material }
 
-        val animation = ctx.gui.modelAccessor.animation
+        val animation = ctx.gui.programState.animation
         val animator = ctx.gui.animator
 
         map.forEach { materialRef, list ->

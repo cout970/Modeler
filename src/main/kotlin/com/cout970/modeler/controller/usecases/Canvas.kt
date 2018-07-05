@@ -96,11 +96,11 @@ private fun onModel(canvas: Canvas, gui: Gui, input: IInput): ITask {
     tryClickOrientationCube(gui, canvas, input)?.let { return it }
 
     val multiSelection = Config.keyBindings.multipleSelection.check(input)
-    val (model, selection) = gui.modelAccessor
+    val (model, selection) = gui.programState
     val pos = input.mouse.getMousePos()
     val obj = PickupHelper.pickup3D(canvas, pos, model, gui.state.selectionType)?.second
 
-    val newSelection = gui.modelAccessor.modelSelectionHandler.updateSelection(
+    val newSelection = gui.programState.modelSelectionHandler.updateSelection(
             selection.toNullable(),
             multiSelection,
             obj
@@ -129,8 +129,8 @@ private fun tryClickOrientationCube(gui: Gui, canvas: Canvas, input: IInput): IT
 }
 
 private fun onTexture(canvas: Canvas, input: IInput, gui: Gui): ITask {
-    val selHandler = gui.modelAccessor.textureSelectionHandler
-    val (model, modSel) = gui.modelAccessor
+    val selHandler = gui.programState.textureSelectionHandler
+    val (model, modSel) = gui.programState
 
     val mouse = input.mouse.getMousePos()
     val actualMaterial = model.getMaterial(gui.state.selectedMaterial)

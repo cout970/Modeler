@@ -13,8 +13,7 @@ import com.cout970.modeler.util.toAxisRotations
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.toVector3
-import com.cout970.vector.extensions.vec3Of
+import com.cout970.vector.extensions.*
 import java.util.*
 
 /**
@@ -58,7 +57,7 @@ data class Object(
 
         override fun scale(obj: IObject, center: IVector3, axis: IVector3, offset: Float): IObject {
             val newMesh = Mesh(
-                    pos = mesh.pos.map { it.scale(center, axis, offset) },
+                    pos = mesh.pos.map { it * (vec3Of(1) + axis * offset / 256.0) },
                     tex = mesh.tex,
                     faces = mesh.faces
             )

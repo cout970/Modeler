@@ -135,10 +135,10 @@ object ProjectLoaderV12 {
             val obj = json.asJsonObject
             val groups = obj["groupObjects"] ?: JsonArray()
             return Model.of(
-                    context.deserializeT(obj["objectMap"]),
-                    context.deserializeT(obj["materialMap"]),
-                    context.deserializeT(obj["groupMap"]),
-                    MutableGroupTree(RootGroupRef,
+                    objectMap = context.deserializeT(obj["objectMap"]),
+                    materialMap = context.deserializeT(obj["materialMap"]),
+                    groupMap = context.deserializeT(obj["groupMap"]),
+                    groupTree = MutableGroupTree(RootGroupRef,
                             context.deserializeT<BiMultimap<IGroupRef, IObjectRef>>(groups).flatMap { it.second }.toMutableList()
                     ).toImmutable()
             )

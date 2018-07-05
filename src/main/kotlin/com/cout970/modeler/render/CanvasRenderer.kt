@@ -76,13 +76,13 @@ class CanvasRenderer(val renderManager: RenderManager) {
     }
 
     private fun render3D(ctx: RenderContext) {
-        worldRenderer.renderWorld(ctx, ctx.gui.modelAccessor.model)
+        worldRenderer.renderWorld(ctx, ctx.gui.programState.model)
         centerMarkRenderer.renderCursor(ctx)
     }
 
     private fun render2D(ctx: RenderContext) {
         val ref = ctx.gui.state.selectedMaterial
-        val material = ctx.gui.modelAccessor.model.getMaterial(ref)
+        val material = ctx.gui.programState.model.getMaterial(ref)
         materialRenderer.renderWorld(ctx, ref, material)
     }
 }

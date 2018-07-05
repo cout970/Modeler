@@ -86,18 +86,18 @@ object ProjectLoaderV10 {
                 context.deserialize<IMaterial>(it, IMaterial::class.java)
             }
 
-            val objectsList = objects.map {
+            val objectsList = objects.map { it ->
                 val materialIndex: Int = it.asJsonObject["material"].asJsonObject["materialIndex"].asInt
                 val obj = context.deserialize<IObject>(it, IObject::class.java)
 
                 // fix material id adding material refs
-                obj.withMaterial(materialList.getOrElse(materialIndex, { MaterialNone }).ref)
+                obj.withMaterial(materialList.getOrElse(materialIndex) { MaterialNone }.ref)
             }
 
             return Model.of(
-                    objectsList.associateBy { it.ref },
-                    materialList.associateBy { it.ref },
-                    emptyMap(), MutableGroupTree(RootGroupRef, objectsList.map { it.ref }.toMutableList()).toImmutable()
+                    objectMap = objectsList.associateBy { it.ref },
+                    materialMap = materialList.associateBy { it.ref },
+                    groupTree = MutableGroupTree(RootGroupRef, objectsList.map { it.ref }.toMutableList()).toImmutable()
             )
         }
     }

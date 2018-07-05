@@ -13,7 +13,7 @@ import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.selection.SelectionHandler
-import com.cout970.modeler.core.project.ModelAccessor
+import com.cout970.modeler.core.project.ProgramState
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.project.ProjectPropertyHolder
 import com.cout970.modeler.core.resource.ResourceLoader
@@ -71,7 +71,7 @@ class Initializer {
                 windowHandler = windowHandler,
                 resourceLoader = resourceLoader,
                 timer = timer,
-                modelAccessor = ModelAccessor(projectManager),
+                programState = ProgramState(projectManager),
                 propertyHolder = ProjectPropertyHolder(projectManager)
         ).init()
 
@@ -82,7 +82,7 @@ class Initializer {
                 timer, windowHandler::shouldClose)
 
         log(Level.FINE) { "Initializing and linking program components" }
-        val state = Program(
+        val program = Program(
                 resourceLoader = resourceLoader,
                 windowHandler = windowHandler,
                 eventController = eventController,
@@ -95,7 +95,7 @@ class Initializer {
                 taskHistory = taskHistory
         )
 
-        Debugger.setInit(state)
+        Debugger.setInit(program)
 
         gui.cursorManager.taskProcessor = taskHistory
         gui.cursorManager.gui = gui
@@ -124,8 +124,8 @@ class Initializer {
         gui.root.loadResources(gui.resources)
 
         log(Level.FINE) { "Loading usecases" }
-        futureExecutor.programState = state
-        gui.dispatcher.state = state
+        futureExecutor.programState = program
+        gui.dispatcher.state = program
         gui.dispatcher.checkUseCases()
 
         log(Level.FINE) { "Binding buttons" }
@@ -144,7 +144,7 @@ class Initializer {
         windowHandler.window.show()
 
         log(Level.FINE) { "Initialization done" }
-        return state
+        return program
     }
 
     private fun parseArgs(programArguments: List<String>, exportManager: ExportManager,

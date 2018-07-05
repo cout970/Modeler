@@ -49,13 +49,13 @@ class Listeners : ITickeable, IGuiCmdRunner {
             }
 
             it.modelSelectionHandler.addChangeListener { _, _ ->
-                gui.state.modelSelectionHash = (gui.modelAccessor.modelSelectionHandler.lastModified and 0xFFFFFFFF).toInt()
-                gui.state.textureSelectionHash = (gui.modelAccessor.textureSelectionHandler.lastModified and 0xFFFFFFFF).toInt()
+                gui.state.modelSelectionHash = (gui.programState.modelSelectionHandler.lastModified and 0xFFFFFFFF).toInt()
+                gui.state.textureSelectionHash = (gui.programState.textureSelectionHandler.lastModified and 0xFFFFFFFF).toInt()
             }
 
             it.textureSelectionHandler.addChangeListener { _, _ ->
-                gui.state.modelSelectionHash = (gui.modelAccessor.modelSelectionHandler.lastModified and 0xFFFFFFFF).toInt()
-                gui.state.textureSelectionHash = (gui.modelAccessor.textureSelectionHandler.lastModified and 0xFFFFFFFF).toInt()
+                gui.state.modelSelectionHash = (gui.programState.modelSelectionHandler.lastModified and 0xFFFFFFFF).toInt()
+                gui.state.textureSelectionHash = (gui.programState.textureSelectionHandler.lastModified and 0xFFFFFFFF).toInt()
             }
 
             it.materialChangeListeners.add { _, _ ->

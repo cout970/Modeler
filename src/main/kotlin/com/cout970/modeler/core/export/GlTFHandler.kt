@@ -1,12 +1,25 @@
 package com.cout970.modeler.core.export
 
 import com.cout970.matrix.api.IMatrix4
+import com.cout970.modeler.api.animation.IAnimation
+import com.cout970.modeler.api.animation.IAnimationRef
+import com.cout970.modeler.api.animation.IChannelRef
+import com.cout970.modeler.api.animation.InterpolationMethod
 import com.cout970.modeler.api.model.IModel
-import com.cout970.modeler.api.model.`object`.IObject
+import com.cout970.modeler.api.model.ITransformation
+import com.cout970.modeler.api.model.`object`.*
+import com.cout970.modeler.api.model.material.IMaterial
+import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IMesh
+import com.cout970.modeler.api.model.selection.IObjectRef
+import com.cout970.modeler.core.animation.Animation
+import com.cout970.modeler.core.animation.Channel
+import com.cout970.modeler.core.animation.Keyframe
+import com.cout970.modeler.core.animation.ref
 import com.cout970.modeler.core.export.glTF.*
-import com.cout970.modeler.core.model.Model
+import com.cout970.modeler.core.model.*
 import com.cout970.modeler.core.model.`object`.Object
+import com.cout970.modeler.core.model.`object`.toMultimap
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.resource.ResourcePath
@@ -14,10 +27,7 @@ import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.api.IVector4
-import com.cout970.vector.extensions.Vector2
-import com.cout970.vector.extensions.times
-import com.cout970.vector.extensions.vec2Of
-import com.cout970.vector.extensions.vec3Of
+import com.cout970.vector.extensions.*
 import com.google.gson.*
 import java.io.File
 import java.lang.reflect.Type
@@ -190,49 +200,146 @@ class GlTFImporter {
     fun import(path: ResourcePath): IModel {
         val file = GSON.fromJson(path.inputStream().reader(), GltfFile::class.java)
         val extraData = GLTFParser.parse(file, path.parent!!)
+        val scene = extraData.scenes[file.scene ?: 0]
 
-        val objs: List<IObject> = extraData.meshes.mapNotNull { (mesh, data) ->
+        val nodes = scene.second.nodes
 
-            val meshes: List<IMesh> = data.primitives.map { (prim, data) ->
-
-                if (GltfAttribute.POSITION !in data.attributes) return@mapNotNull null
-
-                val vecPos = getPositions(data).map { it * 16f }
-                val vecUv = getUv(data)
-                val indices = data.indices?.let { getIndices(it) } ?: vecPos.indices
-
-                if (vecUv != null) {
-                    check(vecPos.size == vecUv.size) { "Different sizes: ${vecPos.size} : ${vecUv.size}" }
-                }
-
-                val faces = when (data.mode) {
-                    GltfMode.TRIANGLES -> {
-                        indices.windowed(3, 3).map {
-                            FaceIndex(listOf(it[0], it[1], it[2], it[2]), listOf(it[0], it[1], it[2], it[2]))
-                        }
-                    }
-                    GltfMode.QUADS -> {
-                        indices.windowed(4, 4).map {
-                            FaceIndex(it, it)
-                        }
-                    }
-                    else -> error("Invalid mode")
-                }
-
-                if (vecUv != null) {
-                    Mesh(vecPos, vecUv, faces)
-                } else {
-                    Mesh(vecPos, vecPos.map { Vector2.ORIGIN }, faces)
-                }
-            }
-
-            Object(
-                    name = mesh.name ?: "Obj",
-                    mesh = meshes.reduce { acc, other -> acc.merge(other) }
-            )
+        if (nodes.isEmpty()) {
+            return Model.empty()
         }
 
-        return Model.of(objects = objs)
+        return if (nodes.size == 1 && nodes[0].second.mesh == null) {
+            parseScene(extraData, nodes[0].second.children)
+        } else {
+            parseScene(extraData, nodes)
+        }
+    }
+
+    fun parseScene(data: GLTFParser.Result, nodes: List<Pair<GltfNode, GLTFParser.ResultNode>>): IModel {
+        val objs = mutableMapOf<IObjectRef, IObject>()
+        val materials = mutableMapOf<IMaterialRef, IMaterial>()
+        val groups = mutableMapOf<IGroupRef, IGroup>()
+        val animations = mutableMapOf<IAnimationRef, IAnimation>()
+        val root = MutableGroupTree(RootGroupRef)
+        val nodeMapping = mutableMapOf<Int, Any>()
+
+        nodes.forEach { (glNode, resNode) ->
+            processNode(glNode, resNode, root, objs, materials, groups, nodeMapping)
+        }
+
+        val objectMapping = mutableMapOf<IChannelRef, List<IObjectRef>>()
+
+        data.animations.forEach { (gltf, anim) ->
+            val channels = anim.channels.map { (gl, channel) ->
+                val keyframes = channel.times.mapIndexed { index, time ->
+                    Keyframe(
+                            time,
+                            transformationOf(channel.values[index], channel.path)
+                    )
+                }
+
+                val chan = Channel(
+                        name = "Channel",
+                        interpolation = InterpolationMethod.LINEAR,
+                        keyframes = keyframes
+                )
+
+                val thing = nodeMapping[gl.target.node]
+                objectMapping += chan.ref to when (thing) {
+                    is IObjectRef -> listOf(thing)
+                    is IGroupRef -> root.findChild(thing)!!.getChildObjects()
+                    else -> emptyList()
+                }
+
+                chan
+            }
+
+            val a = Animation(
+                    channels.associateBy { it.ref },
+                    objectMapping.toMultimap(),
+                    channels.map { it.keyframes.last().time }.max() ?: 1f,
+                    gltf.name ?: "Animation"
+            )
+            animations += a.ref to a
+        }
+
+        return Model.of(objs, materials, groups, animations, root.toImmutable())
+    }
+
+    fun transformationOf(value: Any, type: GltfChannelPath): ITransformation = when (type) {
+        GltfChannelPath.translation -> TRSTransformation(translation = value as IVector3)
+        GltfChannelPath.rotation -> TRSTransformation(rotation = (value as IVector4).toQuat())
+        GltfChannelPath.scale -> TRSTransformation(scale = value as IVector3)
+        GltfChannelPath.weights -> error("Not supported weights in skinning animation")
+    }
+
+    fun IVector4.toQuat() = quatOf(x, y, z, w)
+
+    fun processNode(gltfNode: GltfNode, node: GLTFParser.ResultNode, root: MutableGroupTree,
+                    objs: MutableMap<IObjectRef, IObject>,
+                    materials: MutableMap<IMaterialRef, IMaterial>,
+                    groups: MutableMap<IGroupRef, IGroup>,
+                    nodeMapping: MutableMap<Int, Any>) {
+
+        val mesh = node.mesh
+        if (mesh != null) {
+            val obj = parseObj(mesh.second, gltfNode.name ?: "Obj")
+            root.objects += obj.ref
+            objs += obj.ref to obj
+            nodeMapping += node.index to obj
+        } else {
+            val group = Group(gltfNode.name ?: "Group")
+            val tree = MutableGroupTree(group.ref)
+            root.children += tree
+            groups += group.ref to group
+            nodeMapping += node.index to group
+
+            node.children.forEach { (glNode, resNode) ->
+                processNode(glNode, resNode, tree, objs, materials, groups, nodeMapping)
+            }
+        }
+    }
+
+    fun parseObj(data: GLTFParser.ResultMesh, name: String): IObject {
+        val meshes: List<IMesh> = data.primitives.map { (_, primData) ->
+
+            if (GltfAttribute.POSITION !in primData.attributes) {
+                error("Found mesh without POSITION attribute")
+            }
+
+            val vecPos = getPositions(primData).map { it * 16f }
+            val vecUv = getUv(primData)
+            val indices = primData.indices?.let { getIndices(it) } ?: vecPos.indices
+
+            if (vecUv != null) {
+                check(vecPos.size == vecUv.size) { "Different sizes: ${vecPos.size} : ${vecUv.size}" }
+            }
+
+            val faces = when (primData.mode) {
+                GltfMode.TRIANGLES -> {
+                    indices.windowed(3, 3).map {
+                        FaceIndex(listOf(it[0], it[1], it[2], it[2]), listOf(it[0], it[1], it[2], it[2]))
+                    }
+                }
+                GltfMode.QUADS -> {
+                    indices.windowed(4, 4).map {
+                        FaceIndex(it, it)
+                    }
+                }
+                else -> error("Invalid mode")
+            }
+
+            if (vecUv != null) {
+                Mesh(vecPos, vecUv, faces)
+            } else {
+                Mesh(vecPos, vecPos.map { Vector2.ORIGIN }, faces)
+            }
+        }
+
+        return Object(
+                name = name,
+                mesh = meshes.reduce { acc, other -> acc.merge(other) }
+        )
     }
 
     private fun getPositions(data: GLTFParser.ResultPrimitive): List<IVector3> {

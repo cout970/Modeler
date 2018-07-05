@@ -12,7 +12,7 @@ import com.cout970.modeler.controller.tasks.TaskUpdateModel
 import com.cout970.modeler.core.model.`object`.ObjectCube
 import com.cout970.modeler.core.model.getSelectedObjects
 import com.cout970.modeler.core.model.objects
-import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.core.project.IProgramState
 import com.cout970.vector.extensions.vec2Of
 import org.liquidengine.legui.component.Component
 
@@ -21,7 +21,7 @@ import org.liquidengine.legui.component.Component
  */
 
 @UseCase("update.template.cube")
-private fun changeCube(comp: Component, access: IModelAccessor): ITask {
+private fun changeCube(comp: Component, access: IProgramState): ITask {
     val ref = getObjectRef(access) ?: return TaskNone
     val offset = comp.metadata["offset"] as? Float ?: return TaskNone
     val cmd = comp.metadata["command"] as? String ?: return TaskNone
@@ -35,7 +35,7 @@ private fun changeCube(comp: Component, access: IModelAccessor): ITask {
     return TaskUpdateModel(model, newModel)
 }
 
-private fun getObjectRef(access: IModelAccessor): IObjectRef? {
+private fun getObjectRef(access: IProgramState): IObjectRef? {
     val sel = access.modelSelection.getOrNull() ?: return null
 
     return if (isSelectingOneCube(access.model, sel)) sel.objects.first() else return null

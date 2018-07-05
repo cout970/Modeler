@@ -1,6 +1,6 @@
 package com.cout970.modeler.gui.rcomponents.left
 
-import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.gui.canvas.GridLines
 import com.cout970.modeler.gui.leguicomp.classes
 import com.cout970.modeler.gui.leguicomp.clear
@@ -17,7 +17,7 @@ import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.event.ScrollEvent
 
 data class LeftPanelProps(
-        val visible: Boolean, val modelAccessor: IModelAccessor,
+        val visible: Boolean, val programState: IProgramState,
         val grids: GridLines, val animator: Animator
 ) : RProps
 
@@ -87,9 +87,9 @@ class LeftPanel : RStatelessComponent<LeftPanelProps>() {
                 }
 
                 child(EditorControls::class)
-                child(EditObjectName::class, ModelAccessorProps(props.modelAccessor))
-                child(EditCubePanel::class, ModelAccessorProps(props.modelAccessor))
-                child(EditAnimation::class, EditAnimationProps(props.animator, props.modelAccessor))
+                child(EditObjectName::class, ModelAccessorProps(props.programState))
+                child(EditCubePanel::class, ModelAccessorProps(props.programState))
+                child(EditAnimation::class, EditAnimationProps(props.animator, props.programState))
                 child(EditGrids::class, EditGridsProps(props.grids))
             }
         }
@@ -97,7 +97,7 @@ class LeftPanel : RStatelessComponent<LeftPanelProps>() {
 }
 
 data class VisibleWidget(val on: Boolean) : RState
-data class ModelAccessorProps(val access: IModelAccessor) : RProps
+data class ModelAccessorProps(val access: IProgramState) : RProps
 
 data class GroupTitleProps(val title: String, val on: Boolean, val toggle: () -> Unit) : RProps
 

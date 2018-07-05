@@ -1,10 +1,13 @@
 package com.cout970.modeler.core.model
 
+import com.cout970.modeler.api.animation.IAnimation
+import com.cout970.modeler.api.animation.IAnimationRef
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.`object`.*
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.IObjectRef
+import com.cout970.modeler.core.animation.ref
 import com.cout970.modeler.core.model.`object`.ObjectNone
 import com.cout970.modeler.core.model.`object`.emptyBiMultimap
 import com.cout970.modeler.core.model.material.MaterialNone
@@ -20,6 +23,7 @@ data class Model(
         override val objectMap: Map<IObjectRef, IObject>,
         override val materialMap: Map<IMaterialRef, IMaterial>,
         override val groupMap: Map<IGroupRef, IGroup>,
+        override val animationMap: Map<IAnimationRef, IAnimation>,
         override val tree: ImmutableGroupTree
 ) : IModel {
 
@@ -38,15 +42,16 @@ data class Model(
         fun of(objectMap: Map<IObjectRef, IObject> = emptyMap(),
                materialMap: Map<IMaterialRef, IMaterial> = emptyMap(),
                groupMap: Map<IGroupRef, IGroup> = emptyMap(),
+               animationMap: Map<IAnimationRef, IAnimation> = emptyMap(),
                groupTree: ImmutableGroupTree = ImmutableGroupTree(emptyBiMultimap(), emptyBiMultimap())
         ): IModel {
-            return Model(objectMap, materialMap, groupMap, groupTree)
+            return Model(objectMap, materialMap, groupMap, animationMap, groupTree)
         }
 
         fun empty() = Model()
     }
 
-    private constructor() : this(emptyMap(), emptyMap(), emptyMap(), ImmutableGroupTree(emptyBiMultimap(), emptyBiMultimap()))
+    private constructor() : this(emptyMap(), emptyMap(), emptyMap(), emptyMap(), ImmutableGroupTree(emptyBiMultimap(), emptyBiMultimap()))
 
     override fun getObject(ref: IObjectRef): IObject {
         if (ref in objectMap) {
@@ -147,13 +152,20 @@ data class Model(
         )
     }
 
-//    override fun getGroupObjects(group: IGroupRef): Set<IObjectRef> = groupObjects[group]
-//
-//    override fun getObjectGroup(obj: IObjectRef): IGroupRef = groupObjects.getReverse(obj) ?: RootGroupRef
-//
-//    override fun setObjectGroup(obj: IObjectRef, newGroup: IGroupRef): IModel {
-//        return copy(groupObjects = groupObjects.removeValue(getObjectGroup(obj), obj).set(newGroup, obj))
-//    }
+    override fun addAnimation(animation: IAnimation): IModel {
+        require(animation.ref !in animationMap)
+        return copy(animationMap = animationMap + (animation.ref to animation))
+    }
+
+    override fun modifyAnimation(ref: IAnimationRef, new: IAnimation): IModel {
+        require(ref == new.ref)
+        return copy(animationMap = animationMap + (new.ref to new))
+    }
+
+    override fun removeAnimation(animationRef: IAnimationRef): IModel {
+        require(animationRef in animationMap)
+        return copy(animationMap = animationMap - animationRef)
+    }
 
     override fun withGroupTree(newGroupTree: ImmutableGroupTree): IModel {
         return copy(tree = newGroupTree)
@@ -164,6 +176,7 @@ data class Model(
                 objectMap = this.objectMap + other.objectMap,
                 materialMap = this.materialMap + other.materialMap,
                 groupMap = this.groupMap + other.groupMap,
+                animationMap = this.animationMap + other.animationMap,
                 tree = tree.mutate {
                     val otherTree = other.tree.toMutable()
                     objects += otherTree.objects

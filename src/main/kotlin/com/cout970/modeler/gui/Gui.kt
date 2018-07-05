@@ -4,7 +4,7 @@ import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.controller.binders.ButtonBinder
 import com.cout970.modeler.controller.binders.KeyboardBinder
-import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.core.project.IProjectPropertiesHolder
 import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.gui.canvas.CanvasManager
@@ -30,7 +30,7 @@ data class Gui(
         var editorView: EditorView,
         val resources: GuiResources,
         val state: GuiState,
-        val modelAccessor: IModelAccessor,
+        val programState: IProgramState,
         val dispatcher: Dispatcher,
         val buttonBinder: ButtonBinder,
         val keyboardBinder: KeyboardBinder,

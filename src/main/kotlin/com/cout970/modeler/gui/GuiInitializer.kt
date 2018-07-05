@@ -6,7 +6,7 @@ import com.cout970.modeler.controller.binders.ButtonBinder
 import com.cout970.modeler.controller.binders.KeyboardBinder
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
-import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.core.project.IProjectPropertiesHolder
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.gui.canvas.CanvasContainer
@@ -29,7 +29,7 @@ class GuiInitializer(
         val windowHandler: WindowHandler,
         val resourceLoader: ResourceLoader,
         val timer: Timer,
-        val modelAccessor: IModelAccessor,
+        val programState: IProgramState,
         val propertyHolder: IProjectPropertiesHolder
 ) {
 
@@ -83,7 +83,7 @@ class GuiInitializer(
                 buttonBinder = buttonBinder,
                 keyboardBinder = keyboardBinder,
                 canvasManager = canvasManager,
-                modelAccessor = modelAccessor,
+                programState = programState,
                 cursorManager = cursorManager,
                 propertyHolder = propertyHolder,
                 notificationHandler = notificationHandler,

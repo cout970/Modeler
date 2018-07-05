@@ -59,11 +59,11 @@ class MaterialRenderer {
             }
         }
 
-        ctx.gui.modelAccessor.modelSelection.ifNotNull {
+        ctx.gui.programState.modelSelection.ifNotNull {
             renderModelSelection(ctx, it, material)
         }
 
-        ctx.gui.modelAccessor.textureSelection.ifNotNull {
+        ctx.gui.programState.textureSelection.ifNotNull {
             renderTextureSelection(ctx, it, material)
         }
 
@@ -79,7 +79,7 @@ class MaterialRenderer {
 
     fun renderMappedAreas(ctx: RenderContext, ref: IMaterialRef, material: IMaterial) {
         val vao = areasCache.getOrCreate(ctx) {
-            val model = ctx.gui.state.tmpModel ?: ctx.gui.modelAccessor.model
+            val model = ctx.gui.state.tmpModel ?: ctx.gui.programState.model
             val objs = model.objectRefs
                     .map { model.getObject(it) }
                     .filter { it.visible && it.material == ref }
@@ -124,7 +124,7 @@ class MaterialRenderer {
 
     fun renderTextureSelection(ctx: RenderContext, selection: ISelection, material: IMaterial) {
         val vao = textureSelectionCache.getOrCreate(ctx) {
-            val model = ctx.gui.state.tmpModel ?: ctx.gui.modelAccessor.model
+            val model = ctx.gui.state.tmpModel ?: ctx.gui.programState.model
             val color = Config.colorPalette.textureSelectionColor
 
             ctx.buffer.build(DrawMode.LINES) {
@@ -162,7 +162,7 @@ class MaterialRenderer {
         if (selection.selectionType !in setOf(SelectionType.OBJECT, SelectionType.FACE)) return
 
         val vao = modelSelectionCache.getOrCreate(ctx) {
-            val model = ctx.gui.state.tmpModel ?: ctx.gui.modelAccessor.model
+            val model = ctx.gui.state.tmpModel ?: ctx.gui.programState.model
             val color = Config.colorPalette.modelSelectionColor
 
             ctx.buffer.build(DrawMode.LINES) {

@@ -16,7 +16,9 @@ object GLTFParser {
             val buffers: PairList<GltfBuffer, ByteArray>,
             val bufferViews: PairList<GltfBufferView, ByteArray>,
             val accessors: PairList<GltfAccessor, List<*>>,
-            val meshes: PairList<GltfMesh, ResultMesh>
+            val meshes: PairList<GltfMesh, ResultMesh>,
+            val scenes: PairList<GltfScene, ResultScene>,
+            val animations: PairList<GltfAnimation, ResultAnimation>
     )
 
     data class ResultMesh(
@@ -29,9 +31,30 @@ object GLTFParser {
             val mode: GltfMode
     )
 
-    fun parse(file: GltfFile, folder: ResourcePath): Result {
+    data class ResultNode(
+            val index: Int,
+            val children: PairList<GltfNode, ResultNode>,
+            val mesh: Pair<GltfMesh, ResultMesh>?
+    )
 
-        val buffers = file.buffers.map { buff ->
+    data class ResultScene(
+            val nodes: PairList<GltfNode, ResultNode>
+    )
+
+    data class ResultAnimation(
+            val channels: PairList<GltfAnimationChannel, ResultChannel>
+    )
+
+    data class ResultChannel(
+            val node: Int,
+            val path: GltfChannelPath,
+            val times: List<Float>,
+            val interpolation: GltfInterpolation,
+            val values: List<Any>
+    )
+
+    private fun parseBuffers(file: GltfFile, folder: ResourcePath): PairList<GltfBuffer, ByteArray> {
+        return file.buffers.map { buff ->
 
             val uri = buff.uri ?: error("Found buffer without uri, unable to load, buffer: $buff")
             val bytes = folder.resolve(uri).inputStream().readBytes()
@@ -44,8 +67,10 @@ object GLTFParser {
 
             Pair(buff, bytes)
         }
+    }
 
-        val bufferViews = file.bufferViews.mapIndexed { index, view ->
+    private fun parseBufferViews(file: GltfFile, buffers: PairList<GltfBuffer, ByteArray>): PairList<GltfBufferView, ByteArray> {
+        return file.bufferViews.mapIndexed { index, view ->
 
             val (_, buffer) = buffers[view.buffer]
             val offset = view.byteOffset ?: 0
@@ -57,8 +82,10 @@ object GLTFParser {
 
             Pair(view, bufferData)
         }
+    }
 
-        val accessors = file.accessors.mapIndexed { index, accessor ->
+    private fun parseAccessors(file: GltfFile, bufferViews: PairList<GltfBufferView, ByteArray>): PairList<GltfAccessor, List<Any>> {
+        return file.accessors.mapIndexed { index, accessor ->
 
             val viewIndex = accessor.bufferView ?: error("Unsupported Empty BufferView at accessor: $accessor")
 
@@ -74,8 +101,34 @@ object GLTFParser {
 
             Pair(accessor, list)
         }
+    }
 
-        val meshes = file.meshes.mapIndexed { index, mesh ->
+    private fun intoList(listType: GltfType, componentType: GltfComponentType, count: Int, buffer: ByteBuffer): List<Any> {
+        val t = componentType
+        val b = buffer
+        return when (listType) {
+            GltfType.SCALAR -> List(count) { b.next(t) }
+            GltfType.VEC2 -> List(count) { vec2Of(b.next(t), b.next(t)) }
+            GltfType.VEC3 -> List(count) { vec3Of(b.next(t), b.next(t), b.next(t)) }
+            GltfType.VEC4 -> List(count) { vec4Of(b.next(t), b.next(t), b.next(t), b.next(t)) }
+            GltfType.MAT2 -> error("Unsupported")
+            GltfType.MAT3 -> error("Unsupported")
+            GltfType.MAT4 -> error("Unsupported")
+        }
+    }
+
+    @Suppress("NOTHING_TO_INLINE")
+    private inline fun ByteBuffer.next(type: GltfComponentType): Number {
+        return when (type) {
+            GltfComponentType.BYTE, GltfComponentType.UNSIGNED_BYTE -> get()
+            GltfComponentType.SHORT, GltfComponentType.UNSIGNED_SHORT -> short
+            GltfComponentType.UNSIGNED_INT -> int
+            GltfComponentType.FLOAT -> float
+        }
+    }
+
+    private fun parseMeshes(file: GltfFile, accessors: PairList<GltfAccessor, List<Any>>): PairList<GltfMesh, ResultMesh> {
+        return file.meshes.mapIndexed { index, mesh ->
             val primitives = mesh.primitives.map { prim ->
 
                 val attr = prim.attributes.map { (k, v) ->
@@ -95,36 +148,64 @@ object GLTFParser {
 
             Pair(mesh, ResultMesh(primitives))
         }
+    }
+
+    private fun parseScenes(file: GltfFile, meshes: PairList<GltfMesh, ResultMesh>): PairList<GltfScene, ResultScene> {
+        return file.scenes.map { scene ->
+            val nodes = scene.nodes ?: emptyList()
+            val parsedNodes = nodes.map { file.nodes[it] to parseNode(file, it, file.nodes[it], meshes) }
+
+            Pair(scene, ResultScene(parsedNodes))
+        }
+    }
+
+    private fun parseNode(file: GltfFile, nodeIndex: Int, node: GltfNode, meshes: PairList<GltfMesh, ResultMesh>): ResultNode {
+        val children = node.children.map { file.nodes[it] to parseNode(file, it, file.nodes[it], meshes) }
+        val mesh = node.mesh?.let { meshes[it] }
+
+        return ResultNode(nodeIndex, children, mesh)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun parseChannel(channel: GltfAnimationChannel, samplers: List<GltfAnimationSampler>,
+                             accessors: PairList<GltfAccessor, List<Any>>): Pair<GltfAnimationChannel, ResultChannel> {
+        val sampler = samplers[channel.sampler]
+        val timeValues = accessors[sampler.input].second.map { (it as Number).toFloat() }
+
+        val res = ResultChannel(
+                node = channel.target.node,
+                path = GltfChannelPath.valueOf(channel.target.path),
+                times = timeValues,
+                interpolation = sampler.interpolation,
+                values = accessors[sampler.output].second
+        )
+
+        return channel to res
+    }
+
+    private fun parseAnimations(file: GltfFile, accessors: PairList<GltfAccessor, List<Any>>): PairList<GltfAnimation, ResultAnimation> {
+        return file.animations.map { anim ->
+            val channels = anim.channels.map { parseChannel(it, anim.samplers, accessors) }
+            anim to ResultAnimation(channels)
+        }
+    }
+
+    fun parse(file: GltfFile, folder: ResourcePath): Result {
+
+        val buffers = parseBuffers(file, folder)
+        val bufferViews = parseBufferViews(file, buffers)
+        val accessors = parseAccessors(file, bufferViews)
+        val meshes = parseMeshes(file, accessors)
+        val scenes = parseScenes(file, meshes)
+        val animations = parseAnimations(file, accessors)
 
         return Result(
                 buffers = buffers,
                 bufferViews = bufferViews,
                 accessors = accessors,
-                meshes = meshes
+                meshes = meshes,
+                scenes = scenes,
+                animations = animations
         )
-    }
-
-    private fun intoList(listType: GltfType, componentType: GltfComponentType, count: Int, buffer: ByteBuffer): List<Any> {
-        val t = componentType
-        val b = buffer
-        return when (listType) {
-            GltfType.SCALAR -> List(count) { b.next(t) }
-            GltfType.VEC2 -> List(count) { vec2Of(b.next(t), b.next(t)) }
-            GltfType.VEC3 -> List(count) { vec3Of(b.next(t), b.next(t), b.next(t)) }
-            GltfType.VEC4 -> List(count) { vec4Of(b.next(t), b.next(t), b.next(t), b.next(t)) }
-            GltfType.MAT2 -> TODO()
-            GltfType.MAT3 -> TODO()
-            GltfType.MAT4 -> TODO()
-        }
-    }
-
-    @Suppress("NOTHING_TO_INLINE")
-    private inline fun ByteBuffer.next(type: GltfComponentType): Number {
-        return when (type) {
-            GltfComponentType.BYTE, GltfComponentType.UNSIGNED_BYTE -> get()
-            GltfComponentType.SHORT, GltfComponentType.UNSIGNED_SHORT -> short
-            GltfComponentType.UNSIGNED_INT -> int
-            GltfComponentType.FLOAT -> float
-        }
     }
 }

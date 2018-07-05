@@ -9,7 +9,7 @@ import com.cout970.modeler.core.animation.Keyframe
 import com.cout970.modeler.core.animation.ref
 import com.cout970.modeler.core.model.TRTSTransformation
 import com.cout970.modeler.core.model.objects
-import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.render.tool.Animator
 import com.cout970.modeler.util.absolutePositionV
@@ -21,9 +21,9 @@ import kotlin.math.roundToInt
 private var lastAnimation = 0
 
 @UseCase("animation.channel.add")
-private fun addAnimationChannel(modelAccessor: IModelAccessor): ITask {
-    val refs = modelAccessor.modelSelection.map { it.objects }.getOrNull() ?: return TaskNone
-    val anim = modelAccessor.animation
+private fun addAnimationChannel(programState: IProgramState): ITask {
+    val refs = programState.modelSelection.map { it.objects }.getOrNull() ?: return TaskNone
+    val anim = programState.animation
 
     val channel = Channel(
             name = "Channel ${lastAnimation++}",
@@ -36,7 +36,7 @@ private fun addAnimationChannel(modelAccessor: IModelAccessor): ITask {
     val newAnimation = anim.withChannel(channel).withMapping(channel.ref, refs)
 
     return TaskChain(listOf(
-            TaskUpdateAnimation(modelAccessor.animation, newAnimation),
+            TaskUpdateAnimation(programState.animation, newAnimation),
             ModifyGui { it.animator.selectedChannel = channel.ref }
     ))
 }
@@ -49,47 +49,47 @@ private fun selectAnimationChannel(comp: Component): ITask = ModifyGui {
 
 
 @UseCase("animation.channel.enable")
-private fun enableAnimationChannel(comp: Component, modelAccessor: IModelAccessor): ITask {
-    val animation = modelAccessor.animation
+private fun enableAnimationChannel(comp: Component, programState: IProgramState): ITask {
+    val animation = programState.animation
     val ref = comp.metadata["ref"] as IChannelRef
     val channel = animation.channels[ref]!!
 
     val newAnimation = animation.withChannel(channel.withEnable(true))
 
-    return TaskUpdateAnimation(modelAccessor.animation, newAnimation)
+    return TaskUpdateAnimation(programState.animation, newAnimation)
 }
 
 @UseCase("animation.channel.disable")
-private fun disableAnimationChannel(comp: Component, modelAccessor: IModelAccessor): ITask {
-    val animation = modelAccessor.animation
+private fun disableAnimationChannel(comp: Component, programState: IProgramState): ITask {
+    val animation = programState.animation
     val ref = comp.metadata["ref"] as IChannelRef
     val channel = animation.channels[ref]!!
 
     val newAnimation = animation.withChannel(channel.withEnable(false))
 
-    return TaskUpdateAnimation(modelAccessor.animation, newAnimation)
+    return TaskUpdateAnimation(programState.animation, newAnimation)
 }
 
 @UseCase("animation.channel.delete")
-private fun removeAnimationChannel(comp: Component, modelAccessor: IModelAccessor): ITask {
-    val animation = modelAccessor.animation
+private fun removeAnimationChannel(comp: Component, programState: IProgramState): ITask {
+    val animation = programState.animation
     val channel = comp.metadata["ref"] as IChannelRef
     val newAnimation = animation.removeChannels(listOf(channel))
 
-    return TaskUpdateAnimation(modelAccessor.animation, newAnimation)
+    return TaskUpdateAnimation(programState.animation, newAnimation)
 }
 
 
 @UseCase("animation.set.length")
-private fun setAnimationLength(comp: Component, modelAccessor: IModelAccessor): ITask {
-    val animation = modelAccessor.animation
+private fun setAnimationLength(comp: Component, programState: IProgramState): ITask {
+    val animation = programState.animation
     val time = comp.metadata["time"] as Float
 
     if (time <= 0) return TaskNone
 
     val newAnimation = animation.withTimeLength(time)
 
-    return TaskUpdateAnimation(modelAccessor.animation, newAnimation)
+    return TaskUpdateAnimation(programState.animation, newAnimation)
 }
 
 @UseCase("animation.panel.click")
@@ -205,7 +205,7 @@ private fun animationSeekStart(): ITask = ModifyGui {
 
 @UseCase("animation.seek.end")
 private fun animationSeekEnd(): ITask = ModifyGui {
-    it.animator.animationTime = it.modelAccessor.animation.timeLength
+    it.animator.animationTime = it.programState.animation.timeLength
 }
 
 @UseCase("animation.prev.keyframe")

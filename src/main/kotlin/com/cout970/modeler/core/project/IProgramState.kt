@@ -9,7 +9,7 @@ import com.cout970.modeler.util.Nullable
 /**
  * Created by cout970 on 2017/09/27.
  */
-interface IModelAccessor {
+interface IProgramState {
 
     val model: IModel
     val animation: IAnimation
@@ -25,9 +25,9 @@ interface IModelAccessor {
     operator fun component3() = textureSelection
 }
 
-class ModelAccessor(
+class ProgramState(
         val projectManager: ProjectManager
-) : IModelAccessor {
+) : IProgramState {
 
     override val modelSelectionHandler: SelectionHandler = projectManager.modelSelectionHandler
     override val textureSelectionHandler: SelectionHandler = projectManager.textureSelectionHandler

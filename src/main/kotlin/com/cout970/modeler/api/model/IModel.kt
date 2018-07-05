@@ -1,5 +1,7 @@
 package com.cout970.modeler.api.model
 
+import com.cout970.modeler.api.animation.IAnimation
+import com.cout970.modeler.api.animation.IAnimationRef
 import com.cout970.modeler.api.model.`object`.IGroup
 import com.cout970.modeler.api.model.`object`.IGroupRef
 import com.cout970.modeler.api.model.`object`.IObject
@@ -16,10 +18,9 @@ interface IModel : Comparable<IModel> {
     val objectMap: Map<IObjectRef, IObject>
     val materialMap: Map<IMaterialRef, IMaterial>
     val groupMap: Map<IGroupRef, IGroup>
+    val animationMap: Map<IAnimationRef, IAnimation>
 
     val tree: ImmutableGroupTree
-//    val groupObjects: BiMultimap<IGroupRef, IObjectRef>
-//    val groupTree: IGroupTree
 
     val objectRefs: List<IObjectRef> get() = objectMap.keys.toList()
     val objects: List<IObject> get() = objectMap.values.toList()
@@ -34,6 +35,7 @@ interface IModel : Comparable<IModel> {
     fun addObjects(objs: List<IObject>): IModel
     fun removeObjects(objs: List<IObjectRef>): IModel
     fun modifyObjects(predicate: (IObjectRef) -> Boolean, func: (IObjectRef, IObject) -> IObject): IModel
+
     fun modifyObjects(objs: Set<IObjectRef>, func: (IObjectRef, IObject) -> IObject): IModel {
         return modifyObjects({ it in objs }, func)
     }
@@ -46,11 +48,10 @@ interface IModel : Comparable<IModel> {
     fun modifyGroup(ref: IGroupRef, group: IGroup): IModel
     fun removeGroup(ref: IGroupRef): IModel
 
-//    fun getGroupObjects(group: IGroupRef): Set<IObjectRef>
-//    fun getObjectGroup(obj: IObjectRef): IGroupRef
-//    fun setObjectGroup(obj: IObjectRef, newGroup: IGroupRef): IModel
+    fun addAnimation(animation: IAnimation): IModel
+    fun modifyAnimation(ref: IAnimationRef, new: IAnimation): IModel
+    fun removeAnimation(animationRef: IAnimationRef): IModel
 
-    //    fun withGroupTree(newGroupTree: IGroupTree): IModel
     fun withGroupTree(newGroupTree: ImmutableGroupTree): IModel
 
     fun merge(other: IModel): IModel

@@ -2,12 +2,15 @@ package com.cout970.modeler.core.export
 
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.mat4Of
+import com.cout970.modeler.api.animation.IAnimationRef
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.GroupRef
 import com.cout970.modeler.api.model.`object`.IGroupRef
 import com.cout970.modeler.api.model.`object`.RootGroupRef
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.IObjectRef
+import com.cout970.modeler.core.animation.AnimationRef
+import com.cout970.modeler.core.animation.AnimationRefNone
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.TRTSTransformation
 import com.cout970.modeler.core.model.material.MaterialRef
@@ -262,6 +265,26 @@ class MaterialRefSerializer : JsonSerializer<IMaterialRef>, JsonDeserializer<IMa
         }
     }
 }
+
+class AnimationRefSerializer : JsonSerializer<IAnimationRef>, JsonDeserializer<IAnimationRef> {
+
+    override fun serialize(src: IAnimationRef, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+        return JsonPrimitive(src.id.toString())
+    }
+
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IAnimationRef {
+        if (json.isJsonObject) {
+            val ref = context.deserializeT<AnimationRef>(json)
+            if (ref.id == AnimationRefNone.id) return AnimationRefNone
+            return ref
+        } else {
+            val uuid = UUID.fromString(json.asString)
+            if (uuid == AnimationRefNone.id) return AnimationRefNone
+            return AnimationRef(uuid)
+        }
+    }
+}
+
 
 class UUIDSerializer : JsonSerializer<UUID>, JsonDeserializer<UUID> {
 

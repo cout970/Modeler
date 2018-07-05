@@ -9,7 +9,7 @@ import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.model.selection.ObjectRefNone
-import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.gui.event.EventModelUpdate
 import com.cout970.modeler.gui.event.EventSelectionUpdate
 import com.cout970.modeler.gui.leguicomp.*
@@ -37,7 +37,7 @@ import kotlin.math.min
 
 data class Slot(val obj: IObjectRef?, val group: IGroupRef?, val level: Int)
 
-data class ModelTreeProps(val modelAccessor: IModelAccessor, val input: IInput, val dispatcher: Dispatcher) : RProps
+data class ModelTreeProps(val programState: IProgramState, val input: IInput, val dispatcher: Dispatcher) : RProps
 data class ModelTreeState(val selectedObj: IObjectRef) : RState
 
 
@@ -49,7 +49,7 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
 
     fun generateObjectMap(): List<Slot> {
 
-        val model = props.modelAccessor.model
+        val model = props.programState.model
         val tree = model.tree
         val map = mutableListOf<Slot>()
 
@@ -171,9 +171,9 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
 
             container {
 
-                val model = props.modelAccessor.model
+                val model = props.programState.model
                 val objectMap = generateObjectMap()
-                val selected = props.modelAccessor.modelSelection
+                val selected = props.programState.modelSelection
                         .map { sel -> { obj: IObjectRef -> sel.isSelected(obj) } }
                         .getOr { _: IObjectRef -> false }
 
@@ -186,7 +186,7 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
 
                 postMount {
                     animation?.stopAnimation()
-                    val anim = ModelTreeAnimation(props.modelAccessor, objectMap,
+                    val anim = ModelTreeAnimation(props.programState, objectMap,
                             this, props.input, this@ModelTree::rerender, props.dispatcher)
 
                     animation = anim.apply { startAnimation() }
@@ -358,7 +358,7 @@ class ToggleName : RComponent<ToggleName.Props, ToggleName.State>() {
 }
 
 
-class ModelTreeAnimation(val modelAccessor: IModelAccessor, val objMap: List<Slot>, val component: Component, val input: IInput, val reset: () -> Unit, val dispatcher: Dispatcher) : Animation() {
+class ModelTreeAnimation(val programState: IProgramState, val objMap: List<Slot>, val component: Component, val input: IInput, val reset: () -> Unit, val dispatcher: Dispatcher) : Animation() {
     var pressTime = 0L
     var unPressTime = 0L
     var selected: Int? = null
@@ -406,7 +406,7 @@ class ModelTreeAnimation(val modelAccessor: IModelAccessor, val objMap: List<Slo
             val selected: (Int, Slot) -> Boolean
 
             selected = if (isMultiSelect(sel))
-                { _, obj -> modelAccessor.modelSelection.eval { obj.obj != null && it.isSelected(obj.obj) } }
+                { _, obj -> programState.modelSelection.eval { obj.obj != null && it.isSelected(obj.obj) } }
             else
                 { i, _ -> i == sel }
 
@@ -427,7 +427,7 @@ class ModelTreeAnimation(val modelAccessor: IModelAccessor, val objMap: List<Slo
     }
 
     private fun isMultiSelect(sel: Int): Boolean {
-        return objMap[sel].obj != null && modelAccessor.modelSelection.eval { it.isSelected(objMap[sel].obj!!) }
+        return objMap[sel].obj != null && programState.modelSelection.eval { it.isSelected(objMap[sel].obj!!) }
     }
 
     private fun calculateMouseCoords(): Vector2i {
@@ -454,7 +454,7 @@ class ModelTreeAnimation(val modelAccessor: IModelAccessor, val objMap: List<Slo
 
             val parent = when {
                 replacedGroup != null -> replacedGroup
-                replacedObj != null -> modelAccessor.model.tree.objects.getReverse(replacedObj)
+                replacedObj != null -> programState.model.tree.objects.getReverse(replacedObj)
                 else -> return
             }
 

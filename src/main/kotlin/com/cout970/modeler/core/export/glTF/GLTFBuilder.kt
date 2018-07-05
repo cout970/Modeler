@@ -295,7 +295,7 @@ class GLTFBuilder {
         primitives.add(Primitive().apply(func))
     }
 
-    inline fun <reified T> Primitive.buffer(type: GltfComponentType, data: List<T>, indices: Boolean = false): UnpackedBuffer {
+    inline fun <reified T> buffer(type: GltfComponentType, data: List<T>, indices: Boolean = false): UnpackedBuffer {
         val container: GltfType = when {
             Number::class.java.isAssignableFrom(T::class.java) -> GltfType.SCALAR
             IVector2::class.java.isAssignableFrom(T::class.java) -> GltfType.VEC2

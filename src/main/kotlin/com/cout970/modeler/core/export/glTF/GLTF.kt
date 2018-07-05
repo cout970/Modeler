@@ -255,7 +255,7 @@ data class GltfOrthographicCamera(
 // @formatter:on
 
 data class GltfAnimation(
-        val name: String,
+        val name: String?,
         val channels: List<GltfAnimationChannel>,
         val samplers: List<GltfAnimationSampler>
 )

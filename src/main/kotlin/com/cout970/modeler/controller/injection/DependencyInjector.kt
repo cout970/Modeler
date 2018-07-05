@@ -15,7 +15,7 @@ import com.cout970.modeler.core.export.ExportManager
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.model.selection.IClipboard
-import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.core.project.IProjectPropertiesHolder
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.project.ProjectProperties
@@ -80,7 +80,7 @@ class DependencyInjector {
         Dispatcher::class.java -> gui.dispatcher
         ButtonBinder::class.java -> gui.buttonBinder
         KeyboardBinder::class.java -> gui.keyboardBinder
-        IModelAccessor::class.java -> gui.modelAccessor
+        IProgramState::class.java -> gui.programState
         Animator::class.java -> gui.animator
         IProjectPropertiesHolder::class.java -> gui.propertyHolder
 

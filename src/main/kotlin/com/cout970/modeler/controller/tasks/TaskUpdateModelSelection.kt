@@ -11,10 +11,10 @@ class TaskUpdateModelSelection(val oldSelection: Nullable<ISelection>,
                                val newSelection: Nullable<ISelection>) : IUndoableTask {
 
     override fun run(state: Program) {
-        state.gui.modelAccessor.modelSelectionHandler.setSelection(newSelection)
+        state.gui.programState.modelSelectionHandler.setSelection(newSelection)
     }
 
     override fun undo(state: Program) {
-        state.gui.modelAccessor.modelSelectionHandler.setSelection(oldSelection)
+        state.gui.programState.modelSelectionHandler.setSelection(oldSelection)
     }
 }

@@ -44,16 +44,16 @@ class RootComp : RComponent<RootProps, RootState>() {
 
         child(CenterPanel::class, CenterPanelProps(props.gui.canvasContainer, props.gui.timer))
 
-        child(LeftPanel::class, LeftPanelProps(state.leftVisible, props.gui.modelAccessor,
+        child(LeftPanel::class, LeftPanelProps(state.leftVisible, props.gui.programState,
                 props.gui.gridLines, props.gui.animator))
 
-        child(RightPanel::class, RightPanelProps(state.rightVisible, props.gui.modelAccessor,
+        child(RightPanel::class, RightPanelProps(state.rightVisible, props.gui.programState,
                 props.gui.state, props.gui.input, props.gui.dispatcher))
 
         child(BottomPanel::class, BottomPanelProps(state.bottomVisible, props.gui.animator,
-                props.gui.modelAccessor, props.gui.input, props.gui.dispatcher))
+                props.gui.programState, props.gui.input, props.gui.dispatcher))
 
-        child(TopBar::class, ModelAccessorProps(props.gui.modelAccessor))
+        child(TopBar::class, ModelAccessorProps(props.gui.programState))
 
         child(Search::class, SearchProps(props.gui.dispatcher))
 

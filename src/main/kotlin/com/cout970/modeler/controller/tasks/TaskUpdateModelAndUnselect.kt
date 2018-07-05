@@ -13,14 +13,14 @@ class TaskUpdateModelAndUnselect(
 ) : IUndoableTask {
 
     override fun run(state: Program) {
-        state.gui.modelAccessor.modelSelectionHandler.clear()
-        state.gui.modelAccessor.textureSelectionHandler.clear()
+        state.gui.programState.modelSelectionHandler.clear()
+        state.gui.programState.textureSelectionHandler.clear()
         state.projectManager.updateModel(newModel)
     }
 
     override fun undo(state: Program) {
         state.projectManager.updateModel(oldModel)
-        state.gui.modelAccessor.modelSelectionHandler.setSelection(oldModelSelection)
-        state.gui.modelAccessor.textureSelectionHandler.setSelection(oldTextureSelection)
+        state.gui.programState.modelSelectionHandler.setSelection(oldModelSelection)
+        state.gui.programState.textureSelectionHandler.setSelection(oldTextureSelection)
     }
 }

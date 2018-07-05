@@ -10,7 +10,7 @@ import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.model.selection.Selection
-import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.render.tool.addFace
 import com.cout970.modeler.render.tool.getEdges
 import com.cout970.modeler.render.tool.getFacePos
@@ -30,9 +30,9 @@ import java.util.*
  */
 
 @UseCase("model.obj.change.name")
-private fun changeObjectName(component: Component, modelAccessor: IModelAccessor): ITask {
-    val model = modelAccessor.model
-    val selection = modelAccessor.modelSelection
+private fun changeObjectName(component: Component, programState: IProgramState): ITask {
+    val model = programState.model
+    val selection = programState.modelSelection
 
     val name = component.asNullable()
             .filterIsInstance<TextInput>()
@@ -55,8 +55,8 @@ private fun changeObjectName(component: Component, modelAccessor: IModelAccessor
 }
 
 @UseCase("model.group.change.name")
-private fun changeGroupName(component: Component, modelAccessor: IModelAccessor): ITask {
-    val model = modelAccessor.model
+private fun changeGroupName(component: Component, programState: IProgramState): ITask {
+    val model = programState.model
     val groupRef = component.metadata["ref"] as IGroupRef
 
     val name = component.asNullable()
@@ -73,11 +73,11 @@ private fun changeGroupName(component: Component, modelAccessor: IModelAccessor)
 
 
 @UseCase("model.obj.join")
-private fun joinObjects(modelAccessor: IModelAccessor): ITask {
-    val selection = modelAccessor.modelSelection.getOrNull() ?: return TaskNone
+private fun joinObjects(programState: IProgramState): ITask {
+    val selection = programState.modelSelection.getOrNull() ?: return TaskNone
     if (selection.selectionType != SelectionType.OBJECT || selection.size < 2) return TaskNone
 
-    val model = modelAccessor.model
+    val model = programState.model
     val objs = model.getSelectedObjects(selection)
     val objsRefs = selection.objects
     val newObj = Object(
@@ -89,11 +89,11 @@ private fun joinObjects(modelAccessor: IModelAccessor): ITask {
 
     return TaskChain(listOf(
             TaskUpdateModelSelection(
-                    oldSelection = modelAccessor.modelSelection,
+                    oldSelection = programState.modelSelection,
                     newSelection = Nullable.castNull()
             ),
             TaskUpdateTextureSelection(
-                    oldSelection = modelAccessor.textureSelection,
+                    oldSelection = programState.textureSelection,
                     newSelection = Nullable.castNull()
             ),
             TaskUpdateModel(oldModel = model, newModel = newModel)
@@ -101,11 +101,11 @@ private fun joinObjects(modelAccessor: IModelAccessor): ITask {
 }
 
 @UseCase("model.obj.arrange.uv")
-private fun arrangeUVs(modelAccessor: IModelAccessor): ITask {
-    val selection = modelAccessor.modelSelection.getOrNull() ?: return TaskNone
+private fun arrangeUVs(programState: IProgramState): ITask {
+    val selection = programState.modelSelection.getOrNull() ?: return TaskNone
     if (selection.selectionType != SelectionType.OBJECT) return TaskNone
 
-    val model = modelAccessor.model
+    val model = programState.model
 
     val newModel = model.modifyObjects(selection.objects.toSet()) { _, obj ->
         val mesh = obj.mesh
@@ -147,11 +147,11 @@ private fun arrangeUVs(modelAccessor: IModelAccessor): ITask {
 
     return TaskChain(listOf(
             TaskUpdateModelSelection(
-                    oldSelection = modelAccessor.modelSelection,
+                    oldSelection = programState.modelSelection,
                     newSelection = Nullable.castNull()
             ),
             TaskUpdateTextureSelection(
-                    oldSelection = modelAccessor.textureSelection,
+                    oldSelection = programState.textureSelection,
                     newSelection = Nullable.castNull()
             ),
             TaskUpdateModel(oldModel = model, newModel = newModel)
@@ -159,11 +159,11 @@ private fun arrangeUVs(modelAccessor: IModelAccessor): ITask {
 }
 
 @UseCase("model.face.extrude")
-private fun extrudeFace(modelAccessor: IModelAccessor): ITask {
-    val selection = modelAccessor.modelSelection.getOrNull() ?: return TaskNone
+private fun extrudeFace(programState: IProgramState): ITask {
+    val selection = programState.modelSelection.getOrNull() ?: return TaskNone
     if (selection.selectionType != SelectionType.FACE || selection.size < 1) return TaskNone
 
-    val model = modelAccessor.model
+    val model = programState.model
 
     val map = selection.faces.groupBy { it.toObjectRef() }
     val objRefs = selection.faces.map { it.toObjectRef() }.toSet()
@@ -219,11 +219,11 @@ private fun extrudeFace(modelAccessor: IModelAccessor): ITask {
             TaskUpdateModel(oldModel = model, newModel = newModel),
 
             TaskUpdateModelSelection(
-                    oldSelection = modelAccessor.modelSelection,
+                    oldSelection = programState.modelSelection,
                     newSelection = newSelection.asNullable()),
 
             TaskUpdateTextureSelection(
-                    oldSelection = modelAccessor.textureSelection,
+                    oldSelection = programState.textureSelection,
                     newSelection = Nullable.castNull())
     ))
 }

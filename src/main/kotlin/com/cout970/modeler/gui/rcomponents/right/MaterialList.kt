@@ -5,7 +5,7 @@ import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.model.ref
-import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.gui.event.EventMaterialUpdate
 import com.cout970.modeler.gui.event.EventModelUpdate
 import com.cout970.modeler.gui.event.EventSelectionUpdate
@@ -22,7 +22,7 @@ import com.cout970.reactive.nodes.scrollablePanel
 import com.cout970.reactive.nodes.style
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 
-data class MaterialListProps(val modelAccessor: IModelAccessor, val selectedMaterial: () -> IMaterialRef) : RProps
+data class MaterialListProps(val programState: IProgramState, val selectedMaterial: () -> IMaterialRef) : RProps
 
 class MaterialList : RStatelessComponent<MaterialListProps>() {
 
@@ -138,8 +138,8 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
 
             container {
 
-                val model = props.modelAccessor.model
-                val selection = props.modelAccessor.modelSelection
+                val model = props.programState.model
+                val selection = props.programState.modelSelection
                 val materialRefs = (model.materialRefs + listOf(MaterialRefNone))
                 val selectedMaterial = props.selectedMaterial()
 

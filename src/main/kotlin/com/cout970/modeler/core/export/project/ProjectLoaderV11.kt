@@ -81,10 +81,9 @@ object ProjectLoaderV11 {
             val materialMap = context.deserializeT<Map<IMaterialRef, IMaterial>>(obj["materialMap"])
 
             return Model.of(
-                    objectMap,
-                    materialMap,
-                    emptyMap(),
-                    MutableGroupTree(RootGroupRef, objectMap.keys.toMutableList()).toImmutable()
+                    objectMap = objectMap,
+                    materialMap = materialMap,
+                    groupTree = MutableGroupTree(RootGroupRef, objectMap.keys.toMutableList()).toImmutable()
             )
         }
     }

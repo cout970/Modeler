@@ -1,8 +1,10 @@
 package com.cout970.modeler.gui
 
+import com.cout970.modeler.api.animation.IAnimationRef
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.SelectionType
+import com.cout970.modeler.core.animation.AnimationRefNone
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.gui.canvas.ISelectable
 import com.cout970.modeler.gui.canvas.TransformationMode
@@ -35,6 +37,7 @@ class GuiState {
     var tmpModel: IModel? = null
 
     var selectedMaterial: IMaterialRef = MaterialRefNone
+    var selectedAnimation: IAnimationRef = AnimationRefNone
 
     var modelHash: Int = -1
     var modelSelectionHash: Int = -1

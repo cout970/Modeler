@@ -31,6 +31,8 @@ interface Multimap<K, V> : Iterable<Pair<K, List<V>>> {
 
 fun <K, V> emptyMultimap() = ImmutableMultimap<K, V>(immutableHashMapOf())
 
+fun <K, V> Map<K, Collection<V>>.toMultimap(): ImmutableMultimap<K, V> = multimapOf(*this.map { it.key to it.value }.toTypedArray())
+
 fun <K, V> multimapOf(vararg entries: Pair<K, Collection<V>>): ImmutableMultimap<K, V> {
     return entries.fold(emptyMultimap()) { acc, entry -> acc.addAll(entry.first, entry.second) }
 }

@@ -83,10 +83,10 @@ class CursorManager {
     }
 
     fun updateCursors(gui: Gui) {
-        val model = gui.state.tmpModel ?: gui.modelAccessor.model
+        val model = gui.state.tmpModel ?: gui.programState.model
         val material = gui.state.selectedMaterial
-        val texSel = gui.modelAccessor.textureSelectionHandler.getSelection()
-        val modSel = gui.modelAccessor.modelSelectionHandler.getSelection()
+        val texSel = gui.programState.textureSelectionHandler.getSelection()
+        val modSel = gui.programState.modelSelectionHandler.getSelection()
         modelCursor = modSel.map { getModelCursor(model, it) }.getOrNull()
         textureCursor = texSel.map { getTextureCursor(model, it, material) }.getOrNull()
     }

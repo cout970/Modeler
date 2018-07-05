@@ -8,7 +8,7 @@ import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.helpers.DeletionHelper
 import com.cout970.modeler.core.model.getSelectedObjects
 import com.cout970.modeler.core.model.selection.*
-import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.asNullable
@@ -37,7 +37,7 @@ private fun deleteSelection(model: IModel, projectManager: ProjectManager): ITas
 
 
 @UseCase("model.selection.copy")
-private fun copySelection(accessor: IModelAccessor, clipboard: IClipboard): ITask {
+private fun copySelection(accessor: IProgramState, clipboard: IClipboard): ITask {
     val model = accessor.model
     val selection = accessor.modelSelection
 
@@ -48,7 +48,7 @@ private fun copySelection(accessor: IModelAccessor, clipboard: IClipboard): ITas
 }
 
 @UseCase("model.selection.paste")
-private fun pasteSelection(accessor: IModelAccessor, clipboard: IClipboard): ITask {
+private fun pasteSelection(accessor: IProgramState, clipboard: IClipboard): ITask {
     val model = accessor.model
     val selection = accessor.modelSelection
 
@@ -62,7 +62,7 @@ private fun pasteSelection(accessor: IModelAccessor, clipboard: IClipboard): ITa
 }
 
 @UseCase("model.selection.cut")
-private fun cutSelection(accessor: IModelAccessor, clipboard: IClipboard): ITask {
+private fun cutSelection(accessor: IProgramState, clipboard: IClipboard): ITask {
     val model = accessor.model
     val selection = accessor.modelSelection
 

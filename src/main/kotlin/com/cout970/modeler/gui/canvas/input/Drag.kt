@@ -52,12 +52,12 @@ class DraggingCursor {
                 endMousePos = mouse.mousePos
                 hovered?.let { hovered ->
                     val travel = startMousePos!! to endMousePos!!
-                    val model = gui.modelAccessor.model
+                    val model = gui.programState.model
                     val material = model.getMaterial(gui.state.selectedMaterial)
                     val selection = if (canvas.viewMode == SelectionTarget.TEXTURE) {
-                        gui.modelAccessor.textureSelectionHandler.getSelection()
+                        gui.programState.textureSelectionHandler.getSelection()
                     } else {
-                        gui.modelAccessor.modelSelectionHandler.getSelection()
+                        gui.programState.modelSelectionHandler.getSelection()
                     }
                     applyTransformation(gui, selection, hovered, travel, canvas, material)
                 }
@@ -70,7 +70,7 @@ class DraggingCursor {
             !isDragging() -> {
                 if (texture) {
                     val clickPos = PickupHelper.getMousePosAbsolute(canvas, mouse.mousePos)
-                    val model = gui.modelAccessor.model
+                    val model = gui.programState.model
                     val material = model.getMaterial(gui.state.selectedMaterial)
                     this.hovered = Hover.getHoveredObject(clickPos, material, targets)
                 } else {
@@ -93,7 +93,7 @@ class DraggingCursor {
         gui.state.run {
             tmpModel = null
             modelCache?.let { cache ->
-                val oldModel = gui.modelAccessor.model
+                val oldModel = gui.programState.model
                 taskToPerform = TaskUpdateModel(oldModel = oldModel, newModel = cache.model)
             }
         }
@@ -108,7 +108,7 @@ class DraggingCursor {
                             canvas: Canvas, mat: IMaterial) {
 
         val mode = gui.state.transformationMode
-        val oldModel = gui.modelAccessor.model
+        val oldModel = gui.programState.model
         val modelCache = this.modelCache ?: ModelCache(oldModel)
 
         val newOffset = when {

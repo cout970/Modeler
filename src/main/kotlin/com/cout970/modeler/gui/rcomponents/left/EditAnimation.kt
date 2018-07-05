@@ -1,7 +1,7 @@
 package com.cout970.modeler.gui.rcomponents.left
 
 import com.cout970.modeler.core.model.TRTSTransformation
-import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.gui.event.EventAnimatorUpdate
 import com.cout970.modeler.gui.event.EventModelUpdate
 import com.cout970.modeler.gui.event.EventSelectionUpdate
@@ -23,7 +23,7 @@ import com.cout970.reactive.nodes.div
 import com.cout970.reactive.nodes.style
 
 
-data class EditAnimationProps(val animator: Animator, val modelAccessor: IModelAccessor) : RProps
+data class EditAnimationProps(val animator: Animator, val programState: IProgramState) : RProps
 
 class EditAnimation : RComponent<EditAnimationProps, VisibleWidget>() {
 

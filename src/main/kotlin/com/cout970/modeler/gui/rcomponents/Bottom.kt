@@ -4,7 +4,7 @@ import com.cout970.glutilities.device.Keyboard
 import com.cout970.modeler.api.animation.AnimationState
 import com.cout970.modeler.controller.Dispatcher
 import com.cout970.modeler.core.animation.ref
-import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.gui.event.EventAnimatorUpdate
 import com.cout970.modeler.gui.event.EventSelectionUpdate
 import com.cout970.modeler.gui.leguicomp.*
@@ -25,7 +25,7 @@ import kotlin.math.max
 data class BottomPanelProps(
         val visible: Boolean,
         val animator: Animator,
-        val modelAccessor: IModelAccessor,
+        val programState: IProgramState,
         val input: IInput,
         val dispatcher: Dispatcher) : RProps
 
@@ -90,7 +90,7 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
                 }
             }
 
-            comp(AnimationPanelHead(props.animator, props.modelAccessor.animation)) {
+            comp(AnimationPanelHead(props.animator, props.programState.animation)) {
 
                 style {
                     classes("bottom_panel_time_bar_left")
@@ -182,7 +182,7 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
     }
 
     fun RBuilder.channelList() = div("Channel list") {
-        val anim = props.modelAccessor.animation
+        val anim = props.programState.animation
 
         style {
             width = 200f
@@ -240,7 +240,7 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
 
 
     fun RBuilder.timeline() = scrollablePanel("Timeline") {
-        val anim = props.modelAccessor.animation
+        val anim = props.programState.animation
 
         style {
             classes("bottom_panel_timeline")

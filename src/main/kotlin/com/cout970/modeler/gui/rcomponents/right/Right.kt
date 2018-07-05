@@ -1,7 +1,7 @@
 package com.cout970.modeler.gui.rcomponents.right
 
 import com.cout970.modeler.controller.Dispatcher
-import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.gui.GuiState
 import com.cout970.modeler.gui.leguicomp.classes
 import com.cout970.modeler.input.event.IInput
@@ -15,7 +15,7 @@ import com.cout970.reactive.nodes.style
 import com.cout970.glutilities.device.Mouse as LibMouse
 
 
-data class RightPanelProps(val visible: Boolean, val modelAccessor: IModelAccessor, val state: GuiState, val input: IInput, val dispatcher: Dispatcher) : RProps
+data class RightPanelProps(val visible: Boolean, val programState: IProgramState, val state: GuiState, val input: IInput, val dispatcher: Dispatcher) : RProps
 
 class RightPanel : RStatelessComponent<RightPanelProps>() {
 
@@ -44,8 +44,8 @@ class RightPanel : RStatelessComponent<RightPanelProps>() {
                 posY = 5f
                 sizeY = parent.sizeY - posY
             }
-            child(ModelTree::class, ModelTreeProps(props.modelAccessor, props.input, props.dispatcher))
-            child(MaterialList::class, MaterialListProps(props.modelAccessor, { props.state.selectedMaterial }))
+            child(ModelTree::class, ModelTreeProps(props.programState, props.input, props.dispatcher))
+            child(MaterialList::class, MaterialListProps(props.programState, { props.state.selectedMaterial }))
         }
     }
 }

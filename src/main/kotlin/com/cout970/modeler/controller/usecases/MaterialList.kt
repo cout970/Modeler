@@ -12,7 +12,7 @@ import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.model.selection.Selection
-import com.cout970.modeler.core.project.IModelAccessor
+import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.gui.GuiState
 import com.cout970.modeler.input.dialogs.FileDialogs
@@ -29,9 +29,9 @@ import java.io.File
  */
 
 @UseCase("material.view.apply")
-private fun applyMaterial(component: Component, modelAccessor: IModelAccessor): ITask {
-    val model = modelAccessor.model
-    modelAccessor.modelSelection.ifNotNull { selection ->
+private fun applyMaterial(component: Component, programState: IProgramState): ITask {
+    val model = programState.model
+    programState.modelSelection.ifNotNull { selection ->
         component.asNullable()
                 .map { it.metadata["ref"] }
                 .flatMap { it as? IMaterialRef }
@@ -112,7 +112,7 @@ private fun selectMaterial(component: Component): ITask {
 }
 
 @UseCase("material.view.duplicate")
-private fun duplicateMaterial(component: Component, access: IModelAccessor): ITask {
+private fun duplicateMaterial(component: Component, access: IProgramState): ITask {
     return component.asNullable()
             .flatMap { it.metadata["ref"] }
             .flatMap { it as? IMaterialRef }
@@ -161,9 +161,9 @@ private fun removeMaterialTask(model: IModel, ref: IMaterialRef, material: IMate
 
 
 @UseCase("material.view.inverse_select")
-private fun selectByMaterial(guiState: GuiState, modelAccessor: IModelAccessor): ITask {
+private fun selectByMaterial(guiState: GuiState, programState: IProgramState): ITask {
     val matRef = guiState.selectedMaterial
-    val model = modelAccessor.model
+    val model = programState.model
 
     val objs = model.objectMap.entries
             .filter { it.value.material == matRef }
@@ -171,6 +171,6 @@ private fun selectByMaterial(guiState: GuiState, modelAccessor: IModelAccessor):
 
     return TaskUpdateModelSelection(
             newSelection = Selection(SelectionTarget.MODEL, SelectionType.OBJECT, objs).asNullable(),
-            oldSelection = modelAccessor.modelSelection
+            oldSelection = programState.modelSelection
     )
 }

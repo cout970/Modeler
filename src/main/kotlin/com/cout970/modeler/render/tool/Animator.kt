@@ -38,7 +38,7 @@ class Animator {
             field = value; gui.listeners.onAnimatorChange(this)
         }
 
-    val animation get() = gui.modelAccessor.animation
+    val animation get() = gui.programState.animation
 
     fun updateTime(timer: Timer) {
         when (animationState) {
