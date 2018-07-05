@@ -50,33 +50,32 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
     fun generateObjectMap(): List<Slot> {
 
         val model = props.modelAccessor.model
-        val tree = model.groupTree
+        val tree = model.tree
         val map = mutableListOf<Slot>()
 
-        tree.getChildren(RootGroupRef).forEach {
+        tree.groups[RootGroupRef].forEach {
             addGroupAndChildren(model, tree, it, map, 0)
         }
 
-        model.getGroupObjects(RootGroupRef).forEach { ref ->
+        tree.objects[RootGroupRef].forEach { ref ->
             map += Slot(ref, null, 0)
         }
-
 
         return map
     }
 
-    fun addGroupAndChildren(model: IModel, tree: IGroupTree, group: IGroupRef, map: MutableList<Slot>, level: Int) {
+    fun addGroupAndChildren(model: IModel, tree: ImmutableGroupTree, group: IGroupRef, map: MutableList<Slot>, level: Int) {
 
         map += Slot(null, group, level)
 
         if (!model.getGroup(group).visible) return
 
-        model.getGroupObjects(group).forEach { ref ->
-            map += Slot(ref, null, min(5, level + 2))
+        tree.groups[group].forEach {
+            addGroupAndChildren(model, tree, it, map, min(5, level + 1))
         }
 
-        tree.getChildren(group).forEach {
-            addGroupAndChildren(model, tree, it, map, min(5, level + 1))
+        tree.objects[group].forEach { ref ->
+            map += Slot(ref, null, min(5, level + 2))
         }
     }
 
@@ -198,7 +197,8 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
                     val obj = slot.obj
 
                     if (group != null) {
-                        group(index, slot.level, model.getGroup(group), model.groupObjects[group].isNotEmpty())
+                        val hasChilds = model.tree.groups[group].isNotEmpty() || model.tree.objects[group].isNotEmpty()
+                        group(index, slot.level, model.getGroup(group), hasChilds)
                     } else if (obj != null) {
                         obj(index, slot.level, model.getObject(obj), selected(obj))
                     }
@@ -211,15 +211,15 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
         val cmd = if (group.visible) "tree.view.hide.group" else "tree.view.show.group"
         val off = (level + 1) * 24f
 
-        if (hasChilds) {
-            val icon = if (group.visible) "button_down" else "button_right"
+        val icon = if (hasChilds) {
+            if (group.visible) "button_down" else "button_right"
+        } else "button_right_dark"
 
-            +IconButton(cmd, icon, 0f, 0f, 24f, 24f).apply {
-                sizeY = 24f
-                posX = 5f + level * 24f
-                posY = 5f + index * (sizeY + 2f)
-                metadata += "ref" to group.ref
-            }
+        +IconButton(cmd, icon, 0f, 0f, 24f, 24f).apply {
+            sizeY = 24f
+            posX = 5f + level * 24f
+            posY = 5f + index * (sizeY + 2f)
+            metadata += "ref" to group.ref
         }
 
         div(group.name) {
@@ -385,7 +385,7 @@ class ModelTreeAnimation(val modelAccessor: IModelAccessor, val objMap: List<Slo
             if (initialMousePos == mousePos) {
                 val mPos = mousePos.toJoml2f()
 
-                component.childComponents.forEachIndexed { index, comp ->
+                component.childComponents.filter { it is Panel }.forEachIndexed { index, comp ->
                     if (comp.intersects(mPos)) {
                         selected = index
                         containerStartHeight = comp.absolutePosition.y - comp.position.y
@@ -410,7 +410,7 @@ class ModelTreeAnimation(val modelAccessor: IModelAccessor, val objMap: List<Slo
             else
                 { i, _ -> i == sel }
 
-            component.childComponents.forEachIndexed { index, component ->
+            component.childComponents.filter { it is Panel }.forEachIndexed { index, component ->
                 component.borderless()
 
                 objMap.getOrNull(index)?.let { slot ->
@@ -419,7 +419,7 @@ class ModelTreeAnimation(val modelAccessor: IModelAccessor, val objMap: List<Slo
                     }
                 }
             }
-            component.childComponents.getOrNull(coords.y)?.let { comp ->
+            component.childComponents.filter { it is Panel }.getOrNull(coords.y)?.let { comp ->
                 comp.style.border = SimpleLineBorder(ColorConstants.red(), 2f)
             }
         }
@@ -454,7 +454,7 @@ class ModelTreeAnimation(val modelAccessor: IModelAccessor, val objMap: List<Slo
 
             val parent = when {
                 replacedGroup != null -> replacedGroup
-                replacedObj != null -> modelAccessor.model.getObjectGroup(replacedObj)
+                replacedObj != null -> modelAccessor.model.tree.objects.getReverse(replacedObj)
                 else -> return
             }
 

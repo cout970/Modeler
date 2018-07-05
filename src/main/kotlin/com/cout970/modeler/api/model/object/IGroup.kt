@@ -1,5 +1,7 @@
 package com.cout970.modeler.api.model.`object`
 
+import com.cout970.modeler.api.model.selection.IObjectRef
+import com.cout970.modeler.core.model.`object`.BiMultimap
 import java.util.*
 
 // Groups
@@ -66,3 +68,14 @@ interface IGroupTree {
 
     fun merge(other: IGroupTree): IGroupTree
 }
+
+data class ImmutableGroupTree(
+        val objects: BiMultimap<IGroupRef, IObjectRef>,
+        val groups: BiMultimap<IGroupRef, IGroupRef>
+)
+
+data class MutableGroupTree(
+        var group: IGroupRef,
+        val objects: MutableList<IObjectRef> = mutableListOf(),
+        val children: MutableList<MutableGroupTree> = mutableListOf()
+)

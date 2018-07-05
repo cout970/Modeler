@@ -12,6 +12,7 @@ import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.animation.*
 import com.cout970.modeler.core.export.*
+import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.`object`.*
 import com.cout970.modeler.core.model.material.ColoredMaterial
@@ -19,24 +20,33 @@ import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
-import com.cout970.modeler.core.model.toImmutable
+import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.project.ProjectProperties
 import com.cout970.modeler.core.resource.ResourcePath
+import com.cout970.modeler.util.toResourcePath
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.google.gson.*
+import com.google.gson.reflect.TypeToken
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableMap
+import org.apache.commons.io.FilenameUtils
+import org.apache.commons.io.IOUtils
+import java.io.File
 import java.lang.reflect.Type
 import java.net.URI
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.util.*
+import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
+import java.util.zip.ZipOutputStream
 
 
-object ProjectLoaderV12 {
+object ProjectLoaderV13 {
 
-    const val VERSION = "1.2"
+    const val VERSION = "1.3"
 
     val gson = GsonBuilder()
             .setExclusionStrategies(ProjectExclusionStrategy())
@@ -50,8 +60,8 @@ object ProjectLoaderV12 {
             .registerTypeAdapter(IMaterialRef::class.java, MaterialRefSerializer())
             .registerTypeAdapter(IObjectRef::class.java, ObjectRefSerializer())
             .registerTypeAdapter(ITransformation::class.java, TransformationSerializer())
-            .registerTypeAdapter(BiMultimap::class.java, BiMultimapSerializer())
             .registerTypeAdapter(ImmutableMap::class.java, ImmutableMapSerializer())
+            .registerTypeAdapter(ImmutableGroupTree::class.java, ImmutableGroupTreeSerializer())
             .registerTypeAdapter(IModel::class.java, ModelSerializer())
             .registerTypeAdapter(IMaterial::class.java, MaterialSerializer())
             .registerTypeAdapter(IObject::class.java, ObjectSerializer())
@@ -69,83 +79,108 @@ object ProjectLoaderV12 {
         val model = zip.load<IModel>("model.json", gson)
                 ?: throw IllegalStateException("Missing file 'model.json' inside '$path'")
 
-        val animation = zip.load<IAnimation>("animation.json", gson)
+        val animation = zip.load<List<IAnimation>>("animation.json", gson)
                 ?: throw IllegalStateException("Missing file 'animation.json' inside '$path'")
 
         checkIntegrity(listOf(model.objectMap, model.materialMap, model.groupMap, model.tree))
         checkIntegrity(listOf(animation))
 
-        return ProgramSave(VERSION, properties, model, animation, emptyList())
+        return ProgramSave(VERSION, properties, model, animation.first(), emptyList())
     }
 
-//    fun saveProject(path: String, save: ProgramSave) {
-//        val file = File(path)
-//        val tmp = createTempFile(directory = file.parentFile)
-//        val zip = ZipOutputStream(tmp.outputStream())
-//
-//        zip.let {
-//
-//            save.textures.forEach { mat ->
-//                try {
-//                    val name = FilenameUtils.getName(mat.path.uri.toURL().path)
-//                    it.putNextEntry(ZipEntry("textures/$name"))
-//                    IOUtils.copy(mat.path.inputStream(), it)
-//                } catch (e: Exception) {
-//                    e.print()
-//                } finally {
-//                    it.closeEntry()
-//                }
-//            }
-//
-//            it.putNextEntry(ZipEntry("version.json"))
-//            it.write(gson.toJson(save.version).toByteArray())
-//            it.closeEntry()
-//
-//            it.putNextEntry(ZipEntry("project.json"))
-//            it.write(gson.toJson(save.projectProperties).toByteArray())
-//            it.closeEntry()
-//
-//            val model = save.textures.fold(save.model) { acc, mat ->
-//                val name = FilenameUtils.getName(mat.path.uri.toURL().path)
-//                val newPath = File(path).toResourcePath().enterZip("textures/$name")
-//
-//                acc.modifyMaterial(mat.ref, mat.copy(path = newPath))
-//            }
-//
-//            it.putNextEntry(ZipEntry("model.json"))
-//            it.write(gson.toJson(model, IModel::class.java).toByteArray())
-//            it.closeEntry()
-//
-//            it.putNextEntry(ZipEntry("animation.json"))
-//            it.write(gson.toJson(save.animation, IAnimation::class.java).toByteArray())
-//            it.closeEntry()
-//        }
-//        zip.close()
-//
-//        Files.copy(tmp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING)
-//
-//        if (tmp != file) {
-//            tmp.delete()
-//        }
-//    }
+    fun saveProject(path: String, save: ProgramSave) {
+        val file = File(path)
+        val tmp = createTempFile(directory = file.parentFile)
+        val zip = ZipOutputStream(tmp.outputStream())
 
-    class ModelSerializer : JsonDeserializer<IModel> {
+        zip.let {
+
+            save.textures.forEach { mat ->
+                try {
+                    val name = FilenameUtils.getName(mat.path.uri.toURL().path)
+                    it.putNextEntry(ZipEntry("textures/$name"))
+                    IOUtils.copy(mat.path.inputStream(), it)
+                } catch (e: Exception) {
+                    e.print()
+                } finally {
+                    it.closeEntry()
+                }
+            }
+
+            it.putNextEntry(ZipEntry("version.json"))
+            it.write(gson.toJson(save.version).toByteArray())
+            it.closeEntry()
+
+            it.putNextEntry(ZipEntry("project.json"))
+            it.write(gson.toJson(save.projectProperties).toByteArray())
+            it.closeEntry()
+
+            val model = save.textures.fold(save.model) { acc, mat ->
+                val name = FilenameUtils.getName(mat.path.uri.toURL().path)
+                val newPath = File(path).toResourcePath().enterZip("textures/$name")
+
+                acc.modifyMaterial(mat.ref, mat.copy(path = newPath))
+            }
+
+            it.putNextEntry(ZipEntry("model.json"))
+            it.write(gson.toJson(model, IModel::class.java).toByteArray())
+            it.closeEntry()
+
+            it.putNextEntry(ZipEntry("animation.json"))
+            it.write(gson.toJson(listOf(save.animation), object : TypeToken<List<IAnimation>>() {}.type).toByteArray())
+            it.closeEntry()
+        }
+        zip.close()
+
+        Files.copy(tmp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING)
+
+        if (tmp != file) {
+            tmp.delete()
+        }
+    }
+
+    class ModelSerializer : JsonSerializer<IModel>, JsonDeserializer<IModel> {
+
+        override fun serialize(src: IModel, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+            return JsonObject().apply {
+                add("objectMap", context.serializeT(src.objectMap))
+                add("materialMap", context.serializeT(src.materialMap))
+                add("groupMap", context.serializeT(src.groupMap))
+                add("groupTree", context.serializeT(src.tree))
+            }
+        }
 
         override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IModel {
             val obj = json.asJsonObject
-            val groups = obj["groupObjects"] ?: JsonArray()
             return Model.of(
                     context.deserializeT(obj["objectMap"]),
                     context.deserializeT(obj["materialMap"]),
                     context.deserializeT(obj["groupMap"]),
-                    MutableGroupTree(RootGroupRef,
-                            context.deserializeT<BiMultimap<IGroupRef, IObjectRef>>(groups).flatMap { it.second }.toMutableList()
-                    ).toImmutable()
+                    context.deserializeT(obj["groupTree"])
             )
         }
     }
 
-    class MaterialSerializer : JsonDeserializer<IMaterial> {
+    class MaterialSerializer : JsonSerializer<IMaterial>, JsonDeserializer<IMaterial> {
+
+        override fun serialize(src: IMaterial, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+            return JsonObject().apply {
+                addProperty("name", src.name)
+                when (src) {
+                    is TexturedMaterial -> {
+                        addProperty("type", "texture")
+                        addProperty("path", src.path.uri.toString())
+                        add("id", context.serializeT(src.id))
+                    }
+                    is ColoredMaterial -> {
+                        addProperty("type", "color")
+                        add("color", context.serializeT(src.color))
+                        add("id", context.serializeT(src.id))
+                    }
+                    else -> addProperty("type", "none")
+                }
+            }
+        }
 
         override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IMaterial {
             val obj = json.asJsonObject
@@ -172,7 +207,13 @@ object ProjectLoaderV12 {
         }
     }
 
-    class ObjectSerializer : JsonDeserializer<IObject> {
+    class ObjectSerializer : JsonSerializer<IObject>, JsonDeserializer<IObject> {
+
+        override fun serialize(src: IObject, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+            return context.serialize(src).asJsonObject.apply {
+                addProperty("class", src.javaClass.simpleName)
+            }
+        }
 
         override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IObject {
             val obj = json.asJsonObject
@@ -370,18 +411,31 @@ object ProjectLoaderV12 {
         }
     }
 
-    class BiMultimapSerializer : JsonDeserializer<BiMultimap<IGroupRef, IObjectRef>> {
+    class ImmutableGroupTreeSerializer : JsonSerializer<ImmutableGroupTree>, JsonDeserializer<ImmutableGroupTree> {
 
         data class Aux(val key: IGroupRef, val value: List<IObjectRef>)
+        data class Aux2(val key: IGroupRef, val value: List<IGroupRef>)
 
-        override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): BiMultimap<IGroupRef, IObjectRef> {
-            if (json.isJsonNull || (json.isJsonArray && json.asJsonArray.size() == 0))
-                return emptyBiMultimap()
+        override fun serialize(src: ImmutableGroupTree, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+            val a = src.objects.map { Aux(it.first, it.second) }
+            val b = src.groups.map { Aux2(it.first, it.second) }
 
-            val array = json.asJsonArray
-            val list = array.map { context.deserialize(it, Aux::class.java) as Aux }
+            return JsonObject().apply {
+                add("objects", context.serializeT(a))
+                add("groups", context.serializeT(b))
+            }
+        }
 
-            return biMultimapOf(*list.map { it.key to it.value }.toTypedArray())
+        override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): ImmutableGroupTree {
+            val obj = json.asJsonObject
+
+            val objects = obj["objects"].asJsonArray
+            val groups = obj["groups"].asJsonArray
+
+            return ImmutableGroupTree(
+                    biMultimapOf(*objects.map { context.deserializeT<Aux>(it) }.map { it.key to it.value }.toTypedArray()),
+                    biMultimapOf(*groups.map { context.deserializeT<Aux2>(it) }.map { it.key to it.value }.toTypedArray())
+            )
         }
     }
 }

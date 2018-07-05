@@ -11,6 +11,7 @@ interface IAnimationRef {
 
 interface IAnimation {
     val id: UUID
+    val name: String
     val channels: Map<IChannelRef, IChannel>
     val objectMapping: Multimap<IChannelRef, IObjectRef>
     val timeLength: Float

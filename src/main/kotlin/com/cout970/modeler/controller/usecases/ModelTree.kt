@@ -8,11 +8,9 @@ import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.helpers.DeletionHelper
 import com.cout970.modeler.core.helpers.ModelHelper
-import com.cout970.modeler.core.model.getRecursiveChildObjects
-import com.cout970.modeler.core.model.objects
+import com.cout970.modeler.core.model.*
 import com.cout970.modeler.core.model.selection.Selection
 import com.cout970.modeler.core.project.IModelAccessor
-import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.gui.rcomponents.right.Slot
 import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.util.Nullable
@@ -148,7 +146,7 @@ private fun nodeMoved(modelAccessor: IModelAccessor, component: Component): ITas
     val parent = component.metadata["parent"] as IGroupRef
     val child = component.metadata["child"] as Slot
     val multi = component.metadata["multi"] as Boolean
-    val tree = model.groupTree
+    val tree = model.tree
 
     val childGroup = child.group
     val childObj = child.obj
@@ -156,9 +154,12 @@ private fun nodeMoved(modelAccessor: IModelAccessor, component: Component): ITas
     if (multi) {
         val selection = sel.getNonNull()
         val newModel = selection.objects.fold(model) { accModel, childObjRef ->
-            val oldParent = accModel.getObjectGroup(childObjRef)
+            val oldParent = tree.objects.getReverse(childObjRef)
             if (oldParent != parent) {
-                accModel.setObjectGroup(childObjRef, parent)
+                accModel.withGroupTree(accModel.tree.mutate {
+                    removeObjects(setOf(childObjRef))
+                    addObject(childObjRef, parent)
+                })
             } else accModel
         }
 
@@ -166,18 +167,21 @@ private fun nodeMoved(modelAccessor: IModelAccessor, component: Component): ITas
 
     } else if (childGroup != null) {
 
-        if (tree.getParent(childGroup) != parent && childGroup != parent) {
-            val newTree = tree.changeParent(childGroup, parent)
+        if (tree.groups.getReverse(childGroup) != parent && childGroup != parent) {
+            val newTree = tree.mutate { changeParent(childGroup, parent) }
             val newModel = model.withGroupTree(newTree)
 
             return TaskUpdateModel(oldModel = model, newModel = newModel)
         }
 
     } else if (childObj != null) {
-        val oldParent = model.getObjectGroup(childObj)
+        val oldParent = tree.objects.getReverse(childObj)
 
         if (oldParent != parent) {
-            val newModel = model.setObjectGroup(childObj, parent)
+            val newModel = model.withGroupTree(tree.mutate {
+                removeObjects(setOf(childObj))
+                addObject(childObj, parent)
+            })
 
             return TaskUpdateModel(oldModel = model, newModel = newModel)
         }

@@ -3,6 +3,7 @@ package com.cout970.modeler.controller.usecases
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.`object`.Group
 import com.cout970.modeler.api.model.`object`.IObject
+import com.cout970.modeler.api.model.`object`.MutableGroupTree
 import com.cout970.modeler.api.model.`object`.RootGroupRef
 import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.tasks.TaskUpdateModel
@@ -10,6 +11,7 @@ import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.`object`.Object
 import com.cout970.modeler.core.model.`object`.ObjectCube
 import com.cout970.modeler.core.model.mesh.MeshFactory
+import com.cout970.modeler.core.model.mutate
 import com.cout970.modeler.core.model.ref
 import com.cout970.vector.extensions.Quaternion
 import com.cout970.vector.extensions.vec3Of
@@ -42,8 +44,8 @@ private fun addObject(model: IModel, obj: IObject): TaskUpdateModel {
 
 @UseCase("group.add")
 private fun addGroup(model: IModel): ITask {
-    val group = Group("Group ${model.groupTree.getChildren(RootGroupRef).size}")
-    val newGroupTree = model.groupTree.addGroup(RootGroupRef, group.ref)
+    val group = Group("Group ${model.tree.objects[RootGroupRef].size}")
+    val newGroupTree = model.tree.mutate { children.add(MutableGroupTree(group.ref)) }
     val newModel = model.addGroup(group).withGroupTree(newGroupTree)
     return TaskUpdateModel(model, newModel)
 }

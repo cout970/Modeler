@@ -4,6 +4,7 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.IGroupRef
 import com.cout970.modeler.api.model.`object`.IObject
+import com.cout970.modeler.api.model.`object`.MutableGroupTree
 import com.cout970.modeler.api.model.`object`.RootGroupRef
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
@@ -14,14 +15,12 @@ import com.cout970.modeler.core.animation.animationOf
 import com.cout970.modeler.core.export.*
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.TRSTransformation
-import com.cout970.modeler.core.model.`object`.BiMultimap
-import com.cout970.modeler.core.model.`object`.Object
-import com.cout970.modeler.core.model.`object`.ObjectCube
-import com.cout970.modeler.core.model.`object`.biMultimapOf
+import com.cout970.modeler.core.model.`object`.*
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
+import com.cout970.modeler.core.model.toImmutable
 import com.cout970.modeler.core.project.ProjectProperties
 import com.cout970.modeler.core.resource.ResourcePath
 import com.cout970.vector.api.IQuaternion
@@ -70,7 +69,7 @@ object ProjectLoaderV11 {
         val model = zip.load<IModel>("model.json", gson)
                 ?: throw IllegalStateException("Missing file 'model.json' inside '$path'")
 
-        checkIntegrity(listOf(model.objectMap, model.materialMap, model.groupMap, model.groupTree))
+        checkIntegrity(listOf(model.objectMap, model.materialMap, model.groupMap, model.tree))
         return ProgramSave(VERSION, properties, model, animationOf(), emptyList())
     }
 
@@ -85,7 +84,7 @@ object ProjectLoaderV11 {
                     objectMap,
                     materialMap,
                     emptyMap(),
-                    biMultimapOf(RootGroupRef to objectMap.keys)
+                    MutableGroupTree(RootGroupRef, objectMap.keys.toMutableList()).toImmutable()
             )
         }
     }
@@ -157,6 +156,21 @@ object ProjectLoaderV11 {
                     pos = context.deserializeT(obj["pos"]),
                     tex = context.deserializeT(obj["tex"])
             )
+        }
+    }
+
+    class BiMultimapSerializer : JsonDeserializer<BiMultimap<IGroupRef, IObjectRef>> {
+
+        data class Aux(val key: IGroupRef, val value: List<IObjectRef>)
+
+        override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): BiMultimap<IGroupRef, IObjectRef> {
+            if (json.isJsonNull || (json.isJsonArray && json.asJsonArray.size() == 0))
+                return emptyBiMultimap()
+
+            val array = json.asJsonArray
+            val list = array.map { context.deserialize(it, Aux::class.java) as Aux }
+
+            return biMultimapOf(*list.map { it.key to it.value }.toTypedArray())
         }
     }
 }

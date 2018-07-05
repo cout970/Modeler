@@ -10,9 +10,6 @@ import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.TRTSTransformation
-import com.cout970.modeler.core.model.`object`.BiMultimap
-import com.cout970.modeler.core.model.`object`.biMultimapOf
-import com.cout970.modeler.core.model.`object`.emptyBiMultimap
 import com.cout970.modeler.core.model.material.MaterialRef
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.selection.ObjectRef
@@ -159,25 +156,6 @@ class Matrix4Serializer : JsonSerializer<IMatrix4>, JsonDeserializer<IMatrix4> {
                 array[4].asDouble, array[5].asDouble, array[6].asDouble, array[7].asDouble,
                 array[8].asDouble, array[9].asDouble, array[10].asDouble, array[11].asDouble,
                 array[12].asDouble, array[13].asDouble, array[14].asDouble, array[15].asDouble)
-    }
-}
-
-class BiMultimapSerializer : JsonSerializer<BiMultimap<IGroupRef, IObjectRef>>, JsonDeserializer<BiMultimap<IGroupRef, IObjectRef>> {
-
-    data class Aux(val key: IGroupRef, val value: List<IObjectRef>)
-
-    override fun serialize(src: BiMultimap<IGroupRef, IObjectRef>, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-        return context.serialize(src.toList().map { Aux(it.first, it.second) })
-    }
-
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): BiMultimap<IGroupRef, IObjectRef> {
-        if (json.isJsonNull || (json.isJsonArray && json.asJsonArray.size() == 0))
-            return emptyBiMultimap()
-
-        val array = json.asJsonArray
-        val list = array.map { context.deserialize(it, Aux::class.java) as Aux }
-
-        return biMultimapOf(*list.map { it.key to it.value }.toTypedArray())
     }
 }
 
@@ -359,3 +337,5 @@ inline fun <reified T> JsonSerializationContext.serializeT(obj: T): JsonElement 
 inline fun <reified T> Gson.fromJson(json: String): T {
     return fromJson(json, object : TypeToken<T>() {}.type)
 }
+
+inline fun <reified T> typeToken() = object : TypeToken<T>() {}.type

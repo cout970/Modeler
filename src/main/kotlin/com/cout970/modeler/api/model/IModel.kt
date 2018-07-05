@@ -2,12 +2,11 @@ package com.cout970.modeler.api.model
 
 import com.cout970.modeler.api.model.`object`.IGroup
 import com.cout970.modeler.api.model.`object`.IGroupRef
-import com.cout970.modeler.api.model.`object`.IGroupTree
 import com.cout970.modeler.api.model.`object`.IObject
+import com.cout970.modeler.api.model.`object`.ImmutableGroupTree
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.modeler.core.model.`object`.BiMultimap
 
 
 /**
@@ -18,8 +17,9 @@ interface IModel : Comparable<IModel> {
     val materialMap: Map<IMaterialRef, IMaterial>
     val groupMap: Map<IGroupRef, IGroup>
 
-    val groupObjects: BiMultimap<IGroupRef, IObjectRef>
-    val groupTree: IGroupTree
+    val tree: ImmutableGroupTree
+//    val groupObjects: BiMultimap<IGroupRef, IObjectRef>
+//    val groupTree: IGroupTree
 
     val objectRefs: List<IObjectRef> get() = objectMap.keys.toList()
     val objects: List<IObject> get() = objectMap.values.toList()
@@ -46,11 +46,12 @@ interface IModel : Comparable<IModel> {
     fun modifyGroup(ref: IGroupRef, group: IGroup): IModel
     fun removeGroup(ref: IGroupRef): IModel
 
-    fun getGroupObjects(group: IGroupRef): Set<IObjectRef>
-    fun getObjectGroup(obj: IObjectRef): IGroupRef
-    fun setObjectGroup(obj: IObjectRef, newGroup: IGroupRef): IModel
+//    fun getGroupObjects(group: IGroupRef): Set<IObjectRef>
+//    fun getObjectGroup(obj: IObjectRef): IGroupRef
+//    fun setObjectGroup(obj: IObjectRef, newGroup: IGroupRef): IModel
 
-    fun withGroupTree(newGroupTree: IGroupTree): IModel
+    //    fun withGroupTree(newGroupTree: IGroupTree): IModel
+    fun withGroupTree(newGroupTree: ImmutableGroupTree): IModel
 
     fun merge(other: IModel): IModel
 }

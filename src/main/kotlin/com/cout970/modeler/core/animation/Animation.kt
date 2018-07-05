@@ -17,6 +17,7 @@ data class Animation(
         override val channels: Map<IChannelRef, IChannel>,
         override val objectMapping: Multimap<IChannelRef, IObjectRef>,
         override val timeLength: Float,
+        override val name: String,
         override val id: UUID = UUID.randomUUID()
 ) : IAnimation {
 
@@ -76,4 +77,4 @@ inline val IChannel.ref: IChannelRef get() = ChannelRef(id)
 inline val IAnimation.ref: IAnimationRef get() = AnimationRef(id)
 
 fun animationOf(vararg channels: IChannel, time: Float = 1f) =
-        Animation(channels.associateBy { it.ref }, emptyMultimap(), time)
+        Animation(channels.associateBy { it.ref }, emptyMultimap(), time, "Animation")

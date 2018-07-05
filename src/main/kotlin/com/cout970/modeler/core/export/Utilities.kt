@@ -78,5 +78,5 @@ private fun check(any: Any?, path: String) {
 inline fun <reified T> ZipFile.load(entryName: String, gson: Gson): T? {
     val entry = getEntry(entryName) ?: return null
     val reader = getInputStream(entry).reader()
-    return gson.fromJson(JsonReader(reader), T::class.java)
+    return gson.fromJson(JsonReader(reader), typeToken<T>())
 }
