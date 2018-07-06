@@ -51,7 +51,7 @@ class TaskImportModel(
             state.projectManager.textureSelectionHandler.clear()
             state.projectManager.modelSelectionHandler.clear()
 
-            state.gui.state.selectedMaterial = newModel.materialRefs.firstOrNull() ?: MaterialRefNone
+            state.projectManager.selectedMaterial = newModel.materialRefs.firstOrNull() ?: MaterialRefNone
             state.gui.state.materialsHash = (System.currentTimeMillis() and 0xFFFFFFFF).toInt()
             state.projectManager.modelSelectionHandler.setSelection(newSelection.asNullable())
             state.projectManager.updateModel(newModel)

@@ -13,7 +13,6 @@ import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.selection.SelectionHandler
-import com.cout970.modeler.core.project.ProgramState
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.project.ProjectPropertyHolder
 import com.cout970.modeler.core.resource.ResourceLoader
@@ -71,7 +70,7 @@ class Initializer {
                 windowHandler = windowHandler,
                 resourceLoader = resourceLoader,
                 timer = timer,
-                programState = ProgramState(projectManager),
+                programState = projectManager,
                 propertyHolder = ProjectPropertyHolder(projectManager)
         ).init()
 

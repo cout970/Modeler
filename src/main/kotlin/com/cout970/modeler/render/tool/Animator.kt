@@ -1,6 +1,7 @@
 package com.cout970.modeler.render.tool
 
 import com.cout970.glutilities.structure.Timer
+import com.cout970.matrix.api.IMatrix4
 import com.cout970.modeler.api.animation.AnimationState
 import com.cout970.modeler.api.animation.IAnimation
 import com.cout970.modeler.api.animation.IChannelRef
@@ -11,7 +12,6 @@ import com.cout970.modeler.core.animation.ref
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.TRTSTransformation
 import com.cout970.modeler.gui.Gui
-import com.cout970.modeler.render.tool.shader.UniversalShader
 
 class Animator {
 
@@ -56,7 +56,7 @@ class Animator {
         }
     }
 
-    fun animate(anim: IAnimation, obj: IObjectRef, shader: UniversalShader) {
+    fun animate(anim: IAnimation, obj: IObjectRef): IMatrix4 {
 
         val now = animationTime
         val activeChannels = anim.channels
@@ -64,12 +64,10 @@ class Animator {
                 .filter { it.enabled }
                 .filter { obj in anim.objectMapping[it.ref] }
 
-        val m = activeChannels.fold(TRSTransformation.IDENTITY as ITransformation) { acc, c ->
+        return activeChannels.fold(TRSTransformation.IDENTITY as ITransformation) { acc, c ->
             val (prev, next) = getPrevAndNext(now, c.keyframes)
             acc + interpolate(now, prev, next)
-        }
-
-        shader.matrixM.setMatrix4(m.matrix)
+        }.matrix
     }
 
     fun interpolate(time: Float, prev: IKeyframe, next: IKeyframe): ITransformation {

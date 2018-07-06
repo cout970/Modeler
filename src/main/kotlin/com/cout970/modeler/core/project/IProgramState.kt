@@ -1,7 +1,10 @@
 package com.cout970.modeler.core.project
 
 import com.cout970.modeler.api.animation.IAnimation
+import com.cout970.modeler.api.animation.IAnimationRef
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.material.IMaterial
+import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.core.model.selection.SelectionHandler
 import com.cout970.modeler.util.Nullable
@@ -12,7 +15,11 @@ import com.cout970.modeler.util.Nullable
 interface IProgramState {
 
     val model: IModel
+    val material: IMaterial
     val animation: IAnimation
+
+    val selectedMaterial: IMaterialRef
+    val selectedAnimation: IAnimationRef
 
     val modelSelectionHandler: SelectionHandler
     val textureSelectionHandler: SelectionHandler
@@ -23,17 +30,4 @@ interface IProgramState {
     operator fun component1() = model
     operator fun component2() = modelSelection
     operator fun component3() = textureSelection
-}
-
-class ProgramState(
-        val projectManager: ProjectManager
-) : IProgramState {
-
-    override val modelSelectionHandler: SelectionHandler = projectManager.modelSelectionHandler
-    override val textureSelectionHandler: SelectionHandler = projectManager.textureSelectionHandler
-
-    override val model: IModel get() = projectManager.model
-    override val animation: IAnimation get() = projectManager.animation
-    override val modelSelection: Nullable<ISelection> get() = modelSelectionHandler.getSelection()
-    override val textureSelection: Nullable<ISelection> get() = textureSelectionHandler.getSelection()
 }

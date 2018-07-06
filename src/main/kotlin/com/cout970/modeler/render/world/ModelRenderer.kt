@@ -144,7 +144,7 @@ class ModelRenderer {
                 }
 
                 list.forEach { (objIndex, _) ->
-                    animator.animate(animation, objIndex, this)
+                    matrixM.setMatrix4(animator.animate(animation, objIndex))
                     accept(modelCache[objIndex]!!)
                 }
                 showHiddenFaces.setBoolean(false)

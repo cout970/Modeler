@@ -1,10 +1,7 @@
 package com.cout970.modeler.core.export
 
 import com.cout970.matrix.api.IMatrix4
-import com.cout970.modeler.api.animation.IAnimation
-import com.cout970.modeler.api.animation.IAnimationRef
-import com.cout970.modeler.api.animation.IChannelRef
-import com.cout970.modeler.api.animation.InterpolationMethod
+import com.cout970.modeler.api.animation.*
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.*
@@ -137,6 +134,7 @@ class GlTFExporter {
         scene {
             objectMap.values.forEach { obj ->
                 node {
+                    name = obj.ref.objectId.toString()
                     mesh {
                         name = obj.name
 
@@ -192,7 +190,95 @@ class GlTFExporter {
                 }
             }
         }
+
+        animationMap.values.forEach { anim ->
+            animation {
+                name = anim.name
+
+                anim.channels.values.map { chan ->
+                    // TODO fix
+                    val obj = anim.objectMapping[chan.ref].first()
+
+                    if (chan.usesTranslation()) {
+                        channel {
+                            node = obj.objectId.toString()
+                            transformType = TRANSLATION
+                            timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
+                            transformValues = buffer(FLOAT, chan.keyframes.map {
+                                val trans = it.value
+                                when (trans) {
+                                    is TRSTransformation -> trans.translation
+                                    is TRTSTransformation -> trans.toTRS().translation
+                                    else -> error("Invalid transformation type: $trans")
+                                }
+                            })
+                        }
+                    }
+
+                    if (chan.usesRotation()) {
+                        channel {
+                            node = obj.objectId.toString()
+                            transformType = ROTATION
+                            timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
+                            transformValues = buffer(FLOAT, chan.keyframes.map {
+                                val trans = it.value
+                                when (trans) {
+                                    is TRSTransformation -> trans.rotation.toVector4()
+                                    is TRTSTransformation -> trans.toTRS().rotation.toVector4()
+                                    else -> error("Invalid transformation type: $trans")
+                                }
+                            })
+                        }
+                    }
+
+                    if (chan.usesScale()) {
+                        channel {
+                            node = obj.objectId.toString()
+                            transformType = SCALE
+                            timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
+                            transformValues = buffer(FLOAT, chan.keyframes.map {
+                                val trans = it.value
+                                when (trans) {
+                                    is TRSTransformation -> trans.scale
+                                    is TRTSTransformation -> trans.scale
+                                    else -> error("Invalid transformation type: $trans")
+                                }
+                            })
+                        }
+                    }
+                }
+            }
+        }
     }
+
+    fun IChannel.usesTranslation() = keyframes.any {
+        val t = it.value
+        when (t) {
+            is TRSTransformation -> t.translation != Vector3.ZERO
+            is TRTSTransformation -> t.toTRS().translation != Vector3.ZERO
+            else -> false
+        }
+    }
+
+    fun IChannel.usesRotation() = keyframes.any {
+        val t = it.value
+        when (t) {
+            is TRSTransformation -> t.rotation != Quaternion.IDENTITY
+            is TRTSTransformation -> t.toTRS().rotation != Quaternion.IDENTITY
+            else -> false
+        }
+    }
+
+    fun IChannel.usesScale() = keyframes.any {
+        val t = it.value
+        when (t) {
+            is TRSTransformation -> t.scale != Vector3.ONE
+            is TRTSTransformation -> t.toTRS().scale != Vector3.ONE
+            else -> false
+        }
+    }
+
+    fun IQuaternion.toVector4() = vec4Of(x, y, z, w)
 }
 
 class GlTFImporter {
@@ -286,13 +372,13 @@ class GlTFImporter {
             val obj = parseObj(mesh.second, gltfNode.name ?: "Obj")
             root.objects += obj.ref
             objs += obj.ref to obj
-            nodeMapping += node.index to obj
+            nodeMapping += node.index to obj.ref
         } else {
             val group = Group(gltfNode.name ?: "Group")
             val tree = MutableGroupTree(group.ref)
             root.children += tree
             groups += group.ref to group
-            nodeMapping += node.index to group
+            nodeMapping += node.index to group.ref
 
             node.children.forEach { (glNode, resNode) ->
                 processNode(glNode, resNode, tree, objs, materials, groups, nodeMapping)

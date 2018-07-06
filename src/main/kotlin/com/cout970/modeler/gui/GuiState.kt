@@ -1,11 +1,8 @@
 package com.cout970.modeler.gui
 
-import com.cout970.modeler.api.animation.IAnimationRef
 import com.cout970.modeler.api.model.IModel
-import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.SelectionType
-import com.cout970.modeler.core.animation.AnimationRefNone
-import com.cout970.modeler.core.model.material.MaterialRefNone
+import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.gui.canvas.ISelectable
 import com.cout970.modeler.gui.canvas.TransformationMode
 import com.cout970.modeler.util.BooleanPropertyWrapper
@@ -14,7 +11,7 @@ import com.cout970.modeler.util.GuiProperty
 /**
  * Created by cout970 on 2017/06/12.
  */
-class GuiState {
+class GuiState(val projectManager: IProgramState) : IProgramState by projectManager {
 
     var transformationMode = TransformationMode.TRANSLATION
     var selectionType: SelectionType by GuiProperty(SelectionType.OBJECT, "SelectionType")
@@ -36,8 +33,6 @@ class GuiState {
     var hoveredObject: ISelectable? = null
     var tmpModel: IModel? = null
 
-    var selectedMaterial: IMaterialRef = MaterialRefNone
-    var selectedAnimation: IAnimationRef = AnimationRefNone
 
     var modelHash: Int = -1
     var modelSelectionHash: Int = -1

@@ -5,6 +5,7 @@ import com.cout970.modeler.api.animation.IAnimationRef
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
+import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.core.animation.AnimationRefNone
 import com.cout970.modeler.core.animation.animationOf
 import com.cout970.modeler.core.animation.ref
@@ -17,28 +18,29 @@ import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.model.selection.ClipboardNone
 import com.cout970.modeler.core.model.selection.IClipboard
 import com.cout970.modeler.core.model.selection.SelectionHandler
+import com.cout970.modeler.util.Nullable
 
 /**
  * Created by cout970 on 2017/07/08.
  */
 
 class ProjectManager(
-        val modelSelectionHandler: SelectionHandler,
-        val textureSelectionHandler: SelectionHandler
-) {
+        override val modelSelectionHandler: SelectionHandler,
+        override val textureSelectionHandler: SelectionHandler
+) : IProgramState {
+
+    override val modelSelection: Nullable<ISelection> get() = modelSelectionHandler.getSelection()
+    override val textureSelection: Nullable<ISelection> get() = textureSelectionHandler.getSelection()
 
     var projectProperties: ProjectProperties = ProjectProperties(Config.user, "unnamed")
 
-    var model: IModel = Model.empty()
-        private set
+    override var model: IModel = Model.empty()
 
-    var clipboard: IClipboard = ClipboardNone
+    override var selectedMaterial: IMaterialRef = MaterialRefNone
+    override val material: IMaterial get() = model.materialMap[selectedMaterial] ?: MaterialNone
 
-    var selectedMaterial: IMaterialRef = MaterialRefNone
-    val material: IMaterial get() = model.materialMap[selectedMaterial] ?: MaterialNone
-
-    var selectedAnimation: IAnimationRef = AnimationRefNone
-    val animation: IAnimation get() = model.animationMap[selectedAnimation] ?: animationOf()
+    override var selectedAnimation: IAnimationRef = AnimationRefNone
+    override val animation: IAnimation get() = model.animationMap.values.firstOrNull() ?: animationOf()
 
     val modelChangeListeners: MutableList<(old: IModel, new: IModel) -> Unit> = mutableListOf()
 
@@ -46,6 +48,8 @@ class ProjectManager(
 
     val materialPaths get() = loadedMaterials.values.filterIsInstance<TexturedMaterial>()
     val loadedMaterials: Map<IMaterialRef, IMaterial> get() = model.materialMap
+
+    var clipboard: IClipboard = ClipboardNone
 
     fun loadMaterial(material: IMaterial) {
         if (material.ref !in loadedMaterials) {

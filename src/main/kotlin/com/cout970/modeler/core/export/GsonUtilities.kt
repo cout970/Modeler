@@ -285,7 +285,6 @@ class AnimationRefSerializer : JsonSerializer<IAnimationRef>, JsonDeserializer<I
     }
 }
 
-
 class UUIDSerializer : JsonSerializer<UUID>, JsonDeserializer<UUID> {
 
     override fun serialize(src: UUID, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {

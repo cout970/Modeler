@@ -50,7 +50,7 @@ class GuiInitializer(
         log(Level.FINE) { "[GuiInitializer] Creating Listeners" }
         val listeners = Listeners()
         log(Level.FINE) { "[GuiInitializer] Creating GuiState" }
-        val guiState = GuiState()
+        val guiState = GuiState(programState)
         log(Level.FINE) { "[GuiInitializer] Creating Dispatcher" }
         val dispatcher = Dispatcher()
         log(Level.FINE) { "[GuiInitializer] Creating ButtonBinder" }

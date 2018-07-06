@@ -9,7 +9,7 @@ import com.cout970.modeler.api.model.material.IMaterialRef
 class TaskUpdateMaterialSelection(val ref: IMaterialRef) : ITask {
 
     override fun run(state: Program) {
-        state.gui.state.selectedMaterial = ref
+        state.projectManager.selectedMaterial = ref
         state.gui.state.materialsHash = (System.currentTimeMillis() and 0xFFFFFFFF).toInt()
         state.gui.root.reRender()
     }

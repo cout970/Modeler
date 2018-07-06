@@ -38,8 +38,15 @@ fun testExporter() = glftModel {
         }
     }
 
-    scene {
-
+    animation {
+        name = "Translation to (1,1,1)"
+        channel {
+            node = "child1"
+            interpolation = LINEAR
+            transformType = TRANSLATION
+            timeValues = buffer(FLOAT, listOf(1f, 2f, 3f, 4f))
+            transformValues = buffer(FLOAT, listOf(vec3Of(0), vec3Of(1), vec3Of(1), vec3Of(0)))
+        }
     }
 }
 
@@ -101,6 +108,8 @@ class GLTFBuilder {
     private var buffer = ByteBuffer.allocate(16).order(ByteOrder.LITTLE_ENDIAN)
     private val bakedBufferViews = mutableListOf<GltfBufferView>()
     private val bakedAccessors = mutableListOf<GltfAccessor>()
+    private val animations = mutableListOf<Animation>()
+
     var bufferName = "model.bin"
 
     fun useExtensions(vararg extensionsUsed: String) {
@@ -113,6 +122,7 @@ class GLTFBuilder {
 
     fun build(): Pair<GltfFile, ByteArray> {
         val scenes = scenes.build()
+        val animations = animations.map { it.build() }
         val binary = buffer.toArray()
 
         return GltfFile(
@@ -124,7 +134,8 @@ class GLTFBuilder {
                 scene = 0,
                 scenes = scenes,
                 buffers = listOf(GltfBuffer(uri = bufferName, byteLength = binary.size)),
-                materials = bakedMaterials
+                materials = bakedMaterials,
+                animations = animations
         ) to binary
     }
 
@@ -252,6 +263,7 @@ class GLTFBuilder {
         return mesh
     }
 
+    @Suppress("PropertyName", "unused")
     data class Primitive(
             val attributes: MutableMap<String, UnpackedBuffer> = mutableMapOf(),
             var indices: UnpackedBuffer? = null,
@@ -260,7 +272,7 @@ class GLTFBuilder {
             val targets: MutableMap<String, Int> = mutableMapOf()
     ) {
 
-        // this avoid having to import ComponentType.*
+        // this avoids having to import ComponentType.*
         inline val BYTE: GltfComponentType get() = GltfComponentType.BYTE
         inline val UNSIGNED_BYTE: GltfComponentType get() = GltfComponentType.UNSIGNED_BYTE
         inline val SHORT: GltfComponentType get() = GltfComponentType.SHORT
@@ -268,7 +280,7 @@ class GLTFBuilder {
         inline val UNSIGNED_INT: GltfComponentType get() = GltfComponentType.UNSIGNED_INT
         inline val FLOAT: GltfComponentType get() = GltfComponentType.FLOAT
 
-        // this avoid having to import Attribute.*
+        // this avoids having to import Attribute.*
         inline val POSITION: String get() = GltfAttribute.POSITION.name
         inline val NORMAL: String get() = GltfAttribute.NORMAL.name
         inline val TANGEN: String get() = GltfAttribute.TANGENT.name
@@ -278,7 +290,7 @@ class GLTFBuilder {
         inline val JOINTS_0: String get() = GltfAttribute.JOINTS_0.name
         inline val WEIGHTS_0: String get() = GltfAttribute.WEIGHTS_0.name
 
-        // this avoid having to import GLMode.*
+        // this avoids having to import GLMode.*
         inline val POINTS: GltfMode get() = GltfMode.POINTS
         inline val LINES: GltfMode get() = GltfMode.LINES
         inline val LINE_LOOP: GltfMode get() = GltfMode.LINE_LOOP
@@ -371,6 +383,8 @@ class GLTFBuilder {
                 normalized = false,
                 count = data.size,
                 type = containerType,
+                min = getMin(this),
+                max = getMax(this),
                 name = null
         )
 
@@ -402,6 +416,64 @@ class GLTFBuilder {
         return index
     }
 
+    private fun getMin(buff: UnpackedBuffer): List<Double> {
+        val numbers = mutableListOf<List<Double>>()
+        when (buff.containerType) {
+            GltfType.SCALAR -> {
+                numbers += buff.data.map { (it as Number).toDouble() }
+            }
+            GltfType.VEC2 -> {
+                val vecs = buff.data.map { it as IVector2 }
+                numbers += vecs.map { it.xd }
+                numbers += vecs.map { it.yd }
+            }
+            GltfType.VEC3 -> {
+                val vecs = buff.data.map { it as IVector3 }
+                numbers += vecs.map { it.xd }
+                numbers += vecs.map { it.yd }
+                numbers += vecs.map { it.zd }
+            }
+            GltfType.VEC4 -> {
+                val vecs = buff.data.map { it as IVector4 }
+                numbers += vecs.map { it.xd }
+                numbers += vecs.map { it.yd }
+                numbers += vecs.map { it.zd }
+                numbers += vecs.map { it.wd }
+            }
+            GltfType.MAT2, GltfType.MAT3, GltfType.MAT4 -> error("Not supported")
+        }
+        return numbers.map { it.min() ?: 0.0 }
+    }
+
+    private fun getMax(buff: UnpackedBuffer): List<Double> {
+        val numbers = mutableListOf<List<Double>>()
+        when (buff.containerType) {
+            GltfType.SCALAR -> {
+                numbers += buff.data.map { (it as Number).toDouble() }
+            }
+            GltfType.VEC2 -> {
+                val vecs = buff.data.map { it as IVector2 }
+                numbers += vecs.map { it.xd }
+                numbers += vecs.map { it.yd }
+            }
+            GltfType.VEC3 -> {
+                val vecs = buff.data.map { it as IVector3 }
+                numbers += vecs.map { it.xd }
+                numbers += vecs.map { it.yd }
+                numbers += vecs.map { it.zd }
+            }
+            GltfType.VEC4 -> {
+                val vecs = buff.data.map { it as IVector4 }
+                numbers += vecs.map { it.xd }
+                numbers += vecs.map { it.yd }
+                numbers += vecs.map { it.zd }
+                numbers += vecs.map { it.wd }
+            }
+            GltfType.MAT2, GltfType.MAT3, GltfType.MAT4 -> error("Not supported")
+        }
+        return numbers.map { it.max() ?: 0.0 }
+    }
+
     fun ByteBuffer.toArray(): ByteArray {
         val array = ByteArray(position())
         flip()
@@ -427,7 +499,78 @@ class GLTFBuilder {
             var doubleSided: Boolean = false
     )
 
-//    val animations: List<Animation> = emptyList(),  // An array of keyframe animations.
+    fun animation(func: Animation.() -> Unit) {
+        val anim = Animation()
+        anim.func()
+        animations.add(anim)
+    }
+
+    fun Animation.channel(func: Channel.() -> Unit) {
+        val chan = Channel()
+        chan.func()
+        channels.add(chan)
+    }
+
+    private fun Animation.build(): GltfAnimation {
+        val channels = mutableListOf<GltfAnimationChannel>()
+        val samplers = mutableListOf<GltfAnimationSampler>()
+
+        this.channels.forEach { chan ->
+            val node = bakedNodes.indexOfFirst { it.name == chan.node }
+            if (node == -1) return@forEach
+
+            channels += GltfAnimationChannel(
+                    target = GltfChannelTarget(node = node, path = chan.transformType.toString()),
+                    sampler = samplers.size
+            )
+
+            samplers += GltfAnimationSampler(
+                    input = chan.timeValues!!.build(),
+                    interpolation = chan.interpolation,
+                    output = chan.transformValues!!.build()
+            )
+        }
+
+        return GltfAnimation(
+                name = name,
+                channels = channels,
+                samplers = samplers
+        )
+    }
+
+    data class Animation(
+            var name: String? = null,
+            val channels: MutableList<Channel> = mutableListOf()
+    )
+
+    data class Channel(
+            var node: String = "",
+            var interpolation: GltfInterpolation = GltfInterpolation.LINEAR,
+            var transformType: GltfChannelPath = GltfChannelPath.translation,
+            var timeValues: UnpackedBuffer? = null,
+            var transformValues: UnpackedBuffer? = null
+    ) {
+
+        // this avoids having to import GltfInterpolation.*
+        inline val LINEAR: GltfInterpolation get() = GltfInterpolation.LINEAR
+        inline val STEP: GltfInterpolation get() = GltfInterpolation.STEP
+        inline val CUBICSPLINE: GltfInterpolation get() = GltfInterpolation.CUBICSPLINE
+
+        // this avoids having to import GltfChannelPath.*
+        inline val TRANSLATION: GltfChannelPath get() = GltfChannelPath.translation
+        inline val ROTATION: GltfChannelPath get() = GltfChannelPath.rotation
+        inline val SCALE: GltfChannelPath get() = GltfChannelPath.scale
+        inline val WEIGHTS: GltfChannelPath get() = GltfChannelPath.weights
+
+        // this avoids having to import ComponentType.*
+        inline val BYTE: GltfComponentType get() = GltfComponentType.BYTE
+        inline val UNSIGNED_BYTE: GltfComponentType get() = GltfComponentType.UNSIGNED_BYTE
+        inline val SHORT: GltfComponentType get() = GltfComponentType.SHORT
+        inline val UNSIGNED_SHORT: GltfComponentType get() = GltfComponentType.UNSIGNED_SHORT
+        inline val UNSIGNED_INT: GltfComponentType get() = GltfComponentType.UNSIGNED_INT
+        inline val FLOAT: GltfComponentType get() = GltfComponentType.FLOAT
+    }
+
 //    val cameras: List<Camera> = emptyList(),  // An array of cameras. A camera defines a projection matrix.
 //    val images: List<Image> = emptyList(),  // An array of images. An image defines data used to create a texture.
 //    val samplers: List<Sampler> = emptyList(),  // An array of samplers. A sampler contains properties for texture filtering and wrapping modes.

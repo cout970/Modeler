@@ -366,7 +366,7 @@ object ProjectLoaderV13 {
 
                 add("mapping", src.objectMapping.toJsonArray { (key, value) ->
                     JsonObject().apply {
-                        add("key", context.serializeT(key))
+                        add("key", context.serializeT(key.id))
                         add("value", context.serializeT(value))
                     }
                 })
