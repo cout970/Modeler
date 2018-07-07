@@ -1,5 +1,6 @@
 package com.cout970.modeler.core.network
 
+import com.cout970.modeler.core.log.print
 import sun.misc.Queue
 import java.io.DataInputStream
 import java.io.DataOutputStream
@@ -24,7 +25,7 @@ class Server {
                     val client = serverSocket.accept()
                     connections += Connection(this, client).apply { runThread() }
                 } catch (e: IOException) {
-                    e.printStackTrace()
+                    e.print()
                 }
             }
         }
