@@ -3,10 +3,7 @@ package com.cout970.modeler.gui.rcomponents.popup
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.export.ExportFormat
 import com.cout970.modeler.core.export.ExportProperties
-import com.cout970.modeler.gui.leguicomp.FixedLabel
-import com.cout970.modeler.gui.leguicomp.TextButton
-import com.cout970.modeler.gui.leguicomp.background
-import com.cout970.modeler.gui.leguicomp.onClick
+import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.input.dialogs.FileDialogs
 import com.cout970.modeler.util.toColor
 import com.cout970.reactive.core.RBuilder
@@ -43,6 +40,7 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
             style.border = SimpleLineBorder(Config.colorPalette.grey.toColor(), 2f)
             width = 460f
             height = 240f
+            classes("popup_back")
         }
 
         postMount {

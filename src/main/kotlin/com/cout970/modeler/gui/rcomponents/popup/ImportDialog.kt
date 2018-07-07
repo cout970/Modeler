@@ -10,8 +10,8 @@ import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
 import com.cout970.reactive.core.RState
 import com.cout970.reactive.dsl.*
-import com.cout970.reactive.nodes.comp
 import com.cout970.reactive.nodes.div
+import com.cout970.reactive.nodes.selectBox
 import com.cout970.reactive.nodes.style
 import org.liquidengine.legui.component.CheckBox
 import org.liquidengine.legui.component.TextInput
@@ -40,6 +40,7 @@ class ImportDialog : RComponent<PopupReturnProps, ImportDialogState>() {
             borderSize = 2f
             width = 460f
             height = 240f
+            classes("popup_back")
         }
 
         postMount {
@@ -94,7 +95,7 @@ class ImportDialog : RComponent<PopupReturnProps, ImportDialogState>() {
             textState.horizontalAlign = HorizontalAlign.LEFT
         }
 
-        comp(DropDown()) {
+        selectBox {
             style {
                 posX = 90f
                 posY = 100f

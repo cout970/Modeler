@@ -29,6 +29,7 @@ class ExportTextureDialog : RComponent<PopupReturnProps, ExportTextureDialogStat
             style.border = SimpleLineBorder(Config.colorPalette.grey.toColor(), 2f)
             width = 460f
             height = 240f
+            classes("popup_back")
         }
 
         postMount {

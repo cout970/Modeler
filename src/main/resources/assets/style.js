@@ -182,7 +182,7 @@ var exported = {
     },
     popup_back: {
         backgroundColor: "#303030",
-        borderWidth: "1",
+        borderWidth: "0.75",
         borderColor: "#a0a0a0",
         borderRadius: "5"
     },
@@ -206,7 +206,7 @@ var exported = {
         borderStyle: "solid",
         borderWidth: "1",
         borderColor: "#666666"
-    }
+    },
 };
 
 exported
