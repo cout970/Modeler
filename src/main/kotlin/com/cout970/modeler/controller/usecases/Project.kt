@@ -9,6 +9,7 @@ import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.project.ProjectProperties
+import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.event.Notification
 import com.cout970.modeler.gui.event.NotificationHandler
 import com.cout970.modeler.input.dialogs.FileDialogs
@@ -21,7 +22,7 @@ import com.cout970.modeler.input.dialogs.MessageDialogs
 private var lastSaveFile: String? = null
 
 @UseCase("project.new")
-private fun newProject(model: IModel, animation: IAnimation, properties: ProjectProperties): ITask = TaskAsync { returnFunc ->
+private fun newProject(gui: Gui, model: IModel, animation: IAnimation, properties: ProjectProperties): ITask = TaskAsync { returnFunc ->
     var accepts = true
     if (model.objects.isNotEmpty() || model.groupMap.isNotEmpty()) {
         accepts = MessageDialogs.warningBoolean(
@@ -32,15 +33,18 @@ private fun newProject(model: IModel, animation: IAnimation, properties: Project
         )
     }
     if (accepts) {
-        val newProject = ProjectProperties(properties.owner, properties.name)
-        returnFunc(TaskUpdateProject(
-                oldProjectProperties = properties,
-                newProjectProperties = newProject,
-                oldModel = model,
-                newModel = Model.empty(),
-                oldAnimation = animation,
-                newAnimation = animationOf()
-        ))
+        openPopup<String>(gui, "project_name") { name ->
+            val newProject = ProjectProperties(properties.owner, name)
+
+            returnFunc(TaskUpdateProject(
+                    oldProjectProperties = properties,
+                    newProjectProperties = newProject,
+                    oldModel = model,
+                    newModel = Model.empty(),
+                    oldAnimation = animation,
+                    newAnimation = animationOf()
+            ))
+        }
     }
 }
 

@@ -180,6 +180,12 @@ var exported = {
         borderStyle: "none",
         borderRadius: "5"
     },
+    popup_background_hide: {
+        display: "none"
+    },
+    popup_background: {
+        backgroundColor: "rgba(255, 255, 255, 0.15)"
+    },
     popup_back: {
         backgroundColor: "#303030",
         borderWidth: "0.75",

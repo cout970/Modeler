@@ -35,8 +35,6 @@ class ImportDialog : RComponent<PopupReturnProps, ImportDialogState>() {
 
     override fun RBuilder.render() = div("ImportPopup") {
         style {
-            background { dark3 }
-            borderColor { color { grey } }
             borderSize = 2f
             width = 460f
             height = 240f

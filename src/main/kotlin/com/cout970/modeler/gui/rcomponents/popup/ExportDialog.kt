@@ -1,11 +1,9 @@
 package com.cout970.modeler.gui.rcomponents.popup
 
-import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.export.ExportFormat
 import com.cout970.modeler.core.export.ExportProperties
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.input.dialogs.FileDialogs
-import com.cout970.modeler.util.toColor
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
 import com.cout970.reactive.core.RState
@@ -16,7 +14,6 @@ import com.cout970.reactive.nodes.style
 import org.liquidengine.legui.component.TextInput
 import org.liquidengine.legui.component.event.textinput.TextInputContentChangeEvent
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
-import org.liquidengine.legui.style.border.SimpleLineBorder
 
 data class ExportDialogState(val text: String, val prefix: String, val selection: Int, var forceUpdate: Boolean) : RState
 
@@ -36,8 +33,6 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
 
     override fun RBuilder.render() = div("ExportDialog") {
         style {
-            background { dark3 }
-            style.border = SimpleLineBorder(Config.colorPalette.grey.toColor(), 2f)
             width = 460f
             height = 240f
             classes("popup_back")
