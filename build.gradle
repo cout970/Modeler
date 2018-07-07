@@ -5,6 +5,7 @@ buildscript {
     ext.kotlin_version = '1.2.31'
     ext.lwjglVersion = "3.1.6-SNAPSHOT"
     ext.legui_version = "1.4.5-205"
+    ext.arrow_version = "0.7.2"
 
     repositories {
         mavenCentral()
@@ -79,6 +80,13 @@ dependencies {
     compile "org.lwjgl:lwjgl-tinyfd:${lwjglVersion}"
     compile "org.lwjgl:lwjgl-nfd:$lwjglVersion"
     compile "org.lwjgl:lwjgl-xxhash:${lwjglVersion}"
+
+    compile "io.arrow-kt:arrow-core:$arrow_version"
+    compile "io.arrow-kt:arrow-syntax:$arrow_version"
+    compile "io.arrow-kt:arrow-typeclasses:$arrow_version"
+    compile "io.arrow-kt:arrow-data:$arrow_version"
+    compile "io.arrow-kt:arrow-instances-core:$arrow_version"
+    compile "io.arrow-kt:arrow-instances-data:$arrow_version"
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
 

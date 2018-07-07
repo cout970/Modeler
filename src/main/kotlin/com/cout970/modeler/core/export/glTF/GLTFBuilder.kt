@@ -12,6 +12,7 @@ import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.vec3Of
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.util.*
 
 fun testExporter() = glftModel {
 
@@ -22,9 +23,12 @@ fun testExporter() = glftModel {
         copyright = "GNU GPL v3"
     }
 
+    var rootNodeId: UUID? = null
+
     scene {
         node {
             name = "root"
+            rootNodeId = id
 
             transformation {
                 translation = Vector3.ZERO
@@ -41,7 +45,7 @@ fun testExporter() = glftModel {
     animation {
         name = "Translation to (1,1,1)"
         channel {
-            node = "child1"
+            node = rootNodeId
             interpolation = LINEAR
             transformType = TRANSLATION
             timeValues = buffer(FLOAT, listOf(1f, 2f, 3f, 4f))
@@ -104,6 +108,7 @@ class GLTFBuilder {
     private val scenes = mutableListOf<Scene>()
     private val bakedMaterials = mutableListOf<GltfMaterial>()
     private val bakedNodes = mutableListOf<GltfNode>()
+    private val nodeIdToIndex = mutableMapOf<UUID, Int>()
     private val bakedMeshes = mutableListOf<GltfMesh>()
     private var buffer = ByteBuffer.allocate(16).order(ByteOrder.LITTLE_ENDIAN)
     private val bakedBufferViews = mutableListOf<GltfBufferView>()
@@ -186,6 +191,7 @@ class GLTFBuilder {
     }
 
     data class Node(
+            val id: UUID = UUID.randomUUID(),
             var transformation: Transformation? = null,
             var name: String? = null,
             var children: MutableList<Node>? = null,
@@ -243,6 +249,7 @@ class GLTFBuilder {
                 extras = extras
         )
 
+        nodeIdToIndex.put(id, bakedNodes.size)
         bakedNodes.add(node)
         return node
     }
@@ -516,8 +523,7 @@ class GLTFBuilder {
         val samplers = mutableListOf<GltfAnimationSampler>()
 
         this.channels.forEach { chan ->
-            val node = bakedNodes.indexOfFirst { it.name == chan.node }
-            if (node == -1) return@forEach
+            val node = nodeIdToIndex[chan.node] ?: return@forEach
 
             channels += GltfAnimationChannel(
                     target = GltfChannelTarget(node = node, path = chan.transformType.toString()),
@@ -544,7 +550,7 @@ class GLTFBuilder {
     )
 
     data class Channel(
-            var node: String = "",
+            var node: UUID? = null,
             var interpolation: GltfInterpolation = GltfInterpolation.LINEAR,
             var transformType: GltfChannelPath = GltfChannelPath.translation,
             var timeValues: UnpackedBuffer? = null,
@@ -574,8 +580,6 @@ class GLTFBuilder {
 //    val cameras: List<Camera> = emptyList(),  // An array of cameras. A camera defines a projection matrix.
 //    val images: List<Image> = emptyList(),  // An array of images. An image defines data used to create a texture.
 //    val samplers: List<Sampler> = emptyList(),  // An array of samplers. A sampler contains properties for texture filtering and wrapping modes.
-//    val scene: Int? = null,         // The index of the default scene.
-//    val scenes: List<Scene> = emptyList(),  // An array of scenes.
 //    val skins: List<Skin> = emptyList(),  // An array of skins. A skin is defined by joints and matrices.
 //    val textures: List<Texture> = emptyList(),  // An array of textures.
 }

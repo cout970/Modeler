@@ -5,6 +5,7 @@ import com.cout970.glutilities.tessellator.DrawMode
 import com.cout970.glutilities.tessellator.VAO
 import com.cout970.matrix.extensions.Matrix4
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.`object`.RootGroupRef
 import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.faces
@@ -127,7 +128,7 @@ class ModelRenderer {
         val animation = ctx.gui.programState.animation
         val animator = ctx.gui.animator
 
-        map.forEach { materialRef, list ->
+        map.forEach { materialRef, objs ->
             val material = model.getMaterial(materialRef)
             material.bind()
             ctx.shader.apply {
@@ -143,8 +144,9 @@ class ModelRenderer {
                     globalColor.setVector3(material.color)
                 }
 
-                list.forEach { (objIndex, _) ->
-                    matrixM.setMatrix4(animator.animate(animation, objIndex))
+                objs.forEach { (objIndex, _) ->
+                    val group = model.tree.objects.getReverse(objIndex) ?: RootGroupRef
+                    matrixM.setMatrix4(animator.animate(animation, group, objIndex))
                     accept(modelCache[objIndex]!!)
                 }
                 showHiddenFaces.setBoolean(false)

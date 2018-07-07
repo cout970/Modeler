@@ -1,6 +1,7 @@
 package com.cout970.modeler.controller.usecases
 
 import com.cout970.modeler.api.animation.AnimationState
+import com.cout970.modeler.api.animation.AnimationTargetGroup
 import com.cout970.modeler.api.animation.IChannelRef
 import com.cout970.modeler.api.animation.InterpolationMethod
 import com.cout970.modeler.controller.tasks.*
@@ -8,7 +9,6 @@ import com.cout970.modeler.core.animation.Channel
 import com.cout970.modeler.core.animation.Keyframe
 import com.cout970.modeler.core.animation.ref
 import com.cout970.modeler.core.model.TRTSTransformation
-import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.render.tool.Animator
@@ -22,7 +22,7 @@ private var lastAnimation = 0
 
 @UseCase("animation.channel.add")
 private fun addAnimationChannel(programState: IProgramState): ITask {
-    val refs = programState.modelSelection.map { it.objects }.getOrNull() ?: return TaskNone
+    val group = programState.selectedGroup
     val anim = programState.animation
 
     val channel = Channel(
@@ -33,7 +33,7 @@ private fun addAnimationChannel(programState: IProgramState): ITask {
                     Keyframe(anim.timeLength, TRTSTransformation.IDENTITY)
             )
     )
-    val newAnimation = anim.withChannel(channel).withMapping(channel.ref, refs)
+    val newAnimation = anim.withChannel(channel).withMapping(channel.ref, AnimationTargetGroup(group))
 
     return TaskChain(listOf(
             TaskUpdateAnimation(programState.animation, newAnimation),

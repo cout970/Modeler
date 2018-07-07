@@ -2,13 +2,10 @@ package com.cout970.modeler.render.tool
 
 import com.cout970.glutilities.structure.Timer
 import com.cout970.matrix.api.IMatrix4
-import com.cout970.modeler.api.animation.AnimationState
-import com.cout970.modeler.api.animation.IAnimation
-import com.cout970.modeler.api.animation.IChannelRef
-import com.cout970.modeler.api.animation.IKeyframe
+import com.cout970.modeler.api.animation.*
 import com.cout970.modeler.api.model.ITransformation
+import com.cout970.modeler.api.model.`object`.IGroupRef
 import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.modeler.core.animation.ref
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.TRTSTransformation
 import com.cout970.modeler.gui.Gui
@@ -56,13 +53,21 @@ class Animator {
         }
     }
 
-    fun animate(anim: IAnimation, obj: IObjectRef): IMatrix4 {
+    fun animate(anim: IAnimation, group: IGroupRef, obj: IObjectRef): IMatrix4 {
 
         val now = animationTime
         val activeChannels = anim.channels
-                .values
-                .filter { it.enabled }
-                .filter { obj in anim.objectMapping[it.ref] }
+                .filter { it.value.enabled }
+                .filter { (chanRef) ->
+                    val target = anim.channelMapping[chanRef]
+
+                    when (target) {
+                        is AnimationTargetGroup -> target.ref == group
+                        is AnimationTargetObject -> target.ref == obj
+                        else -> false
+                    }
+                }
+                .map { it.value }
 
         return activeChannels.fold(TRSTransformation.IDENTITY as ITransformation) { acc, c ->
             val (prev, next) = getPrevAndNext(now, c.keyframes)

@@ -46,8 +46,13 @@ object BackupManager {
         File("$path/$projectName").createParentsIfNeeded(true)
         val finalPath = "$path/$projectName/${getBackupName(projectName)}"
 
-        exportManager.saveProject(PathConstants.LAST_BACKUP_FILE_PATH, projectManager, false)
-        Files.copy(File(PathConstants.LAST_BACKUP_FILE_PATH).toPath(), File(finalPath).toPath())
-        log(Level.NORMAL) { "Backup saved at ${File(finalPath).absolutePath}" }
+        try {
+            exportManager.saveProject(PathConstants.LAST_BACKUP_FILE_PATH, projectManager, false)
+            Files.copy(File(PathConstants.LAST_BACKUP_FILE_PATH).toPath(), File(finalPath).toPath())
+            log(Level.NORMAL) { "Backup saved at ${File(finalPath).absolutePath}" }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            log(Level.NORMAL) { "Backup error saving to file: ${File(finalPath).absolutePath}" }
+        }
     }
 }

@@ -16,7 +16,6 @@ import com.cout970.modeler.core.animation.ref
 import com.cout970.modeler.core.export.glTF.*
 import com.cout970.modeler.core.model.*
 import com.cout970.modeler.core.model.`object`.Object
-import com.cout970.modeler.core.model.`object`.toMultimap
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.resource.ResourcePath
@@ -28,6 +27,7 @@ import com.cout970.vector.extensions.*
 import com.google.gson.*
 import java.io.File
 import java.lang.reflect.Type
+import java.util.*
 
 private val GSON = GsonBuilder()
         .registerTypeAdapter(IVector4::class.java, Vector4Serializer())
@@ -131,61 +131,22 @@ class GlTFExporter {
     fun IModel.toGlTF(buffer: String) = glftModel {
         bufferName = "$buffer.bin"
 
+        val groupToNode = mutableMapOf<AnimationTarget, UUID>()
+
         scene {
-            objectMap.values.forEach { obj ->
-                node {
-                    name = obj.ref.objectId.toString()
-                    mesh {
-                        name = obj.name
 
-                        primitive {
+            node {
+                name = "root"
 
-                            val pos = obj.mesh.pos
-                            val tex = obj.mesh.tex
-                            val scale = 1f / 16f
+                val tree = tree.toMutable()
+                groupToNode += AnimationTargetGroup(tree.group) to id
 
-                            val vertexPos = obj.mesh.faces.flatMap { face ->
-                                when (face.vertexCount) {
-                                    3 -> listOf(
-                                            pos[face.pos[0]] * scale,
-                                            pos[face.pos[1]] * scale,
-                                            pos[face.pos[2]] * scale
-                                    )
-                                    4 -> listOf(
-                                            pos[face.pos[0]] * scale,
-                                            pos[face.pos[1]] * scale,
-                                            pos[face.pos[2]] * scale,
+                addSceneTree(this, this@toGlTF, tree, groupToNode)
 
-                                            pos[face.pos[0]] * scale,
-                                            pos[face.pos[2]] * scale,
-                                            pos[face.pos[3]] * scale
-                                    )
-                                    else -> error("Invalid vertexCount: ${face.vertexCount}")
-                                }
-                            }
-                            val vertexTex = obj.mesh.faces.flatMap { face ->
-                                when (face.vertexCount) {
-                                    3 -> listOf(
-                                            tex[face.tex[0]],
-                                            tex[face.tex[1]],
-                                            tex[face.tex[2]]
-                                    )
-                                    4 -> listOf(
-                                            tex[face.tex[0]],
-                                            tex[face.tex[1]],
-                                            tex[face.tex[2]],
-
-                                            tex[face.tex[0]],
-                                            tex[face.tex[2]],
-                                            tex[face.tex[3]]
-                                    )
-                                    else -> error("Invalid vertexCount: ${face.vertexCount}")
-                                }
-                            }
-
-                            attributes[POSITION] = buffer(FLOAT, vertexPos)
-                            attributes[TEXCOORD_0] = buffer(FLOAT, vertexTex)
-                        }
+                tree.objects.map { getObject(it) }.forEach {
+                    node {
+                        name = it.name
+                        addMesh(this, it)
                     }
                 }
             }
@@ -194,59 +155,140 @@ class GlTFExporter {
         animationMap.values.forEach { anim ->
             animation {
                 name = anim.name
+                addAnimation(this, anim, groupToNode)
+            }
+        }
+    }
 
-                anim.channels.values.map { chan ->
-                    // TODO fix
-                    val obj = anim.objectMapping[chan.ref].first()
+    fun GLTFBuilder.addSceneTree(builder: GLTFBuilder.Node, model: IModel, tree: MutableGroupTree,
+                                 groupToNode: MutableMap<AnimationTarget, UUID>): Unit = builder.run {
+        node {
+            name = model.getGroup(tree.group).name
+            groupToNode += AnimationTargetGroup(tree.group) to id
 
-                    if (chan.usesTranslation()) {
-                        channel {
-                            node = obj.objectId.toString()
-                            transformType = TRANSLATION
-                            timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
-                            transformValues = buffer(FLOAT, chan.keyframes.map {
-                                val trans = it.value
-                                when (trans) {
-                                    is TRSTransformation -> trans.translation
-                                    is TRTSTransformation -> trans.toTRS().translation
-                                    else -> error("Invalid transformation type: $trans")
-                                }
-                            })
+            tree.children.forEach {
+                addSceneTree(this, model, it, groupToNode)
+            }
+
+            tree.objects.map { model.getObject(it) }.forEach {
+                node {
+                    name = it.name
+                    groupToNode += AnimationTargetObject(it.ref) to id
+                    addMesh(this, it)
+                }
+            }
+        }
+    }
+
+    fun GLTFBuilder.addAnimation(builder: GLTFBuilder.Animation, anim: IAnimation, groupToNode: Map<AnimationTarget, UUID>) = builder.apply {
+        anim.channels.values.map { chan ->
+            val groupRef = anim.channelMapping[chan.ref]
+            val groupNode = groupToNode[groupRef] ?: return@map
+            val useTranslation = chan.usesTranslation()
+            val useRotation = chan.usesRotation()
+            val useScale = chan.usesScale()
+
+            if (!useTranslation && !useRotation && !useScale) return@map
+
+            if (useTranslation)
+                channel {
+                    node = groupNode
+                    transformType = TRANSLATION
+                    timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
+                    transformValues = buffer(FLOAT, chan.keyframes.map {
+                        val trans = it.value
+                        when (trans) {
+                            is TRSTransformation -> trans.translation
+                            is TRTSTransformation -> trans.toTRS().translation
+                            else -> error("Invalid transformation type: $trans")
                         }
-                    }
+                    })
+                }
 
-                    if (chan.usesRotation()) {
-                        channel {
-                            node = obj.objectId.toString()
-                            transformType = ROTATION
-                            timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
-                            transformValues = buffer(FLOAT, chan.keyframes.map {
-                                val trans = it.value
-                                when (trans) {
-                                    is TRSTransformation -> trans.rotation.toVector4()
-                                    is TRTSTransformation -> trans.toTRS().rotation.toVector4()
-                                    else -> error("Invalid transformation type: $trans")
-                                }
-                            })
-                        }
-                    }
 
-                    if (chan.usesScale()) {
-                        channel {
-                            node = obj.objectId.toString()
-                            transformType = SCALE
-                            timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
-                            transformValues = buffer(FLOAT, chan.keyframes.map {
-                                val trans = it.value
-                                when (trans) {
-                                    is TRSTransformation -> trans.scale
-                                    is TRTSTransformation -> trans.scale
-                                    else -> error("Invalid transformation type: $trans")
-                                }
-                            })
+            if (useRotation)
+                channel {
+                    node = groupNode
+                    transformType = ROTATION
+                    timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
+                    transformValues = buffer(FLOAT, chan.keyframes.map {
+                        val trans = it.value
+                        when (trans) {
+                            is TRSTransformation -> trans.rotation.toVector4()
+                            is TRTSTransformation -> trans.toTRS().rotation.toVector4()
+                            else -> error("Invalid transformation type: $trans")
                         }
+                    })
+                }
+
+            if (useScale)
+                channel {
+                    node = groupNode
+                    transformType = SCALE
+                    timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
+                    transformValues = buffer(FLOAT, chan.keyframes.map {
+                        val trans = it.value
+                        when (trans) {
+                            is TRSTransformation -> trans.scale
+                            is TRTSTransformation -> trans.scale
+                            else -> error("Invalid transformation type: $trans")
+                        }
+                    })
+                }
+        }
+    }
+
+    fun GLTFBuilder.addMesh(node: GLTFBuilder.Node, obj: IObject) = node.apply {
+        mesh {
+            name = obj.name
+
+            primitive {
+
+                val pos = obj.mesh.pos
+                val tex = obj.mesh.tex
+                val scale = 1f / 16f
+
+                val vertexPos = obj.mesh.faces.flatMap { face ->
+                    when (face.vertexCount) {
+                        3 -> listOf(
+                                pos[face.pos[0]] * scale,
+                                pos[face.pos[1]] * scale,
+                                pos[face.pos[2]] * scale
+                        )
+                        4 -> listOf(
+                                pos[face.pos[0]] * scale,
+                                pos[face.pos[1]] * scale,
+                                pos[face.pos[2]] * scale,
+
+                                pos[face.pos[0]] * scale,
+                                pos[face.pos[2]] * scale,
+                                pos[face.pos[3]] * scale
+                        )
+                        else -> error("Invalid vertexCount: ${face.vertexCount}")
                     }
                 }
+                val vertexTex = obj.mesh.faces.flatMap { face ->
+                    when (face.vertexCount) {
+                        3 -> listOf(
+                                tex[face.tex[0]],
+                                tex[face.tex[1]],
+                                tex[face.tex[2]]
+                        )
+                        4 -> listOf(
+                                tex[face.tex[0]],
+                                tex[face.tex[1]],
+                                tex[face.tex[2]],
+
+                                tex[face.tex[0]],
+                                tex[face.tex[2]],
+                                tex[face.tex[3]]
+                        )
+                        else -> error("Invalid vertexCount: ${face.vertexCount}")
+                    }
+                }
+
+                attributes[POSITION] = buffer(FLOAT, vertexPos)
+                attributes[TEXCOORD_0] = buffer(FLOAT, vertexTex)
             }
         }
     }
@@ -313,7 +355,7 @@ class GlTFImporter {
             processNode(glNode, resNode, root, objs, materials, groups, nodeMapping)
         }
 
-        val objectMapping = mutableMapOf<IChannelRef, List<IObjectRef>>()
+        val channelMapping = mutableMapOf<IChannelRef, AnimationTarget>()
 
         data.animations.forEach { (gltf, anim) ->
             val channels = anim.channels.map { (gl, channel) ->
@@ -331,18 +373,16 @@ class GlTFImporter {
                 )
 
                 val thing = nodeMapping[gl.target.node]
-                objectMapping += chan.ref to when (thing) {
-                    is IObjectRef -> listOf(thing)
-                    is IGroupRef -> root.findChild(thing)!!.getChildObjects()
-                    else -> emptyList()
-                }
+
+                (thing as? IGroupRef)?.let { channelMapping += chan.ref to AnimationTargetGroup(it) }
+                (thing as? IObjectRef)?.let { channelMapping += chan.ref to AnimationTargetObject(it) }
 
                 chan
             }
 
             val a = Animation(
                     channels.associateBy { it.ref },
-                    objectMapping.toMultimap(),
+                    channelMapping,
                     channels.map { it.keyframes.last().time }.max() ?: 1f,
                     gltf.name ?: "Animation"
             )

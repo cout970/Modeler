@@ -1,28 +1,32 @@
 package com.cout970.modeler.api.animation
 
 import com.cout970.modeler.api.model.ITransformation
+import com.cout970.modeler.api.model.`object`.IGroupRef
 import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.modeler.core.model.`object`.Multimap
 import java.util.*
 
 interface IAnimationRef {
     val id: UUID
 }
 
+sealed class AnimationTarget
+data class AnimationTargetGroup(val ref: IGroupRef) : AnimationTarget()
+data class AnimationTargetObject(val ref: IObjectRef) : AnimationTarget()
+
 interface IAnimation {
     val id: UUID
     val name: String
     val channels: Map<IChannelRef, IChannel>
-    val objectMapping: Multimap<IChannelRef, IObjectRef>
+    val channelMapping: Map<IChannelRef, AnimationTarget>
     val timeLength: Float
 
     fun withChannel(channel: IChannel): IAnimation
     fun withTimeLength(newLength: Float): IAnimation
-    fun withMapping(channel: IChannelRef, objects: List<IObjectRef>): IAnimation
+    fun withMapping(channel: IChannelRef, target: AnimationTarget): IAnimation
 
     fun removeChannels(list: List<IChannelRef>): IAnimation
 
-    fun getChannels(obj: IObjectRef): List<IChannel>
+    fun getChannels(group: IGroupRef): List<IChannel>
 
     operator fun plus(other: IAnimation): IAnimation
 }

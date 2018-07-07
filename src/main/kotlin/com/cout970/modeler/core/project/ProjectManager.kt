@@ -3,6 +3,8 @@ package com.cout970.modeler.core.project
 import com.cout970.modeler.api.animation.IAnimation
 import com.cout970.modeler.api.animation.IAnimationRef
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.`object`.IGroupRef
+import com.cout970.modeler.api.model.`object`.RootGroupRef
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.ISelection
@@ -35,6 +37,8 @@ class ProjectManager(
     var projectProperties: ProjectProperties = ProjectProperties(Config.user, "unnamed")
 
     override var model: IModel = Model.empty()
+
+    override var selectedGroup: IGroupRef = RootGroupRef
 
     override var selectedMaterial: IMaterialRef = MaterialRefNone
     override val material: IMaterial get() = model.materialMap[selectedMaterial] ?: MaterialNone

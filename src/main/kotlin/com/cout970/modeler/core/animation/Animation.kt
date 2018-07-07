@@ -2,9 +2,7 @@ package com.cout970.modeler.core.animation
 
 import com.cout970.modeler.api.animation.*
 import com.cout970.modeler.api.model.ITransformation
-import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.modeler.core.model.`object`.Multimap
-import com.cout970.modeler.core.model.`object`.emptyMultimap
+import com.cout970.modeler.api.model.`object`.IGroupRef
 import java.util.*
 
 /**
@@ -19,7 +17,7 @@ object AnimationRefNone : IAnimationRef {
 
 data class Animation(
         override val channels: Map<IChannelRef, IChannel>,
-        override val objectMapping: Multimap<IChannelRef, IObjectRef>,
+        override val channelMapping: Map<IChannelRef, AnimationTarget>,
         override val timeLength: Float,
         override val name: String,
         override val id: UUID = UUID.randomUUID()
@@ -33,16 +31,16 @@ data class Animation(
         return copy(timeLength = newLength)
     }
 
-    override fun withMapping(channel: IChannelRef, objects: List<IObjectRef>): IAnimation {
-        return copy(objectMapping = objectMapping.set(channel, objects))
+    override fun withMapping(channel: IChannelRef, target: AnimationTarget): IAnimation {
+        return copy(channelMapping = channelMapping + Pair(channel, target))
     }
 
     override fun removeChannels(list: List<IChannelRef>): IAnimation {
         return copy(channels = channels.filterKeys { it !in list })
     }
 
-    override fun getChannels(obj: IObjectRef): List<IChannel> {
-        return objectMapping.filter { obj in it.second }.map { it.first }.map { channels[it]!! }
+    override fun getChannels(group: IGroupRef): List<IChannel> {
+        return channelMapping.filter { group == it.value }.map { it.key }.map { channels[it]!! }
     }
 
     override fun plus(other: IAnimation): IAnimation {
@@ -80,5 +78,6 @@ data class Keyframe(
 inline val IChannel.ref: IChannelRef get() = ChannelRef(id)
 inline val IAnimation.ref: IAnimationRef get() = AnimationRef(id)
 
+// TODO
 fun animationOf(vararg channels: IChannel, time: Float = 1f) =
-        Animation(channels.associateBy { it.ref }, emptyMultimap(), time, "Animation")
+        Animation(channels.associateBy { it.ref }, emptyMap(), time, "Animation")

@@ -1,7 +1,6 @@
 package com.cout970.modeler.core.export.project
 
 import com.cout970.modeler.api.animation.IAnimation
-import com.cout970.modeler.api.animation.IChannelRef
 import com.cout970.modeler.api.animation.InterpolationMethod
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.ITransformation
@@ -295,49 +294,19 @@ object ProjectLoaderV12 {
         }
     }
 
-    class AnimationSerializer : JsonSerializer<IAnimation>, JsonDeserializer<IAnimation> {
-
-        override fun serialize(src: IAnimation, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-            return JsonObject().apply {
-                addProperty("timeLength", src.timeLength)
-
-                add("channels", src.channels.values.toJsonArray { v ->
-                    JsonObject().apply {
-                        add("id", context.serializeT(v.id))
-                        addProperty("name", v.name)
-                        addProperty("interpolation", v.interpolation.name)
-                        addProperty("enabled", v.enabled)
-
-                        add("keyframes", v.keyframes.toJsonArray {
-                            JsonObject().apply {
-                                addProperty("time", it.time)
-                                add("value", context.serializeT(it.value))
-                            }
-                        })
-
-                    }
-                })
-
-                add("mapping", src.objectMapping.toJsonArray { (key, value) ->
-                    JsonObject().apply {
-                        add("key", context.serializeT(key))
-                        add("value", context.serializeT(value))
-                    }
-                })
-            }
-        }
+    class AnimationSerializer : JsonDeserializer<IAnimation> {
 
         override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IAnimation {
             if (json.isJsonNull) return animationOf()
 
             val obj = json.asJsonObject
 
-            val pairs = obj["mapping"].asJsonArray
-                    .map { it.asJsonObject }
-                    .map { context.deserializeT<UUID>(it["key"]) to context.deserializeT<List<IObjectRef>>(it["value"]) }
-                    .map { (ChannelRef(it.first) as IChannelRef) to it.second }
-
-            val objectMapping = multimapOf(*pairs.toTypedArray())
+//            val pairs = obj["mapping"].asJsonArray
+//                    .map { it.asJsonObject }
+//                    .map { context.deserializeT<UUID>(it["key"]) to context.deserializeT<List<IObjectRef>>(it["value"]) }
+//                    .map { (ChannelRef(it.first) as IChannelRef) to it.second }
+//
+//            val objectMapping = multimapOf(*pairs.toTypedArray())
 
             val channels = obj["channels"].asJsonArray.map {
                 val channel = it.asJsonObject
@@ -364,7 +333,7 @@ object ProjectLoaderV12 {
             return Animation(
                     channels = channels.associateBy { it.ref },
                     timeLength = obj["timeLength"].asFloat,
-                    objectMapping = objectMapping,
+                    channelMapping = emptyMap(),
                     name = "animation"
             )
         }

@@ -3,6 +3,7 @@ package com.cout970.modeler.core.project
 import com.cout970.modeler.api.animation.IAnimation
 import com.cout970.modeler.api.animation.IAnimationRef
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.`object`.IGroupRef
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.ISelection
@@ -18,6 +19,7 @@ interface IProgramState {
     val material: IMaterial
     val animation: IAnimation
 
+    val selectedGroup: IGroupRef
     val selectedMaterial: IMaterialRef
     val selectedAnimation: IAnimationRef
 

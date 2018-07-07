@@ -1,9 +1,6 @@
 package com.cout970.modeler.core.export.project
 
-import com.cout970.modeler.api.animation.IAnimation
-import com.cout970.modeler.api.animation.IAnimationRef
-import com.cout970.modeler.api.animation.IChannelRef
-import com.cout970.modeler.api.animation.InterpolationMethod
+import com.cout970.modeler.api.animation.*
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.*
@@ -15,7 +12,10 @@ import com.cout970.modeler.core.animation.*
 import com.cout970.modeler.core.export.*
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.Model
-import com.cout970.modeler.core.model.`object`.*
+import com.cout970.modeler.core.model.`object`.GroupTree
+import com.cout970.modeler.core.model.`object`.Object
+import com.cout970.modeler.core.model.`object`.ObjectCube
+import com.cout970.modeler.core.model.`object`.biMultimapOf
 import com.cout970.modeler.core.model.material.ColoredMaterial
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
@@ -71,6 +71,7 @@ object ProjectLoaderV13 {
             .registerTypeAdapter(IMesh::class.java, MeshSerializer())
             .registerTypeAdapter(IAnimation::class.java, AnimationSerializer())
             .registerTypeAdapter(IAnimationRef::class.java, AnimationRefSerializer())
+            .registerTypeAdapter(AnimationTarget::class.java, AnimationTargetSerializer())
             .create()!!
 
     fun loadProject(zip: ZipFile, path: String): ProgramSave {
@@ -364,7 +365,7 @@ object ProjectLoaderV13 {
                     }
                 })
 
-                add("mapping", src.objectMapping.toJsonArray { (key, value) ->
+                add("mapping", src.channelMapping.entries.toJsonArray { (key, value) ->
                     JsonObject().apply {
                         add("key", context.serializeT(key.id))
                         add("value", context.serializeT(value))
@@ -378,15 +379,14 @@ object ProjectLoaderV13 {
 
             val obj = json.asJsonObject
 
-            val pairs = obj["mapping"].asJsonArray
+            val channelMapping = obj["mapping"].asJsonArray
                     .map { it.asJsonObject }
-                    .map { context.deserializeT<UUID>(it["key"]) to context.deserializeT<List<IObjectRef>>(it["value"]) }
+                    .map { context.deserializeT<UUID>(it["key"]) to context.deserializeT<AnimationTarget>(it["value"]) }
                     .map { (ChannelRef(it.first) as IChannelRef) to it.second }
+                    .toMap()
 
-            val objectMapping = multimapOf(*pairs.toTypedArray())
-
-            val channels = obj["channels"].asJsonArray.map {
-                val channel = it.asJsonObject
+            val channels = obj["channels"].asJsonArray.map { elem ->
+                val channel = elem.asJsonObject
 
                 val interName = channel["interpolation"].asString
                 val keyframesJson = channel["keyframes"].asJsonArray
@@ -410,7 +410,7 @@ object ProjectLoaderV13 {
             return Animation(
                     channels = channels.associateBy { it.ref },
                     timeLength = obj["timeLength"].asFloat,
-                    objectMapping = objectMapping,
+                    channelMapping = channelMapping,
                     name = "animation"
             )
         }
@@ -441,6 +441,17 @@ object ProjectLoaderV13 {
                     biMultimapOf(*objects.map { context.deserializeT<Aux>(it) }.map { it.key to it.value }.toTypedArray()),
                     biMultimapOf(*groups.map { context.deserializeT<Aux2>(it) }.map { it.key to it.value }.toTypedArray())
             )
+        }
+    }
+
+    class AnimationTargetSerializer : JsonSerializer<AnimationTarget>, JsonDeserializer<AnimationTarget> {
+
+        override fun serialize(src: AnimationTarget?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement {
+            TODO()
+        }
+
+        override fun deserialize(json: JsonElement?, typeOfT: Type?, context: JsonDeserializationContext?): AnimationTarget {
+            TODO()
         }
     }
 }
