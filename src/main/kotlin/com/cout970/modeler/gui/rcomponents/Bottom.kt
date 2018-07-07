@@ -18,6 +18,8 @@ import com.cout970.reactive.dsl.*
 import com.cout970.reactive.nodes.*
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Component
+import org.liquidengine.legui.component.SelectBox
+import org.liquidengine.legui.component.event.selectbox.SelectBoxChangeSelectionEvent
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.event.ScrollEvent
 import kotlin.math.max
@@ -169,14 +171,35 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
         }
 
         selectBox {
+            val animations = props.programState.model.animationMap.values.toList()
+
             style {
                 posY = 3f
                 sizeX = 160f
                 sizeY = 26f
 
-                addElement("Animation")
+                animations.forEachIndexed { index, animation -> addElement("$index ${animation.name}") }
+                addElement("None")
+
+                val selectedIndex = animations.indexOfFirst { it.ref == props.programState.selectedAnimation }
+                if (selectedIndex != -1) {
+                    setSelected(selectedIndex, true)
+                } else {
+                    setSelected(elements.size - 1, true)
+                }
+
                 visibleCount = 4
                 elementHeight = 26f
+            }
+
+            on<SelectBoxChangeSelectionEvent<SelectBox>> { event ->
+                val selected = event.targetComponent.selectBoxElements.indexOfFirst { it.text == event.newValue }
+
+                if (selected in animations.indices) {
+                    props.dispatcher.onEvent("animation.select", Panel().also {
+                        it.metadata["animation"] = animations[selected].ref
+                    })
+                }
             }
         }
     }

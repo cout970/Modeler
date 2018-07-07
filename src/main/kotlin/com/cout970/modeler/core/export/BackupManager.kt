@@ -101,7 +101,7 @@ object BackupManager {
             exportManager.saveProject(PathConstants.LAST_BACKUP_FILE_PATH, projectManager, false)
             Files.copy(File(PathConstants.LAST_BACKUP_FILE_PATH).toPath(), File(finalPath).toPath())
             log(Level.NORMAL) { "Backup saved at ${File(finalPath).absolutePath}" }
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             e.print()
             log(Level.NORMAL) { "Backup error saving to file: ${File(finalPath).absolutePath}" }
         }

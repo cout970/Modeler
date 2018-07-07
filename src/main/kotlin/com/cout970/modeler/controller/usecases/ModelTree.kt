@@ -11,6 +11,7 @@ import com.cout970.modeler.core.helpers.ModelHelper
 import com.cout970.modeler.core.model.*
 import com.cout970.modeler.core.model.selection.Selection
 import com.cout970.modeler.core.project.IProgramState
+import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.gui.rcomponents.right.Slot
 import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.util.Nullable
@@ -94,8 +95,10 @@ private fun toggle(pair: Pair<ISelection, IObjectRef>, model: IModel): ITask {
 // Groups
 
 @UseCase("tree.view.select.group")
-private fun selectListGroup(component: Component, input: IInput, programState: IProgramState): ITask {
+private fun selectListGroup(component: Component, input: IInput, programState: ProjectManager): ITask {
     val (model, selection) = programState
+
+    component.ref().asGroupRef().map { programState.selectedGroup = it }
 
     return component.ref().asGroupRef().map { ref ->
         val multiSelection = Config.keyBindings.multipleSelection.check(input)

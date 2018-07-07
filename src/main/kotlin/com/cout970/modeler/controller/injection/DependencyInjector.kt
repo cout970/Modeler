@@ -90,9 +90,8 @@ class DependencyInjector {
     fun callUseCase(state: Program, comp: Component?, useCase: KFunction<*>): ITask {
 
         val args: Map<KParameter, Any> = useCase.valueParameters.associate { param ->
-            Pair(param,
-                    state.getInstance(param.type.javaType, comp)
-                            ?: throw IllegalStateException("Unable to inject ${param.type.javaType}")
+            Pair(param, state.getInstance(param.type.javaType, comp)
+                    ?: throw IllegalStateException("Unable to inject ${param.type.javaType}")
             )
         }
 

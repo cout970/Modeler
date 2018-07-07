@@ -213,6 +213,11 @@ var exported = {
         borderWidth: "1",
         borderColor: "#666666"
     },
+    model_tree_selected_group: {
+        borderStyle: "solid",
+        borderWidth: "1",
+        borderColor: "#c2f3ff"
+    }
 };
 
 exported

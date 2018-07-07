@@ -19,12 +19,17 @@ import com.cout970.modeler.core.model.`object`.Object
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.resource.ResourcePath
+import com.cout970.modeler.util.toIQuaternion
+import com.cout970.modeler.util.toIVector
+import com.cout970.modeler.util.toJOML
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.api.IVector4
 import com.cout970.vector.extensions.*
 import com.google.gson.*
+import org.joml.Quaterniond
+import org.joml.Vector3d
 import java.io.File
 import java.lang.reflect.Type
 import java.util.*
@@ -414,8 +419,9 @@ class GlTFImporter {
             objs += obj.ref to obj
             nodeMapping += node.index to obj.ref
         } else {
-            val group = Group(gltfNode.name ?: "Group")
+            val group = Group(gltfNode.name ?: "Group", transform = transformOf(gltfNode))
             val tree = MutableGroupTree(group.ref)
+
             root.children += tree
             groups += group.ref to group
             nodeMapping += node.index to group.ref
@@ -426,6 +432,24 @@ class GlTFImporter {
         }
     }
 
+    private fun transformOf(gltfNode: GltfNode): ITransformation {
+        if (gltfNode.matrix != null) {
+            val joml = gltfNode.matrix.toJOML()
+
+            val pos = joml.getTranslation(Vector3d()).toIVector()
+            val quat = Quaterniond().setFromUnnormalized(joml).toIQuaternion()
+            val scale = joml.getScale(Vector3d()).toIVector()
+
+            return TRSTransformation(pos, quat, scale)
+        }
+
+        return TRSTransformation(
+                gltfNode.translation ?: Vector3.ZERO,
+                gltfNode.rotation ?: Quaternion.IDENTITY,
+                gltfNode.scale ?: Vector3.ONE
+        )
+    }
+
     fun parseObj(data: GLTFParser.ResultMesh, name: String): IObject {
         val meshes: List<IMesh> = data.primitives.map { (_, primData) ->
 
@@ -433,7 +457,7 @@ class GlTFImporter {
                 error("Found mesh without POSITION attribute")
             }
 
-            val vecPos = getPositions(primData).map { it * 16f }
+            val vecPos = getPositions(primData)
             val vecUv = getUv(primData)
             val indices = primData.indices?.let { getIndices(it) } ?: vecPos.indices
 

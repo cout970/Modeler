@@ -14,6 +14,7 @@ import com.cout970.reactive.nodes.div
 import com.cout970.reactive.nodes.selectBox
 import com.cout970.reactive.nodes.style
 import org.liquidengine.legui.component.CheckBox
+import org.liquidengine.legui.component.SelectBox
 import org.liquidengine.legui.component.TextInput
 import org.liquidengine.legui.component.event.checkbox.CheckBoxChangeValueEvent
 import org.liquidengine.legui.component.event.selectbox.SelectBoxChangeSelectionEvent
@@ -108,7 +109,7 @@ class ImportDialog : RComponent<PopupReturnProps, ImportDialogState>() {
 
             childrenAsNodes()
 
-            on<SelectBoxChangeSelectionEvent<DropDown>> {
+            on<SelectBoxChangeSelectionEvent<SelectBox>> {
                 setState { copy(option = options.indexOf(it.newValue)) }
             }
         }

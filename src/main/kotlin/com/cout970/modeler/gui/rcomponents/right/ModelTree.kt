@@ -228,6 +228,9 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
                 posX = 5f + off
                 posY = 5f + index * (sizeY + 2f)
                 classes("model_tree_item")
+                if (props.programState.selectedGroup == group.ref) {
+                    classes("model_tree_selected_group")
+                }
             }
 
             postMount {

@@ -44,7 +44,7 @@ class ProjectManager(
     override val material: IMaterial get() = model.materialMap[selectedMaterial] ?: MaterialNone
 
     override var selectedAnimation: IAnimationRef = AnimationRefNone
-    override val animation: IAnimation get() = model.animationMap.values.firstOrNull() ?: animationOf()
+    override val animation: IAnimation get() = model.animationMap[selectedAnimation] ?: animationOf()
 
     val modelChangeListeners: MutableList<(old: IModel, new: IModel) -> Unit> = mutableListOf()
 
@@ -86,7 +86,7 @@ class ProjectManager(
 
     @Deprecated("Use model mutating tasks instead")
     fun updateAnimation(newAnimation: IAnimation) {
-        model = model.modifyAnimation(newAnimation.ref, newAnimation)
+        updateModel(model.modifyAnimation(newAnimation.ref, newAnimation))
     }
 
     fun loadProjectProperties(aNew: ProjectProperties) {

@@ -80,7 +80,7 @@ class WorldRenderer {
         val channel = acc.selectedChannel ?: return
         val keyframe = acc.selectedKeyframe ?: return
 
-        val key = acc.animation.channels[channel]!!.keyframes[keyframe]
+        val key = acc.animation.channels[channel]?.keyframes?.get(keyframe) ?: return
         val value = key.value as? TRTSTransformation ?: return
 
         val transform = TRSTransformation(translation = value.pivot, scale = Vector3.ONE * 0.25)

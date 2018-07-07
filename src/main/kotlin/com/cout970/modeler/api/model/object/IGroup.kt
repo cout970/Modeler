@@ -1,6 +1,8 @@
 package com.cout970.modeler.api.model.`object`
 
+import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.selection.IObjectRef
+import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.`object`.BiMultimap
 import java.util.*
 
@@ -9,26 +11,33 @@ import java.util.*
 interface IGroup {
     val id: UUID
     val name: String
+    val transform: ITransformation
     val visible: Boolean
 
+    fun withTransform(transform: ITransformation): IGroup
     fun withVisibility(visible: Boolean): IGroup
     fun withName(name: String): IGroup
 }
 
 data class Group(
         override val name: String,
+        override val transform: ITransformation = TRSTransformation.IDENTITY,
         override val visible: Boolean = true,
         override val id: UUID = UUID.randomUUID()
 ) : IGroup {
+
+    override fun withTransform(transform: ITransformation): IGroup = copy(transform = transform)
     override fun withVisibility(visible: Boolean): IGroup = copy(visible = visible)
     override fun withName(name: String): IGroup = copy(name = name)
 }
 
 object GroupNone : IGroup {
     override val id: UUID = RootGroupRef.id
+    override val transform: ITransformation = TRSTransformation.IDENTITY
     override val name: String = "root"
     override val visible: Boolean = true
 
+    override fun withTransform(transform: ITransformation): IGroup = this
     override fun withVisibility(visible: Boolean): IGroup = this
     override fun withName(name: String): IGroup = this
 }
