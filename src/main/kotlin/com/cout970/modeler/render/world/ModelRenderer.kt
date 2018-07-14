@@ -21,6 +21,7 @@ import com.cout970.modeler.core.model.material.ColoredMaterial
 import com.cout970.modeler.core.model.mesh.MeshFactory
 import com.cout970.modeler.core.model.pos
 import com.cout970.modeler.core.model.ref
+import com.cout970.modeler.core.model.selection.ObjectRefNone
 import com.cout970.modeler.render.tool.*
 import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.getColor
@@ -181,7 +182,7 @@ class ModelRenderer {
 
     private fun getRecursiveMatrix(matrixCache: MutableMap<IObjectRef, IMatrix4>, model: IModel, animator: Animator, animation: IAnimation) {
         model.tree.objects[RootGroupRef].forEach { obj ->
-            matrixCache[obj] = animator.animate(animation, RootGroupRef, obj)
+            matrixCache[obj] = model.getObject(obj).transformation.matrix * animator.animate(animation, RootGroupRef, obj)
         }
 
         model.tree.groups[RootGroupRef].forEach {
@@ -192,12 +193,13 @@ class ModelRenderer {
     private fun getRecursiveMatrix(matrixCache: MutableMap<IObjectRef, IMatrix4>, model: IModel,
                                    group: IGroupRef, matrix: IMatrix4, animator: Animator, animation: IAnimation) {
 
+        val mat = model.getGroup(group).transform.matrix * matrix * animator.animate(animation, group, ObjectRefNone)
+
         model.tree.objects[group].forEach { obj ->
-            matrixCache[obj] = matrix * animator.animate(animation, group, obj)
+            matrixCache[obj] = mat * model.getObject(obj).transformation.matrix * animator.animate(animation, group, obj)
         }
 
         model.tree.groups[group].forEach {
-            val mat = model.getGroup(group).transform.matrix * matrix
             getRecursiveMatrix(matrixCache, model, it, mat, animator, animation)
         }
     }

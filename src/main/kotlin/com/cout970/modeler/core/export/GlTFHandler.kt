@@ -414,7 +414,7 @@ class GlTFImporter {
 
         val mesh = node.mesh
         if (mesh != null) {
-            val obj = parseObj(mesh.second, gltfNode.name ?: "Obj")
+            val obj = parseObj(transformOf(gltfNode), mesh.second, gltfNode.name ?: "Obj")
             root.objects += obj.ref
             objs += obj.ref to obj
             nodeMapping += node.index to obj.ref
@@ -433,31 +433,33 @@ class GlTFImporter {
     }
 
     private fun transformOf(gltfNode: GltfNode): ITransformation {
-        if (gltfNode.matrix != null) {
-            val joml = gltfNode.matrix.toJOML()
-
-            val pos = joml.getTranslation(Vector3d()).toIVector()
-            val quat = Quaterniond().setFromUnnormalized(joml).toIQuaternion()
-            val scale = joml.getScale(Vector3d()).toIVector()
-
-            return TRSTransformation(pos, quat, scale)
-        }
-
-        return TRSTransformation(
-                gltfNode.translation ?: Vector3.ZERO,
+        val trans = TRSTransformation(
+                gltfNode.translation?.times(16) ?: Vector3.ZERO,
                 gltfNode.rotation ?: Quaternion.IDENTITY,
                 gltfNode.scale ?: Vector3.ONE
         )
+
+        if (gltfNode.matrix != null) {
+            val joml = gltfNode.matrix.toJOML()
+
+            val pos = joml.getTranslation(Vector3d()).toIVector() * 16
+            val quat = Quaterniond().setFromUnnormalized(joml).toIQuaternion()
+            val scale = joml.getScale(Vector3d()).toIVector()
+
+            return trans.merge(TRSTransformation(pos, quat, scale))
+        }
+
+        return trans
     }
 
-    fun parseObj(data: GLTFParser.ResultMesh, name: String): IObject {
+    fun parseObj(transform: ITransformation, data: GLTFParser.ResultMesh, name: String): IObject {
         val meshes: List<IMesh> = data.primitives.map { (_, primData) ->
 
             if (GltfAttribute.POSITION !in primData.attributes) {
                 error("Found mesh without POSITION attribute")
             }
 
-            val vecPos = getPositions(primData)
+            val vecPos = getPositions(primData).map { it * 16 }
             val vecUv = getUv(primData)
             val indices = primData.indices?.let { getIndices(it) } ?: vecPos.indices
 
@@ -488,7 +490,8 @@ class GlTFImporter {
 
         return Object(
                 name = name,
-                mesh = meshes.reduce { acc, other -> acc.merge(other) }
+                mesh = meshes.parallelStream().reduce { acc, other -> acc.merge(other) }.get(),
+                transformation = transform
         )
     }
 

@@ -54,17 +54,12 @@ class Mesh(
     }
 
     override fun merge(other: IMesh): IMesh {
-        val newPos = (pos + other.pos).distinct()
-        val newTex = (tex + other.tex).distinct()
+        val newPos = (pos + other.pos)
+        val newTex = (tex + other.tex)
 
-        val newFaces = faces.map { face ->
-            val p = face.pos.map { newPos.indexOf(pos[it]) }
-            val t = face.tex.map { newTex.indexOf(tex[it]) }
-
-            FaceIndex(p, t)
-        } + other.faces.map { face ->
-            val p = face.pos.map { newPos.indexOf(other.pos[it]) }
-            val t = face.tex.map { newTex.indexOf(other.tex[it]) }
+        val newFaces = faces + other.faces.map { face ->
+            val p = face.pos.map { it + pos.size }
+            val t = face.tex.map { it + tex.size }
 
             FaceIndex(p, t)
         }

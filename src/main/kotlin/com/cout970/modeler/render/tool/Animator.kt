@@ -56,7 +56,7 @@ class Animator {
     fun animate(anim: IAnimation, group: IGroupRef, obj: IObjectRef): IMatrix4 {
 
         val now = animationTime
-        val activeChannels = anim.channels
+        return anim.channels
                 .filter { it.value.enabled }
                 .filter { (chanRef) ->
                     val target = anim.channelMapping[chanRef]
@@ -68,11 +68,11 @@ class Animator {
                     }
                 }
                 .map { it.value }
-
-        return activeChannels.fold(TRSTransformation.IDENTITY as ITransformation) { acc, c ->
-            val (prev, next) = getPrevAndNext(now, c.keyframes)
-            acc + interpolate(now, prev, next)
-        }.matrix
+                .fold(TRSTransformation.IDENTITY as ITransformation) { acc, c ->
+                    val (prev, next) = getPrevAndNext(now, c.keyframes)
+                    acc + interpolate(now, prev, next)
+                }
+                .matrix
     }
 
     fun interpolate(time: Float, prev: IKeyframe, next: IKeyframe): ITransformation {

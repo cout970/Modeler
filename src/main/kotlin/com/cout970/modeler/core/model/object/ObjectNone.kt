@@ -23,8 +23,11 @@ object ObjectNone : IObject {
     override val id: UUID = UUID.fromString("89672293-60d2-46ea-9b56-46c624dec60a")
     override val name: String = "none"
     override val mesh: IMesh = Mesh()
+    override val transformation: ITransformation = TRSTransformation.IDENTITY
     override val material: IMaterialRef = MaterialRefNone
     override val visible: Boolean = true
+
+    override fun withTransformation(transform: ITransformation): IObject = this
 
     override fun withVisibility(visible: Boolean): IObject = this
 

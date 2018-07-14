@@ -8,7 +8,6 @@ import com.cout970.vector.api.IVector3
  * Created by cout970 on 2017/05/14.
  */
 interface IObjectCube : IObject {
-    val transformation: ITransformation
     val textureOffset: IVector2
     val textureSize: IVector2
 
@@ -17,7 +16,7 @@ interface IObjectCube : IObject {
     fun withSize(size: IVector3): IObjectCube
     fun withPos(pos: IVector3): IObjectCube
 
-    fun withTransformation(transform: ITransformation): IObjectCube
+    override fun withTransformation(transform: ITransformation): IObjectCube
     fun withTextureOffset(tex: IVector2): IObjectCube
     fun withTextureSize(size: IVector2): IObjectCube
 }

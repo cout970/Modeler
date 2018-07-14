@@ -125,7 +125,7 @@ data class ObjectCube(
 
     override fun withTextureSize(size: IVector2): IObjectCube = copy(textureSize = size)
 
-    override fun withMesh(newMesh: IMesh): IObject = Object(name, newMesh, material, visible, id)
+    override fun withMesh(newMesh: IMesh): IObject = Object(name, newMesh, material, TRSTransformation.IDENTITY, visible, id)
 
     override fun withMaterial(materialRef: IMaterialRef): IObject = copy(material = materialRef)
 
