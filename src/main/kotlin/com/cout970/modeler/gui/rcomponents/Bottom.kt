@@ -2,7 +2,7 @@ package com.cout970.modeler.gui.rcomponents
 
 import com.cout970.glutilities.device.Keyboard
 import com.cout970.modeler.api.animation.AnimationState
-import com.cout970.modeler.controller.Dispatcher
+import com.cout970.modeler.controller.dispatcher
 import com.cout970.modeler.core.animation.ref
 import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.gui.event.EventAnimatorUpdate
@@ -28,8 +28,7 @@ data class BottomPanelProps(
         val visible: Boolean,
         val animator: Animator,
         val programState: IProgramState,
-        val input: IInput,
-        val dispatcher: Dispatcher) : RProps
+        val input: IInput) : RProps
 
 class BottomPanel : RStatelessComponent<BottomPanelProps>() {
 
@@ -141,7 +140,7 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
         child(TinyFloatInput::class, TinyFloatInputProps(
                 pos = Vector2f(0f, 4f),
                 getter = { props.animator.animation.timeLength },
-                setter = { props.dispatcher.onEvent("animation.set.length", Panel().apply { metadata["time"] = it }) }
+                setter = { dispatcher.onEvent("animation.set.length", Panel().apply { metadata["time"] = it }) }
         ))
 
         +IconButton("animation.add.keyframe", "add_keyframe", 0f, 3f, 26f, 26f).apply {
@@ -196,7 +195,7 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
                 val selected = event.targetComponent.selectBoxElements.indexOfFirst { it.text == event.newValue }
 
                 if (selected in animations.indices) {
-                    props.dispatcher.onEvent("animation.select", Panel().also {
+                    dispatcher.onEvent("animation.select", Panel().also {
                         it.metadata["animation"] = animations[selected].ref
                     })
                 }
@@ -330,7 +329,7 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
                     height = parent.sizeY - posY
                 }
 
-                onClick { props.dispatcher.onEvent("animation.panel.click", it.targetComponent) }
+                onClick { dispatcher.onEvent("animation.panel.click", it.targetComponent) }
 
                 onScroll(this@BottomPanel::handleScroll)
             }

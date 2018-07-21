@@ -26,6 +26,10 @@ object MeshFactory {
     fun createCube(size: IVector3, offset: IVector3): IMesh {
         val n: IVector3 = offset
         val p: IVector3 = size + offset
+        return createAABB(n, p)
+    }
+
+    fun createAABB(n: IVector3, p: IVector3): IMesh {
 
         val pos = listOf(
                 vec3Of(p.x, n.y, n.z), //0

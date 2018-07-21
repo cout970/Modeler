@@ -5,6 +5,7 @@ import com.cout970.matrix.extensions.Matrix4
 import com.cout970.matrix.extensions.times
 import com.cout970.modeler.api.animation.IAnimation
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.*
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
@@ -44,6 +45,10 @@ fun IObject.getGlobalMesh(model: IModel, animator: Animator, animation: IAnimati
 
 fun IObject.getGlobalMatrix(model: IModel, animator: Animator, animation: IAnimation = animator.animation): IMatrix4 {
     return getRecursiveMatrix(ref, model, animator, animation) ?: Matrix4.IDENTITY
+}
+
+fun IObject.getGlobalTransform(model: IModel): ITransformation {
+    return getRecursiveTransform(ref, model) ?: TRSTransformation.IDENTITY
 }
 
 fun IModel.getSelectionCenter(selection: ISelection, animator: Animator,
@@ -110,6 +115,33 @@ private fun getRecursiveMatrix(ref: IObjectRef, model: IModel, group: IGroupRef,
 
     model.tree.groups[group].forEach {
         val newMat = getRecursiveMatrix(ref, model, it, mat, animator, animation)
+        if (newMat != null) return newMat
+    }
+    return null
+}
+
+private fun getRecursiveTransform(ref: IObjectRef, model: IModel): ITransformation? {
+    model.tree.objects[RootGroupRef].forEach { obj ->
+        if (obj == ref) return model.getObject(obj).transformation
+    }
+
+    model.tree.groups[RootGroupRef].forEach {
+        val mat = getRecursiveTransform(ref, model, it, TRSTransformation.IDENTITY)
+        if (mat != null) return mat
+    }
+    return null
+}
+
+private fun getRecursiveTransform(ref: IObjectRef, model: IModel, group: IGroupRef, matrix: TRSTransformation): ITransformation? {
+
+    val mat = model.getGroup(group).transform + matrix
+
+    model.tree.objects[group].forEach { obj ->
+        if (obj == ref) return mat + model.getObject(obj).transformation
+    }
+
+    model.tree.groups[group].forEach {
+        val newMat = getRecursiveTransform(ref, model, it, mat.toTRS())
         if (newMat != null) return newMat
     }
     return null

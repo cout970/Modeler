@@ -5,7 +5,7 @@ import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.`object`.*
 import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.modeler.controller.Dispatcher
+import com.cout970.modeler.controller.dispatcher
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.model.selection.ObjectRefNone
@@ -37,7 +37,7 @@ import kotlin.math.min
 
 data class Slot(val obj: IObjectRef?, val group: IGroupRef?, val level: Int)
 
-data class ModelTreeProps(val programState: IProgramState, val input: IInput, val dispatcher: Dispatcher) : RProps
+data class ModelTreeProps(val programState: IProgramState, val input: IInput) : RProps
 data class ModelTreeState(val selectedObj: IObjectRef) : RState
 
 
@@ -187,7 +187,7 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
                 postMount {
                     animation?.stopAnimation()
                     val anim = ModelTreeAnimation(props.programState, objectMap,
-                            this, props.input, this@ModelTree::rerender, props.dispatcher)
+                            this, props.input, this@ModelTree::rerender)
 
                     animation = anim.apply { startAnimation() }
                 }
@@ -242,7 +242,7 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
                 hoveredStyle.background.color.set(0f)
             }
 
-            child(ToggleName::class, ToggleName.Props(group, off, props.dispatcher))
+            child(ToggleName::class, ToggleName.Props(group, off))
 
             +IconButton("tree.view.delete.group", "deleteIcon", 222f - off, 0f, 24f, 24f).apply {
                 transparent()
@@ -336,7 +336,7 @@ class ToggleName : RComponent<ToggleName.Props, ToggleName.State>() {
                     metadata += "ref" to props.group.ref
                 }
                 onDoubleClick { setState { copy(hidden = false) } }
-                onClick { props.dispatcher.onEvent("tree.view.select.group", it.targetComponent) }
+                onClick { dispatcher.onEvent("tree.view.select.group", it.targetComponent) }
             }
         } else {
             comp(StringInput("model.group.change.name", props.group.name, 24f, 0f, 172f - props.offset, 24f)) {
@@ -357,11 +357,11 @@ class ToggleName : RComponent<ToggleName.Props, ToggleName.State>() {
     }
 
     data class State(val hidden: Boolean) : RState
-    data class Props(val group: IGroup, val offset: Float, val dispatcher: Dispatcher) : RProps
+    data class Props(val group: IGroup, val offset: Float) : RProps
 }
 
 
-class ModelTreeAnimation(val programState: IProgramState, val objMap: List<Slot>, val component: Component, val input: IInput, val reset: () -> Unit, val dispatcher: Dispatcher) : Animation() {
+class ModelTreeAnimation(val programState: IProgramState, val objMap: List<Slot>, val component: Component, val input: IInput, val reset: () -> Unit) : Animation() {
     var pressTime = 0L
     var unPressTime = 0L
     var selected: Int? = null

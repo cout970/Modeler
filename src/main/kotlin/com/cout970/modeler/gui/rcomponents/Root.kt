@@ -48,14 +48,14 @@ class RootComp : RComponent<RootProps, RootState>() {
                 props.gui.gridLines, props.gui.animator))
 
         child(RightPanel::class, RightPanelProps(state.rightVisible, props.gui.programState,
-                props.gui.state, props.gui.input, props.gui.dispatcher))
+                props.gui.state, props.gui.input))
 
         child(BottomPanel::class, BottomPanelProps(state.bottomVisible, props.gui.animator,
-                props.gui.programState, props.gui.input, props.gui.dispatcher))
+                props.gui.programState, props.gui.input))
 
         child(TopBar::class, ModelAccessorProps(props.gui.programState))
 
-        child(Search::class, SearchProps(props.gui.dispatcher))
+        child(Search::class)
 
         child(PopUp::class, PopUpProps(props.gui.state, props.gui.propertyHolder))
 

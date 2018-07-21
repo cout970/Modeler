@@ -87,3 +87,9 @@ data class TRSTransformation(
         }
     }
 }
+
+fun ITransformation.toTRS() = when (this) {
+    is TRSTransformation -> this
+    is TRTSTransformation -> this.toTRS()
+    else -> error("Type: ${javaClass.name}")
+}

@@ -2,6 +2,7 @@ package com.cout970.modeler.render.world
 
 import com.cout970.glutilities.tessellator.VAO
 import com.cout970.matrix.api.IMatrix4
+import com.cout970.matrix.extensions.Matrix4
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.gui.canvas.cursor.CursorParameters
 import com.cout970.modeler.gui.canvas.tool.CursorMode
@@ -9,6 +10,7 @@ import com.cout970.modeler.render.tool.AutoCache
 import com.cout970.modeler.render.tool.RenderContext
 import com.cout970.modeler.render.tool.createVao
 import com.cout970.modeler.util.rotationTo
+import com.cout970.modeler.util.transform
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.vec3Of
@@ -35,9 +37,9 @@ class ModelCursorRenderer {
         }
 
         val rotation = listOf(
-                base rotationTo cursor.rigthDir,
-                base rotationTo cursor.upDir,
-                base rotationTo cursor.frontDir
+                base rotationTo cursor.rotation.transform(Vector3.X_AXIS),
+                base rotationTo cursor.rotation.transform(Vector3.Y_AXIS),
+                base rotationTo cursor.rotation.transform(Vector3.Z_AXIS)
         )
 
         val model = when (cursor.mode) {
@@ -68,11 +70,19 @@ class ModelCursorRenderer {
             useTexture.setInt(0)
 
             useGlobalColor.setBoolean(true)
-            parts.forEach {
-                matrixM.setMatrix4(it.transform)
-                globalColor.setVector3(it.color)
-                accept(it.model)
+            parts.forEachIndexed { index, p ->
+                matrixM.setMatrix4(p.transform)
+                globalColor.setVector3(p.color)
+                accept(p.model)
+
+                val part = cursor.getParts()[index]
+                val vao = part.calculateHitbox(cursor, ctx.camera, ctx.viewport).createVao(ctx.buffer, vec3Of(1, 1, 1))
+
+                matrixM.setMatrix4(Matrix4.IDENTITY)
+                accept(vao)
+                vao.close()
             }
+
             globalColor.setVector3(Vector3.ONE)
             useGlobalColor.setBoolean(false)
         }

@@ -1,7 +1,7 @@
 package com.cout970.modeler.gui.leguicomp
 
 import com.cout970.glutilities.structure.Timer
-import com.cout970.modeler.controller.Dispatcher
+import com.cout970.modeler.controller.dispatcher
 import com.cout970.modeler.core.config.ColorPalette
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.event.EventGuiCommand
@@ -154,6 +154,5 @@ fun <T : Event<*>> ListenerMap.clear(clazz: Class<T>) {
 }
 
 fun Component.dispatch(str: String) {
-    val dispatcher = metadata["Dispatcher"] as Dispatcher
     dispatcher.onEvent(str, this)
 }

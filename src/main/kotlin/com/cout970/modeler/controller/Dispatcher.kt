@@ -25,21 +25,32 @@ import kotlin.reflect.jvm.kotlinFunction
 /**
  * Created by cout970 on 2017/07/17.
  */
-class Dispatcher : ITickeable {
+
+interface IDispatcher {
+    fun onEvent(key: String, comp: Component?)
+}
+
+lateinit var dispatcher: IDispatcher
+
+class Dispatcher : ITickeable, IDispatcher {
 
     lateinit var state: Program
+
+    init {
+        dispatcher = this
+    }
 
     val dependencyInjector = DependencyInjector()
     val functionUseCases: Map<String, KFunction<*>> = findFunctionUseCases()
 
-    private val sideEffects = Collections.synchronizedList(mutableListOf<Deferred<ITask>>())
+    private val sideEffects = Collections.synchronizedList(mutableListOf<Pair<String, Deferred<ITask>>>())
 
     override fun tick() {
-        sideEffects.removeAll {
-            if (it.isCompleted) {
-                if (it.isCompletedExceptionally) {
-                    val e = it.getCompletionExceptionOrNull()!!
-//                        log(Level.ERROR) { "Unable to run usecase: ${useCase::class.simpleName}, ${useCase.name}, key: $key" }
+        sideEffects.removeAll { (key, job) ->
+            if (job.isCompleted) {
+                if (job.isCompletedExceptionally) {
+                    val e = job.getCompletionExceptionOrNull()!!
+                    log(Level.ERROR) { "Unable to run usecase: $key" }
                     e.print()
                     val cause = e.cause
 
@@ -49,7 +60,7 @@ class Dispatcher : ITickeable {
 
                     NotificationHandler.push(Notification("Internal error", msg))
                 } else {
-                    state.taskHistory.processTask(it.getCompleted())
+                    state.taskHistory.processTask(job.getCompleted())
                 }
                 true
             } else {
@@ -58,7 +69,7 @@ class Dispatcher : ITickeable {
         }
     }
 
-    fun onEvent(key: String, comp: Component?) {
+    override fun onEvent(key: String, comp: Component?) {
         Profiler.startSection("Dispatcher")
         log(Level.FINEST) { "[Dispatcher] Executing: $key" }
 
@@ -67,7 +78,8 @@ class Dispatcher : ITickeable {
         if (useCase == null) {
             log(Level.ERROR) { "[Dispatcher] No UseCase found for $key" }
         } else {
-            sideEffects.add(async(COMPUTE) {
+            val id = "${useCase::class.simpleName}, ${useCase.name}, key: $key"
+            sideEffects.add(id to async(COMPUTE) {
                 dependencyInjector.callUseCase(state, comp, useCase.apply { isAccessible = true })
             })
         }

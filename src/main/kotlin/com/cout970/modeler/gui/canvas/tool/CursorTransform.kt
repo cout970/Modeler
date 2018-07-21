@@ -2,6 +2,8 @@ package com.cout970.modeler.gui.canvas.tool
 
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.selection.ISelection
+import com.cout970.modeler.controller.dispatcher
+import com.cout970.modeler.controller.tasks.TaskUpdateModel
 import com.cout970.modeler.core.helpers.TransformationHelper
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.canvas.Canvas
@@ -12,9 +14,11 @@ import com.cout970.modeler.gui.canvas.helpers.TranslationHelper
 import com.cout970.modeler.gui.canvas.input.Hover
 import com.cout970.modeler.util.quatOfAxisAngled
 import com.cout970.modeler.util.toIVector
+import com.cout970.modeler.util.transform
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.times
 import com.cout970.vector.extensions.unaryMinus
+import org.liquidengine.legui.component.Panel
 
 class DragListener(val gui: Gui) : IDragListener {
 
@@ -31,7 +35,7 @@ class DragListener(val gui: Gui) : IDragListener {
         cursor.getParts().forEach { it.hovered = false }
 
         val targets = cursor.getParts().map { part ->
-            part to part.calculateHitbox(cursor, camera, viewport)
+            part to part.calculateHitbox2(cursor, camera, viewport)
         }
 
         val part = Hover.getHoveredObject3D(context, targets) ?: return
@@ -51,9 +55,9 @@ class DragListener(val gui: Gui) : IDragListener {
     }
 
     override fun onEnd(startMousePos: IVector2, endMousePos: IVector2) {
-        gui.state.tmpModel = null
         helper.cache?.let { cache ->
-            //            run TaskUpdateModel(oldModel = gui.programState.model, newModel = cache)
+            val task = TaskUpdateModel(oldModel = gui.programState.model, newModel = cache)
+            dispatcher.onEvent("run", Panel().apply { metadata["task"] = task })
         }
         helper.cache = null
         gui.state.cursor.update(gui)
@@ -70,18 +74,19 @@ private class CursorTransformHelper {
 
         val oldModel = gui.programState.model
         val modelCache = this.cache ?: oldModel
+        val vector = cursor.rotation.transform(hovered.vector)
 
         val newOffset = when (hovered.mode) {
             CursorMode.TRANSLATION -> {
                 val context = CanvasHelper.getContext(canvas, mouse)
-                TranslationHelper.getOffset(-hovered.vector, canvas, gui.input, context.first, context.second)
+                TranslationHelper.getOffset(-vector, canvas, gui.input, context.first, context.second)
             }
             CursorMode.ROTATION -> {
-                RotationHelper.getOffsetGlobal(cursor.position, hovered.vector, canvas, mouse, gui.input)
+                RotationHelper.getOffsetGlobal(cursor.position, vector, canvas, mouse, gui.input)
             }
             CursorMode.SCALE -> {
                 val context = CanvasHelper.getContext(canvas, mouse)
-                ScaleHelper.getOffset(-hovered.vector, canvas, gui.input, context.first, context.second)
+                ScaleHelper.getOffset(-vector, canvas, gui.input, context.first, context.second)
             }
         }
 
@@ -90,13 +95,13 @@ private class CursorTransformHelper {
 
             val model = when (hovered.mode) {
                 CursorMode.TRANSLATION -> {
-                    TransformationHelper.translate(oldModel, selection, hovered.vector * offset)
+                    TransformationHelper.translate(oldModel, selection, vector * offset)
                 }
                 CursorMode.ROTATION -> {
-                    TransformationHelper.rotate(oldModel, selection, cursor.position, quatOfAxisAngled(hovered.vector, offset))
+                    TransformationHelper.rotate(oldModel, selection, cursor.position, quatOfAxisAngled(vector, offset))
                 }
                 CursorMode.SCALE -> {
-                    TransformationHelper.scale(oldModel, selection, cursor.position, hovered.vector, offset)
+                    TransformationHelper.scale(oldModel, selection, cursor.position, vector, offset)
                 }
             }
 

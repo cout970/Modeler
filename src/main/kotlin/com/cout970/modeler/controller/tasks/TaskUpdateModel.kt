@@ -9,10 +9,12 @@ import com.cout970.modeler.api.model.IModel
 class TaskUpdateModel(val oldModel: IModel, val newModel: IModel) : IUndoableTask {
 
     override fun run(state: Program) {
+        state.gui.state.tmpModel = null
         state.projectManager.updateModel(newModel)
     }
 
     override fun undo(state: Program) {
+        state.gui.state.tmpModel = null
         state.projectManager.updateModel(oldModel)
     }
 }
