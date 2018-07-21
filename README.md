@@ -25,9 +25,29 @@ Valid input formats:
 - TBL: [Tabula model format](https://github.com/iChun/Tabula)
 - JSON: [Minecraft json models](https://minecraft.gamepedia.com/Model)
 - MCX: Custom model format used in [ModeLoader](https://minecraft.curseforge.com/projects/modelloader)
+- GLTF: WIP (mostly supported)
 
 Valid output formats:
 - OBJ: Wavefront .obj file
 - MCX: Custom model format used in [ModeLoader](https://minecraft.curseforge.com/projects/modelloader)
+- GLTF: WIP (only some parts supported)
 
-The formats TCN, TBL and JSON are based in storing objects as cubes with properties, so they don't allow any kind of shape and it's impossible to export to them from OBJ.
+The formats TCN, TBL and JSON are based on storing objects as cubes with properties, they don't allow 
+arbitrary kinds of shapes so it's impossible to export complex models to them.
+
+### Features
+- Free vertex edit capabilities
+- Free UV edit capabilities
+- Translation, rotation and scale
+- Object, face, edge and vertex individual selection
+- Texture import on change
+- Automatic backup creation and removal of old backups
+- Local and global transformation
+- Keyframe based animations
+- Helper grids to align objects
+- Orthographic and projection cameras
+- Multiview up to 4 viewports
+- Skybox background
+- Texture template export
+- Axis Aligned Bounding Box export to text format
+

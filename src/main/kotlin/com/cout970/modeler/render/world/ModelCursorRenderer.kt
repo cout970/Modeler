@@ -29,12 +29,16 @@ class ModelCursorRenderer {
 
         val params = CursorParameters.create(ctx.camera.zoom, ctx.viewport)
 
-        val rotation = when (cursor.mode) {
-            CursorMode.TRANSLATION, CursorMode.SCALE ->
-                listOf(Vector3.X_AXIS rotationTo Vector3.X_AXIS, Vector3.X_AXIS rotationTo Vector3.Y_AXIS, Vector3.X_AXIS rotationTo Vector3.Z_AXIS)
-            else ->
-                listOf(Vector3.Y_AXIS rotationTo Vector3.X_AXIS, Vector3.Y_AXIS rotationTo Vector3.Y_AXIS, Vector3.Y_AXIS rotationTo Vector3.Z_AXIS)
+        val base = when (cursor.mode) {
+            CursorMode.TRANSLATION, CursorMode.SCALE -> Vector3.X_AXIS
+            else -> Vector3.Y_AXIS
         }
+
+        val rotation = listOf(
+                base rotationTo cursor.rigthDir,
+                base rotationTo cursor.upDir,
+                base rotationTo cursor.frontDir
+        )
 
         val model = when (cursor.mode) {
             CursorMode.TRANSLATION -> translationArrow.getOrCreate(ctx) {
@@ -49,7 +53,7 @@ class ModelCursorRenderer {
         }
 
         val parts = cursor.getParts().mapIndexed { index, cursorPart ->
-            CursorPart(model, if (cursorPart.hovered) Vector3.ONE else cursorPart.vector,
+            CursorPart(model, if (cursorPart.hovered) Vector3.ONE else cursorPart.color,
                     TRSTransformation(
                             translation = cursor.position,
                             rotation = rotation[index],

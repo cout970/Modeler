@@ -13,10 +13,7 @@ import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.Vector3
-import com.cout970.vector.extensions.minus
-import com.cout970.vector.extensions.plus
-import com.cout970.vector.extensions.times
+import com.cout970.vector.extensions.*
 
 enum class CursorMode { TRANSLATION, ROTATION, SCALE }
 enum class CursorOrientation { GLOBAL, LOCAL }
@@ -29,11 +26,13 @@ class Cursor3D {
     var mode: CursorMode = CursorMode.TRANSLATION
     var orientation: CursorOrientation = CursorOrientation.GLOBAL
 
-    val upDir: IVector3 = Vector3.Y_AXIS
-    val rigthDir: IVector3 = Vector3.X_AXIS
+    var rigthDir: IVector3 = Vector3.X_AXIS
+    var upDir: IVector3 = Vector3.Y_AXIS
+    val frontDir: IVector3 get() = -(upDir cross rigthDir)
 
     private val parts = CursorMode.values().map { mode ->
-        mode to listOf(Vector3.X_AXIS, Vector3.Y_AXIS, Vector3.Z_AXIS).map { dir -> CursorPart(mode, dir) }
+        val pairs = listOf(rigthDir to Vector3.X_AXIS, upDir to Vector3.Y_AXIS, frontDir to Vector3.Z_AXIS)
+        mode to pairs.map { (dir, color) -> CursorPart(mode, dir, color) }
     }.toMap()
 
     fun getParts(): List<CursorPart> = parts[mode]!!
@@ -51,7 +50,7 @@ class Cursor3D {
     }
 }
 
-data class CursorPart(val mode: CursorMode, val vector: IVector3, var hovered: Boolean = false) {
+data class CursorPart(val mode: CursorMode, val vector: IVector3, val color: IVector3, var hovered: Boolean = false) {
 
     fun calculateHitbox(cursor: Cursor3D, camera: Camera, viewport: IVector2): IRayObstacle {
         val params = CursorParameters.create(camera.zoom, viewport)

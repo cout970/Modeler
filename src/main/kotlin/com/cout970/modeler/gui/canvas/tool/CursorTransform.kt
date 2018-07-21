@@ -14,6 +14,7 @@ import com.cout970.modeler.util.quatOfAxisAngled
 import com.cout970.modeler.util.toIVector
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.times
+import com.cout970.vector.extensions.unaryMinus
 
 class DragListener(val gui: Gui) : IDragListener {
 
@@ -55,6 +56,7 @@ class DragListener(val gui: Gui) : IDragListener {
             //            run TaskUpdateModel(oldModel = gui.programState.model, newModel = cache)
         }
         helper.cache = null
+        gui.state.cursor.update(gui)
     }
 }
 
@@ -72,14 +74,14 @@ private class CursorTransformHelper {
         val newOffset = when (hovered.mode) {
             CursorMode.TRANSLATION -> {
                 val context = CanvasHelper.getContext(canvas, mouse)
-                TranslationHelper.getOffset(hovered.vector, canvas, gui.input, context.first, context.second)
+                TranslationHelper.getOffset(-hovered.vector, canvas, gui.input, context.first, context.second)
             }
             CursorMode.ROTATION -> {
                 RotationHelper.getOffsetGlobal(cursor.position, hovered.vector, canvas, mouse, gui.input)
             }
             CursorMode.SCALE -> {
                 val context = CanvasHelper.getContext(canvas, mouse)
-                ScaleHelper.getOffset(hovered.vector, canvas, gui.input, context.first, context.second)
+                ScaleHelper.getOffset(-hovered.vector, canvas, gui.input, context.first, context.second)
             }
         }
 
