@@ -75,37 +75,37 @@ fun IMesh.getEdgeHit(ray: Ray, a: Int, b: Int): RayTraceResult? =
 fun IMesh.getVertexHit(ray: Ray, a: Int): RayTraceResult? =
         RayTraceUtil.rayTraceBox3(pos[a] - vec3Of(0.25), pos[a] + vec3Of(0.25), ray, FakeRayObstacle)
 
-fun IObject.toRayObstacle(): IRayObstacle {
+fun IMesh.toRayObstacle(): IRayObstacle {
     return object : IRayObstacle {
         override fun rayTrace(ray: Ray): RayTraceResult? = getHits(ray).getClosest(ray)
     }
 }
 
-fun IObject.getFaceRayObstacles(objRef: IObjectRef): List<Pair<IRayObstacle, IRef>> {
-    return mesh.faces.mapIndexed { ref, faceIndex ->
+fun IMesh.getFaceRayObstacles(objRef: IObjectRef): List<Pair<IRayObstacle, IRef>> {
+    return faces.mapIndexed { ref, faceIndex ->
         object : IRayObstacle {
-            override fun rayTrace(ray: Ray): RayTraceResult? = mesh.getFaceHit(ray, faceIndex)
+            override fun rayTrace(ray: Ray): RayTraceResult? = getFaceHit(ray, faceIndex)
         } to objRef.toFaceRef(ref)
     }
 }
 
-fun IObject.getEdgeRayObstacles(objRef: IObjectRef): List<Pair<IRayObstacle, IRef>> {
-    return mesh.faces.flatMap { f ->
+fun IMesh.getEdgeRayObstacles(objRef: IObjectRef): List<Pair<IRayObstacle, IRef>> {
+    return faces.flatMap { f ->
 
         (0 until f.vertexCount).map { index ->
             val next = (index + 1) % f.vertexCount
 
             object : IRayObstacle {
-                override fun rayTrace(ray: Ray): RayTraceResult? = mesh.getEdgeHit(ray, f.pos[index], f.pos[next])
+                override fun rayTrace(ray: Ray): RayTraceResult? = getEdgeHit(ray, f.pos[index], f.pos[next])
             } to objRef.toEdgeRef(f.pos[index], f.pos[next])
         }
     }
 }
 
-fun IObject.getVertexRayObstacles(objRef: IObjectRef): List<Pair<IRayObstacle, IRef>> {
-    return mesh.pos.mapIndexed { index, _ ->
+fun IMesh.getVertexRayObstacles(objRef: IObjectRef): List<Pair<IRayObstacle, IRef>> {
+    return pos.mapIndexed { index, _ ->
         object : IRayObstacle {
-            override fun rayTrace(ray: Ray): RayTraceResult? = mesh.getVertexHit(ray, index)
+            override fun rayTrace(ray: Ray): RayTraceResult? = getVertexHit(ray, index)
         } to objRef.toPosRef(index)
     }
 }

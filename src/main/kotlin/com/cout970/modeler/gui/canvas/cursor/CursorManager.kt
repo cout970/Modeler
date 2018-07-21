@@ -6,10 +6,7 @@ import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.controller.ITaskProcessor
 import com.cout970.modeler.core.helpers.PickupHelper
 import com.cout970.modeler.core.log.Profiler
-import com.cout970.modeler.core.model.edges
-import com.cout970.modeler.core.model.faces
 import com.cout970.modeler.core.model.getSelectedObjects
-import com.cout970.modeler.core.model.pos
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.canvas.Canvas
 import com.cout970.modeler.gui.canvas.ISelectable
@@ -74,16 +71,6 @@ class CursorManager {
             textureCursor = cursorDrag.currentCursor
         } else {
             modelCursor = cursorDrag.currentCursor
-
-
-            val newCursor = cursorDrag.currentCursor
-
-            if (newCursor == null) {
-                gui.state.cursor.visible = false
-            } else {
-                gui.state.cursor.visible = true
-                gui.state.cursor.position = newCursor.center
-            }
         }
 
         gui.state.run {
@@ -151,32 +138,33 @@ class CursorManager {
     }
 
     fun getModelCursor(model: IModel, selection: ISelection): Cursor? {
-        return when (selection.selectionType) {
-            SelectionType.OBJECT -> model.getSelectedObjects(selection)
-                    .map { it.getCenter() }
-                    .middle()
-
-            SelectionType.FACE -> selection.faces
-                    .map { model.getObject(it.toObjectRef()) to it.faceIndex }
-                    .map { (obj, index) ->
-                        obj.mesh.faces[index]
-                                .pos
-                                .mapNotNull { obj.mesh.pos.getOrNull(it) }
-                                .middle()
-                    }
-                    .middle()
-
-            SelectionType.EDGE -> selection.edges
-                    .map { model.getObject(it.toObjectRef()) to it }
-                    .flatMap { (obj, ref) -> listOf(obj.mesh.pos[ref.firstIndex], obj.mesh.pos[ref.secondIndex]) }
-                    .middle()
-
-            SelectionType.VERTEX -> selection.pos
-                    .map { model.getObject(it.toObjectRef()).mesh.pos[it.posIndex] }
-                    .middle()
-
-        }.let { middle ->
-            if (!middle.hasNaN()) Cursor(middle) else null
-        }
+//        return when (selection.selectionType) {
+//            SelectionType.OBJECT -> model.getSelectedObjects(selection)
+//                    .map { it.getCenter() }
+//                    .middle()
+//
+//            SelectionType.FACE -> selection.faces
+//                    .map { model.getObject(it.toObjectRef()) to it.faceIndex }
+//                    .map { (obj, index) ->
+//                        obj.mesh.faces[index]
+//                                .pos
+//                                .mapNotNull { obj.mesh.pos.getOrNull(it) }
+//                                .middle()
+//                    }
+//                    .middle()
+//
+//            SelectionType.EDGE -> selection.edges
+//                    .map { model.getObject(it.toObjectRef()) to it }
+//                    .flatMap { (obj, ref) -> listOf(obj.mesh.pos[ref.firstIndex], obj.mesh.pos[ref.secondIndex]) }
+//                    .middle()
+//
+//            SelectionType.VERTEX -> selection.pos
+//                    .map { model.getObject(it.toObjectRef()).mesh.pos[it.posIndex] }
+//                    .middle()
+//
+//        }.let { middle ->
+//            if (!middle.hasNaN()) Cursor(middle) else null
+//        }
+        return null
     }
 }

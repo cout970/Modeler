@@ -1,5 +1,6 @@
 package com.cout970.modeler.core.model.mesh
 
+import com.cout970.matrix.api.IMatrix4
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
@@ -36,6 +37,17 @@ class Mesh(
         return Mesh(
                 pos = pos.map {
                     matrix.transform(Vector4d(it.xd, it.yd, it.zd, 1.0))
+                }.map { vec3Of(it.x, it.y, it.z) },
+                tex = tex,
+                faces = faces
+        )
+    }
+
+    override fun transform(matrix: IMatrix4): IMesh {
+        val mat = matrix.toJOML()
+        return Mesh(
+                pos = pos.map {
+                    mat.transform(Vector4d(it.xd, it.yd, it.zd, 1.0))
                 }.map { vec3Of(it.x, it.y, it.z) },
                 tex = tex,
                 faces = faces

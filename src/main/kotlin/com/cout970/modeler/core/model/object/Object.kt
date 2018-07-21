@@ -8,7 +8,6 @@ import com.cout970.modeler.api.model.transformer.IObjectTransformer
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.mesh.Mesh
-import com.cout970.modeler.util.middle
 import com.cout970.modeler.util.scale
 import com.cout970.modeler.util.toAxisRotations
 import com.cout970.vector.api.IQuaternion
@@ -31,8 +30,6 @@ data class Object(
 
     @Suppress("unused")
     private constructor() : this("", Mesh())
-
-    override fun getCenter(): IVector3 = mesh.middle()
 
     override fun withTransformation(transform: ITransformation): IObject = copy(transformation = transform)
 

@@ -8,9 +8,11 @@ import com.cout970.modeler.api.model.selection.IRef
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.core.collision.TexturePolygon
+import com.cout970.modeler.core.model.getGlobalMesh
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.gui.canvas.Canvas
+import com.cout970.modeler.render.tool.Animator
 import com.cout970.modeler.util.*
 import com.cout970.raytrace.IRayObstacle
 import com.cout970.raytrace.Ray
@@ -21,9 +23,9 @@ import org.joml.Vector3d
 
 object PickupHelper {
 
-    fun pickup3D(canvas: Canvas, absPos: IVector2, model: IModel, type: SelectionType): Pair<RayTraceResult, IRef>? {
+    fun pickup3D(canvas: Canvas, absPos: IVector2, model: IModel, type: SelectionType, animator: Animator): Pair<RayTraceResult, IRef>? {
         val ray = getMouseRayAbsolute(canvas, absPos)
-        val obstacles = getModelObstacles(model, type)
+        val obstacles = getModelObstacles(model, type, animator)
         return getFirstCollision(ray, obstacles)
     }
 
@@ -65,14 +67,22 @@ object PickupHelper {
         return res.getClosest(ray)
     }
 
-    fun getModelObstacles(model: IModel, type: SelectionType): List<Pair<IRayObstacle, IRef>> {
+    fun getModelObstacles(model: IModel, type: SelectionType, animator: Animator): List<Pair<IRayObstacle, IRef>> {
         val objs = model.objectMap.toList().filter { it.second.visible }
 
         return when (type) {
-            SelectionType.OBJECT -> objs.map { (ref, obj) -> obj.toRayObstacle() to ref }
-            SelectionType.FACE -> objs.flatMap { (ref, obj) -> obj.getFaceRayObstacles(ref) }
-            SelectionType.EDGE -> objs.flatMap { (ref, obj) -> obj.getEdgeRayObstacles(ref) }
-            SelectionType.VERTEX -> objs.flatMap { (ref, obj) -> obj.getVertexRayObstacles(ref) }
+            SelectionType.OBJECT -> objs.map { (ref, obj) ->
+                obj.getGlobalMesh(model, animator).toRayObstacle() to ref
+            }
+            SelectionType.FACE -> objs.flatMap { (ref, obj) ->
+                obj.getGlobalMesh(model, animator).getFaceRayObstacles(ref)
+            }
+            SelectionType.EDGE -> objs.flatMap { (ref, obj) ->
+                obj.getGlobalMesh(model, animator).getEdgeRayObstacles(ref)
+            }
+            SelectionType.VERTEX -> objs.flatMap { (ref, obj) ->
+                obj.getGlobalMesh(model, animator).getVertexRayObstacles(ref)
+            }
         }
     }
 

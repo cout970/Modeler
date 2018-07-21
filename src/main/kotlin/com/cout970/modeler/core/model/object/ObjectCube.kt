@@ -12,7 +12,6 @@ import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.mesh.MeshFactory
-import com.cout970.modeler.util.middle
 import com.cout970.modeler.util.toAxisRotations
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
@@ -104,8 +103,6 @@ data class ObjectCube(
                 vec2Of(offsetX + length + width + length, offsetY + length + height) * texelSize
         )
     }
-
-    override fun getCenter(): IVector3 = mesh.middle()
 
     override fun withVisibility(visible: Boolean): IObject = copy(visible = visible)
 

@@ -13,7 +13,6 @@ import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.Vector2
-import com.cout970.vector.extensions.Vector3
 import java.util.*
 
 /**
@@ -52,7 +51,6 @@ object ObjectNone : IObject {
                                   offset: Float): IObject = this@ObjectNone
     }
 
-    override fun getCenter(): IVector3 = Vector3.ORIGIN
 }
 
 object ObjectCubeNone : IObjectCube {
@@ -98,5 +96,4 @@ object ObjectCubeNone : IObjectCube {
                                   offset: Float): IObject = this@ObjectCubeNone
     }
 
-    override fun getCenter(): IVector3 = Vector3.ORIGIN
 }

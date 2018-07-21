@@ -14,7 +14,6 @@ import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.helpers.PickupHelper
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.gui.Gui
-import com.cout970.modeler.gui.GuiState
 import com.cout970.modeler.gui.canvas.Canvas
 import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.gui.canvas.helpers.CanvasHelper
@@ -70,12 +69,12 @@ private fun setIsometricCamera(canvasContainer: CanvasContainer): ITask {
 }
 
 @UseCase("canvas.jump.camera")
-private fun jumpCameraToCanvas(component: Component, state: GuiState, input: IInput, model: IModel): ITask {
-    if (state.hoveredObject != null) return TaskNone
+private fun jumpCameraToCanvas(component: Component, gui: Gui, input: IInput, model: IModel): ITask {
+    if (gui.state.hoveredObject != null) return TaskNone
 
     val canvas = component as Canvas
     val pos = input.mouse.getMousePos()
-    val (result, _) = PickupHelper.pickup3D(canvas, pos, model, SelectionType.OBJECT) ?: return TaskNone
+    val (result, _) = PickupHelper.pickup3D(canvas, pos, model, SelectionType.OBJECT, gui.animator) ?: return TaskNone
 
     return ModifyGui { canvas.cameraHandler.setPosition(-result.hit) }
 }
@@ -98,7 +97,7 @@ private fun onModel(canvas: Canvas, gui: Gui, input: IInput): ITask {
     val multiSelection = Config.keyBindings.multipleSelection.check(input)
     val (model, selection) = gui.programState
     val pos = input.mouse.getMousePos()
-    val obj = PickupHelper.pickup3D(canvas, pos, model, gui.state.selectionType)?.second
+    val obj = PickupHelper.pickup3D(canvas, pos, model, gui.state.selectionType, gui.animator)?.second
 
     val newSelection = gui.programState.modelSelectionHandler.updateSelection(
             selection.toNullable(),

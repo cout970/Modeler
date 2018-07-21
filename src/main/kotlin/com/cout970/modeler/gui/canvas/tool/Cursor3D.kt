@@ -1,13 +1,6 @@
 package com.cout970.modeler.gui.canvas.tool
 
-import com.cout970.modeler.api.model.IModel
-import com.cout970.modeler.api.model.selection.ISelection
-import com.cout970.modeler.api.model.selection.SelectionType
-import com.cout970.modeler.api.model.selection.toObjectRef
-import com.cout970.modeler.core.model.edges
-import com.cout970.modeler.core.model.faces
-import com.cout970.modeler.core.model.getSelectedObjects
-import com.cout970.modeler.core.model.pos
+import com.cout970.modeler.core.model.getSelectionCenter
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.canvas.cursor.AABBObstacle
 import com.cout970.modeler.gui.canvas.cursor.CursorParameters
@@ -15,7 +8,6 @@ import com.cout970.modeler.render.tool.camera.Camera
 import com.cout970.modeler.util.RenderUtil
 import com.cout970.modeler.util.getClosest
 import com.cout970.modeler.util.getHits
-import com.cout970.modeler.util.middle
 import com.cout970.raytrace.IRayObstacle
 import com.cout970.raytrace.Ray
 import com.cout970.raytrace.RayTraceResult
@@ -54,34 +46,7 @@ class Cursor3D {
             visible = false
         } else {
             visible = true
-            position = getCenter(model, sel.getNonNull())
-        }
-    }
-
-    private fun getCenter(model: IModel, selection: ISelection): IVector3 {
-        return when (selection.selectionType) {
-            SelectionType.OBJECT -> model.getSelectedObjects(selection)
-                    .map { it.getCenter() }
-                    .middle()
-
-            SelectionType.FACE -> selection.faces
-                    .map { model.getObject(it.toObjectRef()) to it.faceIndex }
-                    .map { (obj, index) ->
-                        obj.mesh.faces[index]
-                                .pos
-                                .mapNotNull { obj.mesh.pos.getOrNull(it) }
-                                .middle()
-                    }
-                    .middle()
-
-            SelectionType.EDGE -> selection.edges
-                    .map { model.getObject(it.toObjectRef()) to it }
-                    .flatMap { (obj, ref) -> listOf(obj.mesh.pos[ref.firstIndex], obj.mesh.pos[ref.secondIndex]) }
-                    .middle()
-
-            SelectionType.VERTEX -> selection.pos
-                    .map { model.getObject(it.toObjectRef()).mesh.pos[it.posIndex] }
-                    .middle()
+            position = model.getSelectionCenter(sel.getNonNull(), gui.animator)
         }
     }
 }

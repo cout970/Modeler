@@ -13,13 +13,11 @@ import com.cout970.modeler.gui.canvas.input.Hover
 import com.cout970.modeler.util.quatOfAxisAngled
 import com.cout970.modeler.util.toIVector
 import com.cout970.vector.api.IVector2
-import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.times
 
 class DragListener(val gui: Gui) : IDragListener {
 
     private val helper = CursorTransformHelper()
-    private var startPos: IVector3? = null
 
     override fun onNoDrag() {
         val mousePos = gui.input.mouse.getMousePos()
@@ -51,18 +49,12 @@ class DragListener(val gui: Gui) : IDragListener {
         cursor.update(gui)
     }
 
-    override fun onStart(startMousePos: IVector2) {
-        startPos = gui.state.cursor.position
-    }
-
     override fun onEnd(startMousePos: IVector2, endMousePos: IVector2) {
         gui.state.tmpModel = null
         helper.cache?.let { cache ->
             //            run TaskUpdateModel(oldModel = gui.programState.model, newModel = cache)
         }
         helper.cache = null
-        startPos?.let { gui.state.cursor.position = it }
-        startPos = null
     }
 }
 
