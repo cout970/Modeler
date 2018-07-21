@@ -2,14 +2,20 @@ package com.cout970.modeler.controller
 
 import com.cout970.modeler.Program
 import com.cout970.modeler.controller.injection.DependencyInjector
+import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.usecases.UseCase
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
+import com.cout970.modeler.gui.COMPUTE
 import com.cout970.modeler.gui.event.Notification
 import com.cout970.modeler.gui.event.NotificationHandler
+import com.cout970.modeler.util.ITickeable
+import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.experimental.async
 import org.liquidengine.legui.component.Component
+import java.util.*
 import kotlin.reflect.KFunction
 import kotlin.reflect.KVisibility
 import kotlin.reflect.jvm.isAccessible
@@ -19,13 +25,54 @@ import kotlin.reflect.jvm.kotlinFunction
 /**
  * Created by cout970 on 2017/07/17.
  */
-class Dispatcher {
+class Dispatcher : ITickeable {
 
     lateinit var state: Program
 
     val dependencyInjector = DependencyInjector()
     val functionUseCases: Map<String, KFunction<*>> = findFunctionUseCases()
 
+    private val sideEffects = Collections.synchronizedList(mutableListOf<Deferred<ITask>>())
+
+    override fun tick() {
+        sideEffects.removeAll {
+            if (it.isCompleted) {
+                if (it.isCompletedExceptionally) {
+                    val e = it.getCompletionExceptionOrNull()!!
+//                        log(Level.ERROR) { "Unable to run usecase: ${useCase::class.simpleName}, ${useCase.name}, key: $key" }
+                    e.print()
+                    val cause = e.cause
+
+                    val msg = if (cause != null)
+                        cause.message ?: cause::class.java.simpleName
+                    else e.message ?: e::class.java.simpleName
+
+                    NotificationHandler.push(Notification("Internal error", msg))
+                } else {
+                    state.taskHistory.processTask(it.getCompleted())
+                }
+                true
+            } else {
+                false
+            }
+        }
+    }
+
+    fun onEvent(key: String, comp: Component?) {
+        Profiler.startSection("Dispatcher")
+        log(Level.FINEST) { "[Dispatcher] Executing: $key" }
+
+        val useCase = functionUseCases[key]
+
+        if (useCase == null) {
+            log(Level.ERROR) { "[Dispatcher] No UseCase found for $key" }
+        } else {
+            sideEffects.add(async(COMPUTE) {
+                dependencyInjector.callUseCase(state, comp, useCase.apply { isAccessible = true })
+            })
+        }
+        Profiler.endSection()
+    }
 
     private fun findFunctionUseCases(): Map<String, KFunction<*>> {
         log(Level.FINE) { "[Dispatcher] Searching UseCases with reflection..." }
@@ -61,34 +108,5 @@ class Dispatcher {
         functionUseCases.forEach { _, func ->
             dependencyInjector.checkUseCaseArguments(state, func)
         }
-    }
-
-    fun onEvent(key: String, comp: Component?) {
-        Profiler.startSection("Dispatcher")
-        log(Level.FINEST) { "[Dispatcher] Executing: $key" }
-
-        val useCase = functionUseCases[key]
-
-        if (useCase == null) {
-            log(Level.ERROR) { "[Dispatcher] No UseCase found for $key" }
-        } else {
-            try {
-                Profiler.startSection(key)
-                val task = dependencyInjector.callUseCase(state, comp, useCase.apply { isAccessible = true })
-                Profiler.endSection()
-                state.taskHistory.processTask(task)
-            } catch (e: Exception) {
-                log(Level.ERROR) { "Unable to run usecase: ${useCase::class.simpleName}, ${useCase.name}, key: $key" }
-                e.print()
-                val cause = e.cause
-
-                val msg = if (cause != null)
-                    cause.message ?: cause::class.java.simpleName
-                else e.message ?: e::class.java.simpleName
-
-                NotificationHandler.push(Notification("Internal error", msg))
-            }
-        }
-        Profiler.endSection()
     }
 }

@@ -76,7 +76,7 @@ class Initializer {
 
         log(Level.FINE) { "Creating Loop" }
         val mainLoop = Loop(
-                listOf(eventController, gui.listeners, renderManager, windowHandler, futureExecutor, autoRunner,
+                listOf(eventController, gui.listeners, renderManager, windowHandler, futureExecutor, autoRunner, gui.dispatcher,
                         Profiler),
                 timer, windowHandler::shouldClose)
 

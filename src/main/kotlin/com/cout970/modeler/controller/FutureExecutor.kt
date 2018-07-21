@@ -22,24 +22,30 @@ class FutureExecutor : ITickeable, IFutureExecutor {
     private val queue = LinkedList<Pair<ITask, (Program) -> Unit>>()
 
     override fun doTask(task: ITask) {
-        queue.add(task to task::run)
+        synchronized(queue) {
+            queue.add(task to task::run)
+        }
     }
 
     override fun undoTask(task: IUndoableTask) {
-        queue.add(task to task::undo)
+        synchronized(queue) {
+            queue.add(task to task::undo)
+        }
     }
 
     override fun tick() = Unit
 
     override fun postTick() {
         Profiler.startSection("runTasks")
-        if (queue.isNotEmpty()) {
-            var index = 0
-            while (queue.isNotEmpty()) {
-                val (task, func) = queue.poll()
-                Profiler.startSection("""${task.javaClass.simpleName}${index++}""")
-                func.invoke(programState)
-                Profiler.endSection()
+        synchronized(queue) {
+            if (queue.isNotEmpty()) {
+                var index = 0
+                while (queue.isNotEmpty()) {
+                    val (task, func) = queue.poll()
+                    Profiler.startSection("""${task.javaClass.simpleName}${index++}""")
+                    func.invoke(programState)
+                    Profiler.endSection()
+                }
             }
         }
         Profiler.endSection()

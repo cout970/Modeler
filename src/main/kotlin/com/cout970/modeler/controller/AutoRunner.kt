@@ -12,6 +12,8 @@ import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.resource.ResourceLoader
+import com.cout970.modeler.gui.COMPUTE
+import com.cout970.modeler.gui.runAsync
 import com.cout970.modeler.util.ITickeable
 
 /**
@@ -34,8 +36,9 @@ class AutoRunner(
 
     override fun tick() {
 
-        if(enableBackups){
-            BackupManager.update(Config.backupPath, exportManager, projectManager)
+        if (enableBackups) {
+            val save = projectManager.toProgramSave(false)
+            COMPUTE.runAsync { BackupManager.update(Config.backupPath, exportManager, save) }
         }
         if (enableAutoExport) {
             Profiler.startSection("autoExport")

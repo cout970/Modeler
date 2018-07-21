@@ -12,6 +12,8 @@ import com.cout970.modeler.core.animation.AnimationRefNone
 import com.cout970.modeler.core.animation.animationOf
 import com.cout970.modeler.core.animation.ref
 import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.core.export.ExportManager
+import com.cout970.modeler.core.export.ProgramSave
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.MaterialRefNone
@@ -92,4 +94,12 @@ class ProjectManager(
     fun loadProjectProperties(aNew: ProjectProperties) {
         projectProperties = aNew
     }
+
+    fun toProgramSave(saveImages: Boolean) = ProgramSave(
+            ExportManager.CURRENT_SAVE_VERSION,
+            projectProperties,
+            model,
+            animation,
+            if (saveImages) materialPaths else emptyList()
+    )
 }

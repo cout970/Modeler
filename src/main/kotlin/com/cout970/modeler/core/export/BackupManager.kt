@@ -5,7 +5,6 @@ import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
-import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.util.createParentsIfNeeded
 import com.google.common.collect.HashMultimap
 import java.io.File
@@ -20,7 +19,7 @@ object BackupManager {
     private var count = 0
     private val FILENAME_LEVEL_REGEX = """Backup_(\d+)_.*""".toRegex()
 
-    fun update(path: String, exportManager: ExportManager, projectManager: ProjectManager) {
+    fun update(path: String, exportManager: ExportManager, save: ProgramSave) {
         val now = System.currentTimeMillis()
 
         // Wait for the time to make the backup
@@ -28,16 +27,16 @@ object BackupManager {
             lastTick = now
 
             // Only make a new backup if there are changes in the model from the last backup
-            val modelHash = projectManager.model.hashCode()
+            val modelHash = save.model.hashCode()
             if (hash != modelHash) {
                 hash = modelHash
 
-                val projectName = projectManager.projectProperties.name
+                val projectName = save.projectProperties.name
                 val finalPath = "$path/$projectName"
 
                 try {
                     log(Level.NORMAL) { "Creating backup..." }
-                    makeBackup(finalPath, getLevel(count), exportManager, projectManager)
+                    makeBackup(finalPath, getLevel(count), exportManager, save)
                     count++
                     log(Level.NORMAL) { "Backup done" }
                 } catch (e: Exception) {
@@ -93,12 +92,12 @@ object BackupManager {
         return "Backup_${level}_${Instant.now().toString().replace("""[^a-zA-Z0-9.\-]""".toRegex(), "_")}.pff"
     }
 
-    private fun makeBackup(path: String, level: Int, exportManager: ExportManager, projectManager: ProjectManager) {
+    private fun makeBackup(path: String, level: Int, exportManager: ExportManager, save: ProgramSave) {
         File(path).createParentsIfNeeded(true)
         val finalPath = "$path/${getBackupName(level)}"
 
         try {
-            exportManager.saveProject(PathConstants.LAST_BACKUP_FILE_PATH, projectManager, false)
+            exportManager.saveProject(PathConstants.LAST_BACKUP_FILE_PATH, save)
             Files.copy(File(PathConstants.LAST_BACKUP_FILE_PATH).toPath(), File(finalPath).toPath())
             log(Level.NORMAL) { "Backup saved at ${File(finalPath).absolutePath}" }
         } catch (e: Throwable) {
