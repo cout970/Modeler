@@ -1,6 +1,10 @@
 package com.cout970.modeler.gui.rcomponents
 
 import com.cout970.modeler.api.model.selection.SelectionType
+import com.cout970.modeler.controller.dispatcher
+import com.cout970.modeler.gui.Gui
+import com.cout970.modeler.gui.canvas.tool.Cursor3D
+import com.cout970.modeler.gui.canvas.tool.CursorOrientation
 import com.cout970.modeler.gui.event.EventModelUpdate
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.gui.rcomponents.left.ModelAccessorProps
@@ -13,7 +17,9 @@ import com.cout970.reactive.nodes.div
 import com.cout970.reactive.nodes.style
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 
-class TopBar : RStatelessComponent<ModelAccessorProps>() {
+data class TopBarProps(val gui: Gui) : RProps
+
+class TopBar : RStatelessComponent<TopBarProps>() {
 
     override fun RBuilder.render() = div("TopBar") {
         style {
@@ -75,7 +81,8 @@ class TopBar : RStatelessComponent<ModelAccessorProps>() {
         }
 
         child(SelectionTypeBar::class)
-        child(ModelStatistics::class, ModelAccessorProps(props.access))
+        child(CursorOrientationBar::class, CursorOrientationProps(props.gui.state.cursor))
+        child(ModelStatistics::class, ModelAccessorProps(props.gui.programState))
     }
 }
 
@@ -133,6 +140,40 @@ class SelectionTypeBar : RComponent<EmptyProps, SelectionTypeState>() {
         PropertyManager.findProperty("SelectionType")
                 ?.let { it as IPropertyBind<SelectionType> }
                 ?.set(newType)
+    }
+}
+
+data class CursorOrientationProps(val cursor: Cursor3D) : RProps
+
+class CursorOrientationBar : RStatelessComponent<CursorOrientationProps>() {
+
+    override fun RBuilder.render() = div("CursorOrientationBar") {
+        style {
+            classes("cursor_orientation_bar")
+            posX = 432f + 10f + 143f + 8f + 8f
+            posY = 5f
+            width = 64f + 14f
+            height = 40f
+        }
+
+        val firstButton = props.cursor.orientation == CursorOrientation.LOCAL
+        val secondButton = props.cursor.orientation == CursorOrientation.GLOBAL
+
+        +ToggleButton("", "selection_mode_object", firstButton, 4f, 4f, 32f, 32f).apply {
+            tooltip = InstantTooltip("Cursor orientation: Local")
+            borderless()
+            onClick { dispatcher.onEvent("cursor.set.orientation.local", null) }
+        }
+
+        +ToggleButton("", "selection_mode_face", secondButton, 32f + 5f + 4f, 4f, 32f, 32f).apply {
+            tooltip = InstantTooltip("Cursor orientation: Global")
+            borderless()
+            onClick { dispatcher.onEvent("cursor.set.orientation.global", null) }
+        }
+
+        onCmd("updateCursorOrientation") {
+            rerender()
+        }
     }
 }
 

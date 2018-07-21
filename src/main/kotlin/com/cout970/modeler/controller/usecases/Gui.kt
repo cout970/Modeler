@@ -9,6 +9,7 @@ import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.canvas.CanvasManager
 import com.cout970.modeler.gui.canvas.cursor.CursorManager
 import com.cout970.modeler.gui.canvas.tool.CursorMode
+import com.cout970.modeler.gui.canvas.tool.CursorOrientation
 import com.cout970.vector.extensions.unaryMinus
 
 /**
@@ -59,6 +60,20 @@ private fun setCursorModeRotation(): ITask = ModifyGui { it.state.cursor.mode = 
 
 @UseCase("cursor.set.mode.scale")
 private fun setCursorModeScale(): ITask = ModifyGui { it.state.cursor.mode = CursorMode.SCALE }
+
+@UseCase("cursor.set.orientation.local")
+private fun setCursorOrientationLocal(): ITask = ModifyGui {
+    it.state.cursor.orientation = CursorOrientation.LOCAL
+    it.state.cursor.update(it)
+    it.listeners.runGuiCommand("updateCursorOrientation")
+}
+
+@UseCase("cursor.set.orientation.global")
+private fun setCursorOrientationGlobal(): ITask = ModifyGui {
+    it.state.cursor.orientation = CursorOrientation.GLOBAL
+    it.state.cursor.update(it)
+    it.listeners.runGuiCommand("updateCursorOrientation")
+}
 
 @UseCase("camera.move.to.cursor")
 private fun moveCameraToCursor(canvasManager: CanvasManager, cursorManager: CursorManager, gui: Gui): ITask {

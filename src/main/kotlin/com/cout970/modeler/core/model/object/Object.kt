@@ -47,13 +47,13 @@ data class Object(
 
     override val transformer: IObjectTransformer = object : IObjectTransformer {
         override fun translate(obj: IObject, translation: IVector3): IObject {
-            return copy(mesh = mesh.transform(TRSTransformation(translation)))
+            return copy(transformation = transformation + TRSTransformation(translation))
         }
 
         override fun rotate(obj: IObject, pivot: IVector3, rot: IQuaternion): IObject {
-            return copy(mesh = mesh.transform(
-                    TRSTransformation.fromRotationPivot(pivot,
-                            rot.toAxisRotations())))
+            return copy(transformation = transformation + TRSTransformation.fromRotationPivot(
+                    pivot, rot.toAxisRotations()
+            ))
         }
 
         override fun scale(obj: IObject, center: IVector3, axis: IVector3, offset: Float): IObject {

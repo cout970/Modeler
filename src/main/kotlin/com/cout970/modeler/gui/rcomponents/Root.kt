@@ -4,7 +4,6 @@ import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.leguicomp.onCmd
 import com.cout970.modeler.gui.rcomponents.left.LeftPanel
 import com.cout970.modeler.gui.rcomponents.left.LeftPanelProps
-import com.cout970.modeler.gui.rcomponents.left.ModelAccessorProps
 import com.cout970.modeler.gui.rcomponents.popup.PopUp
 import com.cout970.modeler.gui.rcomponents.popup.PopUpProps
 import com.cout970.modeler.gui.rcomponents.right.RightPanel
@@ -53,7 +52,7 @@ class RootComp : RComponent<RootProps, RootState>() {
         child(BottomPanel::class, BottomPanelProps(state.bottomVisible, props.gui.animator,
                 props.gui.programState, props.gui.input))
 
-        child(TopBar::class, ModelAccessorProps(props.gui.programState))
+        child(TopBar::class, TopBarProps(props.gui))
 
         child(Search::class)
 

@@ -2,7 +2,6 @@ package com.cout970.modeler.render.world
 
 import com.cout970.glutilities.tessellator.VAO
 import com.cout970.matrix.api.IMatrix4
-import com.cout970.matrix.extensions.Matrix4
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.gui.canvas.cursor.CursorParameters
 import com.cout970.modeler.gui.canvas.tool.CursorMode
@@ -75,12 +74,12 @@ class ModelCursorRenderer {
                 globalColor.setVector3(p.color)
                 accept(p.model)
 
-                val part = cursor.getParts()[index]
-                val vao = part.calculateHitbox(cursor, ctx.camera, ctx.viewport).createVao(ctx.buffer, vec3Of(1, 1, 1))
-
-                matrixM.setMatrix4(Matrix4.IDENTITY)
-                accept(vao)
-                vao.close()
+//                val part = cursor.getParts()[index]
+//                val vao = part.calculateHitbox(cursor, ctx.camera, ctx.viewport).createVao(ctx.buffer, vec3Of(1, 1, 1))
+//
+//                matrixM.setMatrix4(Matrix4.IDENTITY)
+//                accept(vao)
+//                vao.close()
             }
 
             globalColor.setVector3(Vector3.ONE)
