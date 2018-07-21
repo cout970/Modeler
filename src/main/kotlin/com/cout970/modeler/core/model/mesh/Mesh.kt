@@ -61,7 +61,7 @@ class Mesh(
             val p = face.pos.map { it + pos.size }
             val t = face.tex.map { it + tex.size }
 
-            FaceIndex(p, t)
+            FaceIndex.from(p, t)
         }
 
         return Mesh(newPos, newTex, newFaces)
@@ -79,7 +79,7 @@ class Mesh(
             val p = face.pos.map { newPos.indexOf(pos[it]) }
             val t = face.tex.map { newTex.indexOf(tex[it]) }
 
-            FaceIndex(p, t)
+            FaceIndex.from(p, t)
         }
         return Mesh(newPos, newTex, newFaces)
     }

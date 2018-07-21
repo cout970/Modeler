@@ -14,12 +14,10 @@ import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.mesh.MeshFactory
 import com.cout970.modeler.util.middle
 import com.cout970.modeler.util.toAxisRotations
-import com.cout970.modeler.util.toJOML
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
-import org.joml.Vector4d
 import java.util.*
 
 
@@ -51,18 +49,14 @@ data class ObjectCube(
 
     fun generateMesh(): IMesh {
         val cube = MeshFactory.createCube(Vector3.ONE, Vector3.ORIGIN)
-        val pos = cube.pos.map { Vector4d(it.xd, it.yd, it.zd, 1.0) }
-                .map(transformation.matrix.toJOML()::transform)
-                .map { vec3Of(it.x, it.y, it.z) }
-
-        return updateTextures(Mesh(pos, cube.tex, cube.faces), size, textureOffset, textureSize)
+        return updateTextures(Mesh(cube.pos, cube.tex, cube.faces), size, textureOffset, textureSize)
     }
 
     fun updateTextures(mesh: IMesh, size: IVector3, offset: IVector2, textureSize: IVector2): IMesh {
         val uvs = generateUVs(size, offset, textureSize)
         val newFaces = mesh.faces.mapIndexed { index, face ->
             val faceIndex = face as FaceIndex
-            FaceIndex(faceIndex.pos, faceIndex.tex.mapIndexed { vertexIndex, _ -> index * 4 + vertexIndex })
+            FaceIndex.from(faceIndex.pos, faceIndex.tex.mapIndexed { vertexIndex, _ -> index * 4 + vertexIndex })
         }
         return Mesh(mesh.pos, uvs, newFaces)
     }

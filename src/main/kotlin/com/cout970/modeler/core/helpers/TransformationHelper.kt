@@ -233,7 +233,7 @@ object TransformationHelper {
                         val endIndex = ((index + 1) * 4)
                         val newTexIndices = (startIndex until endIndex).toList()
 
-                        FaceIndex(face.pos, newTexIndices)
+                        FaceIndex.from(face.pos, newTexIndices)
                     }
 
                     val newMesh = Mesh(pos, newTex, newFaces)

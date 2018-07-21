@@ -135,7 +135,7 @@ private fun arrangeUVs(programState: IProgramState): ITask {
                 newTex += vec2Of(x, y)
             }
 
-            FaceIndex(it.pos, listOf(newTex.size - 4, newTex.size - 3, newTex.size - 2, newTex.size - 1))
+            FaceIndex.from(it.pos, listOf(newTex.size - 4, newTex.size - 3, newTex.size - 2, newTex.size - 1))
         }
 
         obj.withMesh(Mesh(

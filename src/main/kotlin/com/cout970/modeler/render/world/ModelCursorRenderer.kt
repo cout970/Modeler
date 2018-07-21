@@ -1,9 +1,10 @@
 package com.cout970.modeler.render.world
 
+import com.cout970.glutilities.tessellator.VAO
+import com.cout970.matrix.api.IMatrix4
 import com.cout970.modeler.core.model.TRSTransformation
-import com.cout970.modeler.gui.canvas.IRotable
-import com.cout970.modeler.gui.canvas.IScalable
-import com.cout970.modeler.gui.canvas.ITranslatable
+import com.cout970.modeler.gui.canvas.cursor.CursorParameters
+import com.cout970.modeler.gui.canvas.tool.CursorMode
 import com.cout970.modeler.render.tool.AutoCache
 import com.cout970.modeler.render.tool.RenderContext
 import com.cout970.modeler.render.tool.createVao
@@ -21,71 +22,62 @@ class ModelCursorRenderer {
     var rotationRing = AutoCache()
     var scaleArrow = AutoCache()
 
-    fun renderCursor(ctx: RenderContext) {
+    fun render(ctx: RenderContext) {
+        val cursor = ctx.gui.state.cursor
 
-        ctx.gui.programState.modelSelectionHandler.getSelection().ifNull { return }
+        if (!cursor.visible) return
 
-        val cursor = ctx.gui.cursorManager.modelCursor ?: return
-        val parameters = cursor.getCursorParameters(ctx.camera, ctx.viewport)
+        val params = CursorParameters.create(ctx.camera.zoom, ctx.viewport)
 
-        val translationArrow = translationArrow.getOrCreate(ctx) {
-            ctx.gui.resources.translationArrow.createVao(ctx.buffer, vec3Of(1, 1, 1))
+        val rotation = when (cursor.mode) {
+            CursorMode.TRANSLATION, CursorMode.SCALE ->
+                listOf(Vector3.X_AXIS rotationTo Vector3.X_AXIS, Vector3.X_AXIS rotationTo Vector3.Y_AXIS, Vector3.X_AXIS rotationTo Vector3.Z_AXIS)
+            else ->
+                listOf(Vector3.Y_AXIS rotationTo Vector3.X_AXIS, Vector3.Y_AXIS rotationTo Vector3.Y_AXIS, Vector3.Y_AXIS rotationTo Vector3.Z_AXIS)
         }
-        val rotationRing = rotationRing.getOrCreate(ctx) {
-            ctx.gui.resources.rotationRing.createVao(ctx.buffer, vec3Of(1, 1, 1))
+
+        val model = when (cursor.mode) {
+            CursorMode.TRANSLATION -> translationArrow.getOrCreate(ctx) {
+                ctx.gui.resources.translationArrow.createVao(ctx.buffer, vec3Of(1, 1, 1))
+            }
+            CursorMode.ROTATION -> rotationRing.getOrCreate(ctx) {
+                ctx.gui.resources.rotationRing.createVao(ctx.buffer, vec3Of(1, 1, 1))
+            }
+            CursorMode.SCALE -> scaleArrow.getOrCreate(ctx) {
+                ctx.gui.resources.scaleArrow.createVao(ctx.buffer, vec3Of(1, 1, 1))
+            }
         }
-        val scaleArrow = scaleArrow.getOrCreate(ctx) {
-            ctx.gui.resources.scaleArrow.createVao(ctx.buffer, vec3Of(1, 1, 1))
+
+        val parts = cursor.getParts().mapIndexed { index, cursorPart ->
+            CursorPart(model, if (cursorPart.hovered) Vector3.ONE else cursorPart.vector,
+                    TRSTransformation(
+                            translation = cursor.position,
+                            rotation = rotation[index],
+                            scale = vec3Of(params.length / 16f)
+                    ).matrix
+            )
         }
+
         ctx.shader.apply {
             useColor.setInt(1)
             useLight.setInt(0)
             useTexture.setInt(0)
-            val hovered = ctx.gui.state.hoveredObject
 
-            cursor.getSelectablePartsModel(ctx.gui, ctx.camera, ctx.viewport).forEach { part ->
-                val selected = hovered == part
-
-                val scale = vec3Of(parameters.length / 16f)
-                val colorFunc = { col: IVector3 -> if (selected) vec3Of(1) else col }
-                useGlobalColor.setBoolean(true)
-
-                when (part) {
-                    is ITranslatable -> {
-
-                        matrixM.setMatrix4(TRSTransformation(
-                                translation = cursor.center,
-                                rotation = Vector3.X_AXIS rotationTo part.translationAxis,
-                                scale = scale
-                        ).matrix)
-                        globalColor.setVector3(colorFunc(part.translationAxis))
-                        accept(translationArrow)
-                        globalColor.setVector3(Vector3.ONE)
-                    }
-                    is IRotable -> {
-                        matrixM.setMatrix4(TRSTransformation(
-                                translation = cursor.center,
-                                rotation = Vector3.Y_AXIS rotationTo part.tangent,
-                                scale = scale
-                        ).matrix)
-                        globalColor.setVector3(colorFunc(part.tangent))
-                        accept(rotationRing)
-                        globalColor.setVector3(Vector3.ONE)
-                    }
-                    is IScalable -> {
-                        matrixM.setMatrix4(TRSTransformation(
-                                translation = cursor.center,
-                                rotation = Vector3.X_AXIS rotationTo part.scaleAxis,
-                                scale = scale
-                        ).matrix)
-                        globalColor.setVector3(colorFunc(part.scaleAxis))
-                        accept(scaleArrow)
-                        globalColor.setVector3(Vector3.ONE)
-                    }
-                }
-
-                useGlobalColor.setBoolean(false)
+            useGlobalColor.setBoolean(true)
+            parts.forEach {
+                matrixM.setMatrix4(it.transform)
+                globalColor.setVector3(it.color)
+                accept(it.model)
             }
+            globalColor.setVector3(Vector3.ONE)
+            useGlobalColor.setBoolean(false)
         }
+    }
+
+    data class CursorPart(val model: VAO, val color: IVector3, val transform: IMatrix4)
+
+    fun renderCursor(ctx: RenderContext) {
+
+        render(ctx)
     }
 }

@@ -9,6 +9,7 @@ import com.cout970.modeler.util.MatrixUtils
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.util.toJOML
 import com.cout970.vector.api.IVector2
+import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
 import org.joml.Matrix4d
 
@@ -19,9 +20,14 @@ object TranslationHelper {
 
     fun getOffset(obj: ITranslatable, canvas: Canvas, input: IInput, oldContext: SceneSpaceContext,
                   newContext: SceneSpaceContext): Float {
+        return getOffset(obj.translationAxis, canvas, input, oldContext, newContext)
+    }
+
+    fun getOffset(direction: IVector3, canvas: Canvas, input: IInput, oldContext: SceneSpaceContext,
+                  newContext: SceneSpaceContext): Float {
 
         val matrix = canvas.cameraHandler.camera.getMatrix(canvas.size.toIVector()).toJOML()
-        val axis = getTranslationAxis(matrix, obj)
+        val axis = getTranslationAxis(matrix, direction)
         val viewportSize = canvas.size.toIVector()
 
         val oldMousePos = ((oldContext.mousePos / viewportSize) * 2 - 1).run { vec2Of(x, -yd) }
@@ -43,13 +49,9 @@ object TranslationHelper {
         return offset
     }
 
-    fun getTranslationAxis(matrix: Matrix4d, obj: ITranslatable): IVector2 {
-        val diff = projectAxis(matrix, obj)
+    fun getTranslationAxis(matrix: Matrix4d, axis: IVector3): IVector2 {
+        val diff = MatrixUtils.projectAxis(matrix, axis)
 
         return diff.second - diff.first
-    }
-
-    fun projectAxis(matrix: Matrix4d, obj: ITranslatable): Pair<IVector2, IVector2> {
-        return MatrixUtils.projectAxis(matrix, obj.translationAxis)
     }
 }

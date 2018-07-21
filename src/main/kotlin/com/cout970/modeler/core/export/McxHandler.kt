@@ -119,7 +119,7 @@ class McxImporter {
             listOf(storage.tex[it.at], storage.tex[it.bt], storage.tex[it.ct], storage.tex[it.dt])
         }
         val faces = quadIndices.map {
-            FaceIndex(
+            FaceIndex.from(
                     listOf(
                             pos.indexOf(storage.pos[it.a]),
                             pos.indexOf(storage.pos[it.b]),

@@ -5,6 +5,7 @@ import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.gui.canvas.ISelectable
 import com.cout970.modeler.gui.canvas.TransformationMode
+import com.cout970.modeler.gui.canvas.tool.Cursor3D
 import com.cout970.modeler.util.BooleanPropertyWrapper
 import com.cout970.modeler.util.GuiProperty
 
@@ -15,6 +16,8 @@ class GuiState(val projectManager: IProgramState) : IProgramState by projectMana
 
     var transformationMode = TransformationMode.TRANSLATION
     var selectionType: SelectionType by GuiProperty(SelectionType.OBJECT, "SelectionType")
+
+    val cursor = Cursor3D()
 
     var useTexture: Boolean = true
 

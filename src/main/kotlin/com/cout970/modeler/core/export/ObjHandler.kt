@@ -157,7 +157,7 @@ class ObjImporter {
     private fun ObjGroup.toMesh(data: MeshData): IMesh {
 
         val faces = quads.map {
-            FaceIndex(it.vertexIndices.toList(), it.textureIndices.toList())
+            FaceIndex.from(it.vertexIndices.toList(), it.textureIndices.toList())
         }
         var pos = data.vertices.map { it * 16 }
         var tex = data.texCoords

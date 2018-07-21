@@ -287,7 +287,7 @@ object ProjectLoaderV12 {
                     texIndices.add(pair[1].asInt)
                 }
 
-                FaceIndex(posIndices, texIndices)
+                FaceIndex.from(posIndices, texIndices)
             }
 
             return Mesh(pos, tex, faces)

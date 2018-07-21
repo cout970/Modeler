@@ -62,12 +62,12 @@ class Listeners : ITickeable, IGuiCmdRunner {
                 gui.state.materialsHash = (System.currentTimeMillis() and 0xFFFFFFFF).toInt()
             }
 
-            it.modelChangeListeners.add { _, _ -> gui.cursorManager.updateCursors(gui) }
+            it.modelChangeListeners.add { _, _ -> gui.state.cursor.update(gui) }
             it.materialChangeListeners.add(this::onMaterialUpdate)
 
             it.modelSelectionHandler.addChangeListener(this::onSelectionUpdate)
-            it.modelSelectionHandler.addChangeListener { _, _ -> gui.cursorManager.updateCursors(gui) }
-            it.textureSelectionHandler.addChangeListener { _, _ -> gui.cursorManager.updateCursors(gui) }
+            it.modelSelectionHandler.addChangeListener { _, _ -> gui.state.cursor.update(gui) }
+            it.textureSelectionHandler.addChangeListener { _, _ -> gui.state.cursor.update(gui) }
         }
     }
 

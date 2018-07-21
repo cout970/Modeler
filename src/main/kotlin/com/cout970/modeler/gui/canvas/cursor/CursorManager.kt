@@ -14,6 +14,8 @@ import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.canvas.Canvas
 import com.cout970.modeler.gui.canvas.ISelectable
 import com.cout970.modeler.gui.canvas.input.DraggingCursor
+import com.cout970.modeler.gui.canvas.tool.DragHandler
+import com.cout970.modeler.gui.canvas.tool.DragListener
 import com.cout970.modeler.util.hasNaN
 import com.cout970.modeler.util.middle
 import com.cout970.vector.extensions.toVector3
@@ -21,20 +23,28 @@ import com.cout970.vector.extensions.toVector3
 class CursorManager {
 
     lateinit var taskProcessor: ITaskProcessor
-    lateinit var gui: Gui
     lateinit var updateCanvas: () -> Unit
+    private lateinit var gui: Gui
 
     var modelCursor: Cursor? = null
     var textureCursor: Cursor? = null
 
     val cursorDrag = DraggingCursor()
 
+    // debug
+    lateinit var handler: DragHandler
+
+    fun setGui(gui: Gui) {
+        this.gui = gui
+        handler = DragHandler(DragListener(gui))
+    }
+
     fun tick() {
         Profiler.startSection("cursorManager")
-        val canvas = gui.canvasContainer.selectedCanvas
-        val allow = canvas?.let { processCursor(it) } ?: true
 
-        if (allow) {
+        handler.tick(gui)
+
+        if (!handler.isDragging()) {
             updateCanvas()
         }
 
@@ -64,6 +74,16 @@ class CursorManager {
             textureCursor = cursorDrag.currentCursor
         } else {
             modelCursor = cursorDrag.currentCursor
+
+
+            val newCursor = cursorDrag.currentCursor
+
+            if (newCursor == null) {
+                gui.state.cursor.visible = false
+            } else {
+                gui.state.cursor.visible = true
+                gui.state.cursor.position = newCursor.center
+            }
         }
 
         gui.state.run {

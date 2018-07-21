@@ -6,6 +6,7 @@ import com.cout970.modeler.gui.canvas.ISelectable
 import com.cout970.modeler.gui.canvas.SceneSpaceContext
 import com.cout970.modeler.util.getClosest
 import com.cout970.modeler.util.getVertexTexturePolygon
+import com.cout970.raytrace.IRayObstacle
 import com.cout970.raytrace.RayTraceResult
 import com.cout970.vector.api.IVector2
 
@@ -23,6 +24,19 @@ object Hover {
         objs.forEach { obj ->
             val res = obj.hitbox!!.rayTrace(ray)
             res?.let { list += it to obj }
+        }
+
+        return list.getClosest(ray)?.second
+    }
+
+    fun <T> getHoveredObject3D(ctx: SceneSpaceContext, objs: List<Pair<T, IRayObstacle>>): T? {
+
+        val ray = ctx.mouseRay
+        val list = mutableListOf<Pair<RayTraceResult, T>>()
+
+        objs.forEach { obj ->
+            val res = obj.second.rayTrace(ray)
+            res?.let { list += it to obj.first }
         }
 
         return list.getClosest(ray)?.second

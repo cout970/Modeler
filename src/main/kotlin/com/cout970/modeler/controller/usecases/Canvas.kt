@@ -82,7 +82,7 @@ private fun jumpCameraToCanvas(component: Component, state: GuiState, input: IIn
 
 @UseCase("canvas.select")
 private fun selectPartInCanvas(component: Component, input: IInput, gui: Gui): ITask {
-    if (gui.state.hoveredObject != null) return TaskNone
+    if (gui.state.cursor.getParts().any { it.hovered }) return TaskNone
 
     val canvas = component as Canvas
     return when (canvas.viewMode) {

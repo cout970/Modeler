@@ -5,9 +5,10 @@ import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.tasks.ModifyGui
 import com.cout970.modeler.controller.tasks.TaskNone
+import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.canvas.CanvasManager
-import com.cout970.modeler.gui.canvas.TransformationMode
 import com.cout970.modeler.gui.canvas.cursor.CursorManager
+import com.cout970.modeler.gui.canvas.tool.CursorMode
 import com.cout970.vector.extensions.unaryMinus
 
 /**
@@ -51,21 +52,21 @@ private fun showSearchPanel(): ITask = ModifyGui { gui ->
 }
 
 @UseCase("cursor.set.mode.translate")
-private fun setCursorModeTranslation(): ITask = ModifyGui { it.state.transformationMode = TransformationMode.TRANSLATION }
+private fun setCursorModeTranslation(): ITask = ModifyGui { it.state.cursor.mode = CursorMode.TRANSLATION }
 
 @UseCase("cursor.set.mode.rotate")
-private fun setCursorModeRotation(): ITask = ModifyGui { it.state.transformationMode = TransformationMode.ROTATION }
+private fun setCursorModeRotation(): ITask = ModifyGui { it.state.cursor.mode = CursorMode.ROTATION }
 
 @UseCase("cursor.set.mode.scale")
-private fun setCursorModeScale(): ITask = ModifyGui { it.state.transformationMode = TransformationMode.SCALE }
+private fun setCursorModeScale(): ITask = ModifyGui { it.state.cursor.mode = CursorMode.SCALE }
 
 @UseCase("camera.move.to.cursor")
-private fun moveCameraToCursor(canvasManager: CanvasManager, cursorManager: CursorManager): ITask {
+private fun moveCameraToCursor(canvasManager: CanvasManager, cursorManager: CursorManager, gui: Gui): ITask {
     canvasManager.getCanvasUnderTheMouse().ifNotNull { canvas ->
         val center = if (canvas.viewMode == SelectionTarget.TEXTURE) {
             cursorManager.textureCursor?.center ?: return@ifNotNull
         } else {
-            cursorManager.modelCursor?.center ?: return@ifNotNull
+            gui.state.cursor.position
         }
         return ModifyGui { canvas.cameraHandler.setPosition(-center) }
     }

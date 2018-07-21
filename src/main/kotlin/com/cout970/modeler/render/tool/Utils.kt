@@ -134,6 +134,6 @@ fun IMesh.getFacePos(index: Int): List<IVector3> {
 }
 
 fun IMesh.addFace(vertex: List<IVector3>): IMesh {
-    val newFace = FaceIndex(listOf(0, 1, 2, 3).map { it + this.pos.size }, (1..4).map { this.tex.size })
+    val newFace = FaceIndex.from(listOf(0, 1, 2, 3).map { it + this.pos.size }, (1..4).map { this.tex.size })
     return Mesh(this.pos + vertex, this.tex + Vector2.ZERO, this.faces + newFace)
 }

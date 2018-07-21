@@ -1,6 +1,20 @@
 # use "jvisualvm.exe -J-Dorg.netbeans.profiler.separateConsole=true"
 # Loads of skyboxes "http://www.custommapmakers.org/skyboxes.php"
 
+# TODO
+Fix selection raytrace
+Fix translation/rotation/scale based on cursor mode
+
+
+
+
+
+
+
+
+
+Old TODO list
+
 # Current
 import texture template after creation
 menu to edit material properties

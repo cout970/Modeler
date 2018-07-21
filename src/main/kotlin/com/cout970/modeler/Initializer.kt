@@ -97,7 +97,7 @@ class Initializer {
         Debugger.setInit(program)
 
         gui.cursorManager.taskProcessor = taskHistory
-        gui.cursorManager.gui = gui
+        gui.cursorManager.setGui(gui)
         gui.cursorManager.updateCanvas = gui.canvasManager::updateSelectedCanvas
 
         modelSelectionHandler.typeGetter = gui.state::selectionType

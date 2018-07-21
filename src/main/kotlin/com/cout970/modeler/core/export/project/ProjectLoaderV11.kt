@@ -151,7 +151,7 @@ object ProjectLoaderV11 {
         override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IFaceIndex {
             val obj = json.asJsonObject
 
-            return FaceIndex(
+            return FaceIndex.from(
                     pos = context.deserializeT(obj["pos"]),
                     tex = context.deserializeT(obj["tex"])
             )

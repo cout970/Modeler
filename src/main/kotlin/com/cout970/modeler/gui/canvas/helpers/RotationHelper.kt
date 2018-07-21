@@ -20,15 +20,19 @@ import com.cout970.vector.extensions.*
 object RotationHelper {
 
     fun getOffsetGlobal(obj: IRotable, canvas: Canvas, pos: Pair<IVector2, IVector2>, input: IInput): Float {
+        return getOffsetGlobal(obj.center, obj.tangent, canvas, pos, input)
+    }
+
+    fun getOffsetGlobal(center: IVector3, normal: IVector3, canvas: Canvas, pos: Pair<IVector2, IVector2>, input: IInput): Float {
         return if (canvas.viewMode == SelectionTarget.TEXTURE) {
-            val start = getAngle(canvas, pos.first, obj)
-            val end = getAngle(canvas, pos.second, obj)
+            val start = getAngle(canvas, pos.first, center)
+            val end = getAngle(canvas, pos.second, center)
             val change = end - start
 
             getOffsetFromChange(-change, input)
         } else {
             val context = CanvasHelper.getContext(canvas, pos)
-            val change = getAngle(context.first, context.second, obj)
+            val change = getAngle(context.first, context.second, center, normal)
 
             getOffsetFromChange(-change, input)
         }
@@ -46,19 +50,17 @@ object RotationHelper {
         return Math.toRadians(offset.toDouble() * 360.0 / 32).toFloat()
     }
 
-    fun getAngle(canvas: Canvas, mouse: IVector2, obj: IRotable): Double {
+    fun getAngle(canvas: Canvas, mouse: IVector2, center: IVector3): Double {
         val clickPos = PickupHelper.getMousePosAbsolute(canvas, mouse)
 
-        val center = obj.center.toVector2()
-        val direction = (center - clickPos).normalize()
+        val direction = (center.toVector2() - clickPos).normalize()
 
         return Math.atan2(direction.xd, direction.yd)
     }
 
-    fun getAngle(oldContext: SceneSpaceContext, newContext: SceneSpaceContext, obj: IRotable): Double {
-        val normal = obj.tangent
-        val new = getDirectionToMouse(oldContext.mouseRay, obj)
-        val old = getDirectionToMouse(newContext.mouseRay, obj)
+    fun getAngle(oldContext: SceneSpaceContext, newContext: SceneSpaceContext, center: IVector3, normal: IVector3): Double {
+        val new = getDirectionToMouse(oldContext.mouseRay, center)
+        val old = getDirectionToMouse(newContext.mouseRay, center)
 
         var angle = (normal cross new) angle (normal cross old)
 
@@ -69,8 +71,8 @@ object RotationHelper {
         return angle
     }
 
-    fun getDirectionToMouse(mouseRay: Ray, obj: IRotable): IVector3 {
-        val closest = getClosestPointOnLineSegment(mouseRay.start, mouseRay.end, obj.center)
-        return (closest - obj.center).normalize()
+    fun getDirectionToMouse(mouseRay: Ray, center: IVector3): IVector3 {
+        val closest = getClosestPointOnLineSegment(mouseRay.start, mouseRay.end, center)
+        return (closest - center).normalize()
     }
 }

@@ -470,12 +470,12 @@ class GlTFImporter {
             val faces = when (primData.mode) {
                 GltfMode.TRIANGLES -> {
                     indices.windowed(3, 3).map {
-                        FaceIndex(listOf(it[0], it[1], it[2], it[2]), listOf(it[0], it[1], it[2], it[2]))
+                        FaceIndex.from(listOf(it[0], it[1], it[2], it[2]), listOf(it[0], it[1], it[2], it[2]))
                     }
                 }
                 GltfMode.QUADS -> {
                     indices.windowed(4, 4).map {
-                        FaceIndex(it, it)
+                        FaceIndex.from(it, it)
                     }
                 }
                 else -> error("Invalid mode")
