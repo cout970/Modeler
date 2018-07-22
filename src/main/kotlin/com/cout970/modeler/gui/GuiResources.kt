@@ -61,6 +61,7 @@ class GuiResources {
         iconMap["duplicate_material"] = BufferedImage("assets/textures/duplicate_material.png")
         iconMap["add_material"] = BufferedImage("assets/textures/add_material.png")
         iconMap["remove_material"] = BufferedImage("assets/textures/remove_material.png")
+        iconMap["material"] = BufferedImage("assets/textures/material.png")
 
         iconMap["addTemplateCubeIcon"] = BufferedImage("assets/textures/add_template_cube.png")
         iconMap["addMeshCubeIcon"] = BufferedImage("assets/textures/add_mesh_cube.png")
@@ -81,10 +82,13 @@ class GuiResources {
         iconMap["active_texture"] = BufferedImage("assets/textures/active_texture.png")
         iconMap["active_focus"] = BufferedImage("assets/textures/active_focus.png")
         iconMap["active_invisible"] = BufferedImage("assets/textures/active_invisible.png")
+
         iconMap["button_up"] = BufferedImage("assets/textures/up.png")
         iconMap["button_down"] = BufferedImage("assets/textures/down.png")
         iconMap["button_left"] = BufferedImage("assets/textures/left.png")
         iconMap["button_right"] = BufferedImage("assets/textures/right.png")
+        iconMap["button_right_dark"] = BufferedImage("assets/textures/dot.png")
+
         iconMap["obj_type_cube"] = BufferedImage("assets/textures/obj_type_cube.png")
         iconMap["obj_type_mesh"] = BufferedImage("assets/textures/obj_type_mesh.png")
         iconMap["group_icon"] = BufferedImage("assets/textures/group_icon.png")

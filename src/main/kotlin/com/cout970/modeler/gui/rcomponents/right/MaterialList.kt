@@ -175,7 +175,7 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
                             marginX(5f)
                         }
 
-                        val icon = if (ref in materialOfSelectedObjects) "material_in_use" else ""
+                        val icon = if (ref in materialOfSelectedObjects) "material_in_use" else "material"
 
                         +IconButton("material.view.select", icon, 0f, 0f, 24f, 24f).apply {
                             metadata += "ref" to material.ref
