@@ -2,20 +2,14 @@ package com.cout970.modeler.controller
 
 import com.cout970.modeler.Program
 import com.cout970.modeler.controller.injection.DependencyInjector
-import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.usecases.UseCase
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
-import com.cout970.modeler.gui.COMPUTE
 import com.cout970.modeler.gui.event.Notification
 import com.cout970.modeler.gui.event.NotificationHandler
-import com.cout970.modeler.util.ITickeable
-import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.async
 import org.liquidengine.legui.component.Component
-import java.util.*
 import kotlin.reflect.KFunction
 import kotlin.reflect.KVisibility
 import kotlin.reflect.jvm.isAccessible
@@ -32,7 +26,7 @@ interface IDispatcher {
 
 lateinit var dispatcher: IDispatcher
 
-class Dispatcher : ITickeable, IDispatcher {
+class Dispatcher : IDispatcher {
 
     lateinit var state: Program
 
@@ -43,32 +37,6 @@ class Dispatcher : ITickeable, IDispatcher {
     val dependencyInjector = DependencyInjector()
     val functionUseCases: Map<String, KFunction<*>> = findFunctionUseCases()
 
-    private val sideEffects = Collections.synchronizedList(mutableListOf<Pair<String, Deferred<ITask>>>())
-
-    override fun tick() {
-        sideEffects.removeAll { (key, job) ->
-            if (job.isCompleted) {
-                if (job.isCompletedExceptionally) {
-                    val e = job.getCompletionExceptionOrNull()!!
-                    log(Level.ERROR) { "Unable to run usecase: $key" }
-                    e.print()
-                    val cause = e.cause
-
-                    val msg = if (cause != null)
-                        cause.message ?: cause::class.java.simpleName
-                    else e.message ?: e::class.java.simpleName
-
-                    NotificationHandler.push(Notification("Internal error", msg))
-                } else {
-                    state.taskHistory.processTask(job.getCompleted())
-                }
-                true
-            } else {
-                false
-            }
-        }
-    }
-
     override fun onEvent(key: String, comp: Component?) {
         Profiler.startSection("Dispatcher")
         log(Level.FINEST) { "[Dispatcher] Executing: $key" }
@@ -78,10 +46,23 @@ class Dispatcher : ITickeable, IDispatcher {
         if (useCase == null) {
             log(Level.ERROR) { "[Dispatcher] No UseCase found for $key" }
         } else {
-            val id = "${useCase::class.simpleName}, ${useCase.name}, key: $key"
-            sideEffects.add(id to async(COMPUTE) {
-                dependencyInjector.callUseCase(state, comp, useCase.apply { isAccessible = true })
-            })
+            try {
+                Profiler.startSection("${useCase::class.simpleName}, ${useCase.name}")
+                val task = dependencyInjector.callUseCase(state, comp, useCase.apply { isAccessible = true })
+                state.taskHistory.processTask(task)
+                Profiler.endSection()
+            } catch (e: Exception) {
+                val id = "${useCase::class.simpleName}, ${useCase.name}, key: $key"
+                log(Level.ERROR) { "Unable to run usecase: $id" }
+                e.print()
+                val cause = e.cause
+
+                val msg = if (cause != null)
+                    cause.message ?: cause::class.java.simpleName
+                else e.message ?: e::class.java.simpleName
+
+                NotificationHandler.push(Notification("Internal error", msg))
+            }
         }
         Profiler.endSection()
     }

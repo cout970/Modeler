@@ -31,12 +31,10 @@ object Debugger {
     }
 
     fun debugLog(a: Any): Boolean {
-        if (a is String) {
-            log(level = Level.DEBUG) { "$a -> ${a.length}" }
-        } else if (a is StringBuffer) {
-            log(level = Level.DEBUG) { a.length.toString() }
-        } else {
-            log(level = Level.DEBUG) { a.toString() }
+        when (a) {
+            is String -> log(level = Level.DEBUG) { "$a -> ${a.length}" }
+            is StringBuffer -> log(level = Level.DEBUG) { a.length.toString() }
+            else -> log(level = Level.DEBUG) { a.toString() }
         }
         return false
     }
