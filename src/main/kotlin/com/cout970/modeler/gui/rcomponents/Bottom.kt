@@ -23,6 +23,7 @@ import org.liquidengine.legui.component.event.selectbox.SelectBoxChangeSelection
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.event.ScrollEvent
 import kotlin.math.max
+import kotlin.math.min
 
 data class BottomPanelProps(
         val visible: Boolean,
@@ -88,6 +89,12 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
                     borderless()
                     rectCorners()
                     tooltip = InstantTooltip("Add new animation channel")
+                }
+
+                +IconButton("animation.channel.remove", "remove_channel", 0f, 0f, 24f, 24f).apply {
+                    borderless()
+                    rectCorners()
+                    tooltip = InstantTooltip("Remove animation channel")
                 }
             }
 
@@ -159,16 +166,6 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
             setTooltip("Remove selected keyframe")
         }
 
-        +IconButton("", "add_animation", 0f, 3f, 26f, 26f).apply {
-            setTooltip("Add animation")
-        }
-
-        +IconButton("", "remove_animation", 0f, 3f, 26f, 26f).apply {
-            setTooltip("Remove animation")
-            disable()
-            disableInput()
-        }
-
         selectBox {
             val animations = props.programState.model.animationMap.values.toList()
 
@@ -187,7 +184,7 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
                     setSelected(elements.size - 1, true)
                 }
 
-                visibleCount = 4
+                visibleCount = min(elements.size, 4)
                 elementHeight = 26f
             }
 
@@ -200,6 +197,16 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
                     })
                 }
             }
+        }
+
+        +IconButton("", "add_animation", 0f, 3f, 26f, 26f).apply {
+            setTooltip("Add animation")
+        }
+
+        +IconButton("", "remove_animation", 0f, 3f, 26f, 26f).apply {
+            setTooltip("Remove animation")
+            disable()
+            disableInput()
         }
     }
 
@@ -259,7 +266,6 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
             }
         }
     }
-
 
     fun RBuilder.timeline() = scrollablePanel("Timeline") {
         val anim = props.programState.animation
