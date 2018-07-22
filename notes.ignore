@@ -2,9 +2,9 @@
 # Loads of skyboxes "http://www.custommapmakers.org/skyboxes.php"
 
 # TODO
-Fix selection raytrace
-Fix translation/rotation/scale based on cursor mode
-
+- [x] Fix selection raytrace
+- [x] Fix translation/rotation/scale based on cursor mode
+- [x] Add panel for transform mode
 
 
 

@@ -180,6 +180,29 @@ var exported = {
         borderStyle: "none",
         borderRadius: "5"
     },
+    cursor_orientation_bar: {
+        backgroundColor: "#191919",
+        borderStyle: "none",
+        borderRadius: "5"
+    },
+    cursor_mode_bar: {
+        backgroundColor: "#191919",
+        borderStyle: "none",
+        borderRadius: "5"
+    },
+    toggle_button: {
+        backgroundColor: transparent,
+        toggledBackgroundColor: "#6f6f6f"
+    },
+    "toggle_button:hover": {
+        backgroundColor: "#484848",
+    },
+    "toggle_button:focus": {
+        backgroundColor: transparent,
+    },
+    "toggle_button:pressed": {
+        backgroundColor: "#6f6f6f",
+    },
     popup_background_hide: {
         display: "none"
     },

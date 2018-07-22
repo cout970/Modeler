@@ -1,7 +1,6 @@
 package com.cout970.modeler.gui
 
 import com.cout970.modeler.core.config.ColorPalette.Companion.colorOf
-import com.cout970.reactive.dsl.borderless
 import com.cout970.reactive.dsl.hide
 import com.cout970.reactive.dsl.show
 import jdk.nashorn.api.scripting.ScriptObjectMirror
@@ -15,7 +14,7 @@ import javax.script.ScriptEngineManager
 
 object CSSTheme : Theme(createThemeManager()) {
 
-    private lateinit var style: Map<String, ScriptObjectMirror>
+    private lateinit var style: Map<Selector, ScriptObjectMirror>
 
     init {
         loadCss()
@@ -24,39 +23,58 @@ object CSSTheme : Theme(createThemeManager()) {
     fun loadCss() {
         val engine = ScriptEngineManager().getEngineByExtension("js")
         val obj = engine.eval(File("../src/main/resources/assets/style.js").reader()) as ScriptObjectMirror
-        style = obj.keys.map { it to (obj[it] as ScriptObjectMirror) }.toMap()
+        style = obj.keys.map { it.toSelector() to (obj[it] as ScriptObjectMirror) }.toMap()
     }
 
+    private fun String.toSelector(): Selector {
+        if (!contains(":")) return Selector(this)
+        return Selector(substringBefore(":"), substringAfter(":"))
+    }
 
     fun applyComp(component: Component) {
         val classes = component.metadata["classes"] ?: return
         if (classes is String) {
+            val modes = mapOf(
+                    null to component.style,
+                    "hover" to component.hoveredStyle,
+                    "focus" to component.focusedStyle,
+                    "pressed" to component.pressedStyle
+            )
 
-            classes.split(",").forEach { thisClass ->
-                val style = style[thisClass] ?: return@forEach
-
-                style.getString("display") {
-                    when (it) {
-                        "none" -> component.hide()
-                        "block" -> component.also { it.show(); it.style.display = Style.DisplayType.MANUAL }
-                        "fex" -> component.also { it.show(); it.style.display = Style.DisplayType.FLEX }
-                    }
-                }
-                style.getColor("backgroundColor") { component.style.background.color = it }
-                style.getString("borderStyle") {
-                    when (it) {
-                        "solid" -> component.style.border = SimpleLineBorder()
-                        "none" -> component.borderless()
-                    }
-                }
-                style.getFloat("borderWidth") { (component.style.border as SimpleLineBorder).thickness = it }
-                style.getFloat("borderRadius") { component.style.setBorderRadius(it) }
-                style.getColor("borderColor") { (component.style.border as SimpleLineBorder).color = it }
-
-                if (component is ScrollBar) {
-                    style.getColor("scrollColor") { component.scrollColor = it }
+            modes.forEach { type, styleObj ->
+                classes.split(",").forEach classLoop@{ thisClass ->
+                    val style = style[Selector(thisClass, type)] ?: return@classLoop
+                    applyStyle(style, styleObj, component)
                 }
             }
+        }
+    }
+
+    private fun applyStyle(style: ScriptObjectMirror, styleObj: Style, comp: Component) {
+        style.getString("display") { display ->
+            when (display) {
+                "none" -> comp.hide()
+                "block" -> comp.also { it.show(); styleObj.display = Style.DisplayType.MANUAL }
+                "fex" -> comp.also { it.show(); styleObj.display = Style.DisplayType.FLEX }
+            }
+        }
+        style.getColor("backgroundColor") { styleObj.background.color = it }
+        style.getString("borderStyle") {
+            when (it) {
+                "solid" -> styleObj.border = SimpleLineBorder()
+                "none" -> styleObj.border = null
+            }
+        }
+        style.getFloat("borderWidth") { (styleObj.border as SimpleLineBorder).thickness = it }
+        style.getFloat("borderRadius") { styleObj.setBorderRadius(it) }
+        style.getColor("borderColor") { (styleObj.border as SimpleLineBorder).color = it }
+
+        if (comp is ScrollBar) {
+            style.getColor("scrollColor") { comp.scrollColor = it }
+        }
+
+        if (comp is ToggleButton) {
+            style.getColor("toggledBackgroundColor") { comp.toggledBackgroundColor = it }
         }
     }
 
@@ -84,6 +102,8 @@ object CSSTheme : Theme(createThemeManager()) {
         }
     }
 }
+
+private data class Selector(val key: String, val mode: String? = null)
 
 private fun createThemeManager(): ThemeManager {
     val m = DefaultThemeManager()

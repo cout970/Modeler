@@ -103,6 +103,13 @@ class GuiResources {
         iconMap["active_selection_mode_edge"] = BufferedImage("assets/textures/selection_mode_edge.png")
         iconMap["active_selection_mode_vertex"] = BufferedImage("assets/textures/selection_mode_vertex.png")
 
+        iconMap["active_selection_mode_translation"] = BufferedImage("assets/textures/translation.png")
+        iconMap["active_selection_mode_rotation"] = BufferedImage("assets/textures/rotation.png")
+        iconMap["active_selection_mode_scale"] = BufferedImage("assets/textures/scale.png")
+
+        iconMap["active_selection_orientation_local"] = BufferedImage("assets/textures/local_orientation.png")
+        iconMap["active_selection_orientation_global"] = BufferedImage("assets/textures/global_orientation.png")
+
         iconMap["add_keyframe"] = BufferedImage("assets/textures/add_keyframe.png")
         iconMap["remove_keyframe"] = BufferedImage("assets/textures/remove_keyframe.png")
         iconMap["add_animation"] = BufferedImage("assets/textures/add.png")

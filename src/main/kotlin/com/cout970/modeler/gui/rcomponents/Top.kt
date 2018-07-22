@@ -4,6 +4,7 @@ import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.controller.dispatcher
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.canvas.tool.Cursor3D
+import com.cout970.modeler.gui.canvas.tool.CursorMode
 import com.cout970.modeler.gui.canvas.tool.CursorOrientation
 import com.cout970.modeler.gui.event.EventModelUpdate
 import com.cout970.modeler.gui.leguicomp.*
@@ -81,7 +82,8 @@ class TopBar : RStatelessComponent<TopBarProps>() {
         }
 
         child(SelectionTypeBar::class)
-        child(CursorOrientationBar::class, CursorOrientationProps(props.gui.state.cursor))
+        child(CursorOrientationBar::class, CursorProps(props.gui.state.cursor))
+        child(CursorModeBar::class, CursorProps(props.gui.state.cursor))
         child(ModelStatistics::class, ModelAccessorProps(props.gui.programState))
     }
 }
@@ -143,32 +145,32 @@ class SelectionTypeBar : RComponent<EmptyProps, SelectionTypeState>() {
     }
 }
 
-data class CursorOrientationProps(val cursor: Cursor3D) : RProps
+data class CursorProps(val cursor: Cursor3D) : RProps
 
-class CursorOrientationBar : RStatelessComponent<CursorOrientationProps>() {
+class CursorOrientationBar : RStatelessComponent<CursorProps>() {
 
     override fun RBuilder.render() = div("CursorOrientationBar") {
         style {
             classes("cursor_orientation_bar")
-            posX = 432f + 10f + 143f + 8f + 8f
+            posX = 600f
             posY = 5f
             width = 64f + 14f
             height = 40f
         }
 
-        val firstButton = props.cursor.orientation == CursorOrientation.LOCAL
         val secondButton = props.cursor.orientation == CursorOrientation.GLOBAL
+        val firstButton = props.cursor.orientation == CursorOrientation.LOCAL
 
-        +ToggleButton("", "selection_mode_object", firstButton, 4f, 4f, 32f, 32f).apply {
-            tooltip = InstantTooltip("Cursor orientation: Local")
-            borderless()
-            onClick { dispatcher.onEvent("cursor.set.orientation.local", null) }
-        }
-
-        +ToggleButton("", "selection_mode_face", secondButton, 32f + 5f + 4f, 4f, 32f, 32f).apply {
+        +ToggleButton("", "selection_orientation_global", secondButton, 4f, 4f, 32f, 32f).apply {
             tooltip = InstantTooltip("Cursor orientation: Global")
             borderless()
             onClick { dispatcher.onEvent("cursor.set.orientation.global", null) }
+        }
+
+        +ToggleButton("", "selection_orientation_local", firstButton, 32f + 5f + 4f, 4f, 32f, 32f).apply {
+            tooltip = InstantTooltip("Cursor orientation: Local")
+            borderless()
+            onClick { dispatcher.onEvent("cursor.set.orientation.local", null) }
         }
 
         onCmd("updateCursorOrientation") {
@@ -177,6 +179,44 @@ class CursorOrientationBar : RStatelessComponent<CursorOrientationProps>() {
     }
 }
 
+class CursorModeBar : RStatelessComponent<CursorProps>() {
+
+    override fun RBuilder.render() = div("CursorModeBar") {
+        style {
+            classes("cursor_mode_bar")
+            posX = 600f + 64f + 14f + 8f
+            posY = 5f
+            width = 72f + 32f + 5f + 8f
+            height = 40f
+        }
+
+        val firstButton = props.cursor.mode == CursorMode.TRANSLATION
+        val secondButton = props.cursor.mode == CursorMode.ROTATION
+        val thirdButton = props.cursor.mode == CursorMode.SCALE
+
+        +ToggleButton("", "selection_mode_translation", firstButton, 4f, 4f, 32f, 32f).apply {
+            tooltip = InstantTooltip("Cursor mode: Translation")
+            borderless()
+            onClick { dispatcher.onEvent("cursor.set.mode.translate", null) }
+        }
+
+        +ToggleButton("", "selection_mode_rotation", secondButton, 32f + 5f + 4f, 4f, 32f, 32f).apply {
+            tooltip = InstantTooltip("Cursor mode: Rotation")
+            borderless()
+            onClick { dispatcher.onEvent("cursor.set.mode.rotate", null) }
+        }
+
+        +ToggleButton("", "selection_mode_scale", thirdButton, 32f + 5f + 32f + 5f + 4f, 4f, 32f, 32f).apply {
+            tooltip = InstantTooltip("Cursor mode: Scale")
+            borderless()
+            onClick { dispatcher.onEvent("cursor.set.mode.scale", null) }
+        }
+
+        onCmd("updateCursorMode") {
+            rerender()
+        }
+    }
+}
 
 class ModelStatistics : RStatelessComponent<ModelAccessorProps>() {
 

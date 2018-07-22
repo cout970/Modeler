@@ -53,13 +53,22 @@ private fun showSearchPanel(): ITask = ModifyGui { gui ->
 }
 
 @UseCase("cursor.set.mode.translate")
-private fun setCursorModeTranslation(): ITask = ModifyGui { it.state.cursor.mode = CursorMode.TRANSLATION }
+private fun setCursorModeTranslation(): ITask = ModifyGui {
+    it.state.cursor.mode = CursorMode.TRANSLATION
+    it.listeners.runGuiCommand("updateCursorMode")
+}
 
 @UseCase("cursor.set.mode.rotate")
-private fun setCursorModeRotation(): ITask = ModifyGui { it.state.cursor.mode = CursorMode.ROTATION }
+private fun setCursorModeRotation(): ITask = ModifyGui {
+    it.state.cursor.mode = CursorMode.ROTATION
+    it.listeners.runGuiCommand("updateCursorMode")
+}
 
 @UseCase("cursor.set.mode.scale")
-private fun setCursorModeScale(): ITask = ModifyGui { it.state.cursor.mode = CursorMode.SCALE }
+private fun setCursorModeScale(): ITask = ModifyGui {
+    it.state.cursor.mode = CursorMode.SCALE
+    it.listeners.runGuiCommand("updateCursorMode")
+}
 
 @UseCase("cursor.set.orientation.local")
 private fun setCursorOrientationLocal(): ITask = ModifyGui {

@@ -2,7 +2,7 @@ package com.cout970.modeler.controller.usecases
 
 import com.cout970.modeler.Debugger
 import com.cout970.modeler.controller.tasks.ITask
-import com.cout970.modeler.controller.tasks.TaskNone
+import com.cout970.modeler.controller.tasks.ModifyGui
 import com.cout970.modeler.gui.CSSTheme
 import com.cout970.modeler.gui.leguicomp.ProfilerDiagram
 import com.cout970.modeler.gui.leguicomp.key
@@ -13,7 +13,7 @@ import com.cout970.modeler.render.RenderManager
  */
 
 @UseCase("debug")
-private fun onDebug(): ITask {
+private fun onDebug(): ITask = ModifyGui {
     Debugger.debug {
         //reload gui
 
@@ -31,36 +31,31 @@ private fun onDebug(): ITask {
 //        )
 //        taskHistory.processTask(TaskImportModel(projectManager.model, properties))
     }
-    return TaskNone
 }
 
 @UseCase("debug.toggle.dynamic")
-private fun toggleDynamicDebug(rm: RenderManager): ITask {
+private fun toggleDynamicDebug(rm: RenderManager): ITask = ModifyGui {
     Debugger.DYNAMIC_DEBUG = !Debugger.DYNAMIC_DEBUG
     rm.guiRenderer.context.isDebugEnabled = Debugger.DYNAMIC_DEBUG
-    return TaskNone
 }
 
 @UseCase("debug.show.profiling")
-private fun showDebugProfiling(): ITask {
+private fun showDebugProfiling(): ITask = ModifyGui {
     Debugger.showProfiling = !Debugger.showProfiling
-    return TaskNone
 }
 
 @UseCase("debug.changeColors")
-private fun changeDebugColors(): ITask {
+private fun changeDebugColors(): ITask = ModifyGui {
     ProfilerDiagram.ProfilerDiagramRenderer.colors = ProfilerDiagram.ProfilerDiagramRenderer.generateColors()
-    return TaskNone
 }
 
 @UseCase("debug.gc")
-private fun forceGC(): ITask {
+private fun forceGC(): ITask = ModifyGui {
     System.gc()
-    return TaskNone
 }
 
 @UseCase("debug.print.focused")
-private fun printFocusedComp(): ITask {
+private fun printFocusedComp(): ITask = ModifyGui {
     Debugger.debug {
         val ctx = renderManager.guiRenderer.context
 
@@ -69,5 +64,4 @@ private fun printFocusedComp(): ITask {
             println(gui)
         }
     }
-    return TaskNone
 }

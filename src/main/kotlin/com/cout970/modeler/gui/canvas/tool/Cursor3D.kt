@@ -31,7 +31,7 @@ class Cursor3D {
     var visible: Boolean = true
 
     var mode: CursorMode = CursorMode.TRANSLATION
-    var orientation: CursorOrientation = CursorOrientation.LOCAL
+    var orientation: CursorOrientation = CursorOrientation.GLOBAL
 
     var rotation: IQuaternion = Quaternion.IDENTITY
 
