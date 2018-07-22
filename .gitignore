@@ -168,4 +168,4 @@ gradle-app.setting
 logs/
 /config.json
 run
-assets
+/assets
