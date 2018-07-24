@@ -2,6 +2,8 @@ package com.cout970.modeler.gui.leguicomp
 
 import com.cout970.glutilities.device.Keyboard
 import com.cout970.modeler.util.asNullable
+import com.cout970.modeler.util.text
+import com.cout970.reactive.dsl.replaceListener
 import org.liquidengine.legui.component.TextInput
 import org.liquidengine.legui.component.event.textinput.TextInputContentChangeEvent
 import org.liquidengine.legui.component.misc.listener.textinput.TextInputMouseClickEventListener
@@ -30,13 +32,13 @@ class StringInput(
         classes("string_input")
         textState.fontSize = 18f
 
-        listenerMap.addListener(MouseClickEvent::class.java, MouseClickEventListener())
+        listenerMap.replaceListener(MouseClickEvent::class.java, MouseClickEventListener())
 
         listenerMap.addListener(FocusEvent::class.java) {
             if (it.isFocused) {
-                if (text.isNotEmpty()) {
+                if (this.text.isNotEmpty()) {
                     startSelectionIndex = 0
-                    endSelectionIndex = text.length
+                    endSelectionIndex = this.text.length
                     onGainFocus()
                 }
             } else {
@@ -74,6 +76,7 @@ class StringInput(
                 .flatMap { it as? StringInput.MouseClickEventListener }
                 .map { it.ignoreNextEvent = true }
     }
+
 
     class MouseClickEventListener : TextInputMouseClickEventListener() {
         var ignoreNextEvent = false
