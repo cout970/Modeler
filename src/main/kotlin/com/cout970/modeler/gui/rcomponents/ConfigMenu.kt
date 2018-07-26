@@ -341,7 +341,7 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                         }
 
                         child(TinyFloatInput::class, TinyFloatInputProps(
-                                Vector2f(510f, 0f), prop.first, prop.second
+                                Vector2f(510f, 0f), 0.1f, prop.first, prop.second
                         ))
                     }
                 }

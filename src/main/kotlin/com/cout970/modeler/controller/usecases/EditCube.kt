@@ -1,6 +1,7 @@
 package com.cout970.modeler.controller.usecases
 
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.`object`.IObjectCube
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.api.model.selection.ISelection
@@ -9,7 +10,6 @@ import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.tasks.TaskNone
 import com.cout970.modeler.controller.tasks.TaskUpdateModel
-import com.cout970.modeler.core.model.`object`.ObjectCube
 import com.cout970.modeler.core.model.getSelectedObjects
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.project.IProgramState
@@ -28,7 +28,7 @@ private fun changeCube(comp: Component, access: IProgramState): ITask {
     val text = comp.metadata["content"] as? String ?: return TaskNone
 
     val model = access.model
-    val cube = model.getObject(ref) as? IObjectCube ?: return TaskNone
+    val cube = model.getObject(ref)
     val newObject = updateCube(cube, cmd, text, offset) ?: return TaskNone
     val newModel = model.modifyObjects(setOf(ref)) { _, _ -> newObject }
 
@@ -38,28 +38,30 @@ private fun changeCube(comp: Component, access: IProgramState): ITask {
 private fun getObjectRef(access: IProgramState): IObjectRef? {
     val sel = access.modelSelection.getOrNull() ?: return null
 
-    return if (isSelectingOneCube(access.model, sel)) sel.objects.first() else return null
+    return if (isSelectingOne(access.model, sel)) sel.objects.first() else return null
 }
 
-private fun isSelectingOneCube(model: IModel, new: ISelection): Boolean {
+private fun isSelectingOne(model: IModel, new: ISelection): Boolean {
     if (new.selectionType != SelectionType.OBJECT) return false
     if (new.selectionTarget != SelectionTarget.MODEL) return false
     if (new.size != 1) return false
-    val selectedObj = model.getSelectedObjects(new).firstOrNull() ?: return false
-    return selectedObj is ObjectCube
+    model.getSelectedObjects(new).firstOrNull() ?: return false
+    return true
 }
 
-private fun updateCube(cube: IObjectCube, cmd: String, input: String, offset: Float): IObjectCube? {
-    val obj: IObjectCube = when (cmd) {
-        "tex.x" -> setTextureOffsetX(cube, x = getValue(input, cube.textureOffset.xf) + offset)
-        "tex.y" -> setTextureOffsetY(cube, y = getValue(input, cube.textureOffset.yf) + offset)
-        "tex.scale" -> setTextureSize(cube, getValue(input, cube.textureSize.xf) + offset)
+private fun updateCube(cube: IObject, cmd: String, input: String, offset: Float): IObject? {
+    val obj: IObject = when (cmd) {
+        "tex.x" -> setTextureOffsetX(cube as IObjectCube, x = getValue(input, cube.textureOffset.xf) + offset)
+        "tex.y" -> setTextureOffsetY(cube as IObjectCube, y = getValue(input, cube.textureOffset.yf) + offset)
+        "tex.scale" -> setTextureSize(cube as IObjectCube, getValue(input, cube.textureSize.xf) + offset)
         else -> {
             val t = updateTransformation(cube.transformation, cmd, input, offset) ?: return null
             cube.withTransformation(t)
         }
     }
-    if (cube.transformation == obj.transformation && cube.textureOffset == obj.textureOffset && cube.textureSize == obj.textureSize) {
+    if (cube.transformation == obj.transformation && (cube is IObjectCube && obj is IObjectCube &&
+                    cube.textureOffset == obj.textureOffset && cube.textureSize == obj.textureSize)) {
+
         return null
     }
 

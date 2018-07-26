@@ -17,7 +17,6 @@ import com.cout970.reactive.dsl.*
 import com.cout970.reactive.nodes.*
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.vec2Of
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
@@ -122,7 +121,12 @@ class FloatInput : RStatelessComponent<FloatInputProps>() {
     }
 }
 
-data class TinyFloatInputProps(val pos: Vector2f, val getter: () -> Float, val setter: (Float) -> Unit) : RProps
+data class TinyFloatInputProps(
+        val pos: Vector2f = Vector2f(),
+        val increment: Float = 0.1f,
+        val getter: () -> Float,
+        val setter: (Float) -> Unit,
+        val enabled: Boolean = true) : RProps
 
 class TinyFloatInput : RStatelessComponent<TinyFloatInputProps>() {
 
@@ -134,21 +138,28 @@ class TinyFloatInput : RStatelessComponent<TinyFloatInputProps>() {
             position.set(props.pos)
             width = 120f
             height = 24f
+            classes("tiny_float_input")
+        }
+
+        postMount {
+            if (!props.enabled) {
+                disableInput()
+            }
         }
 
         +IconButton("", "button_left", 0f, 0f, 24f, 24f).apply {
-            borderless()
+            classes("tiny_float_input_left")
             onClick {
-                value -= 0.1f
+                value -= props.increment
                 rerender()
             }
         }
 
         +StringInput("", "%.3f".format(Locale.ENGLISH, value), 24f, 0f, 72f, 24f).apply {
-            horizontalAlign = HorizontalAlign.CENTER
+            classes("tiny_float_input_field")
             onScroll {
                 text.toFloatValue()?.let { txt ->
-                    value = it.yoffset.toFloat() + txt
+                    value = it.yoffset.toFloat() * props.increment + txt
                 } ?: rerender()
             }
 
@@ -162,9 +173,9 @@ class TinyFloatInput : RStatelessComponent<TinyFloatInputProps>() {
         }
 
         +IconButton("", "button_right", 96f, 0f, 24f, 24f).apply {
-            borderless()
+            classes("tiny_float_input_right")
             onClick {
-                value += 0.1f
+                value += props.increment
                 rerender()
             }
         }
@@ -174,7 +185,7 @@ class TinyFloatInput : RStatelessComponent<TinyFloatInputProps>() {
         get() = props.getter()
         set(value) {
             props.setter(value)
-            rerender()
+//          rerender()
         }
 
     fun String.toFloatValue(): Float? {
@@ -208,103 +219,387 @@ class TransformationInput : RStatelessComponent<TransformationInputProps>() {
     fun RBuilder.position(translation: IVector3) {
         div("Position") {
             style {
-                transparent()
-                borderless()
-                height = 110f
+                height = 100f
+                classes("inputGroup")
             }
 
             postMount {
                 fillX()
             }
 
-            +FixedLabel("Position", 0f, 0f, 278f, 18f).apply { textState.fontSize = 22f }
-            +FixedLabel("x", 10f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
-            +FixedLabel("y", 98f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
-            +FixedLabel("z", 185f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
+            val line = 0.35f
 
-            valueInput({ translation.xf }, "pos.x", vec2Of(10f, 20f))
-            valueInput({ translation.yf }, "pos.y", vec2Of(98f, 20f))
-            valueInput({ translation.zf }, "pos.z", vec2Of(185f, 20f))
+            div {
+                style {
+                    classes("div")
+                }
+
+                postMount {
+                    width = parent.width * line
+                    fillY()
+                    floatTop(6f, 10f)
+                }
+
+                label("Position X") {
+                    style {
+                        width = 110f
+                        height = 25f
+                        classes("inputLabel")
+                    }
+
+                    postMount { marginX(10f) }
+                }
+
+                label("Position Y") {
+                    style {
+                        width = 110f
+                        height = 25f
+                        classes("inputLabel")
+                    }
+
+                    postMount { marginX(10f) }
+                }
+
+                label("Position Z") {
+                    style {
+                        width = 110f
+                        height = 25f
+                        classes("inputLabel")
+                    }
+
+                    postMount { marginX(10f) }
+                }
+            }
+
+            div {
+                style {
+                    classes("div")
+                }
+
+                postMount {
+                    posX = parent.width * line
+                    width = parent.width * (1 - line)
+                    fillY()
+                    floatTop(6f, 10f)
+                }
+
+                child(TinyFloatInput::class, TinyFloatInputProps(
+                        pos = Vector2f(5f, 0f),
+                        increment = 1f,
+                        getter = { translation.xf },
+                        setter = { cmd("pos.x", it) },
+                        enabled = props.enable
+                ))
+
+                child(TinyFloatInput::class, TinyFloatInputProps(
+                        pos = Vector2f(5f, 0f),
+                        increment = 1f,
+                        getter = { translation.yf },
+                        setter = { cmd("pos.y", it) },
+                        enabled = props.enable
+                ))
+
+                child(TinyFloatInput::class, TinyFloatInputProps(
+                        pos = Vector2f(5f, 0f),
+                        increment = 1f,
+                        getter = { translation.zf },
+                        setter = { cmd("pos.z", it) },
+                        enabled = props.enable
+                ))
+            }
         }
     }
 
     fun RBuilder.rotation(rotation: IVector3) {
         div("Rotation") {
             style {
-                transparent()
-                borderless()
-                height = 110f
+                height = 100f
+                classes("inputGroup")
             }
 
             postMount {
                 fillX()
             }
 
-            +FixedLabel("Rotation", 0f, 0f, 278f, 18f).apply { textState.fontSize = 22f }
-            +FixedLabel("x", 10f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
-            +FixedLabel("y", 98f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
-            +FixedLabel("z", 185f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
+            val line = 0.35f
 
-            valueInput({ rotation.xf }, "rot.x", vec2Of(10f, 20f))
-            valueInput({ rotation.yf }, "rot.y", vec2Of(98f, 20f))
-            valueInput({ rotation.zf }, "rot.z", vec2Of(185f, 20f))
+            div {
+                style {
+                    classes("div")
+                }
+
+                postMount {
+                    width = parent.width * line
+                    fillY()
+                    floatTop(6f, 10f)
+                }
+
+                label("Rotation X") {
+                    style {
+                        width = 110f
+                        height = 25f
+                        classes("inputLabel")
+                    }
+
+                    postMount { marginX(10f) }
+                }
+
+                label("Rotation Y") {
+                    style {
+                        width = 110f
+                        height = 25f
+                        classes("inputLabel")
+                    }
+
+                    postMount { marginX(10f) }
+                }
+
+                label("Rotation Z") {
+                    style {
+                        width = 110f
+                        height = 25f
+                        classes("inputLabel")
+                    }
+
+                    postMount { marginX(10f) }
+                }
+            }
+
+            div {
+                style {
+                    classes("div")
+                }
+
+                postMount {
+                    posX = parent.width * line
+                    width = parent.width * (1 - line)
+                    fillY()
+                    floatTop(6f, 10f)
+                }
+
+                child(TinyFloatInput::class, TinyFloatInputProps(
+                        pos = Vector2f(5f, 0f),
+                        increment = 15f,
+                        getter = { rotation.xf },
+                        setter = { cmd("rot.x", it) },
+                        enabled = props.enable
+                ))
+
+                child(TinyFloatInput::class, TinyFloatInputProps(
+                        pos = Vector2f(5f, 0f),
+                        increment = 15f,
+                        getter = { rotation.yf },
+                        setter = { cmd("rot.y", it) },
+                        enabled = props.enable
+                ))
+
+                child(TinyFloatInput::class, TinyFloatInputProps(
+                        pos = Vector2f(5f, 0f),
+                        increment = 15f,
+                        getter = { rotation.zf },
+                        setter = { cmd("rot.z", it) },
+                        enabled = props.enable
+                ))
+            }
         }
     }
 
     fun RBuilder.pivot(translation: IVector3) {
         div("Pivot") {
             style {
-                transparent()
-                borderless()
-                height = 110f
+                height = 100f
+                classes("inputGroup")
             }
 
             postMount {
                 fillX()
             }
 
-            +FixedLabel("Pivot", 0f, 0f, 278f, 18f).apply { textState.fontSize = 22f }
-            +FixedLabel("x", 10f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
-            +FixedLabel("y", 98f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
-            +FixedLabel("z", 185f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
+            val line = 0.35f
 
-            valueInput({ translation.xf }, "pivot.x", vec2Of(10f, 20f))
-            valueInput({ translation.yf }, "pivot.y", vec2Of(98f, 20f))
-            valueInput({ translation.zf }, "pivot.z", vec2Of(185f, 20f))
+            div {
+                style {
+                    classes("div")
+                }
+
+                postMount {
+                    width = parent.width * line
+                    fillY()
+                    floatTop(6f, 10f)
+                }
+
+                label("Pivot X") {
+                    style {
+                        width = 110f
+                        height = 25f
+                        classes("inputLabel")
+                    }
+
+                    postMount { marginX(10f) }
+                }
+
+                label("Pivot Y") {
+                    style {
+                        width = 110f
+                        height = 25f
+                        classes("inputLabel")
+                    }
+
+                    postMount { marginX(10f) }
+                }
+
+                label("Pivot Z") {
+                    style {
+                        width = 110f
+                        height = 25f
+                        classes("inputLabel")
+                    }
+
+                    postMount { marginX(10f) }
+                }
+            }
+
+            div {
+                style {
+                    classes("div")
+                }
+
+                postMount {
+                    posX = parent.width * line
+                    width = parent.width * (1 - line)
+                    fillY()
+                    floatTop(6f, 10f)
+                }
+
+                child(TinyFloatInput::class, TinyFloatInputProps(
+                        pos = Vector2f(5f, 0f),
+                        increment = 1f,
+                        getter = { translation.xf },
+                        setter = { cmd("pivot.x", it) },
+                        enabled = props.enable
+                ))
+
+                child(TinyFloatInput::class, TinyFloatInputProps(
+                        pos = Vector2f(5f, 0f),
+                        increment = 1f,
+                        getter = { translation.yf },
+                        setter = { cmd("pivot.y", it) },
+                        enabled = props.enable
+                ))
+
+                child(TinyFloatInput::class, TinyFloatInputProps(
+                        pos = Vector2f(5f, 0f),
+                        increment = 1f,
+                        getter = { translation.zf },
+                        setter = { cmd("pivot.z", it) },
+                        enabled = props.enable
+                ))
+            }
         }
     }
-
 
     fun RBuilder.scale(scale: IVector3) {
         div("Scale") {
             style {
-                transparent()
-                borderless()
-                height = 110f
+                height = 100f
+                classes("inputGroup")
             }
 
             postMount {
                 fillX()
             }
 
-            +FixedLabel("Scale", 0f, 0f, 278f, 18f).apply { fontSize = 22f }
-            +FixedLabel("x", 10f, 90f, 75f, 20f).apply { fontSize = 18f }
-            +FixedLabel("y", 98f, 90f, 75f, 20f).apply { fontSize = 18f }
-            +FixedLabel("z", 185f, 90f, 75f, 20f).apply { fontSize = 18f }
+            val line = 0.35f
 
-            valueInput({ scale.xf }, "size.x", vec2Of(10f, 20f))
-            valueInput({ scale.yf }, "size.y", vec2Of(98f, 20f))
-            valueInput({ scale.zf }, "size.z", vec2Of(185f, 20f))
+            div {
+                style {
+                    classes("div")
+                }
+
+                postMount {
+                    width = parent.width * line
+                    fillY()
+                    floatTop(6f, 10f)
+                }
+
+                label("Scale X") {
+                    style {
+                        width = 110f
+                        height = 25f
+                        classes("inputLabel")
+                    }
+
+                    postMount { marginX(10f) }
+                }
+
+                label("Scale Y") {
+                    style {
+                        width = 110f
+                        height = 25f
+                        classes("inputLabel")
+                    }
+
+                    postMount { marginX(10f) }
+                }
+
+                label("Scale Z") {
+                    style {
+                        width = 110f
+                        height = 25f
+                        classes("inputLabel")
+                    }
+
+                    postMount { marginX(10f) }
+                }
+            }
+
+            div {
+                style {
+                    classes("div")
+                }
+
+                postMount {
+                    posX = parent.width * line
+                    width = parent.width * (1 - line)
+                    fillY()
+                    floatTop(6f, 10f)
+                }
+
+                child(TinyFloatInput::class, TinyFloatInputProps(
+                        pos = Vector2f(5f, 0f),
+                        increment = 1f,
+                        getter = { scale.xf },
+                        setter = { cmd("size.x", it) },
+                        enabled = props.enable
+                ))
+
+                child(TinyFloatInput::class, TinyFloatInputProps(
+                        pos = Vector2f(5f, 0f),
+                        increment = 1f,
+                        getter = { scale.yf },
+                        setter = { cmd("size.y", it) },
+                        enabled = props.enable
+                ))
+
+                child(TinyFloatInput::class, TinyFloatInputProps(
+                        pos = Vector2f(5f, 0f),
+                        increment = 1f,
+                        getter = { scale.zf },
+                        setter = { cmd("size.z", it) },
+                        enabled = props.enable
+                ))
+            }
         }
     }
 
-    fun DivBuilder.valueInput(getter: () -> Float, cmd: String, pos: IVector2) {
-        child(FloatInput::class, FloatInputProps(
-                getter = getter,
-                command = props.usecase,
-                metadata = mapOf("command" to cmd),
-                enabled = props.enable,
-                pos = pos)
-        )
+    fun cmd(txt: String, value: Float) {
+        if (props.enable) {
+            Panel().apply {
+                metadata += mapOf("command" to txt)
+                metadata += "offset" to 0f
+                metadata += "content" to value.toString()
+                dispatch(props.usecase)
+            }
+        }
     }
 }

@@ -1,13 +1,13 @@
 package com.cout970.modeler.gui.rcomponents.left
 
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.`object`.IObjectCube
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.core.model.TRTSTransformation
-import com.cout970.modeler.core.model.`object`.ObjectCube
 import com.cout970.modeler.core.model.getSelectedObjects
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.model.selection.ObjectRefNone
@@ -20,9 +20,6 @@ import com.cout970.modeler.gui.rcomponents.FloatInput
 import com.cout970.modeler.gui.rcomponents.FloatInputProps
 import com.cout970.modeler.gui.rcomponents.TransformationInput
 import com.cout970.modeler.gui.rcomponents.TransformationInputProps
-import com.cout970.modeler.util.Nullable
-import com.cout970.modeler.util.asNullable
-import com.cout970.modeler.util.getOr
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
 import com.cout970.reactive.dsl.*
@@ -49,63 +46,62 @@ class EditCubePanel : RComponent<ModelAccessorProps, VisibleWidget>() {
             alignAsColumn(5f, 14f)
         }
 
-        val (ref, cube) = getObject().split { it }
-        val cubeRef: IObjectRef = ref.getOr(ObjectRefNone)
+        val pair = getObject()
 
-        val trans = cube.map { it.transformation }.getOr(TRTSTransformation.IDENTITY)
-        val tex = { cube.map { it.textureOffset }.getOr(Vector2.ORIGIN) }
-        val scale = { cube.map { it.textureSize }.getOr(Vector2.ORIGIN) }
+        val trans = pair?.second?.transformation ?: TRTSTransformation.IDENTITY
+        val tex = (pair?.second as? IObjectCube)?.textureOffset ?: Vector2.ORIGIN
+        val scale = (pair?.second as? IObjectCube)?.textureSize ?: Vector2.ORIGIN
 
         child(GroupTitle::class.java, GroupTitleProps("Edit Cube", state.on) { setState { copy(on = !on) } })
 
         child(TransformationInput::class, TransformationInputProps(
                 usecase = "update.template.cube",
                 transformation = trans,
-                enable = cubeRef != ObjectRefNone
+                enable = pair != null
         ))
 
-        div("Texture") {
-            style {
-                transparent()
-                borderless()
-                height = 110f
+        if (pair != null && pair.second is IObjectCube) {
+            div("Texture") {
+                style {
+                    transparent()
+                    borderless()
+                    height = 110f
+                }
+
+                postMount {
+                    fillX()
+                }
+
+                +FixedLabel("Texture", 0f, 0f, 278f, 18f).apply { textState.fontSize = 22f }
+                +FixedLabel("x", 10f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
+                +FixedLabel("y", 98f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
+                +FixedLabel("scale", 185f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
+
+                valueInput({ tex.xf }, "tex.x", pair.first, vec2Of(10f, 20f))
+                valueInput({ tex.yf }, "tex.y", pair.first, vec2Of(98f, 20f))
+                valueInput({ scale.xf }, "tex.scale", pair.first, vec2Of(185f, 20f))
             }
-
-            postMount {
-                fillX()
-            }
-
-            +FixedLabel("Texture", 0f, 0f, 278f, 18f).apply { textState.fontSize = 22f }
-            +FixedLabel("x", 10f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
-            +FixedLabel("y", 98f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
-            +FixedLabel("scale", 185f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
-
-            valueInput({ tex().xf }, "tex.x", cubeRef, vec2Of(10f, 20f))
-            valueInput({ tex().yf }, "tex.y", cubeRef, vec2Of(98f, 20f))
-            valueInput({ scale().xf }, "tex.scale", cubeRef, vec2Of(185f, 20f))
         }
 
         on<EventModelUpdate> { rerender() }
         on<EventSelectionUpdate> { rerender() }
     }
 
-    fun isSelectingOneCube(model: IModel, new: ISelection): Boolean {
+    fun isSelectingOne(model: IModel, new: ISelection): Boolean {
         if (new.selectionType != SelectionType.OBJECT) return false
         if (new.selectionTarget != SelectionTarget.MODEL) return false
         if (new.size != 1) return false
-        val selectedObj = model.getSelectedObjects(new).firstOrNull() ?: return false
-        return selectedObj is ObjectCube
+        model.getSelectedObjects(new).firstOrNull() ?: return false
+        return true
     }
 
-    fun getObject(): Nullable<Pair<IObjectRef, IObjectCube>> {
-        return props.access.modelSelection
-                .flatMap {
-                    if (isSelectingOneCube(props.access.model, it)) it.objects.first() else null
-                }
-                .flatMapNullable {
-                    val cube = props.access.model.getObject(it).asNullable().flatMap { it as? IObjectCube }
-                    it.asNullable().zip(cube)
-                }
+    fun getObject(): Pair<IObjectRef, IObject>? {
+        val sel = props.access.modelSelection.getOrNull() ?: return null
+        if (!isSelectingOne(props.access.model, sel)) return null
+        val objRef = sel.objects.first()
+        val obj = props.access.model.getObject(objRef)
+
+        return objRef to obj
     }
 
     fun DivBuilder.valueInput(getter: () -> Float, cmd: String, cubeRef: IObjectRef, pos: IVector2) {

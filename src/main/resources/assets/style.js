@@ -240,7 +240,41 @@ var exported = {
         borderStyle: "solid",
         borderWidth: "1",
         borderColor: "#c2f3ff"
-    }
+    },
+    div: {
+        backgroundColor: transparent,
+        borderStyle: "none"
+    },
+    inputLabel: {
+        textAlign: "right",
+        textSize: "20"
+    },
+    tiny_float_input: {
+        borderWidth: "1",
+        borderColor: "#131313",
+        borderRadius: "0"
+    },
+    tiny_float_input_left: {
+        backgroundColor: "#484848",
+        borderStyle: "none",
+        borderRadius: "0"
+    },
+    tiny_float_input_right: {
+        backgroundColor: "#484848",
+        borderStyle: "none",
+        borderRadius: "0"
+    },
+    tiny_float_input_field: {
+        textAlign: "center",
+        backgroundColor: "#323232",
+        borderRadius: "0",
+        textSize: "20"
+    },
+    inputGroup: {
+        backgroundColor: transparent,
+        borderStyle: "none"
+    },
+
 };
 
 exported

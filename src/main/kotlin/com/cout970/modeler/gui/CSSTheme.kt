@@ -1,11 +1,14 @@
 package com.cout970.modeler.gui
 
 import com.cout970.modeler.core.config.ColorPalette.Companion.colorOf
+import com.cout970.modeler.core.log.Level
+import com.cout970.modeler.core.log.log
 import com.cout970.reactive.dsl.hide
 import com.cout970.reactive.dsl.show
 import jdk.nashorn.api.scripting.ScriptObjectMirror
 import org.joml.Vector4f
 import org.liquidengine.legui.component.*
+import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.style.Style
 import org.liquidengine.legui.style.border.SimpleLineBorder
 import org.liquidengine.legui.theme.*
@@ -76,6 +79,18 @@ object CSSTheme : Theme(createThemeManager()) {
         if (comp is ToggleButton) {
             style.getColor("toggledBackgroundColor") { comp.toggledBackgroundColor = it }
         }
+
+        if (comp is TextComponent) {
+            style.getString("textAlign") {
+                when (it) {
+                    "right" -> comp.textState.horizontalAlign = HorizontalAlign.RIGHT
+                    "left" -> comp.textState.horizontalAlign = HorizontalAlign.LEFT
+                    "center" -> comp.textState.horizontalAlign = HorizontalAlign.CENTER
+                    else -> log(Level.DEBUG) { "Invalid textAlign value: $it" }
+                }
+            }
+            style.getFloat("textSize") { comp.textState.fontSize = it }
+        }
     }
 
     private inline fun ScriptObjectMirror.getColor(clazz: String, func: (Vector4f) -> Unit) {
@@ -89,7 +104,13 @@ object CSSTheme : Theme(createThemeManager()) {
     }
 
     private inline fun ScriptObjectMirror.getFloat(clazz: String, func: (Float) -> Unit) {
-        get(clazz) { func((this as String).toFloat()) }
+        get(clazz) {
+            if (this is String) {
+                func(this.toFloat())
+            } else if (this is Number) {
+                func(this.toFloat())
+            }
+        }
     }
 
     private inline fun ScriptObjectMirror.getString(clazz: String, func: (String) -> Unit) {
