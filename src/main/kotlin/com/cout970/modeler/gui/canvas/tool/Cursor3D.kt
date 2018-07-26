@@ -33,14 +33,42 @@ class Cursor3D {
     var mode: CursorMode = CursorMode.TRANSLATION
     var orientation: CursorOrientation = CursorOrientation.GLOBAL
 
+    var useLinearScalation: Boolean = true
     var rotation: IQuaternion = Quaternion.IDENTITY
 
-    private val parts = CursorMode.values().map { mode ->
-        val pairs = listOf(Vector3.X_AXIS, Vector3.Y_AXIS, Vector3.Z_AXIS)
-        mode to pairs.map { CursorPart(mode, it, it) }
-    }.toMap()
+    private val translationParts = listOf(
+            CursorPart(CursorMode.TRANSLATION, Vector3.X_AXIS, Vector3.X_AXIS),
+            CursorPart(CursorMode.TRANSLATION, Vector3.Y_AXIS, Vector3.Y_AXIS),
+            CursorPart(CursorMode.TRANSLATION, Vector3.Z_AXIS, Vector3.Z_AXIS)
+    )
 
-    fun getParts(): List<CursorPart> = parts[mode]!!
+    private val rotationParts = listOf(
+            CursorPart(CursorMode.ROTATION, Vector3.X_AXIS, Vector3.X_AXIS),
+            CursorPart(CursorMode.ROTATION, Vector3.Y_AXIS, Vector3.Y_AXIS),
+            CursorPart(CursorMode.ROTATION, Vector3.Z_AXIS, Vector3.Z_AXIS)
+    )
+
+    private val scaleParts = listOf(
+            CursorPart(CursorMode.SCALE, Vector3.X_AXIS, Vector3.X_AXIS),
+            CursorPart(CursorMode.SCALE, Vector3.Y_AXIS, Vector3.Y_AXIS),
+            CursorPart(CursorMode.SCALE, Vector3.Z_AXIS, Vector3.Z_AXIS)
+    )
+
+    private val linearScaleParts = listOf(
+            CursorPart(CursorMode.SCALE, Vector3.X_AXIS, Vector3.X_AXIS),
+            CursorPart(CursorMode.SCALE, Vector3.Y_AXIS, Vector3.Y_AXIS),
+            CursorPart(CursorMode.SCALE, Vector3.Z_AXIS, Vector3.Z_AXIS),
+
+            CursorPart(CursorMode.SCALE, Vector3.NEG_X_AXIS, Vector3.X_AXIS),
+            CursorPart(CursorMode.SCALE, Vector3.NEG_Y_AXIS, Vector3.Y_AXIS),
+            CursorPart(CursorMode.SCALE, Vector3.NEG_Z_AXIS, Vector3.Z_AXIS)
+    )
+
+    fun getParts(): List<CursorPart> = when (mode) {
+        CursorMode.TRANSLATION -> translationParts
+        CursorMode.ROTATION -> rotationParts
+        CursorMode.SCALE -> if (useLinearScalation) linearScaleParts else scaleParts
+    }
 
     fun update(gui: Gui) {
         val sel = gui.state.modelSelection

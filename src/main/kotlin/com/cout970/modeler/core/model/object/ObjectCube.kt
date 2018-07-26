@@ -12,8 +12,6 @@ import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.mesh.MeshFactory
-import com.cout970.modeler.util.toAxisRotations
-import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
@@ -116,7 +114,7 @@ data class ObjectCube(
 
     override fun withTextureSize(size: IVector2): IObjectCube = copy(textureSize = size)
 
-    override fun withMesh(newMesh: IMesh): IObject = Object(name, newMesh, material, TRSTransformation.IDENTITY, visible, id)
+    override fun withMesh(newMesh: IMesh): IObject = Object(name, newMesh, material, transformation, visible, id)
 
     override fun withMaterial(materialRef: IMaterialRef): IObject = copy(material = materialRef)
 
@@ -127,21 +125,6 @@ data class ObjectCube(
     override fun makeCopy(): IObjectCube = copy(id = UUID.randomUUID())
 
     override val transformer: IObjectTransformer = object : IObjectTransformer {
-
-        override fun translate(obj: IObject, translation: IVector3): IObject {
-            val newPos = pos + translation
-            return copy(transformation = trs.copy(translation = newPos))
-        }
-
-        override fun rotate(obj: IObject, pivot: IVector3, rot: IQuaternion): IObject {
-            val newRot = TRSTransformation.fromRotationPivot(pivot, rot.toAxisRotations())
-            return copy(transformation = transformation + newRot)
-        }
-
-        override fun scale(obj: IObject, center: IVector3, axis: IVector3, offset: Float): IObject {
-            val newSize = size + axis * offset
-            return copy(transformation = trs.copy(scale = newSize))
-        }
 
         override fun translateTexture(obj: IObject, translation: IVector2): IObject {
             val newOffset = textureOffset + translation * textureSize

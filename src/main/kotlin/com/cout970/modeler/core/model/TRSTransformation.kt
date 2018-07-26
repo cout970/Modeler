@@ -8,6 +8,7 @@ import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
 import org.joml.Matrix4d
 import org.joml.Quaterniond
+import org.joml.Vector3d
 
 /**
  * Created by cout970 on 2017/05/14.
@@ -41,6 +42,19 @@ data class TRSTransformation(
         fun fromRotationPivot(pivot: IVector3, rotation: IVector3): TRSTransformation {
             return fromRotationPivot(pivot, quatOfAngles(rotation))
         }
+
+        fun fromScalePivot(point: IVector3, scale: IVector3): TRSTransformation {
+            return TRSTransformation(translation = point - point * scale, scale = scale)
+        }
+
+        fun fromMatrix(mat: IMatrix4): TRSTransformation {
+            val joml = mat.toJOML()
+            val translation = joml.getTranslation(Vector3d()).toIVector()
+            val rotation = joml.getUnnormalizedRotation(Quaterniond()).normalize().toIQuaternion()
+            val scale = joml.getScale(Vector3d()).toIVector()
+
+            return TRSTransformation(translation, rotation, scale)
+        }
     }
 
     // Gson pls
@@ -56,8 +70,16 @@ data class TRSTransformation(
 
     fun merge(other: TRSTransformation): TRSTransformation {
         return TRSTransformation(
-                translation = other.rotation.transform(this.translation) + other.translation,
+                translation = other.rotation.transform(this.translation) * other.scale + other.translation,
                 rotation = other.rotation * this.rotation,
+                scale = other.scale * this.scale
+        )
+    }
+
+    operator fun times(other: TRSTransformation): TRSTransformation {
+        return TRSTransformation(
+                translation = this.rotation.transform(other.translation) + this.translation * other.scale,
+                rotation = this.rotation * other.rotation,
                 scale = this.scale * other.scale
         )
     }

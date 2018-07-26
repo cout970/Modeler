@@ -1,31 +1,30 @@
-# use "jvisualvm.exe -J-Dorg.netbeans.profiler.separateConsole=true"
-# Loads of skyboxes "http://www.custommapmakers.org/skyboxes.php"
+# Notes
+use "jvisualvm.exe -J-Dorg.netbeans.profiler.separateConsole=true" for performance testing
+Loads of skyboxes "http://www.custommapmakers.org/skyboxes.php"
 
 # TODO
 - [x] Fix selection raytrace
 - [x] Fix translation/rotation/scale based on cursor mode
 - [x] Add panel for transform mode
+- [ ] Fix transform relative with object space
+- [ ] Fix import/export
+- [ ] Fix texture editing
+- [ ] Finish cursor capabilities
+- [ ] Add control panel for all the program flags
 
+# Old TODO list
 
-
-
-
-
-
-
-Old TODO list
-
-# Current
+### Current
 import texture template after creation
 menu to edit material properties
 add extra info into objects
 
-# TODO soom
+### TODO soom
 add binary switches
 better logo.
 choose a name.
 
-# TODO later
+### TODO later
 export hitbox dialog
 detect duplicated shapes
 change scale to be directional
@@ -48,7 +47,7 @@ make face based on vertex/edge selection
 c for convert (obj to mesh, mesh to obj)
 remove doubles (duplicated vertices/edges/faces)
 
-# TODO maybe, and of course later
+### TODO maybe, and of course later
 Add plugin api
 Add keys in react tree, so you can use paths
 Add render event to be able to change or add stuff to the gui, probably allowing customs props?
@@ -58,6 +57,6 @@ Be able to change skybox texture
 showcase option, just keep the camera rotating around the model
 Center camera when something is selected select
 
-# TODO pay me if you want me to spend months on this
+### TODO pay me if you want me to spend months on this
 Minecraft transformations preview (hand, hat, ground, etc)
 Game sync (update in editor, change in game at the same time)

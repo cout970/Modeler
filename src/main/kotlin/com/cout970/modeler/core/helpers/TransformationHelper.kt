@@ -1,29 +1,23 @@
 package com.cout970.modeler.core.helpers
 
+import com.cout970.matrix.api.IMatrix4
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.`object`.IObjectCube
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.api.model.selection.toObjectRef
-import com.cout970.modeler.core.model.TRSTransformation
-import com.cout970.modeler.core.model.edges
-import com.cout970.modeler.core.model.faces
+import com.cout970.modeler.core.model.*
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.mesh.getTextureVertex
-import com.cout970.modeler.core.model.pos
-import com.cout970.modeler.util.scale
-import com.cout970.modeler.util.toAxisRotations
-import com.cout970.modeler.util.toJOML
-import com.cout970.vector.api.IQuaternion
+import com.cout970.modeler.render.tool.Animator
+import com.cout970.modeler.util.*
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.times
-import com.cout970.vector.extensions.toVector3
-import com.cout970.vector.extensions.vec2Of
-import com.cout970.vector.extensions.vec3Of
+import com.cout970.vector.extensions.*
 import org.joml.Matrix4d
 import org.joml.Vector4d
 
@@ -35,16 +29,134 @@ object TransformationHelper {
     //
     // TRANSFORM
     //
-    fun translate(source: IModel, sel: ISelection, translation: IVector3): IModel {
-        val matrix = TRSTransformation(translation).matrix.toJOML()
-        val transform = { it: IVector3 -> matrix.transformVertex(it) }
+    fun transformLocal(source: IModel, sel: ISelection, animator: Animator, transform: ITransformation): IModel {
         return when (sel.selectionType) {
-            SelectionType.OBJECT -> source.modifyObjects({ sel.isSelected(it) }) { _, it ->
-                it.transformer.translate(it, translation)
+            SelectionType.OBJECT -> {
+                applyTransformation(source, sel, animator) { obj, inv ->
+                    obj.withTransformation(obj.transformation + (inv + transform))
+                }
             }
-            SelectionType.FACE -> transformFaces(source, sel, transform)
-            SelectionType.EDGE -> transformEdges(source, sel, transform)
-            SelectionType.VERTEX -> transformVertex(source, sel, transform)
+            SelectionType.FACE -> {
+                applyTransformation(source, sel, animator) { obj, inv ->
+                    val indices: Set<Int> = sel.faces
+                            .filter { it.objectId == obj.id }
+                            .map { obj.mesh.faces[it.faceIndex] }
+                            .flatMap { it.pos }
+                            .toSet()
+
+                    val local = obj.transformation + transform + obj.transformation.invert()
+                    val newMesh = transformMesh2(obj, indices, (inv + local).matrix)
+                    obj.withMesh(newMesh)
+                }
+            }
+            SelectionType.EDGE -> {
+                applyTransformation(source, sel, animator) { obj, inv ->
+                    val indices: Set<Int> = sel.edges
+                            .filter { it.objectId == obj.id }
+                            .flatMap { listOf(it.firstIndex, it.secondIndex) }
+                            .toSet()
+
+                    val local = obj.transformation + transform + obj.transformation.invert()
+                    val newMesh = transformMesh2(obj, indices, (inv + local).matrix)
+                    obj.withMesh(newMesh)
+                }
+            }
+            SelectionType.VERTEX -> {
+                applyTransformation(source, sel, animator) { obj, inv ->
+                    val indices: Set<Int> = sel.pos
+                            .filter { it.objectId == obj.id }
+                            .map { it.posIndex }
+                            .toSet()
+
+                    val local = obj.transformation + transform + obj.transformation.invert()
+                    val newMesh = transformMesh2(obj, indices, (inv + local).matrix)
+                    obj.withMesh(newMesh)
+                }
+            }
+        }
+    }
+
+    fun scaleLocal(source: IModel, sel: ISelection, animator: Animator, vector: IVector3, offset: Float): IModel {
+
+        fun calculateTransfrom(obj: IObject, inv: ITransformation): ITransformation {
+            val trs = obj.transformation.toTRS()
+            val local = trs.rotation.invert().transform(inv.matrix.transformVertex(vector))
+            val (scale, translation) = getScaleAndTranslation(local)
+            val finalTranslation = trs.rotation.transform(inv.invert().matrix.transformVertex(translation))
+
+            return trs.copy(
+                    translation = trs.translation + finalTranslation * offset,
+                    scale = (trs.scale + scale * offset).max(Vector3.ZERO)
+            )
+        }
+
+        return when (sel.selectionType) {
+            SelectionType.OBJECT -> {
+                applyTransformation(source, sel, animator) { obj, inv ->
+                    obj.withTransformation(calculateTransfrom(obj, inv))
+                }
+            }
+            SelectionType.FACE -> {
+                applyTransformation(source, sel, animator) { obj, inv ->
+                    val indices: Set<Int> = sel.faces
+                            .filter { it.objectId == obj.id }
+                            .map { obj.mesh.faces[it.faceIndex] }
+                            .flatMap { it.pos }
+                            .toSet()
+
+                    val trs = obj.transformation.toTRS()
+                    val transform = calculateTransfrom(obj, inv) + trs.invert()
+
+                    val newMesh = transformMesh2(obj, indices, (inv + transform).matrix)
+                    obj.withMesh(newMesh)
+                }
+            }
+            SelectionType.EDGE -> {
+                applyTransformation(source, sel, animator) { obj, inv ->
+                    val indices: Set<Int> = sel.edges
+                            .filter { it.objectId == obj.id }
+                            .flatMap { listOf(it.firstIndex, it.secondIndex) }
+                            .toSet()
+
+                    val trs = obj.transformation.toTRS()
+                    val transform = calculateTransfrom(obj, inv) + trs.invert()
+
+                    val newMesh = transformMesh2(obj, indices, (inv + transform).matrix)
+                    obj.withMesh(newMesh)
+                }
+            }
+            SelectionType.VERTEX -> {
+                applyTransformation(source, sel, animator) { obj, inv ->
+                    val indices: Set<Int> = sel.pos
+                            .filter { it.objectId == obj.id }
+                            .map { it.posIndex }
+                            .toSet()
+
+                    val trs = obj.transformation.toTRS()
+                    val transform = calculateTransfrom(obj, inv) + trs.invert()
+
+                    val newMesh = transformMesh2(obj, indices, (inv + transform).matrix)
+                    obj.withMesh(newMesh)
+                }
+            }
+        }
+    }
+
+    fun getScaleAndTranslation(vec: IVector3): Pair<IVector3, IVector3> {
+        val x = vec.xd >= 0
+        val y = vec.yd >= 0
+        val z = vec.zd >= 0
+
+        return when {
+            !x && !y && !z -> vec3Of(-vec.xd, -vec.yd, -vec.zd) to vec3Of(vec.xd, vec.yd, vec.zd)
+            !x && !y && z -> vec3Of(-vec.xd, -vec.yd, vec.zd) to vec3Of(vec.xd, vec.yd, 0)
+            !x && y && !z -> vec3Of(-vec.xd, vec.yd, -vec.zd) to vec3Of(vec.xd, 0, vec.zd)
+            !x && y && z -> vec3Of(-vec.xd, vec.yd, vec.zd) to vec3Of(vec.xd, 0, 0)
+            x && !y && !z -> vec3Of(vec.xd, -vec.yd, -vec.zd) to vec3Of(0, vec.yd, vec.zd)
+            x && !y && z -> vec3Of(vec.xd, -vec.yd, vec.zd) to vec3Of(0, vec.yd, 0)
+            x && y && !z -> vec3Of(vec.xd, vec.yd, -vec.zd) to vec3Of(0, 0, vec.zd)
+            x && y && z -> vec3Of(vec.xd, vec.yd, vec.zd) to vec3Of(0, 0, 0)
+            else -> error("x: $x, y: $y, z: $z")
         }
     }
 
@@ -58,19 +170,6 @@ object TransformationHelper {
             SelectionType.FACE -> transformTextureFaces(source, sel, transform)
             SelectionType.EDGE -> transformTextureEdges(source, sel, transform)
             SelectionType.VERTEX -> transformTextureVertex(source, sel, transform)
-        }
-    }
-
-    fun rotate(source: IModel, sel: ISelection, pivot: IVector3, rotation: IQuaternion): IModel {
-        val matrix = TRSTransformation.fromRotationPivot(pivot, rotation.toAxisRotations()).matrix.toJOML()
-        val transform = { it: IVector3 -> matrix.transformVertex(it) }
-        return when (sel.selectionType) {
-            SelectionType.OBJECT -> source.modifyObjects({ sel.isSelected(it) }) { _, it ->
-                it.transformer.rotate(it, pivot, rotation)
-            }
-            SelectionType.FACE -> transformFaces(source, sel, transform)
-            SelectionType.EDGE -> transformEdges(source, sel, transform)
-            SelectionType.VERTEX -> transformVertex(source, sel, transform)
         }
     }
 
@@ -88,18 +187,6 @@ object TransformationHelper {
         }
     }
 
-    fun scale(source: IModel, sel: ISelection, center: IVector3, axis: IVector3, offset: Float): IModel {
-        val transform = { it: IVector3 -> it.scale(center, axis, offset) }
-        return when (sel.selectionType) {
-            SelectionType.OBJECT -> source.modifyObjects({ sel.isSelected(it) }) { _, it ->
-                it.transformer.scale(it, center, axis, offset)
-            }
-            SelectionType.FACE -> transformFaces(source, sel, transform)
-            SelectionType.EDGE -> transformEdges(source, sel, transform)
-            SelectionType.VERTEX -> transformVertex(source, sel, transform)
-        }
-    }
-
     fun scaleTexture(source: IModel, sel: ISelection, center: IVector2, axis: IVector2, offset: Float): IModel {
         val transform = { it: IVector2 -> it.scale(center, axis, offset) }
         return when (sel.selectionType) {
@@ -112,44 +199,23 @@ object TransformationHelper {
         }
     }
 
-    fun transformFaces(source: IModel, sel: ISelection, transform: (IVector3) -> IVector3): IModel {
-        val objRefs = sel.faces.map { it.toObjectRef() }.toSet()
-        return source.modifyObjects(objRefs) { ref, obj ->
-            val indices: Set<Int> = sel.faces
-                    .filter { it.toObjectRef() == ref }
-                    .map { obj.mesh.faces[it.faceIndex] }
-                    .flatMap { it.pos }
-                    .toSet()
+    private fun applyTransformation(source: IModel, sel: ISelection, animator: Animator, func: (IObject, ITransformation) -> IObject): IModel {
+        val objRefs = when (sel.selectionType) {
+            SelectionType.OBJECT -> sel.objects.toSet()
+            SelectionType.FACE -> sel.faces.map { it.toObjectRef() }.toSet()
+            SelectionType.EDGE -> sel.edges.map { it.toObjectRef() }.toSet()
+            SelectionType.VERTEX -> sel.pos.map { it.toObjectRef() }.toSet()
+        }
+        return source.modifyObjects(objRefs) { _, obj ->
+            val mat = obj.getParentGlobalMatrix(source, animator)
+            val inv = mat.toJOML().invert().toIMatrix()
 
-            val newMesh = transformMesh(obj, indices, transform)
-            obj.withMesh(newMesh)
+            func(obj, TRSTransformation.fromMatrix(inv))
         }
     }
 
-    fun transformEdges(source: IModel, sel: ISelection, transform: (IVector3) -> IVector3): IModel {
-        val objRefs = sel.edges.map { it.toObjectRef() }.toSet()
-        return source.modifyObjects(objRefs) { ref, obj ->
-            val indices: Set<Int> = sel.edges
-                    .filter { it.toObjectRef() == ref }
-                    .flatMap { listOf(it.firstIndex, it.secondIndex) }
-                    .toSet()
-
-            val newMesh = transformMesh(obj, indices, transform)
-            obj.withMesh(newMesh)
-        }
-    }
-
-    fun transformVertex(source: IModel, sel: ISelection, transform: (IVector3) -> IVector3): IModel {
-        val objRefs = sel.pos.map { it.toObjectRef() }.toSet()
-        return source.modifyObjects(objRefs) { ref, obj ->
-            val indices: Set<Int> = sel.pos
-                    .filter { it.toObjectRef() == ref }
-                    .map { it.posIndex }
-                    .toSet()
-
-            val newMesh = transformMesh(obj, indices, transform)
-            obj.withMesh(newMesh)
-        }
+    private fun ITransformation.invert(): TRSTransformation {
+        return TRSTransformation.fromMatrix(matrix.toJOML().invert().toIMatrix())
     }
 
     fun transformTextureFaces(source: IModel, sel: ISelection, transform: (IVector2) -> IVector2): IModel {
@@ -192,6 +258,14 @@ object TransformationHelper {
         }
     }
 
+    fun transformMesh2(obj: IObject, indices: Set<Int>, transform: IMatrix4): IMesh {
+
+        val newPos: List<IVector3> = obj.mesh.pos.mapIndexed { index, it ->
+            if (index in indices) transform.transformVertex(it) else it
+        }
+        return Mesh(pos = newPos, tex = obj.mesh.tex, faces = obj.mesh.faces)
+    }
+
     fun transformMesh(obj: IObject, indices: Set<Int>, transform: (IVector3) -> IVector3): IMesh {
 
         val newPos: List<IVector3> = obj.mesh.pos.mapIndexed { index, it ->
@@ -206,11 +280,6 @@ object TransformationHelper {
             if (index in indices) transform(it) else it
         }
         return Mesh(pos = obj.mesh.pos, tex = newTex, faces = obj.mesh.faces)
-    }
-
-    fun Matrix4d.transformVertex(it: IVector3): IVector3 {
-        val vec4 = transform(Vector4d(it.xd, it.yd, it.zd, 1.0))
-        return vec3Of(vec4.x, vec4.y, vec4.z)
     }
 
     fun Matrix4d.transformVertex(it: IVector2): IVector2 {
@@ -262,3 +331,11 @@ object TransformationHelper {
         }
     }
 }
+
+fun Matrix4d.transformVertex(it: IVector3): IVector3 {
+    val vec4 = transform(Vector4d(it.xd, it.yd, it.zd, 1.0))
+    return vec3Of(vec4.x, vec4.y, vec4.z)
+}
+
+fun IMatrix4.transformVertex(it: IVector3): IVector3 = toJOML().transformVertex(it)
+

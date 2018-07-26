@@ -9,11 +9,9 @@ import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.util.scale
-import com.cout970.modeler.util.toAxisRotations
-import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
-import com.cout970.vector.api.IVector3
-import com.cout970.vector.extensions.*
+import com.cout970.vector.extensions.toVector3
+import com.cout970.vector.extensions.vec3Of
 import java.util.*
 
 /**
@@ -46,33 +44,13 @@ data class Object(
     override fun makeCopy(): IObject = copy(id = UUID.randomUUID())
 
     override val transformer: IObjectTransformer = object : IObjectTransformer {
-        override fun translate(obj: IObject, translation: IVector3): IObject {
-            return copy(transformation = transformation + TRSTransformation(translation))
-        }
-
-        override fun rotate(obj: IObject, pivot: IVector3, rot: IQuaternion): IObject {
-            return copy(transformation = transformation + TRSTransformation.fromRotationPivot(
-                    pivot, rot.toAxisRotations()
-            ))
-        }
-
-        override fun scale(obj: IObject, center: IVector3, axis: IVector3, offset: Float): IObject {
-            val newMesh = Mesh(
-                    pos = mesh.pos.map { it * (vec3Of(1) + axis * offset / 256.0) },
-                    tex = mesh.tex,
-                    faces = mesh.faces
-            )
-            return copy(mesh = newMesh)
-        }
 
         override fun translateTexture(obj: IObject, translation: IVector2): IObject {
-            return copy(mesh = mesh.transformTexture(
-                    TRSTransformation(translation.toVector3(0.0))))
+            return copy(mesh = mesh.transformTexture(TRSTransformation(translation.toVector3(0.0))))
         }
 
         override fun rotateTexture(obj: IObject, center: IVector2, angle: Double): IObject {
-            val trans = TRSTransformation.fromRotationPivot(
-                    center.toVector3(0.0), vec3Of(0.0, 0.0, 1.0))
+            val trans = TRSTransformation.fromRotationPivot(center.toVector3(0.0), vec3Of(0.0, 0.0, 1.0))
             return copy(mesh = mesh.transformTexture(trans))
         }
 

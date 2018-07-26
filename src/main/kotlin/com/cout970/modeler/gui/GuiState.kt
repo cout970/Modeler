@@ -26,6 +26,7 @@ class GuiState(val projectManager: IProgramState) : IProgramState by projectMana
     var showHiddenFaces: Boolean = false
     var drawTextureProjection: Boolean = true
     var drawTextureGridLines: Boolean = true
+    var drawOutline: Boolean = false
 
     var renderLights: Boolean = false
     var renderSkybox: Boolean = true
@@ -33,6 +34,7 @@ class GuiState(val projectManager: IProgramState) : IProgramState by projectMana
 
     var popup: Popup? = null
 
+    // TODO remove
     var hoveredObject: ISelectable? = null
     var tmpModel: IModel? = null
 

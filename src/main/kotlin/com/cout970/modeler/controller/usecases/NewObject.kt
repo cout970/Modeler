@@ -14,6 +14,7 @@ import com.cout970.modeler.core.model.mesh.MeshFactory
 import com.cout970.modeler.core.model.mutate
 import com.cout970.modeler.core.model.ref
 import com.cout970.vector.extensions.Quaternion
+import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.vec3Of
 
 /**
@@ -22,8 +23,11 @@ import com.cout970.vector.extensions.vec3Of
 
 @UseCase("cube.mesh.new")
 private fun newObject(model: IModel): ITask {
-    val mesh = MeshFactory.createCube(vec3Of(4, 16, 4), vec3Of(8, 8, 8))
-    val obj = Object("Object ${model.objects.size}", mesh)
+    val obj = Object(
+            name = "Object ${model.objects.size}",
+            mesh = MeshFactory.createCube(Vector3.ONE, Vector3.ORIGIN),
+            transformation = TRSTransformation(vec3Of(4, 16, 4), Quaternion.IDENTITY, vec3Of(8, 8, 8))
+    )
 
     return addObject(model, obj)
 }

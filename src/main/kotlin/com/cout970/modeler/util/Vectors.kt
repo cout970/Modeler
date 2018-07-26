@@ -161,21 +161,6 @@ fun quatOfAngles(angles: IVector3): IQuaternion {
     return Quaterniond().rotateXYZ(rads.x.toDouble(), rads.y.toDouble(), rads.z.toDouble()).toIQuaternion()
 }
 
-inline fun quatOfAxisAngled(x: Number, y: Number, z: Number, angle: Number): IQuaternion {
-    return Quaterniond().rotateAxis(angle.toDouble(), x.toDouble(), y.toDouble(), z.toDouble()).toIQuaternion()
-}
-
-// degrees
-fun quatOfAxisAngled(angles: IVector3, angle: Number): IQuaternion {
-
-    return Quaterniond().rotateAxis(
-            angle.toDouble(),
-            angles.x.toRads(),
-            angles.y.toRads(),
-            angles.z.toRads()
-    ).toIQuaternion()
-}
-
 fun IQuaternion.transform(pos: IVector3): IVector3 {
     return toJOML().transform(pos.toJoml3d()).toIVector()
 }

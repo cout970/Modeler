@@ -41,7 +41,7 @@ class ToggleButton(
 
     override fun loadResources(resources: GuiResources) {
         resources.getIconOrNull("active_$icon")?.let {
-            setImage(ImageIcon(it))
+            setImage(ImageIcon(size, it))
         }
         resources.getIconOrNull("disable_$icon")?.let {
             style.background.icon = ImageIcon(it)

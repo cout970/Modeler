@@ -123,30 +123,32 @@ class ModelRenderer {
         }
 
         // Outline
-        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE)
-        GL11.glLineWidth(Config.selectionThickness * 10f)
-        ctx.shader.apply {
-            useCubeMap.setBoolean(false)
-            useTexture.setBoolean(false)
-            useColor.setBoolean(false)
-            useLight.setBoolean(false)
-            showHiddenFaces.setBoolean(false)
-            useGlobalColor.setBoolean(true)
-            globalColor.setVector3(vec3Of(0, 0, 0))
+        if (ctx.gui.state.drawOutline) {
+            GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE)
+            GL11.glLineWidth(Config.selectionThickness * 10f)
+            ctx.shader.apply {
+                useCubeMap.setBoolean(false)
+                useTexture.setBoolean(false)
+                useColor.setBoolean(false)
+                useLight.setBoolean(false)
+                showHiddenFaces.setBoolean(false)
+                useGlobalColor.setBoolean(true)
+                globalColor.setVector3(vec3Of(0, 0, 0))
 
-            objectCache.forEach { objRef, cache ->
-                matrixM.setMatrix4(matrixCache[objRef] ?: Matrix4.IDENTITY)
-                accept(cache.geometry)
+                objectCache.forEach { objRef, cache ->
+                    matrixM.setMatrix4(matrixCache[objRef] ?: Matrix4.IDENTITY)
+                    accept(cache.geometry)
+                }
+
+                globalColor.setVector3(Vector3.ONE)
+                useGlobalColor.setBoolean(false)
+                showHiddenFaces.setBoolean(false)
             }
-
-            globalColor.setVector3(Vector3.ONE)
-            useGlobalColor.setBoolean(false)
-            showHiddenFaces.setBoolean(false)
+            GL11.glLineWidth(1f)
+            GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL)
         }
-        GL11.glLineWidth(1f)
-        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL)
 
-        // Selection
+        // Model Selection
         ctx.shader.apply {
             useTexture.setInt(0)
             useColor.setInt(1)
@@ -162,8 +164,7 @@ class ModelRenderer {
             GL11.glLineWidth(1f)
         }
 
-
-        // Selection
+        // Texture Selection
         ctx.shader.apply {
             useTexture.setInt(0)
             useColor.setInt(1)

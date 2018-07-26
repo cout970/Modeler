@@ -82,8 +82,10 @@ private fun joinObjects(programState: IProgramState): ITask {
     val objsRefs = selection.objects
     val newObj = Object(
             name = objs.first().name,
+            // TODO get relative transformation between this and the other objects so the meshes are in the same coordinate system
             mesh = objs.map { it.mesh }.reduce { acc, mesh -> acc.merge(mesh) },
-            material = objs.first().material
+            material = objs.first().material,
+            transformation = objs.first().transformation
     )
     val newModel = model.removeObjects(objsRefs).addObjects(listOf(newObj))
 

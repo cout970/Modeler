@@ -47,6 +47,10 @@ fun IObject.getGlobalMatrix(model: IModel, animator: Animator, animation: IAnima
     return getRecursiveMatrix(ref, model, animator, animation) ?: Matrix4.IDENTITY
 }
 
+fun IObject.getParentGlobalMatrix(model: IModel, animator: Animator, animation: IAnimation = animator.animation): IMatrix4 {
+    return getParentRecursiveMatrix(ref, model, animator, animation) ?: Matrix4.IDENTITY
+}
+
 fun IObject.getGlobalTransform(model: IModel): ITransformation {
     return getRecursiveTransform(ref, model) ?: TRSTransformation.IDENTITY
 }
@@ -115,6 +119,34 @@ private fun getRecursiveMatrix(ref: IObjectRef, model: IModel, group: IGroupRef,
 
     model.tree.groups[group].forEach {
         val newMat = getRecursiveMatrix(ref, model, it, mat, animator, animation)
+        if (newMat != null) return newMat
+    }
+    return null
+}
+
+private fun getParentRecursiveMatrix(ref: IObjectRef, model: IModel, animator: Animator, animation: IAnimation): IMatrix4? {
+    model.tree.objects[RootGroupRef].forEach { obj ->
+        if (obj == ref) return null
+    }
+
+    model.tree.groups[RootGroupRef].forEach {
+        val mat = getParentRecursiveMatrix(ref, model, it, Matrix4.IDENTITY, animator, animation)
+        if (mat != null) return mat
+    }
+    return null
+}
+
+private fun getParentRecursiveMatrix(ref: IObjectRef, model: IModel, group: IGroupRef,
+                                     matrix: IMatrix4, animator: Animator, animation: IAnimation): IMatrix4? {
+
+    val mat = model.getGroup(group).transform.matrix * matrix * animator.animate(animation, group, ObjectRefNone)
+
+    model.tree.objects[group].forEach { obj ->
+        if (obj == ref) return mat
+    }
+
+    model.tree.groups[group].forEach {
+        val newMat = getParentRecursiveMatrix(ref, model, it, mat, animator, animation)
         if (newMat != null) return newMat
     }
     return null

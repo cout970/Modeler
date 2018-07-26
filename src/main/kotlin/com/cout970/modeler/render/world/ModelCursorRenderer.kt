@@ -38,7 +38,10 @@ class ModelCursorRenderer {
         val rotation = listOf(
                 base rotationTo cursor.rotation.transform(Vector3.X_AXIS),
                 base rotationTo cursor.rotation.transform(Vector3.Y_AXIS),
-                base rotationTo cursor.rotation.transform(Vector3.Z_AXIS)
+                base rotationTo cursor.rotation.transform(Vector3.Z_AXIS),
+                base rotationTo cursor.rotation.transform(Vector3.NEG_X_AXIS),
+                base rotationTo cursor.rotation.transform(Vector3.NEG_Y_AXIS),
+                base rotationTo cursor.rotation.transform(Vector3.NEG_Z_AXIS)
         )
 
         val model = when (cursor.mode) {

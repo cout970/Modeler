@@ -5,6 +5,7 @@ import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.controller.dispatcher
 import com.cout970.modeler.controller.tasks.TaskUpdateModel
 import com.cout970.modeler.core.helpers.TransformationHelper
+import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.canvas.Canvas
 import com.cout970.modeler.gui.canvas.helpers.CanvasHelper
@@ -12,12 +13,15 @@ import com.cout970.modeler.gui.canvas.helpers.RotationHelper
 import com.cout970.modeler.gui.canvas.helpers.ScaleHelper
 import com.cout970.modeler.gui.canvas.helpers.TranslationHelper
 import com.cout970.modeler.gui.canvas.input.Hover
-import com.cout970.modeler.util.quatOfAxisAngled
-import com.cout970.modeler.util.toIVector
-import com.cout970.modeler.util.transform
+import com.cout970.modeler.util.*
+import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
+import com.cout970.vector.api.IVector3
+import com.cout970.vector.extensions.Vector3
+import com.cout970.vector.extensions.plus
 import com.cout970.vector.extensions.times
 import com.cout970.vector.extensions.unaryMinus
+import org.joml.Quaterniond
 import org.liquidengine.legui.component.Panel
 
 class DragListener(val gui: Gui) : IDragListener {
@@ -95,13 +99,20 @@ private class CursorTransformHelper {
 
             val model = when (hovered.mode) {
                 CursorMode.TRANSLATION -> {
-                    TransformationHelper.translate(oldModel, selection, vector * offset)
+                    val transform = TRSTransformation(translation = vector * offset)
+                    TransformationHelper.transformLocal(oldModel, selection, gui.animator, transform)
                 }
                 CursorMode.ROTATION -> {
-                    TransformationHelper.rotate(oldModel, selection, cursor.position, quatOfAxisAngled(vector, offset))
+                    val transform = TRSTransformation.fromRotationPivot(cursor.position, quatOfAxisAngled(vector, offset).toAxisRotations())
+                    TransformationHelper.transformLocal(oldModel, selection, gui.animator, transform)
                 }
                 CursorMode.SCALE -> {
-                    TransformationHelper.scale(oldModel, selection, cursor.position, vector, offset)
+                    if (cursor.useLinearScalation) {
+                        TransformationHelper.scaleLocal(oldModel, selection, gui.animator, vector, offset)
+                    } else {
+                        val transform = TRSTransformation.fromScalePivot(cursor.position, Vector3.ONE + vector * offset)
+                        TransformationHelper.transformLocal(oldModel, selection, gui.animator, transform)
+                    }
                 }
             }
 
@@ -112,5 +123,16 @@ private class CursorTransformHelper {
             this.offset = newOffset
             return this.cache!!
         }
+    }
+
+    // degrees
+    fun quatOfAxisAngled(angles: IVector3, angle: Number): IQuaternion {
+
+        return Quaterniond().rotateAxis(
+                angle.toDouble(),
+                angles.x.toRads(),
+                angles.y.toRads(),
+                angles.z.toRads()
+        ).toIQuaternion()
     }
 }
