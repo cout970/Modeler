@@ -36,11 +36,12 @@ var exported = {
     },
     checkbox: {
         borderStyle: "none",
-        backgroundColor: "#474747",
-        borderRadius: "2"
+        backgroundColor: transparent,
+        borderRadius: "2",
+        textSize: "22"
     },
     checkbox_active: {
-        backgroundColor: "#6b6b6b"
+        backgroundColor: "rgba(1, 1, 1, 0.3)"
     },
     right_panel_hide: {
         display: "none"
@@ -247,7 +248,7 @@ var exported = {
     },
     inputLabel: {
         textAlign: "right",
-        textSize: "20"
+        textSize: "22"
     },
     tiny_float_input: {
         borderWidth: "1",
@@ -269,6 +270,15 @@ var exported = {
         backgroundColor: "#323232",
         borderRadius: "0",
         textSize: "20"
+    },
+    tiny_float_input_left_disable: {
+        backgroundColor: "#2d2d2d",
+    },
+    tiny_float_input_right_disable: {
+        backgroundColor: "#2d2d2d",
+    },
+    tiny_float_input_field_disable: {
+        backgroundColor: "#242424",
     },
     inputGroup: {
         backgroundColor: transparent,

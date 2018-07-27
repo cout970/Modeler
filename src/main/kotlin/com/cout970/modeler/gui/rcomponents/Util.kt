@@ -17,6 +17,7 @@ import com.cout970.reactive.dsl.*
 import com.cout970.reactive.nodes.*
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
+import com.cout970.vector.extensions.Vector3
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
@@ -139,6 +140,9 @@ class TinyFloatInput : RStatelessComponent<TinyFloatInputProps>() {
             width = 120f
             height = 24f
             classes("tiny_float_input")
+            if (!props.enabled) {
+                classes("tiny_float_input_disable")
+            }
         }
 
         postMount {
@@ -149,14 +153,25 @@ class TinyFloatInput : RStatelessComponent<TinyFloatInputProps>() {
 
         +IconButton("", "button_left", 0f, 0f, 24f, 24f).apply {
             classes("tiny_float_input_left")
+            if (!props.enabled) {
+                classes("tiny_float_input_left_disable")
+            }
+
             onClick {
                 value -= props.increment
                 rerender()
             }
         }
 
-        +StringInput("", "%.3f".format(Locale.ENGLISH, value), 24f, 0f, 72f, 24f).apply {
+        +StringInput("", formatter.format(value), 24f, 0f, 72f, 24f).apply {
             classes("tiny_float_input_field")
+            if (!props.enabled) {
+                disable()
+                disableInput()
+                classes("tiny_float_input_field_disable")
+                focusedStyle.background = style.background
+            }
+
             onScroll {
                 text.toFloatValue()?.let { txt ->
                     value = it.yoffset.toFloat() * props.increment + txt
@@ -174,6 +189,9 @@ class TinyFloatInput : RStatelessComponent<TinyFloatInputProps>() {
 
         +IconButton("", "button_right", 96f, 0f, 24f, 24f).apply {
             classes("tiny_float_input_right")
+            if (!props.enabled) {
+                classes("tiny_float_input_right_disable")
+            }
             onClick {
                 value += props.increment
                 rerender()
@@ -197,6 +215,10 @@ data class TransformationInputProps(val usecase: String, val transformation: ITr
 
 class TransformationInput : RStatelessComponent<TransformationInputProps>() {
 
+    companion object {
+        private val line = 0.4f
+    }
+
     override fun RBuilder.render() {
 
         val t = props.transformation
@@ -206,12 +228,13 @@ class TransformationInput : RStatelessComponent<TransformationInputProps>() {
                 scale(t.scale)
                 position(t.translation)
                 rotation(t.rotation.toAxisRotations())
+                pivot(Vector3.ZERO, false)
             }
             is TRTSTransformation -> {
                 scale(t.scale)
                 position(t.translation)
                 rotation(t.rotation)
-                pivot(t.pivot)
+                pivot(t.pivot, true)
             }
         }
     }
@@ -219,15 +242,13 @@ class TransformationInput : RStatelessComponent<TransformationInputProps>() {
     fun RBuilder.position(translation: IVector3) {
         div("Position") {
             style {
-                height = 100f
+                height = 93f
                 classes("inputGroup")
             }
 
             postMount {
                 fillX()
             }
-
-            val line = 0.35f
 
             div {
                 style {
@@ -237,7 +258,7 @@ class TransformationInput : RStatelessComponent<TransformationInputProps>() {
                 postMount {
                     width = parent.width * line
                     fillY()
-                    floatTop(6f, 10f)
+                    floatTop(6f, 5f)
                 }
 
                 label("Position X") {
@@ -280,7 +301,7 @@ class TransformationInput : RStatelessComponent<TransformationInputProps>() {
                     posX = parent.width * line
                     width = parent.width * (1 - line)
                     fillY()
-                    floatTop(6f, 10f)
+                    floatTop(6f, 5f)
                 }
 
                 child(TinyFloatInput::class, TinyFloatInputProps(
@@ -313,15 +334,13 @@ class TransformationInput : RStatelessComponent<TransformationInputProps>() {
     fun RBuilder.rotation(rotation: IVector3) {
         div("Rotation") {
             style {
-                height = 100f
+                height = 93f
                 classes("inputGroup")
             }
 
             postMount {
                 fillX()
             }
-
-            val line = 0.35f
 
             div {
                 style {
@@ -331,7 +350,7 @@ class TransformationInput : RStatelessComponent<TransformationInputProps>() {
                 postMount {
                     width = parent.width * line
                     fillY()
-                    floatTop(6f, 10f)
+                    floatTop(6f, 5f)
                 }
 
                 label("Rotation X") {
@@ -374,7 +393,7 @@ class TransformationInput : RStatelessComponent<TransformationInputProps>() {
                     posX = parent.width * line
                     width = parent.width * (1 - line)
                     fillY()
-                    floatTop(6f, 10f)
+                    floatTop(6f, 5f)
                 }
 
                 child(TinyFloatInput::class, TinyFloatInputProps(
@@ -404,18 +423,16 @@ class TransformationInput : RStatelessComponent<TransformationInputProps>() {
         }
     }
 
-    fun RBuilder.pivot(translation: IVector3) {
+    fun RBuilder.pivot(translation: IVector3, enabled: Boolean) {
         div("Pivot") {
             style {
-                height = 100f
+                height = 93f
                 classes("inputGroup")
             }
 
             postMount {
                 fillX()
             }
-
-            val line = 0.35f
 
             div {
                 style {
@@ -425,7 +442,7 @@ class TransformationInput : RStatelessComponent<TransformationInputProps>() {
                 postMount {
                     width = parent.width * line
                     fillY()
-                    floatTop(6f, 10f)
+                    floatTop(6f, 5f)
                 }
 
                 label("Pivot X") {
@@ -468,7 +485,7 @@ class TransformationInput : RStatelessComponent<TransformationInputProps>() {
                     posX = parent.width * line
                     width = parent.width * (1 - line)
                     fillY()
-                    floatTop(6f, 10f)
+                    floatTop(6f, 5f)
                 }
 
                 child(TinyFloatInput::class, TinyFloatInputProps(
@@ -476,7 +493,7 @@ class TransformationInput : RStatelessComponent<TransformationInputProps>() {
                         increment = 1f,
                         getter = { translation.xf },
                         setter = { cmd("pivot.x", it) },
-                        enabled = props.enable
+                        enabled = props.enable && enabled
                 ))
 
                 child(TinyFloatInput::class, TinyFloatInputProps(
@@ -484,7 +501,7 @@ class TransformationInput : RStatelessComponent<TransformationInputProps>() {
                         increment = 1f,
                         getter = { translation.yf },
                         setter = { cmd("pivot.y", it) },
-                        enabled = props.enable
+                        enabled = props.enable && enabled
                 ))
 
                 child(TinyFloatInput::class, TinyFloatInputProps(
@@ -492,7 +509,7 @@ class TransformationInput : RStatelessComponent<TransformationInputProps>() {
                         increment = 1f,
                         getter = { translation.zf },
                         setter = { cmd("pivot.z", it) },
-                        enabled = props.enable
+                        enabled = props.enable && enabled
                 ))
             }
         }
@@ -501,15 +518,13 @@ class TransformationInput : RStatelessComponent<TransformationInputProps>() {
     fun RBuilder.scale(scale: IVector3) {
         div("Scale") {
             style {
-                height = 100f
+                height = 93f
                 classes("inputGroup")
             }
 
             postMount {
                 fillX()
             }
-
-            val line = 0.35f
 
             div {
                 style {
@@ -519,7 +534,7 @@ class TransformationInput : RStatelessComponent<TransformationInputProps>() {
                 postMount {
                     width = parent.width * line
                     fillY()
-                    floatTop(6f, 10f)
+                    floatTop(6f, 5f)
                 }
 
                 label("Scale X") {
@@ -562,7 +577,7 @@ class TransformationInput : RStatelessComponent<TransformationInputProps>() {
                     posX = parent.width * line
                     width = parent.width * (1 - line)
                     fillY()
-                    floatTop(6f, 10f)
+                    floatTop(6f, 5f)
                 }
 
                 child(TinyFloatInput::class, TinyFloatInputProps(

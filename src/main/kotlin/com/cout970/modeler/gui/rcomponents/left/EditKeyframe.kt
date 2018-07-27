@@ -23,21 +23,21 @@ import com.cout970.reactive.nodes.div
 import com.cout970.reactive.nodes.style
 
 
-data class EditAnimationProps(val animator: Animator, val programState: IProgramState) : RProps
+data class EditKeyframeProps(val animator: Animator, val programState: IProgramState) : RProps
 
-class EditAnimation : RComponent<EditAnimationProps, VisibleWidget>() {
+class EditKeyframe : RComponent<EditKeyframeProps, VisibleWidget>() {
 
     override fun getInitialState() = VisibleWidget(false)
 
     override fun RBuilder.render() = div("EditAnimation") {
         style {
             classes("left_panel_group", "edit_animation")
-            height = if (state.on) 491f else 24f
+            height = if (state.on) 420f else 24f
         }
 
         postMount {
             marginX(5f)
-            alignAsColumn(5f, 14f)
+            alignAsColumn(5f, 16f)
         }
 
         child(GroupTitle::class.java, GroupTitleProps("Edit Keyframe", state.on) { setState { copy(on = !on) } })

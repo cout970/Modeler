@@ -3,19 +3,17 @@ package com.cout970.modeler.gui.rcomponents.left
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.canvas.GridLines
 import com.cout970.modeler.gui.leguicomp.*
-import com.cout970.modeler.gui.rcomponents.FloatInput
-import com.cout970.modeler.gui.rcomponents.FloatInputProps
+import com.cout970.modeler.gui.rcomponents.TinyFloatInput
+import com.cout970.modeler.gui.rcomponents.TinyFloatInputProps
 import com.cout970.modeler.util.toColor
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
 import com.cout970.reactive.core.RProps
 import com.cout970.reactive.dsl.*
-import com.cout970.reactive.nodes.DivBuilder
 import com.cout970.reactive.nodes.child
 import com.cout970.reactive.nodes.div
+import com.cout970.reactive.nodes.label
 import com.cout970.reactive.nodes.style
-import com.cout970.vector.api.IVector2
-import com.cout970.vector.extensions.vec2Of
 import org.joml.Vector2f
 import org.liquidengine.legui.component.CheckBox
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
@@ -44,19 +42,17 @@ class EditGrids : RComponent<EditGridsProps, VisibleWidget>() {
             style {
                 classes("config_grids_checkboxes")
                 height = 24f * 3 + 15f
+                width = 160f
             }
 
             postMount {
-                marginX(10f)
+                centerX()
             }
 
-            +CheckBox("Enable Plane X", 0f, 0f, 248f, 24f).apply {
+            +CheckBox("Enable Plane X", 0f, 0f, 160f, 24f).apply {
                 defaultTextColor()
-                style.setBorderRadius(0f)
-                fontSize = 20f
-                textState.padding.x = 24f
+                textState.padding.x = 4f
                 isChecked = props.gridLines.enableXPlane
-                background { dark2 }
                 classes("checkbox")
                 if (isChecked) classes("checkbox_active")
 
@@ -66,12 +62,10 @@ class EditGrids : RComponent<EditGridsProps, VisibleWidget>() {
                 onClick { props.gridLines.enableXPlane = isChecked; rerender() }
             }
 
-            +CheckBox("Enable Plane Y", 0f, 24f + 5f, 248f, 24f).apply {
+            +CheckBox("Enable Plane Y", 0f, 24f + 5f, 160f, 24f).apply {
                 defaultTextColor()
-                fontSize = 20f
-                textState.padding.x = 24f
+                textState.padding.x = 4f
                 isChecked = props.gridLines.enableYPlane
-                background { dark2 }
                 classes("checkbox")
                 if (isChecked) classes("checkbox_active")
 
@@ -81,12 +75,10 @@ class EditGrids : RComponent<EditGridsProps, VisibleWidget>() {
                 onClick { props.gridLines.enableYPlane = isChecked; rerender() }
             }
 
-            +CheckBox("Enable Plane Z", 0f, 48f + 10f, 248f, 24f).apply {
+            +CheckBox("Enable Plane Z", 0f, 48f + 10f, 160f, 24f).apply {
                 defaultTextColor()
-                fontSize = 20f
-                textState.padding.x = 24f
+                textState.padding.x = 4f
                 isChecked = props.gridLines.enableZPlane
-                background { dark2 }
                 classes("checkbox")
                 if (isChecked) classes("checkbox_active")
 
@@ -99,68 +91,201 @@ class EditGrids : RComponent<EditGridsProps, VisibleWidget>() {
 
         div("Offset") {
             style {
-                transparent()
-                borderless()
-                height = 110f
+                height = 92f
+                classes("inputGroup")
             }
 
             postMount {
                 fillX()
             }
 
-            val gridOffsetX = props.gridLines.gridOffset::xf.getter
-            val gridOffsetY = props.gridLines.gridOffset::yf.getter
-            val gridOffsetZ = props.gridLines.gridOffset::zf.getter
+            val line = 0.4f
 
-            +FixedLabel("Grid offset", 0f, 0f, 278f, 18f).apply { textState.fontSize = 22f }
-            +FixedLabel("x", 10f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
-            +FixedLabel("y", 98f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
-            +FixedLabel("z", 185f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
+            div {
+                style {
+                    classes("div")
+                }
 
-            valueInput(gridOffsetX, "offset", "x", vec2Of(10f, 20f))
-            valueInput(gridOffsetY, "offset", "y", vec2Of(98f, 20f))
-            valueInput(gridOffsetZ, "offset", "z", vec2Of(185f, 20f))
+                postMount {
+                    width = parent.width * line
+                    fillY()
+                    floatTop(6f, 5f)
+                }
+
+                label("Offset X") {
+                    style {
+                        width = 110f
+                        height = 25f
+                        classes("inputLabel")
+                    }
+
+                    postMount { marginX(10f) }
+                }
+
+                label("Offset Y") {
+                    style {
+                        width = 110f
+                        height = 25f
+                        classes("inputLabel")
+                    }
+
+                    postMount { marginX(10f) }
+                }
+
+                label("Offset Z") {
+                    style {
+                        width = 110f
+                        height = 25f
+                        classes("inputLabel")
+                    }
+
+                    postMount { marginX(10f) }
+                }
+            }
+
+            div {
+                style {
+                    classes("div")
+                }
+
+                postMount {
+                    posX = parent.width * line
+                    width = parent.width * (1 - line)
+                    fillY()
+                    floatTop(6f, 5f)
+                }
+
+                val offset = props.gridLines.gridOffset
+
+                child(TinyFloatInput::class, TinyFloatInputProps(
+                        pos = Vector2f(5f, 0f),
+                        increment = 1f,
+                        getter = { offset.xf },
+                        setter = { cmd("x", it, "grid.offset.change") }
+                ))
+
+                child(TinyFloatInput::class, TinyFloatInputProps(
+                        pos = Vector2f(5f, 0f),
+                        increment = 1f,
+                        getter = { offset.yf },
+                        setter = { cmd("y", it, "grid.offset.change") }
+                ))
+
+                child(TinyFloatInput::class, TinyFloatInputProps(
+                        pos = Vector2f(5f, 0f),
+                        increment = 1f,
+                        getter = { offset.zf },
+                        setter = { cmd("z", it, "grid.offset.change") }
+                ))
+            }
         }
 
         div("Size") {
             style {
-                transparent()
-                borderless()
-                height = 110f
+                height = 92f
+                classes("inputGroup")
             }
 
             postMount {
                 fillX()
             }
 
-            val gridSizeX = props.gridLines.gridSize::xf.getter
-            val gridSizeY = props.gridLines.gridSize::yf.getter
-            val gridSizeZ = props.gridLines.gridSize::zf.getter
+            val line = 0.4f
 
-            +FixedLabel("Grid size", 0f, 0f, 278f, 18f).apply { textState.fontSize = 22f }
-            +FixedLabel("x", 10f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
-            +FixedLabel("y", 98f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
-            +FixedLabel("z", 185f, 90f, 75f, 20f).apply { textState.fontSize = 18f }
+            div {
+                style {
+                    classes("div")
+                }
 
-            valueInput(gridSizeX, "size", "x", vec2Of(10f, 20f))
-            valueInput(gridSizeY, "size", "y", vec2Of(98f, 20f))
-            valueInput(gridSizeZ, "size", "z", vec2Of(185f, 20f))
+                postMount {
+                    width = parent.width * line
+                    fillY()
+                    floatTop(6f, 5f)
+                }
+
+                label("Size X") {
+                    style {
+                        width = 110f
+                        height = 25f
+                        classes("inputLabel")
+                    }
+
+                    postMount { marginX(10f) }
+                }
+
+                label("Size Y") {
+                    style {
+                        width = 110f
+                        height = 25f
+                        classes("inputLabel")
+                    }
+
+                    postMount { marginX(10f) }
+                }
+
+                label("Size Z") {
+                    style {
+                        width = 110f
+                        height = 25f
+                        classes("inputLabel")
+                    }
+
+                    postMount { marginX(10f) }
+                }
+            }
+
+            div {
+                style {
+                    classes("div")
+                }
+
+                postMount {
+                    posX = parent.width * line
+                    width = parent.width * (1 - line)
+                    fillY()
+                    floatTop(6f, 5f)
+                }
+
+                val offset = props.gridLines.gridSize
+
+                child(TinyFloatInput::class, TinyFloatInputProps(
+                        pos = Vector2f(5f, 0f),
+                        increment = 1f,
+                        getter = { offset.xf },
+                        setter = { cmd("x", it, "grid.size.change") }
+                ))
+
+                child(TinyFloatInput::class, TinyFloatInputProps(
+                        pos = Vector2f(5f, 0f),
+                        increment = 1f,
+                        getter = { offset.yf },
+                        setter = { cmd("y", it, "grid.size.change") }
+                ))
+
+                child(TinyFloatInput::class, TinyFloatInputProps(
+                        pos = Vector2f(5f, 0f),
+                        increment = 1f,
+                        getter = { offset.zf },
+                        setter = { cmd("z", it, "grid.size.change") }
+                ))
+            }
         }
     }
 
-    private fun configIcon(icon: CharIcon) {
+    private fun CheckBox.configIcon(icon: CharIcon) {
         icon.color = Config.colorPalette.bright4.toColor()
-        icon.position = Vector2f(4f, 4f)
+        icon.size = Vector2f(24f, 24f)
+        icon.position = Vector2f(size.x - icon.size.x, 0f)
         icon.horizontalAlign = HorizontalAlign.CENTER
     }
 
-    fun DivBuilder.valueInput(getter: () -> Float, target: String, axis: String, pos: IVector2) {
-        child(FloatInput::class, FloatInputProps(
-                getter = getter,
-                command = "grid.$target.change",
-                metadata = mapOf("axis" to axis, "listener" to { rerender() }),
-                enabled = true,
-                pos = pos
-        ))
+    fun cmd(txt: String, value: Float, usecase: String) {
+        Panel().apply {
+            metadata += "axis" to txt
+            metadata += "offset" to 0f
+            metadata += "listener" to { rerender() }
+            metadata += "content" to value.toString()
+            dispatch(usecase)
+        }
     }
 }

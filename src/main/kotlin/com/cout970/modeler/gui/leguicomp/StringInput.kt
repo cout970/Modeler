@@ -35,6 +35,7 @@ class StringInput(
         listenerMap.replaceListener(MouseClickEvent::class.java, MouseClickEventListener())
 
         listenerMap.addListener(FocusEvent::class.java) {
+            if (!it.targetComponent.isEnabled) return@addListener
             if (it.isFocused) {
                 if (this.text.isNotEmpty()) {
                     startSelectionIndex = 0
@@ -47,11 +48,13 @@ class StringInput(
         }
 
         listenerMap.addListener(KeyEvent::class.java) {
+            if (!it.targetComponent.isEnabled) return@addListener
             if (it.key == Keyboard.KEY_ENTER) {
                 onEnterPress?.invoke()
             }
         }
         listenerMap.addListener(TextInputContentChangeEvent::class.java) {
+            if (!it.targetComponent.isEnabled) return@addListener
             onTextChange?.invoke(it)
         }
 
@@ -83,7 +86,7 @@ class StringInput(
 
         override fun process(event: MouseClickEvent<*>) {
             if (event.action != MouseClickEvent.MouseClickAction.PRESS) return
-            if (ignoreNextEvent) {
+            if (ignoreNextEvent || !event.targetComponent.isEnabled) {
                 ignoreNextEvent = false
                 return
             }
