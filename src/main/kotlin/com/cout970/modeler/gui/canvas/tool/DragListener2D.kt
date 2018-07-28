@@ -56,7 +56,6 @@ class DragListener2D(val gui: Gui) : IDragListener {
         selectButton = false
         helper.modelCache = null
         helper.offsetCache = Vector2.ORIGIN
-        gui.state.tmpModel = null
         gui.state.cursor.update(gui)
     }
 

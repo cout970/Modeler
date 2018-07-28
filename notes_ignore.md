@@ -6,11 +6,15 @@ Loads of skyboxes "http://www.custommapmakers.org/skyboxes.php"
 - [x] Fix selection raytrace
 - [x] Fix translation/rotation/scale based on cursor mode
 - [x] Add panel for transform mode
-- [ ] Fix transform relative with object space
+- [x] Fix transform relative with object space
 - [ ] Fix import/export
-- [ ] Fix texture editing
-- [ ] Finish cursor capabilities
+- [x] Fix texture editing
+- [x] Finish cursor capabilities
+- [x] Fix selection raytrace (again)
 - [ ] Add control panel for all the program flags
+- [ ] Upgrade model tree and fix object out of groups
+- [ ] Add interface to edit texture properties
+- [ ] Upgrade animation panel/keyframe editor
 
 # Old TODO list
 
