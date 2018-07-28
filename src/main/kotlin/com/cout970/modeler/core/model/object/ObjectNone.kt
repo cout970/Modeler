@@ -5,7 +5,6 @@ import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.`object`.IObjectCube
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IMesh
-import com.cout970.modeler.api.model.transformer.IObjectTransformer
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.mesh.Mesh
@@ -38,14 +37,6 @@ object ObjectNone : IObject {
     override fun withName(name: String): IObject = this
 
     override fun withId(id: UUID): IObject = this
-
-    override val transformer: IObjectTransformer = object : IObjectTransformer {
-
-        override fun translateTexture(obj: IObject, translation: IVector2): IObject = this@ObjectNone
-        override fun rotateTexture(obj: IObject, center: IVector2, angle: Double): IObject = this@ObjectNone
-        override fun scaleTexture(obj: IObject, center: IVector2, axis: IVector2,
-                                  offset: Float): IObject = this@ObjectNone
-    }
 
 }
 
@@ -80,13 +71,5 @@ object ObjectCubeNone : IObjectCube {
     override fun withName(name: String): IObject = this
 
     override fun withId(id: UUID): IObject = this
-
-    override val transformer: IObjectTransformer = object : IObjectTransformer {
-
-        override fun translateTexture(obj: IObject, translation: IVector2): IObject = this@ObjectCubeNone
-        override fun rotateTexture(obj: IObject, center: IVector2, angle: Double): IObject = this@ObjectCubeNone
-        override fun scaleTexture(obj: IObject, center: IVector2, axis: IVector2,
-                                  offset: Float): IObject = this@ObjectCubeNone
-    }
 
 }

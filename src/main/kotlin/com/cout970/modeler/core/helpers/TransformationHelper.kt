@@ -26,9 +26,6 @@ import org.joml.Vector4d
  */
 object TransformationHelper {
 
-    //
-    // TRANSFORM
-    //
     fun transformLocal(source: IModel, sel: ISelection, animator: Animator, transform: ITransformation): IModel {
         return when (sel.selectionType) {
             SelectionType.OBJECT -> {
@@ -45,7 +42,7 @@ object TransformationHelper {
                             .toSet()
 
                     val local = obj.transformation + transform + obj.transformation.invert()
-                    val newMesh = transformMesh2(obj, indices, (inv + local).matrix)
+                    val newMesh = transformMesh(obj, indices, (inv + local).matrix)
                     obj.withMesh(newMesh)
                 }
             }
@@ -57,7 +54,7 @@ object TransformationHelper {
                             .toSet()
 
                     val local = obj.transformation + transform + obj.transformation.invert()
-                    val newMesh = transformMesh2(obj, indices, (inv + local).matrix)
+                    val newMesh = transformMesh(obj, indices, (inv + local).matrix)
                     obj.withMesh(newMesh)
                 }
             }
@@ -69,7 +66,7 @@ object TransformationHelper {
                             .toSet()
 
                     val local = obj.transformation + transform + obj.transformation.invert()
-                    val newMesh = transformMesh2(obj, indices, (inv + local).matrix)
+                    val newMesh = transformMesh(obj, indices, (inv + local).matrix)
                     obj.withMesh(newMesh)
                 }
             }
@@ -78,7 +75,7 @@ object TransformationHelper {
 
     fun scaleLocal(source: IModel, sel: ISelection, animator: Animator, vector: IVector3, offset: Float): IModel {
 
-        fun calculateTransfrom(obj: IObject, inv: ITransformation): ITransformation {
+        fun calculateTransform(obj: IObject, inv: ITransformation): ITransformation {
             val trs = obj.transformation.toTRS()
             val local = trs.rotation.invert().transform(inv.matrix.transformVertex(vector))
             val (scale, translation) = getScaleAndTranslation(local)
@@ -93,7 +90,7 @@ object TransformationHelper {
         return when (sel.selectionType) {
             SelectionType.OBJECT -> {
                 applyTransformation(source, sel, animator) { obj, inv ->
-                    obj.withTransformation(calculateTransfrom(obj, inv))
+                    obj.withTransformation(calculateTransform(obj, inv))
                 }
             }
             SelectionType.FACE -> {
@@ -105,9 +102,9 @@ object TransformationHelper {
                             .toSet()
 
                     val trs = obj.transformation.toTRS()
-                    val transform = calculateTransfrom(obj, inv) + trs.invert()
+                    val transform = calculateTransform(obj, inv) + trs.invert()
 
-                    val newMesh = transformMesh2(obj, indices, (inv + transform).matrix)
+                    val newMesh = transformMesh(obj, indices, (inv + transform).matrix)
                     obj.withMesh(newMesh)
                 }
             }
@@ -119,9 +116,9 @@ object TransformationHelper {
                             .toSet()
 
                     val trs = obj.transformation.toTRS()
-                    val transform = calculateTransfrom(obj, inv) + trs.invert()
+                    val transform = calculateTransform(obj, inv) + trs.invert()
 
-                    val newMesh = transformMesh2(obj, indices, (inv + transform).matrix)
+                    val newMesh = transformMesh(obj, indices, (inv + transform).matrix)
                     obj.withMesh(newMesh)
                 }
             }
@@ -133,16 +130,16 @@ object TransformationHelper {
                             .toSet()
 
                     val trs = obj.transformation.toTRS()
-                    val transform = calculateTransfrom(obj, inv) + trs.invert()
+                    val transform = calculateTransform(obj, inv) + trs.invert()
 
-                    val newMesh = transformMesh2(obj, indices, (inv + transform).matrix)
+                    val newMesh = transformMesh(obj, indices, (inv + transform).matrix)
                     obj.withMesh(newMesh)
                 }
             }
         }
     }
 
-    fun getScaleAndTranslation(vec: IVector3): Pair<IVector3, IVector3> {
+    private fun getScaleAndTranslation(vec: IVector3): Pair<IVector3, IVector3> {
         val x = vec.xd >= 0
         val y = vec.yd >= 0
         val z = vec.zd >= 0
@@ -161,11 +158,20 @@ object TransformationHelper {
     }
 
     fun translateTexture(source: IModel, sel: ISelection, translation: IVector2): IModel {
-        val matrix = TRSTransformation(translation.toVector3(0.0)).matrix.toJOML()
-        val transform = { it: IVector2 -> matrix.transformVertex(it) }
+        val transform = { it: IVector2 -> it + translation }
+
         return when (sel.selectionType) {
-            SelectionType.OBJECT -> source.modifyObjects({ sel.isSelected(it) }) { _, it ->
-                it.transformer.translateTexture(it, translation)
+            SelectionType.OBJECT -> {
+                val objRefs = sel.objects.toSet()
+                return source.modifyObjects(objRefs) { _, obj ->
+                    if (obj is IObjectCube) {
+                        val newOffset = obj.textureOffset + translation * obj.textureSize
+                        obj.withTextureOffset(newOffset)
+                    } else {
+                        val newMesh = transformMeshTexture(obj, obj.mesh.tex.indices.toSet(), transform)
+                        obj.withMesh(newMesh)
+                    }
+                }
             }
             SelectionType.FACE -> transformTextureFaces(source, sel, transform)
             SelectionType.EDGE -> transformTextureEdges(source, sel, transform)
@@ -174,25 +180,29 @@ object TransformationHelper {
     }
 
     fun rotateTexture(source: IModel, sel: ISelection, pivot: IVector2, rotation: Double): IModel {
-        val matrix = TRSTransformation.fromRotationPivot(pivot.toVector3(0.0), vec3Of(0.0, 0.0, rotation))
-                .matrix.toJOML()
+        val matrix = TRSTransformation.fromRotationPivot(
+                pivot.toVector3(0.0), vec3Of(0.0, 0.0, rotation)
+        ).matrix.toJOML()
+
         val transform = { it: IVector2 -> matrix.transformVertex(it) }
         return when (sel.selectionType) {
-            SelectionType.OBJECT -> source.modifyObjects({ sel.isSelected(it) }) { _, it ->
-                it.transformer.rotateTexture(it, pivot, rotation)
-            }
+            SelectionType.OBJECT -> transformTextureObjects(source, sel, transform)
             SelectionType.FACE -> transformTextureFaces(source, sel, transform)
             SelectionType.EDGE -> transformTextureEdges(source, sel, transform)
             SelectionType.VERTEX -> transformTextureVertex(source, sel, transform)
         }
     }
 
-    fun scaleTexture(source: IModel, sel: ISelection, center: IVector2, axis: IVector2, offset: Float): IModel {
-        val transform = { it: IVector2 -> it.scale(center, axis, offset) }
+    fun scaleTexture(source: IModel, sel: ISelection, start: IVector2, end: IVector2, translation: IVector2, axis: IVector2): IModel {
+        val size = end - start
+        val offset = translation * axis.normalize() / size
+        val (_, move) = getScaleAndTranslation(axis.toVector3(0))
+
+        val transform = { point: IVector2 ->
+            point + (point - start + size * move.toVector2()) * offset
+        }
         return when (sel.selectionType) {
-            SelectionType.OBJECT -> source.modifyObjects({ sel.isSelected(it) }) { _, it ->
-                it.transformer.scaleTexture(it, center, axis, offset)
-            }
+            SelectionType.OBJECT -> transformTextureObjects(source, sel, transform)
             SelectionType.FACE -> transformTextureFaces(source, sel, transform)
             SelectionType.EDGE -> transformTextureEdges(source, sel, transform)
             SelectionType.VERTEX -> transformTextureVertex(source, sel, transform)
@@ -216,6 +226,14 @@ object TransformationHelper {
 
     private fun ITransformation.invert(): TRSTransformation {
         return TRSTransformation.fromMatrix(matrix.toJOML().invert().toIMatrix())
+    }
+
+    fun transformTextureObjects(source: IModel, sel: ISelection, transform: (IVector2) -> IVector2): IModel {
+        val objRefs = sel.objects.toSet()
+        return source.modifyObjects(objRefs) { _, obj ->
+            val newMesh = transformMeshTexture(obj, obj.mesh.tex.indices.toSet(), transform)
+            obj.withMesh(newMesh)
+        }
     }
 
     fun transformTextureFaces(source: IModel, sel: ISelection, transform: (IVector2) -> IVector2): IModel {
@@ -258,18 +276,10 @@ object TransformationHelper {
         }
     }
 
-    fun transformMesh2(obj: IObject, indices: Set<Int>, transform: IMatrix4): IMesh {
+    fun transformMesh(obj: IObject, indices: Set<Int>, transform: IMatrix4): IMesh {
 
         val newPos: List<IVector3> = obj.mesh.pos.mapIndexed { index, it ->
             if (index in indices) transform.transformVertex(it) else it
-        }
-        return Mesh(pos = newPos, tex = obj.mesh.tex, faces = obj.mesh.faces)
-    }
-
-    fun transformMesh(obj: IObject, indices: Set<Int>, transform: (IVector3) -> IVector3): IMesh {
-
-        val newPos: List<IVector3> = obj.mesh.pos.mapIndexed { index, it ->
-            if (index in indices) transform(it) else it
         }
         return Mesh(pos = newPos, tex = obj.mesh.tex, faces = obj.mesh.faces)
     }

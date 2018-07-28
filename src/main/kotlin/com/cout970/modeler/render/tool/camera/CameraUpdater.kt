@@ -5,6 +5,7 @@ import com.cout970.glutilities.event.EventMouseScroll
 import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.core.config.Config
+import com.cout970.modeler.core.helpers.PickupHelper
 import com.cout970.modeler.gui.canvas.Canvas
 import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.input.event.IInput
@@ -103,14 +104,14 @@ class CameraUpdater(
     }
 
     fun moveTextureCamera(selectedScene: Canvas, speed: Double) {
-        val camera = selectedScene.textureCamera.camera
-        val diff = input.mouse.getMousePosDiff()
+        val prev = input.mouse.getMousePos() - input.mouse.getMousePosDiff()
+        val current = input.mouse.getMousePos()
 
-        val zoomModifier = Math.sqrt(camera.zoom) * 0.1
-        val a = (diff.xd * Config.mouseTranslateSpeedX * speed * zoomModifier)
-        val b = (-diff.yd * Config.mouseTranslateSpeedY * speed * zoomModifier)
+        val start = PickupHelper.getMousePosAbsolute(selectedScene, prev)
+        val end = PickupHelper.getMousePosAbsolute(selectedScene, current)
 
-        selectedScene.textureCamera.translate(vec3Of(a, b, 0))
+        val diff = end - start
+        selectedScene.textureCamera.translate(vec3Of(diff.xd, diff.yd, 0))
     }
 
     fun updateZoom(canvas: Canvas, e: EventMouseScroll) {

@@ -32,7 +32,7 @@ import java.awt.Color
  */
 class MaterialRenderer {
 
-    var areasCache = AutoCache(MODEL, MATERIAL, SELECTION_TEXTURE, TEXTURE_CURSOR)
+    var areasCache = AutoCache(MODEL, MATERIAL, SELECTION_TEXTURE)
     val debugCache = AutoCache()
 
     val gridLinesPixel = AutoCache(MATERIAL)

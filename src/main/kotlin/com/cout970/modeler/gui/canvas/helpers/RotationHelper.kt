@@ -4,7 +4,6 @@ import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.helpers.PickupHelper
 import com.cout970.modeler.gui.canvas.Canvas
-import com.cout970.modeler.gui.canvas.IRotable
 import com.cout970.modeler.gui.canvas.SceneSpaceContext
 import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.util.getClosestPointOnLineSegment
@@ -18,10 +17,6 @@ import com.cout970.vector.extensions.*
  * Created by cout970 on 2017/04/08.
  */
 object RotationHelper {
-
-    fun getOffsetGlobal(obj: IRotable, canvas: Canvas, pos: Pair<IVector2, IVector2>, input: IInput): Float {
-        return getOffsetGlobal(obj.center, obj.tangent, canvas, pos, input)
-    }
 
     fun getOffsetGlobal(center: IVector3, normal: IVector3, canvas: Canvas, pos: Pair<IVector2, IVector2>, input: IInput): Float {
         return if (canvas.viewMode == SelectionTarget.TEXTURE) {

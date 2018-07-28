@@ -155,8 +155,8 @@ object PickupHelper {
                  material: IMaterial, selectionType: SelectionType): Pair<IPolygon, IRef>? {
 
         val clickPos = getMousePosAbsolute(canvas, mouse)
-        val polygons = getTexturePolygons(model, selection, selectionType, material)
         val finalPos = fromCanvasToMaterial(clickPos, material)
+        val polygons = getTexturePolygons(model, selection, selectionType, material)
         return getFirstCollision(finalPos, polygons)
     }
 }

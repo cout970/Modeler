@@ -47,7 +47,7 @@ class CanvasManager {
     fun selectPart(): Boolean {
         val canvas = getCanvasUnderTheMouse()
         canvas.ifNotNull {
-            gui.dispatcher.onEvent("canvas.select", it)
+            gui.dispatcher.onEvent("canvas.select.model", it)
             return true
         }
         return false

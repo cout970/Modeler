@@ -5,7 +5,6 @@ import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.`object`.IObjectCube
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IMesh
-import com.cout970.modeler.api.model.transformer.IObjectTransformer
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.TRTSTransformation
 import com.cout970.modeler.core.model.material.MaterialRefNone
@@ -124,20 +123,4 @@ data class ObjectCube(
 
     override fun makeCopy(): IObjectCube = copy(id = UUID.randomUUID())
 
-    override val transformer: IObjectTransformer = object : IObjectTransformer {
-
-        override fun translateTexture(obj: IObject, translation: IVector2): IObject {
-            val newOffset = textureOffset + translation * textureSize
-            return copy(textureOffset = newOffset)
-        }
-
-        override fun rotateTexture(obj: IObject, center: IVector2, angle: Double): IObject {
-            return obj
-        }
-
-        override fun scaleTexture(obj: IObject, center: IVector2, axis: IVector2, offset: Float): IObject {
-            val newSize = textureSize + axis * offset
-            return copy(textureSize = newSize)
-        }
-    }
 }

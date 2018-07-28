@@ -45,7 +45,6 @@ class TaskImportModel(
             val newModel = if (properties.append) oldModel.merge(it) else it
             val newSelection = Selection(SelectionTarget.MODEL, SelectionType.OBJECT, it.objectRefs)
             state.gui.state.tmpModel = null
-            state.gui.state.hoveredObject = null
             state.gui.state.cursor.visible = false
             state.projectManager.textureSelectionHandler.clear()
             state.projectManager.modelSelectionHandler.clear()

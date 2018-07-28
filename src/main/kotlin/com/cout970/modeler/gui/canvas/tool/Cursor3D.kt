@@ -36,6 +36,8 @@ class Cursor3D {
     var useLinearScalation: Boolean = true
     var rotation: IQuaternion = Quaternion.IDENTITY
 
+    var scaleBoxIndex = -1
+
     private val translationParts = listOf(
             CursorPart(CursorMode.TRANSLATION, Vector3.X_AXIS, Vector3.X_AXIS),
             CursorPart(CursorMode.TRANSLATION, Vector3.Y_AXIS, Vector3.Y_AXIS),

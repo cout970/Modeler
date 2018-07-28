@@ -3,8 +3,6 @@ package com.cout970.modeler.gui
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.core.project.IProgramState
-import com.cout970.modeler.gui.canvas.ISelectable
-import com.cout970.modeler.gui.canvas.TransformationMode
 import com.cout970.modeler.gui.canvas.tool.Cursor3D
 import com.cout970.modeler.util.BooleanPropertyWrapper
 import com.cout970.modeler.util.GuiProperty
@@ -14,7 +12,6 @@ import com.cout970.modeler.util.GuiProperty
  */
 class GuiState(val projectManager: IProgramState) : IProgramState by projectManager {
 
-    var transformationMode = TransformationMode.TRANSLATION
     var selectionType: SelectionType by GuiProperty(SelectionType.OBJECT, "SelectionType")
 
     val cursor = Cursor3D()
@@ -34,10 +31,7 @@ class GuiState(val projectManager: IProgramState) : IProgramState by projectMana
 
     var popup: Popup? = null
 
-    // TODO remove
-    var hoveredObject: ISelectable? = null
     var tmpModel: IModel? = null
-
 
     var modelHash: Int = -1
     var modelSelectionHash: Int = -1

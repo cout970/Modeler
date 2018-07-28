@@ -2,7 +2,6 @@ package com.cout970.modeler.gui.canvas.helpers
 
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.canvas.Canvas
-import com.cout970.modeler.gui.canvas.ITranslatable
 import com.cout970.modeler.gui.canvas.SceneSpaceContext
 import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.util.MatrixUtils
@@ -17,11 +16,6 @@ import org.joml.Matrix4d
  * Created by cout970 on 2017/04/08.
  */
 object TranslationHelper {
-
-    fun getOffset(obj: ITranslatable, canvas: Canvas, input: IInput, oldContext: SceneSpaceContext,
-                  newContext: SceneSpaceContext): Float {
-        return getOffset(obj.translationAxis, canvas, input, oldContext, newContext)
-    }
 
     fun getOffset(direction: IVector3, canvas: Canvas, input: IInput, oldContext: SceneSpaceContext,
                   newContext: SceneSpaceContext): Float {

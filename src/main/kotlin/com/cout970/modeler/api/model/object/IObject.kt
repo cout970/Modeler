@@ -3,7 +3,6 @@ package com.cout970.modeler.api.model.`object`
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IMesh
-import com.cout970.modeler.api.model.transformer.IObjectTransformer
 import java.util.*
 
 /**
@@ -17,8 +16,6 @@ interface IObject {
     val transformation: ITransformation
     val material: IMaterialRef
     val visible: Boolean
-
-    val transformer: IObjectTransformer
 
     fun makeCopy(): IObject
 

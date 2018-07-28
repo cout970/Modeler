@@ -74,8 +74,8 @@ class ModelRenderer {
 
             model.objectMap.values.filter { it.visible }.forEach { obj ->
                 val geom = obj.mesh.createVao(ctx.buffer, getColor(obj.id.hashCode()))
-                val modSel = getSelectionVao(ctx, obj, modelSel)
-                val texSel = getSelectionVao(ctx, obj, textureSel)
+                val modSel = getSelectionVao(ctx, obj, modelSel, Config.colorPalette.modelSelectionColor)
+                val texSel = getSelectionVao(ctx, obj, textureSel, Config.colorPalette.textureSelectionColor)
 
                 objectCache[obj.ref] = ObjectCache(geom, modSel, texSel)
             }
@@ -205,9 +205,8 @@ class ModelRenderer {
         }
     }
 
-    private fun getSelectionVao(ctx: RenderContext, obj: IObject, selection: Nullable<ISelection>): VAO? {
+    private fun getSelectionVao(ctx: RenderContext, obj: IObject, selection: Nullable<ISelection>, color: IVector3): VAO? {
         val sel = selection.getOrNull() ?: return null
-        val color = Config.colorPalette.modelSelectionColor
         return when (sel.selectionType) {
             SelectionType.OBJECT -> ctx.buffer.build(DrawMode.LINES) {
                 appendObjectSelection(obj, sel, color)

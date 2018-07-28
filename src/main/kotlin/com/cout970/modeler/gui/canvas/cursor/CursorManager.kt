@@ -4,26 +4,23 @@ import com.cout970.modeler.controller.ITaskProcessor
 import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.canvas.tool.DragHandler
-import com.cout970.modeler.gui.canvas.tool.DragListener
+import com.cout970.modeler.gui.canvas.tool.DragListener2D
+import com.cout970.modeler.gui.canvas.tool.DragListener3D
+import com.cout970.modeler.gui.canvas.tool.DragListenerCombinator
 
-// TODO remove or rename
 class CursorManager {
 
     lateinit var taskProcessor: ITaskProcessor
     lateinit var updateCanvas: () -> Unit
     private lateinit var gui: Gui
 
-//    var modelCursor: CursorableLinkedList.Cursor? = null
-//    var textureCursor: Cursor? = null
-
-//    val cursorDrag = DraggingCursor()
 
     // debug
     lateinit var handler: DragHandler
 
     fun setGui(gui: Gui) {
         this.gui = gui
-        handler = DragHandler(DragListener(gui))
+        handler = DragHandler(DragListenerCombinator(DragListener3D(gui), DragListener2D(gui)))
     }
 
     fun tick() {
@@ -88,44 +85,6 @@ class CursorManager {
 //        textureCursor = texSel.map { getTextureCursor(model, it, material) }.getOrNull()
 //    }
 
-//    fun getTextureCursor(model: IModel, selection: ISelection, materialRef: IMaterialRef): CursorableLinkedList.Cursor? {
-//        val material = model.getMaterial(materialRef)
-//        return when (selection.selectionType) {
-//            SelectionType.OBJECT -> model.getSelectedObjects(selection)
-//                    .map { it.mesh.tex.middle() }
-//                    .middle()
-//
-//            SelectionType.FACE -> selection.refs
-//                    .filterIsInstance<IFaceRef>()
-//                    .map { model.getObject(it.toObjectRef()) to it.faceIndex }
-//                    .groupBy { it.first }
-//                    .map { it.key to it.value.map { it.second } }
-//                    .map { (obj, faces) ->
-//                        faces.map { obj.mesh.faces[it] }
-//                                .flatMap { it.tex }
-//                                .mapNotNull { obj.mesh.tex.getOrNull(it) }
-//                                .middle()
-//                    }
-//                    .middle()
-//
-//            SelectionType.EDGE -> selection.refs
-//                    .filterIsInstance<IEdgeRef>()
-//                    .map { model.getObject(it.toObjectRef()) to it }
-//                    .flatMap { (obj, ref) -> listOf(obj.mesh.tex[ref.firstIndex], obj.mesh.tex[ref.secondIndex]) }
-//                    .middle()
-//
-//            SelectionType.VERTEX -> selection.refs
-//                    .filterIsInstance<IPosRef>()
-//                    .map { model.getObject(it.toObjectRef()).mesh.tex[it.posIndex] }
-//                    .middle()
-//
-//        }.let { middle ->
-//            if (!middle.hasNaN()) {
-//                val center = PickupHelper.fromMaterialToCanvas(middle, material)
-//                CursorableLinkedList.Cursor(center.toVector3(0.0))
-//            } else null
-//        }
-//    }
 
 //    fun getModelCursor(model: IModel, selection: ISelection): Cursor? {
 //        return when (selection.selectionType) {

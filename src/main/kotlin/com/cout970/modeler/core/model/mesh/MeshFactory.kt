@@ -13,10 +13,20 @@ import com.cout970.vector.extensions.vec3Of
  */
 object MeshFactory {
 
-    fun createPlane(size: IVector2): IMesh {
+    fun createPlaneY(size: IVector2): IMesh {
         return Mesh(
                 listOf(vec3Of(0, 0, 0), vec3Of(0, 0, 1), vec3Of(1, 0, 1), vec3Of(1, 0, 0))
                         .map { it * vec3Of(size.x, 1, size.y) },
+                listOf(vec2Of(0, 0), vec2Of(1, 0), vec2Of(1, 1), vec2Of(0, 1)),
+
+                listOf(FaceIndex.from(listOf(0, 1, 2, 3), listOf(0, 1, 2, 3)))
+        )
+    }
+
+    fun createPlaneZ(size: IVector2): IMesh {
+        return Mesh(
+                listOf(vec3Of(0, 0, 0), vec3Of(0, 1, 0), vec3Of(1, 1, 0), vec3Of(1, 0, 0))
+                        .map { it * vec3Of(size.x, size.y, 1) },
                 listOf(vec2Of(0, 0), vec2Of(1, 0), vec2Of(1, 1), vec2Of(0, 1)),
 
                 listOf(FaceIndex.from(listOf(0, 1, 2, 3), listOf(0, 1, 2, 3)))

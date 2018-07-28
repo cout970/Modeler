@@ -40,6 +40,7 @@ object CanvasHelper {
 
         val a = matrix.unproject(vec3Of(mousePos.x, viewportSize.yd - mousePos.yd, 0.0).toJoml3d(),
                 viewport, Vector3d()).toIVector()
+
         val b = matrix.unproject(vec3Of(mousePos.x, viewportSize.yd - mousePos.yd, 1.0).toJoml3d(),
                 viewport, Vector3d()).toIVector()
 

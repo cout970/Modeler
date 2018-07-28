@@ -51,7 +51,7 @@ class TestModel {
 
     @Test
     fun `Check model merge without material`() {
-        val obj1 = Object("", MeshFactory.createPlane(Vector2.ONE),
+        val obj1 = Object("", MeshFactory.createPlaneY(Vector2.ONE),
                 MaterialRefNone)
 
         val modelA = Model.of(mapOf(obj1.toPair()))
@@ -65,7 +65,7 @@ class TestModel {
     @Test
     fun `Check model merge with material`() {
         val material = TexturedMaterial("name", ResourcePath.fromResourceLocation("path"))
-        val obj1 = Object("", MeshFactory.createPlane(Vector2.ONE), material.ref)
+        val obj1 = Object("", MeshFactory.createPlaneY(Vector2.ONE), material.ref)
 
         val modelA = Model.of(mapOf(obj1.toPair()), mapOf(material.ref to material))
         val modelB = Model.of(mapOf(obj1.toPair()), mapOf(material.ref to material))
