@@ -17,6 +17,7 @@ import com.cout970.modeler.util.middle
 import com.cout970.modeler.util.toRads
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.*
+import kotlin.math.max
 
 class Cursor2DTransformHelper {
 
@@ -92,15 +93,25 @@ class Cursor2DTransformHelper {
                 val start = PickupHelper.fromCanvasToMaterial(min, gui.state.material)
                 val end = PickupHelper.fromCanvasToMaterial(max, gui.state.material)
 
-                val direction = listOf(
-                        vec2Of(0, -1), vec2Of(0, 1), vec2Of(-1, 0), vec2Of(1, 0),
-                        vec2Of(-1, -1), vec2Of(-1, 1), vec2Of(1, -1), vec2Of(1, 1)
-                )
-
                 val uvDiff = getTranslationOffset(gui, mouse, canvas, material)
-                if ((uvDiff - offsetCache).lengthSq() != 0.0) {
+                val diff = if (index > 3 && Config.keyBindings.squareScale.check(gui.input)) {
+                    val dir = DIRECTIONS[index]
+                    when {
+                        dir.xd > 0 && dir.yd > 0 -> dir * max(uvDiff.xd, uvDiff.yd)
+                        dir.xd <= 0 && dir.yd <= 0 -> dir * max(-uvDiff.xd, -uvDiff.yd)
+                        dir.xd > 0 && dir.yd <= 0 -> dir * max(uvDiff.xd, -uvDiff.yd)
+                        dir.xd <= 0 && dir.yd > 0 -> dir * max(-uvDiff.xd, uvDiff.yd)
+                        else -> vec2Of(0)
+                    }
+                } else {
+                    uvDiff
+                }
+
+                println(diff)
+
+                if ((diff - offsetCache).lengthSq() != 0.0) {
                     offsetCache = uvDiff
-                    modelCache = TransformationHelper.scaleTexture(oldModel, selection, start, end, uvDiff, direction[index])
+                    modelCache = TransformationHelper.scaleTexture(oldModel, selection, start, end, diff, DIRECTIONS[index])
                 }
             }
         }
@@ -267,6 +278,11 @@ class Cursor2DTransformHelper {
                     (pos + vec2Of(size.xd, size.yd - margin.yd)) to margin     // bottom-right
             )
         }
+
+        private val DIRECTIONS = listOf(
+                vec2Of(0, -1), vec2Of(0, 1), vec2Of(-1, 0), vec2Of(1, 0),
+                vec2Of(-1, -1), vec2Of(-1, 1), vec2Of(1, -1), vec2Of(1, 1)
+        )
     }
 
     data class ScaleBox(val pos: IVector2, val size: IVector2)

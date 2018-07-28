@@ -195,11 +195,14 @@ object TransformationHelper {
 
     fun scaleTexture(source: IModel, sel: ISelection, start: IVector2, end: IVector2, translation: IVector2, axis: IVector2): IModel {
         val size = end - start
-        val offset = translation * axis.normalize() / size
+        val offset = translation * axis / size
         val (_, move) = getScaleAndTranslation(axis.toVector3(0))
+        val addition = -start + size * move.toVector2()
 
+        println("addition: $addition, offset: $offset")
+        println("ratio1: ${size.xd / size.yd}, ratio2: ${offset.xd / offset.yd}")
         val transform = { point: IVector2 ->
-            point + (point - start + size * move.toVector2()) * offset
+            point + (point + addition) * offset
         }
         return when (sel.selectionType) {
             SelectionType.OBJECT -> transformTextureObjects(source, sel, transform)

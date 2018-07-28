@@ -25,6 +25,7 @@ import com.cout970.glutilities.device.Keyboard.Companion.KEY_P
 import com.cout970.glutilities.device.Keyboard.Companion.KEY_PAGE_DOWN
 import com.cout970.glutilities.device.Keyboard.Companion.KEY_PAGE_UP
 import com.cout970.glutilities.device.Keyboard.Companion.KEY_R
+import com.cout970.glutilities.device.Keyboard.Companion.KEY_RIGHT_CONTROL
 import com.cout970.glutilities.device.Keyboard.Companion.KEY_S
 import com.cout970.glutilities.device.Keyboard.Companion.KEY_SPACE
 import com.cout970.glutilities.device.Keyboard.Companion.KEY_T
@@ -49,6 +50,7 @@ class KeyBindings {
     var selectModel = MouseKeyBind(BUTTON_LEFT)
     var jumpCameraToCursor = MouseKeyBind(BUTTON_RIGHT)
 
+    var squareScale = KeyBind(KEY_RIGHT_CONTROL)
     var multipleSelection = KeyBind(KEY_LEFT_CONTROL)
     var disableGridMotion = KeyBind(KEY_LEFT_CONTROL)
     var disablePixelGridMotion = KeyBind(KEY_LEFT_SHIFT)
