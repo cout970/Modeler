@@ -3,7 +3,6 @@ package com.cout970.modeler.controller.usecases
 import com.cout970.modeler.api.animation.IAnimation
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.controller.tasks.*
-import com.cout970.modeler.core.animation.animationOf
 import com.cout970.modeler.core.export.ExportManager
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.Model
@@ -40,9 +39,7 @@ private fun newProject(gui: Gui, model: IModel, animation: IAnimation, propertie
                     oldProjectProperties = properties,
                     newProjectProperties = newProject,
                     oldModel = model,
-                    newModel = Model.empty(),
-                    oldAnimation = animation,
-                    newAnimation = animationOf()
+                    newModel = Model.empty()
             ))
         }
     }
@@ -78,9 +75,7 @@ private fun loadProjectWithoutAsking(file: String, exportManager: ExportManager,
                 oldProjectProperties = projectManager.projectProperties,
                 newProjectProperties = save.projectProperties,
                 oldModel = projectManager.model,
-                newModel = save.model,
-                oldAnimation = projectManager.animation,
-                newAnimation = save.animation
+                newModel = save.model
         ))
         NotificationHandler.push(Notification("Project loaded successfully", "Project loaded from '$file'"))
     } catch (e: Exception) {
@@ -101,16 +96,14 @@ private fun askFileLocation(): String? {
 private fun saveProject(projectManager: ProjectManager, exportManager: ExportManager): ITask {
 
     val path = getSavePathOrAsk() ?: return TaskNone
-    return TaskSaveProject(exportManager, path, projectManager.model, projectManager.projectProperties,
-            projectManager.animation)
+    return TaskSaveProject(exportManager, path, projectManager.model, projectManager.projectProperties)
 }
 
 @UseCase("project.save.as")
 private fun saveProjectAs(projectManager: ProjectManager, exportManager: ExportManager): ITask {
 
     val path = getSavePathOrAsk(true) ?: return TaskNone
-    return TaskSaveProject(exportManager, path, projectManager.model, projectManager.projectProperties,
-            projectManager.animation)
+    return TaskSaveProject(exportManager, path, projectManager.model, projectManager.projectProperties)
 }
 
 private fun getSavePathOrAsk(force: Boolean = false): String? {

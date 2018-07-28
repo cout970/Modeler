@@ -22,6 +22,7 @@ import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.ref
+import com.cout970.modeler.core.model.selection.ObjectRefNone
 import com.cout970.modeler.core.project.ProjectProperties
 import com.cout970.modeler.core.resource.ResourcePath
 import com.cout970.modeler.util.toResourcePath
@@ -29,7 +30,6 @@ import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.google.gson.*
-import com.google.gson.reflect.TypeToken
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableMap
 import org.apache.commons.io.FilenameUtils
@@ -82,13 +82,13 @@ object ProjectLoaderV13 {
         val model = zip.load<IModel>("model.json", gson)
                 ?: throw IllegalStateException("Missing file 'model.json' inside '$path'")
 
-        val animation = zip.load<List<IAnimation>>("animation.json", gson)
-                ?: throw IllegalStateException("Missing file 'animation.json' inside '$path'")
+        val animations = zip.load<List<IAnimation>>("animation.json", gson) ?: emptyList()
 
-        checkIntegrity(listOf(model.objectMap, model.materialMap, model.groupMap, model.tree))
-        checkIntegrity(listOf(animation))
+        checkIntegrity(listOf(model.objectMap, model.materialMap, model.groupMap, model.tree, model.animationMap))
+        checkIntegrity(listOf(animations))
 
-        return ProgramSave(VERSION, properties, model, animation.first(), emptyList())
+        val finalModel = animations.fold(model) { tmpModel, anim -> tmpModel.addAnimation(anim) }
+        return ProgramSave(VERSION, properties, finalModel, emptyList())
     }
 
     fun saveProject(path: String, save: ProgramSave) {
@@ -128,10 +128,6 @@ object ProjectLoaderV13 {
             it.putNextEntry(ZipEntry("model.json"))
             it.write(gson.toJson(model, IModel::class.java).toByteArray())
             it.closeEntry()
-
-            it.putNextEntry(ZipEntry("animation.json"))
-            it.write(gson.toJson(listOf(save.animation), object : TypeToken<List<IAnimation>>() {}.type).toByteArray())
-            it.closeEntry()
         }
         zip.close()
 
@@ -160,9 +156,10 @@ object ProjectLoaderV13 {
                     objectMap = context.deserializeT(obj["objectMap"]),
                     materialMap = context.deserializeT(obj["materialMap"]),
                     groupMap = context.deserializeT(obj["groupMap"]),
-                    animationMap = obj["animationMap"]?.let { context.deserializeT<Map<IAnimationRef, IAnimation>>(it) }
-                            ?: emptyMap(),
-                    groupTree = context.deserializeT(obj["groupTree"])
+                    groupTree = context.deserializeT(obj["groupTree"]),
+                    animationMap = obj["animationMap"]?.let {
+                        context.deserializeT<Map<IAnimationRef, IAnimation>>(it)
+                    } ?: emptyMap()
             )
         }
     }
@@ -240,10 +237,10 @@ object ProjectLoaderV13 {
                         name = context.deserialize(obj["name"], String::class.java),
                         mesh = context.deserialize(obj["mesh"], IMesh::class.java),
                         material = context.deserialize(obj["material"], IMaterialRef::class.java),
+                        transformation = context.deserialize(obj["transformation"], ITransformation::class.java),
                         visible = context.deserialize(obj["visible"], Boolean::class.java),
                         id = context.deserialize(obj["id"], UUID::class.java)
                 )
-
 
                 else -> throw IllegalStateException("Unknown Class: ${obj["class"]}")
             }
@@ -446,12 +443,29 @@ object ProjectLoaderV13 {
 
     class AnimationTargetSerializer : JsonSerializer<AnimationTarget>, JsonDeserializer<AnimationTarget> {
 
-        override fun serialize(src: AnimationTarget?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement {
-            TODO()
+        override fun serialize(src: AnimationTarget, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+            return when (src) {
+                is AnimationTargetGroup -> JsonObject().apply {
+                    addProperty("type", "group")
+                    add("ref", context.serializeT(src.ref))
+                }
+                is AnimationTargetObject -> JsonObject().apply {
+                    addProperty("type", "object")
+                    add("ref", context.serializeT(src.ref))
+                }
+            }
         }
 
-        override fun deserialize(json: JsonElement?, typeOfT: Type?, context: JsonDeserializationContext?): AnimationTarget {
-            TODO()
+        override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): AnimationTarget {
+            if (!json.isJsonObject) return AnimationTargetObject(ObjectRefNone)
+            val obj = json.asJsonObject
+            if (!obj.has("type")) return AnimationTargetObject(ObjectRefNone)
+
+            return when (obj["type"].asString) {
+                "group" -> AnimationTargetGroup(context.deserializeT(obj["ref"]))
+                "object" -> AnimationTargetObject(context.deserializeT(obj["ref"]))
+                else -> error("Invalid AnimationTarget type: ${obj["type"].asString}")
+            }
         }
     }
 }

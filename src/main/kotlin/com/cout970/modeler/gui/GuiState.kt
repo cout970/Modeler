@@ -17,7 +17,6 @@ class GuiState(val projectManager: IProgramState) : IProgramState by projectMana
     val cursor = Cursor3D()
 
     var useTexture: Boolean = true
-
     var useColor: Boolean = false
     var useLight: Boolean = true
     var showHiddenFaces: Boolean = false
@@ -38,6 +37,19 @@ class GuiState(val projectManager: IProgramState) : IProgramState by projectMana
     var textureSelectionHash: Int = -1
     var materialsHash: Int = -1
     var gridLinesHash: Int = -1
+
+    fun reset() {
+        cursor.visible = false
+        tmpModel = null
+        popup = null
+        modelSelectionHandler.clear()
+        textureSelectionHandler.clear()
+        modelHash = -1
+        modelSelectionHash = -1
+        textureSelectionHash = -1
+        materialsHash = -1
+        gridLinesHash = -1
+    }
 
     fun getBooleanProperties() = mapOf(
             "drawTextureGridLines" to BooleanPropertyWrapper(this::drawTextureGridLines),

@@ -1,7 +1,6 @@
 package com.cout970.modeler.core.export
 
 import com.cout970.modeler.PathConstants
-import com.cout970.modeler.api.animation.IAnimation
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.core.export.project.ProjectLoaderV10
 import com.cout970.modeler.core.export.project.ProjectLoaderV11
@@ -57,7 +56,7 @@ class ExportManager(val resourceLoader: ResourceLoader) {
 
     fun saveProject(path: String, manager: ProjectManager, saveImages: Boolean) {
         saveProject(path, ProgramSave(CURRENT_SAVE_VERSION, manager.projectProperties, manager.model,
-                manager.animation, if (saveImages) manager.materialPaths else emptyList()))
+                if (saveImages) manager.materialPaths else emptyList()))
     }
 
     fun import(file: String): IModel {
@@ -73,7 +72,6 @@ class ExportManager(val resourceLoader: ResourceLoader) {
 
                 projectManager.loadProjectProperties(save.projectProperties)
                 projectManager.updateModel(save.model)
-                projectManager.updateAnimation(save.animation)
                 gui.windowHandler.updateTitle(save.projectProperties.name)
 
                 save.model.materials.forEach { it.loadTexture(resourceLoader) }
@@ -97,6 +95,5 @@ data class ProgramSave(
         val version: String,
         val projectProperties: ProjectProperties,
         val model: IModel,
-        val animation: IAnimation,
         val textures: List<TexturedMaterial>
 )

@@ -11,7 +11,6 @@ import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IFaceIndex
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.modeler.core.animation.animationOf
 import com.cout970.modeler.core.export.*
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.TRSTransformation
@@ -72,7 +71,7 @@ object ProjectLoaderV10 {
                 ?: throw IllegalStateException("Missing file 'model.json' inside '$path'")
 
         checkIntegrity(model.objects)
-        return ProgramSave(VERSION, properties, model, animationOf(), emptyList())
+        return ProgramSave(VERSION, properties, model, emptyList())
     }
 
     class ModelDeserializer : JsonDeserializer<IModel> {
@@ -165,10 +164,22 @@ object ProjectLoaderV10 {
         override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IFaceIndex {
             val obj = json.asJsonObject
 
-            return FaceIndex.from(
-                    pos = context.deserializeT(obj["pos"]),
-                    tex = context.deserializeT(obj["tex"])
-            )
+            return if (obj.has("pos")) {
+                FaceIndex.from(
+                        pos = context.deserializeT(obj["pos"]),
+                        tex = context.deserializeT(obj["tex"])
+                )
+            } else {
+                val (pos, tex) = obj["index"].asJsonArray.map {
+                    val pair = it.asJsonObject
+                    pair["first"].asInt to pair["second"].asInt
+                }.unzip()
+
+                FaceIndex.from(
+                        pos = pos,
+                        tex = tex
+                )
+            }
         }
     }
 

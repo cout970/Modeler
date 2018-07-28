@@ -74,72 +74,19 @@ object ProjectLoaderV12 {
         checkIntegrity(listOf(model.objectMap, model.materialMap, model.groupMap, model.tree))
         checkIntegrity(listOf(animation))
 
-        return ProgramSave(VERSION, properties, model, animation, emptyList())
+        return ProgramSave(VERSION, properties, model.addAnimation(animation), emptyList())
     }
-
-//    fun saveProject(path: String, save: ProgramSave) {
-//        val file = File(path)
-//        val tmp = createTempFile(directory = file.parentFile)
-//        val zip = ZipOutputStream(tmp.outputStream())
-//
-//        zip.let {
-//
-//            save.textures.forEach { mat ->
-//                try {
-//                    val name = FilenameUtils.getName(mat.path.uri.toURL().path)
-//                    it.putNextEntry(ZipEntry("textures/$name"))
-//                    IOUtils.copy(mat.path.inputStream(), it)
-//                } catch (e: Exception) {
-//                    e.print()
-//                } finally {
-//                    it.closeEntry()
-//                }
-//            }
-//
-//            it.putNextEntry(ZipEntry("version.json"))
-//            it.write(gson.toJson(save.version).toByteArray())
-//            it.closeEntry()
-//
-//            it.putNextEntry(ZipEntry("project.json"))
-//            it.write(gson.toJson(save.projectProperties).toByteArray())
-//            it.closeEntry()
-//
-//            val model = save.textures.fold(save.model) { acc, mat ->
-//                val name = FilenameUtils.getName(mat.path.uri.toURL().path)
-//                val newPath = File(path).toResourcePath().enterZip("textures/$name")
-//
-//                acc.modifyMaterial(mat.ref, mat.copy(path = newPath))
-//            }
-//
-//            it.putNextEntry(ZipEntry("model.json"))
-//            it.write(gson.toJson(model, IModel::class.java).toByteArray())
-//            it.closeEntry()
-//
-//            it.putNextEntry(ZipEntry("animation.json"))
-//            it.write(gson.toJson(save.animation, IAnimation::class.java).toByteArray())
-//            it.closeEntry()
-//        }
-//        zip.close()
-//
-//        Files.copy(tmp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING)
-//
-//        if (tmp != file) {
-//            tmp.delete()
-//        }
-//    }
 
     class ModelSerializer : JsonDeserializer<IModel> {
 
         override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IModel {
             val obj = json.asJsonObject
-            val groups = obj["groupObjects"] ?: JsonArray()
+            val objects: Map<IObjectRef, IObject> = context.deserializeT(obj["objectMap"])
             return Model.of(
-                    objectMap = context.deserializeT(obj["objectMap"]),
+                    objectMap = objects,
                     materialMap = context.deserializeT(obj["materialMap"]),
                     groupMap = context.deserializeT(obj["groupMap"]),
-                    groupTree = MutableGroupTree(RootGroupRef,
-                            context.deserializeT<BiMultimap<IGroupRef, IObjectRef>>(groups).flatMap { it.second }.toMutableList()
-                    ).toImmutable()
+                    groupTree = MutableGroupTree(RootGroupRef, objects.keys.toMutableList()).toImmutable()
             )
         }
     }
@@ -301,14 +248,8 @@ object ProjectLoaderV12 {
 
             val obj = json.asJsonObject
 
-//            val pairs = obj["mapping"].asJsonArray
-//                    .map { it.asJsonObject }
-//                    .map { context.deserializeT<UUID>(it["key"]) to context.deserializeT<List<IObjectRef>>(it["value"]) }
-//                    .map { (ChannelRef(it.first) as IChannelRef) to it.second }
-//
-//            val objectMapping = multimapOf(*pairs.toTypedArray())
-
-            val channels = obj["channels"].asJsonArray.map {
+            val channelsObj = obj["channels"]
+            val channels = if (!channelsObj.isJsonArray) emptyList() else channelsObj.asJsonArray.map {
                 val channel = it.asJsonObject
 
                 val interName = channel["interpolation"].asString

@@ -99,7 +99,6 @@ class ProjectManager(
             ExportManager.CURRENT_SAVE_VERSION,
             projectProperties,
             model,
-            animation,
             if (saveImages) materialPaths else emptyList()
     )
 }

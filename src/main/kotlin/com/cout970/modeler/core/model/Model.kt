@@ -17,7 +17,7 @@ import com.cout970.modeler.core.model.material.MaterialRefNone
  * Created by cout970 on 2017/05/07.
  *
  * Immutable snapshot of the model in a point of time, Is immutable to reduce memory usage sharing objects and
- * materials with the new versions
+ * materials with the new versions, also makes concurrency and transactions simpler
  */
 data class Model(
         override val objectMap: Map<IObjectRef, IObject>,
@@ -189,6 +189,7 @@ data class Model(
         if (this.objectMap != other.objectMap) return -1
         if (this.materialMap != other.materialMap) return -1
         if (this.groupMap != other.groupMap) return -1
+        if (this.animationMap != other.animationMap) return -1
         if (this.tree != other.tree) return -1
 
         return 0

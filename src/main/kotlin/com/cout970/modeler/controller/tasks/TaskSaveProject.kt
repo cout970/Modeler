@@ -1,7 +1,6 @@
 package com.cout970.modeler.controller.tasks
 
 import com.cout970.modeler.Program
-import com.cout970.modeler.api.animation.IAnimation
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.core.export.ExportManager
 import com.cout970.modeler.core.export.ProgramSave
@@ -19,24 +18,21 @@ class TaskSaveProject(
         val exportManager: ExportManager,
         val path: String,
         val model: IModel,
-        val properties: ProjectProperties,
-        val animation: IAnimation
+        val properties: ProjectProperties
 ) : ITask {
 
     override fun run(state: Program) {
         try {
             log(Level.FINE) { "Saving project..." }
-            exportManager.saveProject(path, ProgramSave(ExportManager.CURRENT_SAVE_VERSION, properties, model,
-                    animation, state.projectManager.materialPaths))
+            val save = ProgramSave(ExportManager.CURRENT_SAVE_VERSION, properties, model, state.projectManager.materialPaths)
+            exportManager.saveProject(path, save)
 
             log(Level.FINE) { "Saving done" }
-            NotificationHandler.push(Notification("Project saved",
-                    "Project saved successfully"))
+            NotificationHandler.push(Notification("Project saved", "Project saved successfully"))
         } catch (e: Exception) {
             log(Level.ERROR) { "Unable to save project" }
             e.print()
-            NotificationHandler.push(Notification("Error saving the project",
-                    "Unable to save the project to '$path': $e"))
+            NotificationHandler.push(Notification("Error saving the project", "Unable to save the project to '$path': $e"))
         }
     }
 }
