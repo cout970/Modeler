@@ -83,7 +83,7 @@ private fun selectPartInCanvas(component: Component, input: IInput, gui: Gui): I
 
     if (canvas.viewMode != SelectionTarget.MODEL) return TaskNone
 
-    if (gui.state.cursor.getParts().any { it.hovered }) return TaskNone
+    if (gui.state.cursor.visible && gui.state.cursor.getParts().any { it.hovered }) return TaskNone
     return onModel(canvas, gui, input)
 }
 
