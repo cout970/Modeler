@@ -40,6 +40,7 @@ import org.lwjgl.opengl.GL13
 
 class ModelRenderer {
 
+    private var objectCacheHash: MutableMap<IObjectRef, Int> = mutableMapOf()
     private var objectCache: MutableMap<IObjectRef, ObjectCache> = mutableMapOf()
     private var modelHash = -1
     private var modelSelectionHash = -1
@@ -69,15 +70,38 @@ class ModelRenderer {
             modelSelectionHash = modelSel.hashCode()
             textureSelectionHash = textureSel.hashCode()
 
-            objectCache.values.forEach { (geom, sel) -> geom.close(); sel?.close() }
+            val oldMap = objectCache.toMap()
             objectCache.clear()
 
             model.objectMap.values.filter { it.visible }.forEach { obj ->
+                if (obj.ref in objectCacheHash) {
+                    val oldHash = objectCacheHash[obj.ref]!!
+                    val newHash = obj.hashCode() xor modelSelectionHash xor textureSelectionHash
+                    if (oldHash == newHash) {
+                        objectCache[obj.ref] = oldMap[obj.ref]!!
+                        return@forEach
+                    }
+                }
+
                 val geom = obj.mesh.createVao(ctx.buffer, getColor(obj.id.hashCode()))
                 val modSel = getSelectionVao(ctx, obj, modelSel, Config.colorPalette.modelSelectionColor)
                 val texSel = getSelectionVao(ctx, obj, textureSel, Config.colorPalette.textureSelectionColor)
 
                 objectCache[obj.ref] = ObjectCache(geom, modSel, texSel)
+                objectCacheHash[obj.ref] = obj.hashCode() xor modelSelectionHash xor textureSelectionHash
+            }
+
+            oldMap.forEach { ref, cache ->
+                if (ref !in objectCache) {
+                    cache.geometry.close()
+                    cache.modelSelection?.close()
+                    cache.textureSelection?.close()
+                    objectCacheHash.remove(ref)
+                } else if (objectCache[ref] != cache) {
+                    cache.geometry.close()
+                    cache.modelSelection?.close()
+                    cache.textureSelection?.close()
+                }
             }
         }
     }
