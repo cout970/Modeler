@@ -30,7 +30,8 @@ object TransformationHelper {
         return when (sel.selectionType) {
             SelectionType.OBJECT -> {
                 applyTransformation(source, sel, animator) { obj, inv ->
-                    obj.withTransformation(obj.transformation + (inv + transform))
+                    val t = inv.invert() + transform + inv
+                    obj.withTransformation(obj.transformation + t)
                 }
             }
             SelectionType.FACE -> {
@@ -41,8 +42,9 @@ object TransformationHelper {
                             .flatMap { it.pos }
                             .toSet()
 
-                    val local = obj.transformation + transform + obj.transformation.invert()
-                    val newMesh = transformMesh(obj, indices, (inv + local).matrix)
+                    val t = inv.invert() + transform + inv
+                    val local = obj.transformation + t + obj.transformation.invert()
+                    val newMesh = transformMesh(obj, indices, local.matrix)
                     obj.withMesh(newMesh)
                 }
             }
@@ -53,8 +55,9 @@ object TransformationHelper {
                             .flatMap { listOf(it.firstIndex, it.secondIndex) }
                             .toSet()
 
-                    val local = obj.transformation + transform + obj.transformation.invert()
-                    val newMesh = transformMesh(obj, indices, (inv + local).matrix)
+                    val t = inv.invert() + transform + inv
+                    val local = obj.transformation + t + obj.transformation.invert()
+                    val newMesh = transformMesh(obj, indices, local.matrix)
                     obj.withMesh(newMesh)
                 }
             }
@@ -65,8 +68,9 @@ object TransformationHelper {
                             .map { it.posIndex }
                             .toSet()
 
-                    val local = obj.transformation + transform + obj.transformation.invert()
-                    val newMesh = transformMesh(obj, indices, (inv + local).matrix)
+                    val t = inv.invert() + transform + inv
+                    val local = obj.transformation + t + obj.transformation.invert()
+                    val newMesh = transformMesh(obj, indices, local.matrix)
                     obj.withMesh(newMesh)
                 }
             }
@@ -77,9 +81,12 @@ object TransformationHelper {
 
         fun calculateTransform(obj: IObject, inv: ITransformation): ITransformation {
             val trs = obj.transformation.toTRS()
-            val local = trs.rotation.invert().transform(inv.matrix.transformVertex(vector))
+
+            val dir = (inv.invert() + TRSTransformation(vector) + inv).toTRS().translation
+
+            val local = trs.rotation.invert().transform(dir)
             val (scale, translation) = getScaleAndTranslation(local)
-            val finalTranslation = trs.rotation.transform(inv.invert().matrix.transformVertex(translation))
+            val finalTranslation = trs.rotation.transform(translation)
 
             return trs.copy(
                     translation = trs.translation + finalTranslation * offset,
@@ -104,7 +111,7 @@ object TransformationHelper {
                     val trs = obj.transformation.toTRS()
                     val transform = calculateTransform(obj, inv) + trs.invert()
 
-                    val newMesh = transformMesh(obj, indices, (inv + transform).matrix)
+                    val newMesh = transformMesh(obj, indices, transform.matrix)
                     obj.withMesh(newMesh)
                 }
             }
@@ -118,7 +125,7 @@ object TransformationHelper {
                     val trs = obj.transformation.toTRS()
                     val transform = calculateTransform(obj, inv) + trs.invert()
 
-                    val newMesh = transformMesh(obj, indices, (inv + transform).matrix)
+                    val newMesh = transformMesh(obj, indices, transform.matrix)
                     obj.withMesh(newMesh)
                 }
             }
@@ -132,7 +139,7 @@ object TransformationHelper {
                     val trs = obj.transformation.toTRS()
                     val transform = calculateTransform(obj, inv) + trs.invert()
 
-                    val newMesh = transformMesh(obj, indices, (inv + transform).matrix)
+                    val newMesh = transformMesh(obj, indices, transform.matrix)
                     obj.withMesh(newMesh)
                 }
             }
@@ -344,11 +351,3 @@ object TransformationHelper {
         }
     }
 }
-
-fun Matrix4d.transformVertex(it: IVector3): IVector3 {
-    val vec4 = transform(Vector4d(it.xd, it.yd, it.zd, 1.0))
-    return vec3Of(vec4.x, vec4.y, vec4.z)
-}
-
-fun IMatrix4.transformVertex(it: IVector3): IVector3 = toJOML().transformVertex(it)
-

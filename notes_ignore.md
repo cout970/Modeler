@@ -15,7 +15,7 @@ Loads of skyboxes "http://www.custommapmakers.org/skyboxes.php"
 - [x] Fix internal error notifications
 - [x] Fix animation selection
 - [x] Add interface to edit group properties
-- [ ] Fix model group transform
+- [x] Fix model group transform
 - [ ] Add control panel for all the program flags
 - [ ] Upgrade model tree and fix object out of groups
 - [ ] Fix adding cube breaks all groups

@@ -229,3 +229,9 @@ fun Pair<IVector3, IQuaternion>.fromPivotToOrigin(): Pair<IVector3, IQuaternion>
     val finalPos = -(second.toJOML().transform((-first).toJoml3d()).toIVector()) + first
     return finalPos to second
 }
+
+fun IMatrix4.transformVertex(it: IVector3): IVector3 = toJOML().transformVertex(it)
+fun Matrix4d.transformVertex(it: IVector3): IVector3 {
+    val vec4 = transform(Vector4d(it.xd, it.yd, it.zd, 1.0))
+    return vec3Of(vec4.x, vec4.y, vec4.z)
+}

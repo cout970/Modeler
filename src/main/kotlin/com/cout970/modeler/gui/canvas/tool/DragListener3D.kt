@@ -43,7 +43,9 @@ class DragListener3D(val gui: Gui) : IDragListener {
         val mouse = startMousePos to endMousePos
 
         gui.state.tmpModel = helper.applyTransformation(gui, selection, cursor, part, mouse, canvas)
-        cursor.update(gui)
+        if (cursor.mode != CursorMode.ROTATION) {
+            cursor.update(gui)
+        }
     }
 
     override fun onEnd(startMousePos: IVector2, endMousePos: IVector2) {

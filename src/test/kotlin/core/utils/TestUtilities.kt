@@ -2,11 +2,11 @@ package core.utils
 
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.times
-import com.cout970.modeler.core.helpers.transformVertex
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.toTRS
 import com.cout970.modeler.util.fromPivotToOrigin
 import com.cout970.modeler.util.quatOfAngles
+import com.cout970.modeler.util.transformVertex
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.Quaternion
