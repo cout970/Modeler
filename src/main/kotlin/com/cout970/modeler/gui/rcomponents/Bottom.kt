@@ -184,6 +184,10 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
 
                 visibleCount = min(elements.size, 4)
                 elementHeight = 26f
+                classes("animation_selector")
+                childComponents.forEach {
+                    it.classes("animation_selector_item")
+                }
             }
 
             on<SelectBoxChangeSelectionEvent<SelectBox>> { event ->
@@ -197,11 +201,11 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
             }
         }
 
-        +IconButton("", "add_animation", 0f, 3f, 26f, 26f).apply {
+        +IconButton("animation.add", "add_animation", 0f, 3f, 26f, 26f).apply {
             setTooltip("Add animation")
         }
 
-        +IconButton("", "remove_animation", 0f, 3f, 26f, 26f).apply {
+        +IconButton("animation.remove", "remove_animation", 0f, 3f, 26f, 26f).apply {
             setTooltip("Remove animation")
             disable()
             disableInput()

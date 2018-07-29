@@ -161,6 +161,9 @@ var exported = {
         backgroundColor: "#313131",
         borderStyle: "none"
     },
+    animation_selector_item: {
+        textSize: "20"
+    },
     animation_panel: {
         backgroundColor: "#262626",
         borderStyle: "none"

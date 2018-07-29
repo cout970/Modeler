@@ -1,14 +1,16 @@
 package com.cout970.modeler.controller.usecases
 
+import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.tasks.TaskNone
-import com.cout970.modeler.controller.tasks.TaskUpdateAnimation
+import com.cout970.modeler.controller.tasks.TaskUpdateModel
+import com.cout970.modeler.core.animation.ref
 import com.cout970.modeler.render.tool.Animator
 import org.liquidengine.legui.component.Component
 
 
 @UseCase("animation.update.keyframe")
-private fun changeKeyframe(comp: Component, animator: Animator): ITask {
+private fun changeKeyframe(comp: Component, animator: Animator, model: IModel): ITask {
     val offset = comp.metadata["offset"] as? Float ?: return TaskNone
     val cmd = comp.metadata["command"] as? String ?: return TaskNone
     val text = comp.metadata["content"] as? String ?: return TaskNone
@@ -27,6 +29,6 @@ private fun changeKeyframe(comp: Component, animator: Animator): ITask {
     val newChannel = channel.withKeyframes(prev + newKeyframe + next)
     val newAnimation = animator.animation.withChannel(newChannel)
 
-    return TaskUpdateAnimation(oldAnimation = animator.animation, newAnimation = newAnimation)
+    return TaskUpdateModel(model, model.modifyAnimation(newAnimation.ref, newAnimation))
 }
 

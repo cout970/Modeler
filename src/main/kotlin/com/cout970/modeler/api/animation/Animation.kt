@@ -26,8 +26,6 @@ interface IAnimation {
 
     fun removeChannels(list: List<IChannelRef>): IAnimation
 
-    fun getChannels(group: IGroupRef): List<IChannel>
-
     operator fun plus(other: IAnimation): IAnimation
 }
 

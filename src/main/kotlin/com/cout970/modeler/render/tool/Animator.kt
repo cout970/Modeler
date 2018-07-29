@@ -21,25 +21,32 @@ class Animator {
     var selectedChannel: IChannelRef? = null
         set(value) {
             field = value
-            gui.listeners.runGuiCommand("updateAnimation")
             selectedKeyframe = null
+            sendUpdate()
         }
 
     var selectedKeyframe: Int? = null
         set(value) {
             field = value
-            gui.listeners.runGuiCommand("updateAnimation")
+            sendUpdate()
         }
 
     var animationState = AnimationState.STOP
         set(value) {
             field = value
-            gui.listeners.runGuiCommand("updateAnimation")
+            sendUpdate()
         }
 
     val animation get() = gui.programState.animation
 
+    fun sendUpdate() {
+        gui.listeners.runGuiCommand("updateAnimation")
+    }
+
     fun updateTime(timer: Timer) {
+        if (animationState != AnimationState.STOP && gui.state.modelSelection.isNonNull()) {
+            gui.state.cursor.update(gui)
+        }
         when (animationState) {
             AnimationState.FORWARD -> {
                 animationTime += timer.delta.toFloat()

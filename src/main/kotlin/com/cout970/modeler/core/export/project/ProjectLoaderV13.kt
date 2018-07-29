@@ -159,6 +159,7 @@ object ProjectLoaderV13 {
                     groupTree = context.deserializeT(obj["groupTree"]),
                     animationMap = obj["animationMap"]?.let {
                         context.deserializeT<Map<IAnimationRef, IAnimation>>(it)
+                                .filter { (key, value) -> key == value.ref }
                     } ?: emptyMap()
             )
         }
@@ -343,6 +344,7 @@ object ProjectLoaderV13 {
 
         override fun serialize(src: IAnimation, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
             return JsonObject().apply {
+                add("id", context.serializeT(src.id))
                 addProperty("timeLength", src.timeLength)
 
                 add("channels", src.channels.values.toJsonArray { v ->
@@ -372,9 +374,11 @@ object ProjectLoaderV13 {
         }
 
         override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IAnimation {
-            if (json.isJsonNull) return animationOf()
+            if (json.isJsonNull) return Animation.of()
 
             val obj = json.asJsonObject
+
+            val id = if (obj.has("id")) context.deserializeT<UUID>(obj["id"]) else UUID.randomUUID()
 
             val channelMapping = obj["mapping"].asJsonArray
                     .map { it.asJsonObject }
@@ -408,7 +412,8 @@ object ProjectLoaderV13 {
                     channels = channels.associateBy { it.ref },
                     timeLength = obj["timeLength"].asFloat,
                     channelMapping = channelMapping,
-                    name = "animation"
+                    name = "animation",
+                    id = id
             )
         }
     }

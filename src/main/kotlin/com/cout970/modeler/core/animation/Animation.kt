@@ -2,7 +2,6 @@ package com.cout970.modeler.core.animation
 
 import com.cout970.modeler.api.animation.*
 import com.cout970.modeler.api.model.ITransformation
-import com.cout970.modeler.api.model.`object`.IGroupRef
 import java.util.*
 
 /**
@@ -39,12 +38,24 @@ data class Animation(
         return copy(channels = channels.filterKeys { it !in list })
     }
 
-    override fun getChannels(group: IGroupRef): List<IChannel> {
-        return channelMapping.filter { group == it.value }.map { it.key }.map { channels[it]!! }
-    }
-
     override fun plus(other: IAnimation): IAnimation {
         return copy(channels = channels + other.channels)
+    }
+
+    companion object {
+        fun of(
+                name: String = "Animation",
+                timeLength: Float = 1f,
+                channels: Map<IChannelRef, IChannel> = emptyMap(),
+                channelMapping: Map<IChannelRef, AnimationTarget> = emptyMap()
+        ): IAnimation {
+            return Animation(
+                    channels = channels,
+                    channelMapping = channelMapping,
+                    name = name,
+                    timeLength = timeLength
+            )
+        }
     }
 }
 
@@ -78,6 +89,20 @@ data class Keyframe(
 inline val IChannel.ref: IChannelRef get() = ChannelRef(id)
 inline val IAnimation.ref: IAnimationRef get() = AnimationRef(id)
 
-// TODO
-fun animationOf(vararg channels: IChannel, time: Float = 1f) =
-        Animation(channels.associateBy { it.ref }, emptyMap(), time, "Animation")
+object AnimationNone : IAnimation {
+    override val id: UUID get() = AnimationRefNone.id
+    override val name: String get() = "None"
+    override val channels: Map<IChannelRef, IChannel> get() = emptyMap()
+    override val channelMapping: Map<IChannelRef, AnimationTarget> get() = emptyMap()
+    override val timeLength: Float get() = 1f
+
+    override fun withChannel(channel: IChannel): IAnimation = this
+
+    override fun withTimeLength(newLength: Float): IAnimation = this
+
+    override fun withMapping(channel: IChannelRef, target: AnimationTarget): IAnimation = this
+
+    override fun removeChannels(list: List<IChannelRef>): IAnimation = this
+
+    override fun plus(other: IAnimation): IAnimation = other
+}

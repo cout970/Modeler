@@ -9,7 +9,10 @@ import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.modeler.core.animation.*
+import com.cout970.modeler.core.animation.Animation
+import com.cout970.modeler.core.animation.Channel
+import com.cout970.modeler.core.animation.Keyframe
+import com.cout970.modeler.core.animation.ref
 import com.cout970.modeler.core.export.*
 import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.model.`object`.*
@@ -244,7 +247,7 @@ object ProjectLoaderV12 {
     class AnimationSerializer : JsonDeserializer<IAnimation> {
 
         override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IAnimation {
-            if (json.isJsonNull) return animationOf()
+            if (json.isJsonNull) return Animation.of()
 
             val obj = json.asJsonObject
 

@@ -8,8 +8,8 @@ import com.cout970.modeler.api.model.`object`.RootGroupRef
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.ISelection
+import com.cout970.modeler.core.animation.AnimationNone
 import com.cout970.modeler.core.animation.AnimationRefNone
-import com.cout970.modeler.core.animation.animationOf
 import com.cout970.modeler.core.animation.ref
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.export.ExportManager
@@ -46,7 +46,7 @@ class ProjectManager(
     override val material: IMaterial get() = model.materialMap[selectedMaterial] ?: MaterialNone
 
     override var selectedAnimation: IAnimationRef = AnimationRefNone
-    override val animation: IAnimation get() = model.animationMap[selectedAnimation] ?: animationOf()
+    override val animation: IAnimation get() = model.animationMap[selectedAnimation] ?: AnimationNone
 
     val modelChangeListeners: MutableList<(old: IModel, new: IModel) -> Unit> = mutableListOf()
 

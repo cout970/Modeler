@@ -163,7 +163,6 @@ data class Model(
     }
 
     override fun removeAnimation(animationRef: IAnimationRef): IModel {
-        require(animationRef in animationMap)
         return copy(animationMap = animationMap - animationRef)
     }
 
