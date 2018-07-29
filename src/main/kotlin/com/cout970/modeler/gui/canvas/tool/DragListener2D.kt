@@ -1,5 +1,6 @@
 package com.cout970.modeler.gui.canvas.tool
 
+import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.controller.dispatcher
 import com.cout970.modeler.controller.tasks.TaskUpdateModel
 import com.cout970.modeler.core.config.Config
@@ -38,6 +39,7 @@ class DragListener2D(val gui: Gui) : IDragListener {
     override fun onTick(startMousePos: IVector2, endMousePos: IVector2) {
         val selection = gui.programState.textureSelection.getOrNull() ?: return
         val canvas = gui.canvasContainer.selectedCanvas ?: return
+        if (canvas.viewMode != SelectionTarget.TEXTURE) return
         val mouse = startMousePos to endMousePos
 
         val model = helper.applyTransformation(gui, selection, mouse, canvas)

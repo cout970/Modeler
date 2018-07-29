@@ -17,6 +17,8 @@ Loads of skyboxes "http://www.custommapmakers.org/skyboxes.php"
 - [ ] Upgrade animation panel/keyframe editor
 - [ ] Fix internal error notifications
 - [ ] Fix gltf import/export
+- [ ] Fix UpdateAnimationTask
+- [ ] Fix adding cube breaks all groups
 
 # Old TODO list
 
