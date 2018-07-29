@@ -197,7 +197,7 @@ class ModelRenderer {
         val mat = model.getGroup(group).transform.matrix * matrix * animator.animate(animation, group, ObjectRefNone)
 
         model.tree.objects[group].forEach { obj ->
-            matrixCache[obj] = mat * model.getObject(obj).transformation.matrix * animator.animate(animation, group, obj)
+            matrixCache[obj] = mat * model.getObject(obj).transformation.matrix * animator.animate(animation, RootGroupRef, obj)
         }
 
         model.tree.groups[group].forEach {

@@ -2,6 +2,7 @@ package com.cout970.modeler.core.animation
 
 import com.cout970.modeler.api.animation.*
 import com.cout970.modeler.api.model.ITransformation
+import com.cout970.modeler.api.model.`object`.RootGroupRef
 import java.util.*
 
 /**
@@ -31,6 +32,9 @@ data class Animation(
     }
 
     override fun withMapping(channel: IChannelRef, target: AnimationTarget): IAnimation {
+        require(target !is AnimationTargetGroup || target.ref != RootGroupRef) {
+            "Cannot apply animation to the root group"
+        }
         return copy(channelMapping = channelMapping + Pair(channel, target))
     }
 

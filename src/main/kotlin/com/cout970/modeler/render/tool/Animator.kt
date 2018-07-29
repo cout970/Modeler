@@ -71,7 +71,9 @@ class Animator {
                     val target = anim.channelMapping[chanRef]
 
                     when (target) {
-                        is AnimationTargetGroup -> target.ref == group
+                        is AnimationTargetGroup -> {
+                            target.ref == group
+                        }
                         is AnimationTargetObject -> target.ref == obj
                         else -> false
                     }

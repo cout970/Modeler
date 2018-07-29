@@ -11,14 +11,15 @@ Loads of skyboxes "http://www.custommapmakers.org/skyboxes.php"
 - [x] Fix texture editing
 - [x] Finish cursor capabilities
 - [x] Fix selection raytrace (again)
+- [x] Fix UpdateAnimationTask
+- [ ] Fix animation selection and transform
 - [ ] Add control panel for all the program flags
 - [ ] Upgrade model tree and fix object out of groups
 - [ ] Add interface to edit texture properties
-- [ ] Upgrade animation panel/keyframe editor
 - [ ] Fix internal error notifications
 - [ ] Fix gltf import/export
-- [ ] Fix UpdateAnimationTask
 - [ ] Fix adding cube breaks all groups
+- [ ] Upgrade animation panel/keyframe editor
 
 # Old TODO list
 

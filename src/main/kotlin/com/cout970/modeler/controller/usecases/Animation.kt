@@ -2,14 +2,18 @@ package com.cout970.modeler.controller.usecases
 
 import com.cout970.modeler.api.animation.*
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.`object`.RootGroupRef
 import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.animation.*
 import com.cout970.modeler.core.model.TRTSTransformation
+import com.cout970.modeler.core.model.objects
+import com.cout970.modeler.core.model.selection.Selection
 import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.render.tool.Animator
 import com.cout970.modeler.util.absolutePositionV
+import com.cout970.modeler.util.asNullable
 import com.cout970.reactive.dsl.width
 import org.liquidengine.legui.component.Component
 import kotlin.math.roundToInt
@@ -43,7 +47,17 @@ private fun removeAnimation(programState: ProjectManager): ITask {
 @UseCase("animation.channel.add")
 private fun addAnimationChannel(programState: IProgramState): ITask {
     val group = programState.selectedGroup
+    val selection = programState.modelSelection
     val anim = programState.animation
+
+    val target = if (group == RootGroupRef) {
+        if (selection.isNull()) return TaskNone
+        val sel = selection.getNonNull()
+        if (sel.objects.size != 1) return TaskNone
+        AnimationTargetObject(sel.objects.first())
+    } else {
+        AnimationTargetGroup(group)
+    }
 
     val channel = Channel(
             name = "Channel ${lastAnimation++}",
@@ -53,7 +67,7 @@ private fun addAnimationChannel(programState: IProgramState): ITask {
                     Keyframe(anim.timeLength, TRTSTransformation.IDENTITY)
             )
     )
-    val newAnimation = anim.withChannel(channel).withMapping(channel.ref, AnimationTargetGroup(group))
+    val newAnimation = anim.withChannel(channel).withMapping(channel.ref, target)
 
     return TaskChain(listOf(
             TaskUpdateModel(programState.model, programState.model.modifyAnimation(newAnimation.ref, newAnimation)),
@@ -63,8 +77,24 @@ private fun addAnimationChannel(programState: IProgramState): ITask {
 
 
 @UseCase("animation.channel.select")
-private fun selectAnimationChannel(comp: Component): ITask = ModifyGui {
-    it.animator.selectedChannel = comp.metadata["ref"] as IChannelRef
+private fun selectAnimationChannel(comp: Component, projectManager: ProjectManager): ITask {
+    val animation = projectManager.animation
+    val channel = comp.metadata["ref"] as IChannelRef
+
+    val task1 = ModifyGui { it.animator.selectedChannel = channel }
+
+    val target = animation.channelMapping[channel] ?: return task1
+
+    return when (target) {
+        is AnimationTargetGroup -> {
+            TaskChain(listOf(task1, ModifyGui { projectManager.selectedGroup = target.ref }))
+        }
+        is AnimationTargetObject -> {
+            val sel = projectManager.modelSelection
+            val task2 = TaskUpdateModelSelection(sel, Selection.of(listOf(target.ref)).asNullable())
+            TaskChain(listOf(task1, task2))
+        }
+    }
 }
 
 @UseCase("animation.select")
