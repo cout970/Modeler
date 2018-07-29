@@ -103,6 +103,7 @@ open class OctoTree<T>(val depth: Int) {
                         }
                         nodes[branchIndex] = Branch(node.value, number(x, y, z, depth - 1))
                     }
+                    else -> Unit
                 }
 
                 if (nodes[branchIndex]!!.set(x, y, z, value, depth - 1)) {

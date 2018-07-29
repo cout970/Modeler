@@ -10,8 +10,6 @@ import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.model.selection.ObjectRefNone
 import com.cout970.modeler.core.project.IProgramState
-import com.cout970.modeler.gui.event.EventModelUpdate
-import com.cout970.modeler.gui.event.EventSelectionUpdate
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.util.getOr
@@ -92,8 +90,8 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
             alignAsColumn(5f)
         }
 
-        on<EventModelUpdate> { rerender() }
-        on<EventSelectionUpdate> { rerender() }
+        onCmd("updateModel") { rerender() }
+        onCmd("updateSelection") { rerender() }
 
         comp(FixedLabel()) {
             style {

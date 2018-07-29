@@ -21,18 +21,20 @@ class Animator {
     var selectedChannel: IChannelRef? = null
         set(value) {
             field = value
-            gui.listeners.onAnimatorChange(this)
+            gui.listeners.runGuiCommand("updateAnimation")
             selectedKeyframe = null
         }
 
     var selectedKeyframe: Int? = null
         set(value) {
-            field = value; gui.listeners.onAnimatorChange(this)
+            field = value
+            gui.listeners.runGuiCommand("updateAnimation")
         }
 
     var animationState = AnimationState.STOP
         set(value) {
-            field = value; gui.listeners.onAnimatorChange(this)
+            field = value
+            gui.listeners.runGuiCommand("updateAnimation")
         }
 
     val animation get() = gui.programState.animation

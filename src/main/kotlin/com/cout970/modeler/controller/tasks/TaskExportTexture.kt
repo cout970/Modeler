@@ -4,8 +4,7 @@ import com.cout970.modeler.Program
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.core.log.print
-import com.cout970.modeler.gui.event.Notification
-import com.cout970.modeler.gui.event.NotificationHandler
+import com.cout970.modeler.gui.event.pushNotification
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.times
 import java.awt.Color
@@ -64,12 +63,10 @@ class TaskExportTexture(
             }
 
             ImageIO.write(image, "png", file)
-            NotificationHandler.push(Notification("Texture exported",
-                    "Texture has been exported to '$path'"))
+            pushNotification("Texture exported", "Texture has been exported to '$path'")
         } catch (e: Exception) {
             e.print()
-            NotificationHandler.push(Notification("Error exporting texture",
-                    "Error exporting texture to '$path': \n$e"))
+            pushNotification("Error exporting texture", "Error exporting texture to '$path': \n$e")
         }
     }
 

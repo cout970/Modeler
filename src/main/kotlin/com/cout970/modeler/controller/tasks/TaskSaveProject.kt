@@ -8,8 +8,7 @@ import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.project.ProjectProperties
-import com.cout970.modeler.gui.event.Notification
-import com.cout970.modeler.gui.event.NotificationHandler
+import com.cout970.modeler.gui.event.pushNotification
 
 /**
  * Created by cout970 on 2017/07/19.
@@ -28,11 +27,11 @@ class TaskSaveProject(
             exportManager.saveProject(path, save)
 
             log(Level.FINE) { "Saving done" }
-            NotificationHandler.push(Notification("Project saved", "Project saved successfully"))
+            pushNotification("Project saved", "Project saved successfully")
         } catch (e: Exception) {
             log(Level.ERROR) { "Unable to save project" }
             e.print()
-            NotificationHandler.push(Notification("Error saving the project", "Unable to save the project to '$path': $e"))
+            pushNotification("Error saving the project", "Unable to save the project to '$path': $e")
         }
     }
 }

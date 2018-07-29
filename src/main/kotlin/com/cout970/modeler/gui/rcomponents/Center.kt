@@ -1,15 +1,9 @@
 package com.cout970.modeler.gui.rcomponents
 
 import com.cout970.glutilities.structure.Timer
-import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.canvas.CanvasContainer
-import com.cout970.modeler.gui.event.EventNotificationUpdate
 import com.cout970.modeler.gui.event.NotificationHandler
-import com.cout970.modeler.gui.leguicomp.FixedLabel
-import com.cout970.modeler.gui.leguicomp.Panel
-import com.cout970.modeler.gui.leguicomp.ProfilerDiagram
-import com.cout970.modeler.gui.leguicomp.classes
-import com.cout970.modeler.util.toColor
+import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.reactive.core.EmptyProps
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RProps
@@ -19,7 +13,6 @@ import com.cout970.reactive.nodes.child
 import com.cout970.reactive.nodes.comp
 import com.cout970.reactive.nodes.div
 import com.cout970.reactive.nodes.style
-import org.liquidengine.legui.component.TextArea
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 
 data class CenterPanelProps(val canvasContainer: CanvasContainer, val timer: Timer) : RProps
@@ -134,40 +127,61 @@ class EventPanel : RStatelessComponent<EmptyProps>() {
 
     override fun RBuilder.render() = div("EventPanel") {
 
+        val lineSize = 18f
         val notifications = NotificationHandler.getNotifications()
+        val notis = notifications.asReversed().map {
+            val limit = 50
+            val words = it.text.split(' ')
+            val lines = words.fold("") { lines, word ->
+                val last = lines.indexOfLast { it == '\n' }.let { if (it == -1) 0 else it }
+                val currentLineSize = lines.length - last
+                if (currentLineSize + word.length + 1 > limit) {
+                    "$lines $word\n"
+                } else {
+                    "$lines $word"
+                }
+            }
+
+            Triple(it.title, lines.split('\n'), it)
+        }
 
         style {
-            transparent()
+            classes("notification_panel")
         }
 
         postMount {
             width = 330f
-            height = (65f + 4f) * notifications.size
+            height = notis.map { 24f + it.second.size * lineSize + 4f + 5f }.sum() - 5f
             posX = parent.sizeX - width - 10f
             posY = parent.sizeY - height - 10f
             if (notifications.isEmpty()) hide()
+            floatTop(5f, 0f)
         }
 
-        on<EventNotificationUpdate> {
-            rerender()
-        }
+        onCmd("updateNotifications") { rerender() }
 
-        notifications.asReversed().forEachIndexed { index, notification ->
+        notis.forEach { (title, lines, noti) ->
             div {
                 style {
                     width = 330f
-                    height = 65f
-                    posY = index * (height + 4f)
+                    height = 24f + lines.size * lineSize + 4f
                     classes("notification")
                 }
 
-                +FixedLabel(notification.title, y = 0f, width = 330f, height = 24f).apply {
-                    textState.fontSize = 18f
+                postMount {
+                    floatTop(0f, 0f)
                 }
-                +TextArea(notification.text, 0f, 24f, 330f, 40f).apply {
-                    isEditable = false
-                    textState.textColor = Config.colorPalette.textColor.toColor()
-                    transparent()
+
+                +FixedLabel(title, 0f, 0f, 330f, 24f).apply {
+                    classes("notification_title")
+                    onMouse { NotificationHandler.remove(noti) }
+                }
+
+                lines.forEach {
+                    +FixedLabel(it, 5f, 0f, 330f, lineSize).apply {
+                        classes("notification_msg")
+                        onMouse { NotificationHandler.remove(noti) }
+                    }
                 }
             }
         }

@@ -4,7 +4,7 @@ import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.UI
 import com.cout970.modeler.gui.setTimeout
-import com.cout970.modeler.util.getListeners
+import java.util.*
 
 class NotificationHandler {
     lateinit var gui: Gui
@@ -13,12 +13,16 @@ class NotificationHandler {
         instance = this
     }
 
-    private val notifications = mutableListOf<Notification>()
+    private val notifications = Collections.synchronizedList(mutableListOf<Notification>())
 
     fun push(noti: Notification) {
         notifications += noti
         UI.setTimeout(NOTIFICATION_DELAY, this::updateNotifications)
         sendUpdate()
+    }
+
+    fun remove(noti: Notification) {
+        notifications.remove(noti)
     }
 
     fun updateNotifications() {
@@ -29,12 +33,7 @@ class NotificationHandler {
         }
     }
 
-    private fun sendUpdate() {
-        val listeners = gui.editorView.base.getListeners<EventNotificationUpdate>()
-        listeners.forEach { (comp, listener) ->
-            listener.process(EventNotificationUpdate(comp, gui.root.context, gui.root, notifications))
-        }
-    }
+    private fun sendUpdate() = gui.listeners.runGuiCommand("updateNotifications")
 
     companion object {
         private lateinit var instance: NotificationHandler
@@ -42,6 +41,12 @@ class NotificationHandler {
 
         fun push(noti: Notification) = instance.push(noti)
 
-        fun getNotifications() = instance.notifications
+        fun remove(noti: Notification) = instance.remove(noti)
+
+        fun getNotifications(): MutableList<Notification> = instance.notifications
     }
+}
+
+fun pushNotification(title: String, text: String) {
+    NotificationHandler.push(Notification(title, text))
 }

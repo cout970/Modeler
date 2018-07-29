@@ -6,7 +6,6 @@ import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.canvas.tool.Cursor3D
 import com.cout970.modeler.gui.canvas.tool.CursorMode
 import com.cout970.modeler.gui.canvas.tool.CursorOrientation
-import com.cout970.modeler.gui.event.EventModelUpdate
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.gui.rcomponents.left.ModelAccessorProps
 import com.cout970.modeler.util.IPropertyBind
@@ -84,7 +83,7 @@ class TopBar : RStatelessComponent<TopBarProps>() {
         child(SelectionTypeBar::class)
         child(CursorOrientationBar::class, CursorProps(props.gui.state.cursor))
         child(CursorModeBar::class, CursorProps(props.gui.state.cursor))
-        child(ModelStatistics::class, ModelAccessorProps(props.gui.programState))
+//        child(ModelStatistics::class, ModelAccessorProps(props.gui.programState))
     }
 }
 
@@ -223,7 +222,7 @@ class ModelStatistics : RStatelessComponent<ModelAccessorProps>() {
     override fun RBuilder.render() = div("ModelStatistics") {
         style {
             width = 288f
-            height = 85f
+            height = 45f
             classes("statistics_panel")
         }
 
@@ -249,8 +248,6 @@ class ModelStatistics : RStatelessComponent<ModelAccessorProps>() {
         +FixedLabel("Pos vertex: $posVertex", 144f, 7f, 140f, 16f).apply(config)
         +FixedLabel("Tex vertex: $texVertex", 144f, 27f, 140f, 16f).apply(config)
 
-        on<EventModelUpdate> {
-            rerender()
-        }
+        onCmd("updateModel") { rerender() }
     }
 }

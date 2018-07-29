@@ -11,8 +11,7 @@ import com.cout970.modeler.core.export.ModelImporters
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.selection.Selection
-import com.cout970.modeler.gui.event.Notification
-import com.cout970.modeler.gui.event.NotificationHandler
+import com.cout970.modeler.gui.event.pushNotification
 import com.cout970.modeler.util.asNullable
 import com.cout970.modeler.util.toResourcePath
 import java.io.File
@@ -35,8 +34,7 @@ class TaskImportModel(
                 modelCache = newModel
             } catch (e: Exception) {
                 e.print()
-                NotificationHandler.push(Notification("Error importing model",
-                        "Error importing model at '${properties.path}': \n$e"))
+                pushNotification("Error importing model", "Error importing model at '${properties.path}': \n$e")
 
             }
         }
@@ -54,8 +52,7 @@ class TaskImportModel(
             state.projectManager.modelSelectionHandler.setSelection(newSelection.asNullable())
             state.projectManager.updateModel(newModel)
 
-            NotificationHandler.push(Notification("Model imported",
-                    "Model at '${properties.path}' imported successfully"))
+            pushNotification("Model imported", "Model at '${properties.path}' imported successfully")
         }
     }
 

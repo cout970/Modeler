@@ -4,7 +4,7 @@ import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.controller.dispatcher
 import com.cout970.modeler.core.config.ColorPalette
 import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.gui.event.EventGuiCommand
+import com.cout970.modeler.gui.EventGuiCommand
 import com.cout970.modeler.util.forEachComponent
 import com.cout970.modeler.util.toColor
 import com.cout970.reactive.core.Listener
@@ -72,6 +72,12 @@ fun Component.classes(vararg classes: String) {
         classes.joinToString(",")
     }
     Themes.getDefaultTheme().applyAll(this)
+}
+
+fun Component.onMouse(func: (MouseClickEvent<*>) -> Unit) {
+    listenerMap.addListener(MouseClickEvent::class.java) {
+        func(it)
+    }
 }
 
 fun Component.onClick(func: (MouseClickEvent<*>) -> Unit) {

@@ -11,12 +11,10 @@ class TaskUpdateModel(val oldModel: IModel, val newModel: IModel) : IUndoableTas
     override fun run(state: Program) {
         state.gui.state.tmpModel = null
         state.projectManager.updateModel(newModel)
-        state.gui.listeners.onAnimatorChange(state.gui.animator)
     }
 
     override fun undo(state: Program) {
         state.gui.state.tmpModel = null
         state.projectManager.updateModel(oldModel)
-        state.gui.listeners.onAnimatorChange(state.gui.animator)
     }
 }

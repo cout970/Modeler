@@ -9,8 +9,7 @@ import com.cout970.modeler.core.model.Model
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.project.ProjectProperties
 import com.cout970.modeler.gui.Gui
-import com.cout970.modeler.gui.event.Notification
-import com.cout970.modeler.gui.event.NotificationHandler
+import com.cout970.modeler.gui.event.pushNotification
 import com.cout970.modeler.input.dialogs.FileDialogs
 import com.cout970.modeler.input.dialogs.MessageDialogs
 
@@ -77,10 +76,10 @@ private fun loadProjectWithoutAsking(file: String, exportManager: ExportManager,
                 oldModel = projectManager.model,
                 newModel = save.model
         ))
-        NotificationHandler.push(Notification("Project loaded successfully", "Project loaded from '$file'"))
+        pushNotification("Project loaded successfully", "Project loaded from '$file'")
     } catch (e: Exception) {
         e.print()
-        NotificationHandler.push(Notification("Error loading project", "Unable to load project at '$file': $e"))
+        pushNotification("Error loading project", "Unable to load project at '$file': $e")
     }
 }
 

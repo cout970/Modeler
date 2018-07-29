@@ -5,8 +5,6 @@ import com.cout970.modeler.api.animation.AnimationState
 import com.cout970.modeler.controller.dispatcher
 import com.cout970.modeler.core.animation.ref
 import com.cout970.modeler.core.project.IProgramState
-import com.cout970.modeler.gui.event.EventAnimatorUpdate
-import com.cout970.modeler.gui.event.EventSelectionUpdate
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.input.event.IInput
 import com.cout970.modeler.render.tool.Animator
@@ -115,8 +113,8 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
 
         timeline()
 
-        on<EventAnimatorUpdate> { rerender() }
-        on<EventSelectionUpdate> { rerender() }
+        onCmd("updateSelection") { rerender() }
+        onCmd("updateAnimation") { rerender() }
     }
 
     fun RBuilder.controlPanel() = div("Control panel") {

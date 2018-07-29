@@ -1,6 +1,5 @@
 package com.cout970.modeler.gui.canvas
 
-import com.cout970.glutilities.event.EnumKeyState
 import com.cout970.glutilities.event.EventMouseClick
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.Gui
@@ -24,16 +23,12 @@ class CanvasManager {
         }
     }
 
-    fun onMouseClick(e: EventMouseClick): Boolean {
-        if (gui.state.popup != null) return false
-
-        if (e.keyState == EnumKeyState.PRESS) {
-            when {
-                Config.keyBindings.selectModel.check(e) -> return selectPart()
-                Config.keyBindings.jumpCameraToCursor.check(e) -> return moveCamera()
-            }
+    fun onClick(e: EventMouseClick): Boolean {
+        return when {
+            Config.keyBindings.selectModel.check(e) -> selectPart()
+            Config.keyBindings.jumpCameraToCursor.check(e) -> moveCamera()
+            else -> false
         }
-        return false
     }
 
     fun getCanvasUnderTheMouse(): Nullable<Canvas> {

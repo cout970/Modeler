@@ -3,8 +3,7 @@ package com.cout970.modeler.controller.tasks
 import com.cout970.modeler.Program
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.core.model.ref
-import com.cout970.modeler.gui.event.Notification
-import com.cout970.modeler.gui.event.NotificationHandler
+import com.cout970.modeler.gui.event.pushNotification
 
 /**
  * Created by cout970 on 2017/07/24.
@@ -16,8 +15,7 @@ class TaskImportMaterial(
     override fun run(state: Program) {
         state.projectManager.loadMaterial(material)
         state.projectManager.loadedMaterials.forEach { it.value.loadTexture(state.resourceLoader) }
-        NotificationHandler.push(Notification("Material imported",
-                "Material '${material.name}' has been imported successfully"))
+        pushNotification("Material imported", "Material '${material.name}' has been imported successfully")
 
     }
 

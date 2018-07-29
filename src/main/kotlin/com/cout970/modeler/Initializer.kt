@@ -17,8 +17,7 @@ import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.project.ProjectPropertyHolder
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.gui.GuiInitializer
-import com.cout970.modeler.gui.event.Notification
-import com.cout970.modeler.gui.event.NotificationHandler
+import com.cout970.modeler.gui.event.pushNotification
 import com.cout970.modeler.input.event.EventController
 import com.cout970.modeler.input.window.Loop
 import com.cout970.modeler.input.window.WindowHandler
@@ -73,9 +72,9 @@ class Initializer {
 
         log(Level.FINE) { "Creating Loop" }
         val mainLoop = Loop(
-                listOf(eventController, gui.listeners, renderManager, windowHandler, futureExecutor, autoRunner,
-                        Profiler),
-                timer, windowHandler::shouldClose)
+                listOf(eventController, gui.listeners, renderManager, windowHandler, futureExecutor, autoRunner, Profiler),
+                timer, windowHandler::shouldClose
+        )
 
         log(Level.FINE) { "Initializing and linking program components" }
         val program = Program(
@@ -143,45 +142,42 @@ class Initializer {
         return program
     }
 
-    private fun parseArgs(programArguments: List<String>, exportManager: ExportManager,
+    private fun parseArgs(args: List<String>, exportManager: ExportManager,
                           projectManager: ProjectManager, windowHandler: WindowHandler) {
-        if (programArguments.isNotEmpty()) {
-            log(Level.FINE) { "Parsing arguments..." }
-            if (File(programArguments[0]).exists()) {
-                try {
-                    log(Level.NORMAL) { "Loading Project at '${programArguments[0]}'" }
-                    val save = exportManager.loadProject(programArguments[0])
-                    projectManager.loadProjectProperties(save.projectProperties)
-                    projectManager.updateModel(save.model)
-                    windowHandler.updateTitle(save.projectProperties.name)
-                    log(Level.NORMAL) { "Project loaded" }
-
-                    NotificationHandler.push(Notification("Project loaded",
-                            "Loaded project successfully"))
-
-                } catch (e: Exception) {
-                    log(Level.ERROR) { "Unable to load project file at '${programArguments[0]}'" }
-                    e.print()
-                    NotificationHandler.push(Notification("Error loading project",
-                            "Unable to load project, path: '${programArguments[0]}': $e"))
-                }
-            } else {
-                log(Level.ERROR) { "Invalid program argument: '${programArguments[0]}' is not a valid path to a save file" }
-            }
-            log(Level.FINE) { "Parsing arguments done" }
-        } else {
+        if (args.isEmpty()) {
             log(Level.FINE) { "No program arguments found, ignoring..." }
+            return
         }
+
+        log(Level.FINE) { "Parsing arguments..." }
+        val file = File(args[0])
+        if (!file.exists()) {
+            log(Level.ERROR) { "Invalid program argument: '${args[0]}' is not a valid path to a save file" }
+            return
+        }
+
+        try {
+            log(Level.NORMAL) { "Loading Project at '${args[0]}'" }
+            val save = exportManager.loadProject(args[0])
+            projectManager.loadProjectProperties(save.projectProperties)
+            projectManager.updateModel(save.model)
+            windowHandler.updateTitle(save.projectProperties.name)
+            log(Level.NORMAL) { "Project loaded" }
+
+            pushNotification("Project loaded", "Loaded project successfully")
+
+        } catch (e: Exception) {
+            log(Level.ERROR) { "Unable to load project file at '${args[0]}'" }
+            e.print()
+            pushNotification("Error loading project", "Unable to load project, path: '${args[0]}': $e")
+        }
+        log(Level.FINE) { "Parsing arguments done" }
     }
 
     fun start(program: Program) {
         log(Level.FINE) { "Starting loop" }
         program.mainLoop.run()
         log(Level.FINE) { "Ending loop" }
-        stop()
-    }
-
-    private fun stop() {
         GLFWLoader.terminate()
     }
 }

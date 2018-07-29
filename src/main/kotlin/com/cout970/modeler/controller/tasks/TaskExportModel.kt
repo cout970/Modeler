@@ -6,8 +6,7 @@ import com.cout970.modeler.core.export.ExportFormat
 import com.cout970.modeler.core.export.ExportProperties
 import com.cout970.modeler.core.export.ModelImporters
 import com.cout970.modeler.core.log.print
-import com.cout970.modeler.gui.event.Notification
-import com.cout970.modeler.gui.event.NotificationHandler
+import com.cout970.modeler.gui.event.pushNotification
 import java.io.File
 
 /**
@@ -32,10 +31,9 @@ class TaskExportModel(
                     ModelImporters.gltfExporter.export(file, model)
                 }
             }
-            NotificationHandler.push(Notification("Model exported successfully",
-                    "The model has been exported successfully to '${prop.path}'"))
+            pushNotification("Model exported successfully", "The model has been exported successfully to '${prop.path}'")
         } catch (e: Exception) {
-            NotificationHandler.push(Notification("Error exporting model ", "Error: ${e.message}"))
+            pushNotification("Error exporting model ", "Error: ${e.message}")
             e.print()
         }
     }

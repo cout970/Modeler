@@ -6,9 +6,6 @@ import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.project.IProgramState
-import com.cout970.modeler.gui.event.EventMaterialUpdate
-import com.cout970.modeler.gui.event.EventModelUpdate
-import com.cout970.modeler.gui.event.EventSelectionUpdate
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.util.flatMapList
 import com.cout970.modeler.util.toColor
@@ -39,9 +36,9 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
             height = parent.height / 2f
         }
 
-        on<EventModelUpdate> { rerender() }
-        on<EventMaterialUpdate> { rerender() }
-        on<EventSelectionUpdate> { rerender() }
+        onCmd("updateModel") { rerender() }
+        onCmd("updateSelection") { rerender() }
+        onCmd("updateMaterial") { rerender() }
 
         comp(FixedLabel()) {
             style {

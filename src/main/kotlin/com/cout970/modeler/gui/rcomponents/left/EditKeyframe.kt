@@ -2,11 +2,9 @@ package com.cout970.modeler.gui.rcomponents.left
 
 import com.cout970.modeler.core.model.TRTSTransformation
 import com.cout970.modeler.core.project.IProgramState
-import com.cout970.modeler.gui.event.EventAnimatorUpdate
-import com.cout970.modeler.gui.event.EventModelUpdate
-import com.cout970.modeler.gui.event.EventSelectionUpdate
 import com.cout970.modeler.gui.leguicomp.alignAsColumn
 import com.cout970.modeler.gui.leguicomp.classes
+import com.cout970.modeler.gui.leguicomp.onCmd
 import com.cout970.modeler.gui.rcomponents.TransformationInput
 import com.cout970.modeler.gui.rcomponents.TransformationInputProps
 import com.cout970.modeler.render.tool.Animator
@@ -55,8 +53,8 @@ class EditKeyframe : RComponent<EditKeyframeProps, VisibleWidget>() {
                 enable = props.animator.selectedKeyframe != null
         ))
 
-        on<EventModelUpdate> { rerender() }
-        on<EventSelectionUpdate> { rerender() }
-        on<EventAnimatorUpdate> { rerender() }
+        onCmd("updateModel") { rerender() }
+        onCmd("updateSelection") { rerender() }
+        onCmd("updateAnimation") { rerender() }
     }
 }

@@ -7,8 +7,7 @@ import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
-import com.cout970.modeler.gui.event.Notification
-import com.cout970.modeler.gui.event.NotificationHandler
+import com.cout970.modeler.gui.event.pushNotification
 import org.liquidengine.legui.component.Component
 import kotlin.reflect.KFunction
 import kotlin.reflect.KVisibility
@@ -61,7 +60,7 @@ class Dispatcher : IDispatcher {
                     cause.message ?: cause::class.java.simpleName
                 else e.message ?: e::class.java.simpleName
 
-                NotificationHandler.push(Notification("Internal error", msg))
+                pushNotification("Internal error", msg)
             }
         }
         Profiler.endSection()

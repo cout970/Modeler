@@ -231,11 +231,24 @@ var exported = {
         borderWidth: "1",
         borderColor: "#a0a0a0"
     },
+    notification_panel: {
+        backgroundColor: transparent
+    },
     notification: {
         backgroundColor: "#2c2c2c",
         borderStyle: "solid",
         borderWidth: "1",
         borderColor: "#666666"
+    },
+    notification_title: {
+        textAlign: "center",
+        backgroundColor: transparent,
+        borderStyle: "none",
+        textSize: "20"
+    },
+    notification_msg: {
+        backgroundColor: transparent,
+        textAlign: "left"
     },
     model_tree_selected_group: {
         borderStyle: "solid",
@@ -283,8 +296,7 @@ var exported = {
     inputGroup: {
         backgroundColor: transparent,
         borderStyle: "none"
-    },
-
+    }
 };
 
 exported

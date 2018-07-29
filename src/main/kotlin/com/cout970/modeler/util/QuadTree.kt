@@ -93,6 +93,7 @@ class QuadTree<T>(val depth: Int) {
                         }
                         nodes[branchIndex] = Branch(node.value, number(x, y, depth - 1))
                     }
+                    else -> Unit
                 }
 
                 if (nodes[branchIndex]!!.set(x, y, value, depth - 1)) {

@@ -14,8 +14,7 @@ import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.core.project.ProjectProperties
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.gui.Gui
-import com.cout970.modeler.gui.event.Notification
-import com.cout970.modeler.gui.event.NotificationHandler
+import com.cout970.modeler.gui.event.pushNotification
 import com.cout970.modeler.util.createParentsIfNeeded
 import com.google.gson.GsonBuilder
 import java.io.File
@@ -77,13 +76,11 @@ class ExportManager(val resourceLoader: ResourceLoader) {
                 save.model.materials.forEach { it.loadTexture(resourceLoader) }
 
                 log(Level.FINE) { "Last project loaded" }
-                NotificationHandler.push(Notification("Project loaded",
-                        "Loaded project from last execution"))
+                pushNotification("Project loaded", "Loaded project from last execution")
             } catch (e: Exception) {
                 log(Level.ERROR) { "Unable to load last project" }
                 e.print()
-                NotificationHandler.push(Notification("Error loading project",
-                        "Unable to load project at '${path.absolutePath}': $e"))
+                pushNotification("Error loading project", "Unable to load project at '${path.absolutePath}': $e")
             }
         } else {
             log(Level.FINE) { "No last project found, ignoring" }

@@ -2,10 +2,9 @@ package com.cout970.modeler.gui.rcomponents.left
 
 import com.cout970.modeler.api.model.`object`.IObject
 import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.modeler.gui.event.EventModelUpdate
-import com.cout970.modeler.gui.event.EventSelectionUpdate
 import com.cout970.modeler.gui.leguicomp.StringInput
 import com.cout970.modeler.gui.leguicomp.classes
+import com.cout970.modeler.gui.leguicomp.onCmd
 import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.getOr
 import com.cout970.reactive.core.RBuilder
@@ -31,12 +30,8 @@ class EditObjectName : RComponent<ModelAccessorProps, VisibleWidget>() {
             marginX(5f)
         }
 
-        on<EventModelUpdate> {
-            rerender()
-        }
-        on<EventSelectionUpdate> {
-            rerender()
-        }
+        onCmd("updateModel") { rerender() }
+        onCmd("updateSelection") { rerender() }
 
         val obj = getObject()
         val text = obj.map { it.name }.getOr("")

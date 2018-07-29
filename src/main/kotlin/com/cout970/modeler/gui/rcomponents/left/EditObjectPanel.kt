@@ -10,12 +10,7 @@ import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.core.model.TRTSTransformation
 import com.cout970.modeler.core.model.getSelectedObjects
 import com.cout970.modeler.core.model.objects
-import com.cout970.modeler.gui.event.EventModelUpdate
-import com.cout970.modeler.gui.event.EventSelectionUpdate
-import com.cout970.modeler.gui.leguicomp.Panel
-import com.cout970.modeler.gui.leguicomp.alignAsColumn
-import com.cout970.modeler.gui.leguicomp.classes
-import com.cout970.modeler.gui.leguicomp.dispatch
+import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.gui.rcomponents.TinyFloatInput
 import com.cout970.modeler.gui.rcomponents.TinyFloatInputProps
 import com.cout970.modeler.gui.rcomponents.TransformationInput
@@ -63,8 +58,8 @@ class EditObjectPanel : RComponent<ModelAccessorProps, VisibleWidget>() {
 
         textureControls(vec3Of(tex.xf, tex.yf, scale.xf), pair != null && pair.second is IObjectCube)
 
-        on<EventModelUpdate> { rerender() }
-        on<EventSelectionUpdate> { rerender() }
+        onCmd("updateModel") { rerender() }
+        onCmd("updateSelection") { rerender() }
     }
 
     private fun RBuilder.textureControls(scale: IVector3, enable: Boolean) {

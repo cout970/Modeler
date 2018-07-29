@@ -22,7 +22,8 @@ private fun onDebug(): ITask = ModifyGui {
         gui.resources.reload(resourceLoader)
         gui.root.loadResources(gui.resources)
 
-        // Test import sistem
+//        pushNotification("Debug", "This is a debug message that is supposed to be long enough to force an overflow in the event box, even when there will never be messages that long in the program")
+        // Test import system
 //        val properties = ImportProperties(
 //                "path/to/file//small_steam_engine.tbl",
 //                ImportFormat.TBL,
