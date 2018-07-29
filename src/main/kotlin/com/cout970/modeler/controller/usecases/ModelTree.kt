@@ -97,24 +97,23 @@ private fun toggle(pair: Pair<ISelection, IObjectRef>, model: IModel): ITask {
 @UseCase("tree.view.select.group")
 private fun selectListGroup(component: Component, input: IInput, programState: ProjectManager): ITask {
     val (model, selection) = programState
+    val ref = component.ref().asGroupRef().getOrNull() ?: return TaskNone
 
-    component.ref().asGroupRef().map { programState.selectedGroup = it }
+    val multiSelection = Config.keyBindings.multipleSelection.check(input)
+    val objs = model.getRecursiveChildObjects(ref)
 
-    return component.ref().asGroupRef().map { ref ->
-        val multiSelection = Config.keyBindings.multipleSelection.check(input)
-        val objs = model.getRecursiveChildObjects(ref)
+    val newSel: Nullable<ISelection> = if (multiSelection) {
+        programState.modelSelectionHandler.updateSelection(selection, multiSelection, objs)
+    } else {
+        Selection.of(objs).asNullable()
+    }
 
-        val newSel: Nullable<ISelection> = if (multiSelection) {
-            programState.modelSelectionHandler.updateSelection(selection, multiSelection, objs)
-        } else {
-            Selection.of(objs).asNullable()
-        }
-
-        TaskUpdateModelSelection(
-                oldSelection = selection,
-                newSelection = newSel
-        )
-    }.getOr(TaskNone)
+    return TaskChain(listOf(
+            TaskUpdateModelSelection(
+                    oldSelection = selection,
+                    newSelection = newSel
+            ), ModifyGui { programState.selectedGroup = ref }
+    ))
 }
 
 @UseCase("tree.view.delete.group")

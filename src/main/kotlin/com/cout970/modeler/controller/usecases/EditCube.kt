@@ -20,7 +20,7 @@ import org.liquidengine.legui.component.Component
  * Created by cout970 on 2017/07/20.
  */
 
-@UseCase("update.template.cube")
+@UseCase("update.object.transform")
 private fun changeCube(comp: Component, access: IProgramState): ITask {
     val ref = getObjectRef(access) ?: return TaskNone
     val offset = comp.metadata["offset"] as? Float ?: return TaskNone

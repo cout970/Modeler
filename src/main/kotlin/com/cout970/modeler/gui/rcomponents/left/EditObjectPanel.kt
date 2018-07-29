@@ -51,7 +51,7 @@ class EditObjectPanel : RComponent<ModelAccessorProps, VisibleWidget>() {
         child(GroupTitle::class.java, GroupTitleProps("Edit Cube", state.on) { setState { copy(on = !on) } })
 
         child(TransformationInput::class, TransformationInputProps(
-                usecase = "update.template.cube",
+                usecase = "update.object.transform",
                 transformation = trans,
                 enable = pair != null
         ))
@@ -162,7 +162,7 @@ class EditObjectPanel : RComponent<ModelAccessorProps, VisibleWidget>() {
                 metadata += mapOf("command" to txt)
                 metadata += "offset" to 0f
                 metadata += "content" to value.toString()
-                dispatch("update.template.cube")
+                dispatch("update.object.transform")
             }
         }
     }
