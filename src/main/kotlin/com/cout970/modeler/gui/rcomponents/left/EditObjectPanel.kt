@@ -15,17 +15,16 @@ import com.cout970.modeler.gui.rcomponents.TinyFloatInput
 import com.cout970.modeler.gui.rcomponents.TinyFloatInputProps
 import com.cout970.modeler.gui.rcomponents.TransformationInput
 import com.cout970.modeler.gui.rcomponents.TransformationInputProps
+import com.cout970.modeler.util.disableInput
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
 import com.cout970.reactive.dsl.*
-import com.cout970.reactive.nodes.child
-import com.cout970.reactive.nodes.div
-import com.cout970.reactive.nodes.label
-import com.cout970.reactive.nodes.style
+import com.cout970.reactive.nodes.*
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.Vector2
 import com.cout970.vector.extensions.vec3Of
 import org.joml.Vector2f
+import org.liquidengine.legui.component.optional.align.HorizontalAlign
 
 class EditObjectPanel : RComponent<ModelAccessorProps, VisibleWidget>() {
 
@@ -34,12 +33,12 @@ class EditObjectPanel : RComponent<ModelAccessorProps, VisibleWidget>() {
     override fun RBuilder.render() = div("EditCubePanel") {
         style {
             classes("left_panel_group", "edit_cube")
-            height = if (state.on) 520f else 24f
+            height = if (state.on) 557f else 24f
         }
 
         postMount {
             marginX(5f)
-            alignAsColumn(5f, 14f)
+            alignAsColumn(5f, 16f)
         }
 
         val pair = getObject()
@@ -47,8 +46,30 @@ class EditObjectPanel : RComponent<ModelAccessorProps, VisibleWidget>() {
         val trans = pair?.second?.transformation ?: TRTSTransformation.IDENTITY
         val tex = (pair?.second as? IObjectCube)?.textureOffset ?: Vector2.ORIGIN
         val scale = (pair?.second as? IObjectCube)?.textureSize ?: Vector2.ORIGIN
+        val text = pair?.second?.name ?: ""
 
         child(GroupTitle::class.java, GroupTitleProps("Edit Cube", state.on) { setState { copy(on = !on) } })
+
+        comp(StringInput("model.obj.change.name")) {
+            style {
+                textState.horizontalAlign = HorizontalAlign.CENTER
+                textState.text = text
+                textState.fontSize = 24f
+                sizeY = 32f
+            }
+
+            postMount {
+                marginX(5f)
+
+                this as StringInput
+
+                if (pair == null) {
+                    isEditable = false
+                    isEnabled = false
+                    disableInput()
+                }
+            }
+        }
 
         child(TransformationInput::class, TransformationInputProps(
                 usecase = "update.object.transform",
