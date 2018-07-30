@@ -8,10 +8,10 @@ Open 3D Modeling Tool
 This tool is written in Kotlin, using [LWJGL3](https://www.lwjgl.org/) for rendering and [Legui](https://github.com/cout970/legui) to build user interfaces
 
 ### Screenshots
-![http://prntscr.com/h7www3](https://image.prntscr.com/image/Hq3BMEieSwuXEyt_tdoOrw.png)
-![http://prntscr.com/h7wx7a](https://image.prntscr.com/image/zNBA32ZkTQ_kbJcYpLsaoA.png)
-![http://prntscr.com/h7wv0i](https://image.prntscr.com/image/zC6SfXSHQg_fZ26qDUI7Zg.png)
-![http://prntscr.com/h7wyik](https://image.prntscr.com/image/wc6eE8i_SFi1Ks-iNDGaJA.png)
+![3d view](https://i.imgur.com/BWWotpp.png)
+![4 viewports](https://i.imgur.com/YTJsckU.png)
+![texture editing](https://i.imgur.com/5HfHfy4.png)
+![animations](https://i.imgur.com/c1KTFaO.png)
 
 ### Current state
 The program is in alpha and there are tons of features that need to be implemented.
