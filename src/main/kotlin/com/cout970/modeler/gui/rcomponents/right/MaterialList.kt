@@ -180,7 +180,7 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
 
                         +TextButton("material.view.select", material.name, 24f, 0f, 196f, 24f).apply {
                             horizontalAlign = HorizontalAlign.LEFT
-                            textState.padding.x = 2f
+                            paddingLeft(2f)
                             fontSize = 20f
                             transparent()
                             metadata += "ref" to material.ref

@@ -119,7 +119,7 @@ class ImportDialog : RComponent<PopupReturnProps, ImportDialogState>() {
 
             background { buttonColor }
             textState.fontSize = 18f
-            textState.padding.x = 5f
+            paddingLeft(5f)
             isChecked = state.flipUV
             style.setBorderRadius(0f)
 

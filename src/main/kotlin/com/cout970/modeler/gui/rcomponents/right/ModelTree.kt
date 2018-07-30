@@ -283,7 +283,7 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
                 hoveredStyle.background.color.set(0f)
                 fontSize = 20f
                 horizontalAlign = HorizontalAlign.LEFT
-                textState.padding.x = 2f
+                paddingLeft(2f)
                 metadata += "ref" to obj.ref
             }
 
@@ -329,7 +329,7 @@ class ToggleName : RComponent<ToggleName.Props, ToggleName.State>() {
                     borderless()
                     fontSize = 20f
                     horizontalAlign = HorizontalAlign.LEFT
-                    textState.padding.x = 2f
+                    paddingLeft(2f)
                     metadata += "ref" to props.group.ref
                 }
                 onDoubleClick { setState { copy(hidden = false) } }
@@ -342,7 +342,7 @@ class ToggleName : RComponent<ToggleName.Props, ToggleName.State>() {
                     borderless()
                     textState.horizontalAlign = HorizontalAlign.LEFT
                     textState.fontSize = 20f
-                    textState.padding.x = 2f
+                    paddingLeft(2f)
                     metadata += "ref" to props.group.ref
                 }
 

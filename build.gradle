@@ -4,7 +4,7 @@ version '1.7.0-SNAPSHOT'
 buildscript {
     ext.kotlin_version = '1.2.31'
     ext.lwjglVersion = "3.1.6-SNAPSHOT"
-    ext.legui_version = "1.4.5-205"
+    ext.legui_version = "1.4.5-221"
     ext.arrow_version = "0.7.2"
 
     repositories {

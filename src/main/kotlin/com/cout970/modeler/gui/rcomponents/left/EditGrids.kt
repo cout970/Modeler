@@ -51,7 +51,7 @@ class EditGrids : RComponent<EditGridsProps, VisibleWidget>() {
 
             +CheckBox("Enable Plane X", 0f, 0f, 160f, 24f).apply {
                 defaultTextColor()
-                textState.padding.x = 4f
+                paddingLeft(4f)
                 isChecked = props.gridLines.enableXPlane
                 classes("checkbox")
                 if (isChecked) classes("checkbox_active")
@@ -64,7 +64,7 @@ class EditGrids : RComponent<EditGridsProps, VisibleWidget>() {
 
             +CheckBox("Enable Plane Y", 0f, 24f + 5f, 160f, 24f).apply {
                 defaultTextColor()
-                textState.padding.x = 4f
+                paddingLeft(4f)
                 isChecked = props.gridLines.enableYPlane
                 classes("checkbox")
                 if (isChecked) classes("checkbox_active")
@@ -77,7 +77,7 @@ class EditGrids : RComponent<EditGridsProps, VisibleWidget>() {
 
             +CheckBox("Enable Plane Z", 0f, 48f + 10f, 160f, 24f).apply {
                 defaultTextColor()
-                textState.padding.x = 4f
+                paddingLeft(4f)
                 isChecked = props.gridLines.enableZPlane
                 classes("checkbox")
                 if (isChecked) classes("checkbox_active")

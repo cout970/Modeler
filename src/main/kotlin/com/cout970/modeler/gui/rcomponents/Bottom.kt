@@ -244,7 +244,7 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
                     borderless()
                     fontSize = 20f
                     horizontalAlign = HorizontalAlign.LEFT
-                    textState.padding.x = 2f
+                    paddingLeft(2f)
                     metadata += "ref" to c.ref
                 }
 

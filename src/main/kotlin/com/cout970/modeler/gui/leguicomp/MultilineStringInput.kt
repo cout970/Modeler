@@ -17,19 +17,21 @@ class MultilineStringInput(
         posY: Float = 0f,
         sizeX: Float = 80f,
         sizeY: Float = 24f
-) : TextArea(text, posX, posY, sizeX, sizeY) {
+) : TextArea(posX, posY, sizeX, sizeY) {
 
     var onLoseFocus: (() -> Unit)? = null
     var onEnterPress: (() -> Unit)? = null
     var onTextChange: ((TextInputContentChangeEvent<*>) -> Unit)? = null
 
     init {
+        textState.text = text
         setTransparent()
         setBorderless()
         defaultTextColor()
         focusedStrokeColor { grey }
         highlightColor { bright3 }
         rectangularCorners()
+        // TODO
         textState.fontSize = 18f
         textState.horizontalAlign = HorizontalAlign.LEFT
         textState.verticalAlign = VerticalAlign.TOP

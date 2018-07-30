@@ -239,7 +239,7 @@ class ModelStatistics : RStatelessComponent<ModelAccessorProps>() {
         val config: FixedLabel.() -> Unit = {
             fontSize = 18f
             horizontalAlign = HorizontalAlign.LEFT
-            textState.padding.x = 10f
+            paddingLeft(10f)
             classes("statistics_panel_item")
         }
 

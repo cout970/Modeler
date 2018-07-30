@@ -5,7 +5,6 @@ import com.cout970.reactive.dsl.borderless
 import com.cout970.reactive.dsl.rectCorners
 import com.cout970.reactive.dsl.transparent
 import org.liquidengine.legui.component.Button
-import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.icon.Icon
 import org.liquidengine.legui.icon.ImageIcon
 
@@ -38,11 +37,6 @@ class IconButton(
 
     fun setImage(img: Icon) {
         style.background.icon = img
-    }
-
-    fun setTextLeft() = this.apply {
-        textState.horizontalAlign = HorizontalAlign.LEFT
-        textState.padding.x += 5f
     }
 
     override fun toString(): String = "IconButton(id='$command', icon='$icon')"
