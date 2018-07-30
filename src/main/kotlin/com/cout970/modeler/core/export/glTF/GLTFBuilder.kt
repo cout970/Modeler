@@ -249,7 +249,7 @@ class GLTFBuilder {
                 extras = extras
         )
 
-        nodeIdToIndex.put(id, bakedNodes.size)
+        nodeIdToIndex[id] = bakedNodes.size
         bakedNodes.add(node)
         return node
     }
@@ -368,11 +368,17 @@ class GLTFBuilder {
             val elementType: GltfComponentType,
             val data: List<*>,
             val indices: Boolean
-    )
+    ) {
+        init {
+            require(data.isNotEmpty()) { "Unable to build an empty Buffer" }
+
+            val size = elementType.size * containerType.numComponents * data.size
+            require(size != 0) { "Unable to build a Buffer of size 0" }
+        }
+    }
 
     @Suppress("UNCHECKED_CAST")
     fun UnpackedBuffer.build(): Int {
-
         val size = elementType.size * containerType.numComponents * data.size
         val index = bakedBufferViews.size
         val view = GltfBufferView(

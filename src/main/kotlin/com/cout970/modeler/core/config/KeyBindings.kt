@@ -50,6 +50,7 @@ class KeyBindings {
     var selectModel = MouseKeyBind(BUTTON_LEFT)
     var jumpCameraToCursor = MouseKeyBind(BUTTON_RIGHT)
 
+    var addToGroup = KeyBind(KEY_RIGHT_CONTROL)
     var squareScale = KeyBind(KEY_RIGHT_CONTROL)
     var multipleSelection = KeyBind(KEY_LEFT_CONTROL)
     var disableGridMotion = KeyBind(KEY_LEFT_CONTROL)

@@ -109,7 +109,7 @@ class DependencyInjector {
         func.valueParameters.forEach { param ->
             val value = state.getInstance(param.type.javaType, null)
             if (value == null) {
-                log(Level.CRITICAL) { "[Dispatcher] Error UseCase argument invalid: $func" }
+                log(Level.ERROR) { "[Dispatcher] Error UseCase argument invalid: $func" }
             }
         }
     }

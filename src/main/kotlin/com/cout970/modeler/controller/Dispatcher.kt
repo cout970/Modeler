@@ -38,6 +38,9 @@ class Dispatcher : IDispatcher {
 
     override fun onEvent(key: String, comp: Component?) {
         Profiler.startSection("Dispatcher")
+        if (key.isBlank()) {
+            log(Level.WARNING) { "[Dispatcher] Unknown event with empty name and component: ${comp?.javaClass?.canonicalName}, ${comp?.metadata}, $comp" }
+        }
         log(Level.FINEST) { "[Dispatcher] Executing: $key" }
 
         val useCase = functionUseCases[key]

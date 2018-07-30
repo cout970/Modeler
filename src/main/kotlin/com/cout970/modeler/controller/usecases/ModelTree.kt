@@ -99,6 +99,15 @@ private fun selectListGroup(component: Component, input: IInput, programState: P
     val (model, selection) = programState
     val ref = component.ref().asGroupRef().getOrNull() ?: return TaskNone
 
+    val addToGroup = Config.keyBindings.addToGroup.check(input)
+
+    if (addToGroup) {
+        component.metadata["parent"] = ref
+        component.metadata["child"] = Slot(null, null, 0)
+        component.metadata["multi"] = true
+        return nodeMoved(programState, component)
+    }
+
     val multiSelection = Config.keyBindings.multipleSelection.check(input)
     val objs = model.getRecursiveChildObjects(ref)
 

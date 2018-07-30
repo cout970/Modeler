@@ -1,6 +1,7 @@
 package com.cout970.modeler.core.export
 
 import com.cout970.matrix.api.IMatrix4
+import com.cout970.matrix.extensions.Matrix4
 import com.cout970.modeler.api.animation.*
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.ITransformation
@@ -14,8 +15,11 @@ import com.cout970.modeler.core.animation.Channel
 import com.cout970.modeler.core.animation.Keyframe
 import com.cout970.modeler.core.animation.ref
 import com.cout970.modeler.core.export.glTF.*
+import com.cout970.modeler.core.log.Level
+import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.model.*
 import com.cout970.modeler.core.model.`object`.Object
+import com.cout970.modeler.core.model.`object`.ObjectNone
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.resource.ResourcePath
@@ -127,6 +131,16 @@ private object BufferViewSerializer : JsonSerializer<GltfBufferView> {
 
 class GlTFExporter {
 
+    companion object {
+        fun reorder(src: TRSTransformation): TRSTransformation {
+            return TRSTransformation(
+                    src.translation / (src.scale * 2),
+                    src.rotation,
+                    src.scale
+            )
+        }
+    }
+
     fun export(file: File, _model: IModel) {
         val (model, buffer) = _model.toGlTF(file.nameWithoutExtension)
         File(file.parent, model.buffers[0].uri).writeBytes(buffer)
@@ -136,7 +150,7 @@ class GlTFExporter {
     fun IModel.toGlTF(buffer: String) = glftModel {
         bufferName = "$buffer.bin"
 
-        val groupToNode = mutableMapOf<AnimationTarget, UUID>()
+        val targetToNode = mutableMapOf<AnimationTarget, UUID>()
 
         scene {
 
@@ -144,44 +158,71 @@ class GlTFExporter {
                 name = "root"
 
                 val tree = tree.toMutable()
-                groupToNode += AnimationTargetGroup(tree.group) to id
+                targetToNode += AnimationTargetGroup(tree.group) to id
 
-                addSceneTree(this, this@toGlTF, tree, groupToNode)
-
-                tree.objects.map { getObject(it) }.forEach {
-                    node {
-                        name = it.name
-                        addMesh(this, it)
-                    }
+                tree.children.forEach {
+                    addSceneTree(this, this@toGlTF, it, targetToNode)
                 }
+
+                tree.objects.map { getObject(it) }.forEach { addObject(this, it, targetToNode) }
             }
         }
 
         animationMap.values.forEach { anim ->
             animation {
                 name = anim.name
-                addAnimation(this, anim, groupToNode)
+                addAnimation(this, anim, targetToNode)
             }
         }
     }
 
-    fun GLTFBuilder.addSceneTree(builder: GLTFBuilder.Node, model: IModel, tree: MutableGroupTree,
-                                 groupToNode: MutableMap<AnimationTarget, UUID>): Unit = builder.run {
+    fun GLTFBuilder.addSceneTree(
+            builder: GLTFBuilder.Node,
+            model: IModel,
+            tree: MutableGroupTree,
+            targetToNode: MutableMap<AnimationTarget, UUID>
+    ): Unit = builder.run {
+
         node {
-            name = model.getGroup(tree.group).name
-            groupToNode += AnimationTargetGroup(tree.group) to id
+            val group = model.getGroup(tree.group)
+            name = group.name
+
+            val transform = group.transform.toTRS()
+            if (transform.matrix != Matrix4.IDENTITY) {
+                val trans = reorder(transform)
+                transformation = GLTFBuilder.Transformation.TRS(
+                        trans.translation,
+                        trans.rotation,
+                        trans.scale
+                )
+            }
+
+            targetToNode += AnimationTargetGroup(tree.group) to id
 
             tree.children.forEach {
-                addSceneTree(this, model, it, groupToNode)
+                addSceneTree(this, model, it, targetToNode)
             }
 
-            tree.objects.map { model.getObject(it) }.forEach {
-                node {
-                    name = it.name
-                    groupToNode += AnimationTargetObject(it.ref) to id
-                    addMesh(this, it)
-                }
+            tree.objects.map { model.getObject(it) }.forEach { addObject(this, it, targetToNode) }
+        }
+    }
+
+    fun GLTFBuilder.addObject(parent: GLTFBuilder.Node, it: IObject, targetToNode: MutableMap<AnimationTarget, UUID>) = parent.run {
+        node {
+            name = it.name
+
+            val objTransform = it.transformation.toTRS()
+            if (objTransform.matrix != Matrix4.IDENTITY) {
+                val trans = reorder(objTransform)
+                transformation = GLTFBuilder.Transformation.TRS(
+                        trans.translation,
+                        trans.rotation,
+                        trans.scale
+                )
             }
+
+            targetToNode += AnimationTargetObject(it.ref) to id
+            addMesh(this, it)
         }
     }
 
@@ -244,6 +285,7 @@ class GlTFExporter {
     }
 
     fun GLTFBuilder.addMesh(node: GLTFBuilder.Node, obj: IObject) = node.apply {
+        if (obj == ObjectNone) return@apply
         mesh {
             name = obj.name
 
@@ -292,6 +334,9 @@ class GlTFExporter {
                     }
                 }
 
+                if (vertexPos.isEmpty()) {
+                    log(Level.WARNING) { "Exporting primitive with empty mesh" }
+                }
                 attributes[POSITION] = buffer(FLOAT, vertexPos)
                 attributes[TEXCOORD_0] = buffer(FLOAT, vertexTex)
             }

@@ -1,14 +1,11 @@
 package core.utils
 
-import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.times
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.toTRS
 import com.cout970.modeler.util.fromPivotToOrigin
 import com.cout970.modeler.util.quatOfAngles
 import com.cout970.modeler.util.transformVertex
-import com.cout970.vector.api.IQuaternion
-import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.Quaternion
 import com.cout970.vector.extensions.quatOfAxisAngled
 import com.cout970.vector.extensions.vec3Of
@@ -132,49 +129,5 @@ class TestUtilities {
         Assert.assertEquals(trans3, trans1 + trans2)
         Assert.assertEquals(trans3.matrix, (trans1 + trans2).matrix)
         Assert.assertEquals(trans3.matrix, trans1.matrix * trans2.matrix)
-    }
-
-    fun assertEquals(vec1: TRSTransformation, vec2: TRSTransformation) {
-        assertEquals(vec1.translation, vec2.translation)
-        assertEquals(vec1.rotation, vec2.rotation)
-        assertEquals(vec1.scale, vec2.scale)
-    }
-
-    fun assertEquals(vec1: IVector3, vec2: IVector3) {
-        val msg = "expected:<$vec1>, but was:<$vec2>"
-        val epsilon = 1.0000000116860974E-7
-        Assert.assertEquals(msg, vec1.xd, vec2.xd, epsilon)
-        Assert.assertEquals(msg, vec1.yd, vec2.yd, epsilon)
-        Assert.assertEquals(msg, vec1.zd, vec2.zd, epsilon)
-    }
-
-    fun assertEquals(vec1: IQuaternion, vec2: IQuaternion) {
-        val msg = "$vec1, but was $vec2"
-        val epsilon = 1.0000000116860974E-7
-        Assert.assertEquals(msg, vec1.xd, vec2.xd, epsilon)
-        Assert.assertEquals(msg, vec1.yd, vec2.yd, epsilon)
-        Assert.assertEquals(msg, vec1.zd, vec2.zd, epsilon)
-        Assert.assertEquals(msg, vec1.wd, vec2.wd, epsilon)
-    }
-
-    fun assertEquals(vec1: IMatrix4, vec2: IMatrix4) {
-        val msg = "expected:<$vec1>, but was:<$vec2>"
-        val epsilon = 1.0000000116860974E-7
-        Assert.assertEquals(msg, vec1.m00d, vec2.m00d, epsilon)
-        Assert.assertEquals(msg, vec1.m01d, vec2.m01d, epsilon)
-        Assert.assertEquals(msg, vec1.m02d, vec2.m02d, epsilon)
-        Assert.assertEquals(msg, vec1.m03d, vec2.m03d, epsilon)
-        Assert.assertEquals(msg, vec1.m10d, vec2.m10d, epsilon)
-        Assert.assertEquals(msg, vec1.m11d, vec2.m11d, epsilon)
-        Assert.assertEquals(msg, vec1.m12d, vec2.m12d, epsilon)
-        Assert.assertEquals(msg, vec1.m13d, vec2.m13d, epsilon)
-        Assert.assertEquals(msg, vec1.m20d, vec2.m20d, epsilon)
-        Assert.assertEquals(msg, vec1.m21d, vec2.m21d, epsilon)
-        Assert.assertEquals(msg, vec1.m22d, vec2.m22d, epsilon)
-        Assert.assertEquals(msg, vec1.m23d, vec2.m23d, epsilon)
-        Assert.assertEquals(msg, vec1.m30d, vec2.m30d, epsilon)
-        Assert.assertEquals(msg, vec1.m31d, vec2.m31d, epsilon)
-        Assert.assertEquals(msg, vec1.m32d, vec2.m32d, epsilon)
-        Assert.assertEquals(msg, vec1.m33d, vec2.m33d, epsilon)
     }
 }

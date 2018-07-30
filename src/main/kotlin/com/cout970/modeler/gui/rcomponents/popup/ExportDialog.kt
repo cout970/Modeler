@@ -27,9 +27,12 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
             ExportFormat.MCX -> listOf("*.mcx")
             ExportFormat.GLTF -> listOf("*.gltf")
         }
+
+        private var lastPath: String = ""
+        private var lastType: Int = 1
     }
 
-    override fun getInitialState() = ExportDialogState("", "magneticraft:blocks/", 1, false)
+    override fun getInitialState() = ExportDialogState(lastPath, "magneticraft:blocks/", lastType, false)
 
     override fun RBuilder.render() = div("ExportDialog") {
         style {
@@ -58,6 +61,7 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
             if (state.selection != 0) background { dark2 }
 
             onClick {
+                lastType = 0
                 setState { copy(selection = 0) }
             }
         }
@@ -66,6 +70,7 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
             if (state.selection != 1) background { dark2 }
 
             onClick {
+                lastType = 1
                 setState { copy(selection = 1) }
             }
         }
@@ -74,6 +79,7 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
             if (state.selection != 2) background { dark2 }
 
             onClick {
+                lastType = 2
                 setState { copy(selection = 2) }
             }
         }
@@ -100,6 +106,7 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
                         filters = getExportFileExtensions(ExportFormat.values()[state.selection])
                 )
                 if (file != null) {
+                    lastPath = file
                     setState { copy(text = file, forceUpdate = true) }
                 }
             }

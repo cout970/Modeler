@@ -78,7 +78,7 @@ data class Model(
         val newObjs = objectMap + objs.map { it.toPair() }
         return copy(
                 objectMap = newObjs,
-                tree = tree.mutate { objects.addAll(newObjs.keys) }
+                tree = tree.mutate { objects.addAll(objs.map { it.ref }) }
         )
     }
 

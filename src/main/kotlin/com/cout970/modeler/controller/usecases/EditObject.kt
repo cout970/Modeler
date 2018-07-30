@@ -1,6 +1,6 @@
 package com.cout970.modeler.controller.usecases
 
-import com.cout970.modeler.api.model.`object`.IGroupRef
+import com.cout970.modeler.api.model.`object`.RootGroupRef
 import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.model.`object`.Object
@@ -57,7 +57,8 @@ private fun changeObjectName(component: Component, programState: IProgramState):
 @UseCase("model.group.change.name")
 private fun changeGroupName(component: Component, programState: IProgramState): ITask {
     val model = programState.model
-    val groupRef = component.metadata["ref"] as IGroupRef
+    val groupRef = programState.selectedGroup
+    if (groupRef == RootGroupRef) return TaskNone
 
     val name = component.asNullable()
             .filterIsInstance<TextInput>()

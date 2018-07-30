@@ -38,7 +38,6 @@ data class Slot(val obj: IObjectRef?, val group: IGroupRef?, val level: Int)
 data class ModelTreeProps(val programState: IProgramState, val input: IInput) : RProps
 data class ModelTreeState(val selectedObj: IObjectRef) : RState
 
-
 class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
 
     var animation: Animation? = null
