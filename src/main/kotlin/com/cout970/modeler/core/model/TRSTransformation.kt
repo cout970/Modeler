@@ -50,7 +50,8 @@ data class TRSTransformation(
         fun fromMatrix(mat: IMatrix4): TRSTransformation {
             val joml = mat.toJOML()
             val translation = joml.getTranslation(Vector3d()).toIVector()
-            val rotation = joml.getUnnormalizedRotation(Quaterniond()).normalize().toIQuaternion()
+            val rotation = Quaterniond().setFromUnnormalized(joml).toIQuaternion()
+//            val rotation = joml.getUnnormalizedRotation(Quaterniond()).normalize().toIQuaternion()
             val scale = joml.getScale(Vector3d()).toIVector()
 
             return TRSTransformation(translation, rotation, scale)

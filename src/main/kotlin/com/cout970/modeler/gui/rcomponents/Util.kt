@@ -207,7 +207,11 @@ class TinyFloatInput : RStatelessComponent<TinyFloatInputProps>() {
         }
 
     fun String.toFloatValue(): Float? {
-        return (scriptEngine.eval(this) as? Number)?.toFloat()
+        return try {
+            (scriptEngine.eval(this) as? Number)?.toFloat()
+        } catch (e: Exception) {
+            null
+        }
     }
 }
 

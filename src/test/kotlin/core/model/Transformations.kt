@@ -1,4 +1,4 @@
-package core.utils
+package core.model
 
 import com.cout970.matrix.extensions.times
 import com.cout970.modeler.core.model.TRSTransformation
@@ -9,13 +9,14 @@ import com.cout970.modeler.util.transformVertex
 import com.cout970.vector.extensions.Quaternion
 import com.cout970.vector.extensions.quatOfAxisAngled
 import com.cout970.vector.extensions.vec3Of
+import core.utils.assertEquals
 import org.junit.Assert
 import org.junit.Test
 
 /**
  * Created by cout970 on 2017/08/29.
  */
-class TestUtilities {
+class Transformations {
 
     @Test
     fun `Test fromPivotToOrigin with identity`() {

@@ -131,16 +131,6 @@ private object BufferViewSerializer : JsonSerializer<GltfBufferView> {
 
 class GlTFExporter {
 
-    companion object {
-        fun reorder(src: TRSTransformation): TRSTransformation {
-            return TRSTransformation(
-                    src.translation / (src.scale * 2),
-                    src.rotation,
-                    src.scale
-            )
-        }
-    }
-
     fun export(file: File, _model: IModel) {
         val (model, buffer) = _model.toGlTF(file.nameWithoutExtension)
         File(file.parent, model.buffers[0].uri).writeBytes(buffer)
@@ -189,11 +179,10 @@ class GlTFExporter {
 
             val transform = group.transform.toTRS()
             if (transform.matrix != Matrix4.IDENTITY) {
-                val trans = reorder(transform)
                 transformation = GLTFBuilder.Transformation.TRS(
-                        trans.translation,
-                        trans.rotation,
-                        trans.scale
+                        transform.translation * 0.0625f,
+                        transform.rotation,
+                        transform.scale
                 )
             }
 
@@ -213,11 +202,10 @@ class GlTFExporter {
 
             val objTransform = it.transformation.toTRS()
             if (objTransform.matrix != Matrix4.IDENTITY) {
-                val trans = reorder(objTransform)
                 transformation = GLTFBuilder.Transformation.TRS(
-                        trans.translation,
-                        trans.rotation,
-                        trans.scale
+                        objTransform.translation * 0.0625f,
+                        objTransform.rotation,
+                        objTransform.scale
                 )
             }
 
@@ -344,30 +332,15 @@ class GlTFExporter {
     }
 
     fun IChannel.usesTranslation() = keyframes.any {
-        val t = it.value
-        when (t) {
-            is TRSTransformation -> t.translation != Vector3.ZERO
-            is TRTSTransformation -> t.toTRS().translation != Vector3.ZERO
-            else -> false
-        }
+        it.value.toTRS().translation != Vector3.ZERO
     }
 
     fun IChannel.usesRotation() = keyframes.any {
-        val t = it.value
-        when (t) {
-            is TRSTransformation -> t.rotation != Quaternion.IDENTITY
-            is TRTSTransformation -> t.toTRS().rotation != Quaternion.IDENTITY
-            else -> false
-        }
+        it.value.toTRS().rotation != Quaternion.IDENTITY
     }
 
     fun IChannel.usesScale() = keyframes.any {
-        val t = it.value
-        when (t) {
-            is TRSTransformation -> t.scale != Vector3.ONE
-            is TRTSTransformation -> t.toTRS().scale != Vector3.ONE
-            else -> false
-        }
+        it.value.toTRS().scale != Vector3.ONE
     }
 
     fun IQuaternion.toVector4() = vec4Of(x, y, z, w)
@@ -380,7 +353,8 @@ class GlTFImporter {
         val extraData = GLTFParser.parse(file, path.parent!!)
         val scene = extraData.scenes[file.scene ?: 0]
 
-        val nodes = scene.second.nodes
+        val nodes = scene.second.nodes.filter { it.first.camera == null }
+
 
         if (nodes.isEmpty()) {
             return Model.empty()
@@ -459,12 +433,14 @@ class GlTFImporter {
 
         val mesh = node.mesh
         if (mesh != null) {
-            val obj = parseObj(transformOf(gltfNode), mesh.second, gltfNode.name ?: "Obj")
+            val name = gltfNode.name ?: mesh.first.name ?: "Obj"
+            val obj = parseObj(transformOf(gltfNode), mesh.second, name)
             root.objects += obj.ref
             objs += obj.ref to obj
             nodeMapping += node.index to obj.ref
         } else {
-            val group = Group(gltfNode.name ?: "Group", transform = transformOf(gltfNode))
+            val name = gltfNode.name ?: "Group"
+            val group = Group(name, transform = transformOf(gltfNode))
             val tree = MutableGroupTree(group.ref)
 
             root.children += tree
@@ -478,23 +454,22 @@ class GlTFImporter {
     }
 
     private fun transformOf(gltfNode: GltfNode): ITransformation {
-        val trans = TRSTransformation(
+        if (gltfNode.matrix != null) {
+            val joml = gltfNode.matrix.toJOML()
+
+            // Note the 16x scale is important
+            val pos = joml.getTranslation(Vector3d()).toIVector() * 16
+            val quaternion = Quaterniond().setFromUnnormalized(joml).toIQuaternion()
+            val scale = joml.getScale(Vector3d()).toIVector()
+
+            return TRSTransformation(pos, quaternion, scale)
+        }
+
+        return TRSTransformation(
                 gltfNode.translation?.times(16) ?: Vector3.ZERO,
                 gltfNode.rotation ?: Quaternion.IDENTITY,
                 gltfNode.scale ?: Vector3.ONE
         )
-
-        if (gltfNode.matrix != null) {
-            val joml = gltfNode.matrix.toJOML()
-
-            val pos = joml.getTranslation(Vector3d()).toIVector() * 16
-            val quat = Quaterniond().setFromUnnormalized(joml).toIQuaternion()
-            val scale = joml.getScale(Vector3d()).toIVector()
-
-            return trans.merge(TRSTransformation(pos, quat, scale))
-        }
-
-        return trans
     }
 
     fun parseObj(transform: ITransformation, data: GLTFParser.ResultMesh, name: String): IObject {
