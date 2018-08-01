@@ -15,11 +15,14 @@ import com.cout970.modeler.gui.canvas.GridLines
 import com.cout970.modeler.gui.canvas.cursor.CursorManager
 import com.cout970.modeler.gui.event.NotificationHandler
 import com.cout970.modeler.gui.leguicomp.Panel
+import com.cout970.modeler.gui.leguicomp.StringInput
 import com.cout970.modeler.gui.views.EditorView
 import com.cout970.modeler.input.event.EventController
 import com.cout970.modeler.input.window.WindowHandler
 import com.cout970.modeler.render.tool.Animator
 import com.cout970.modeler.util.PropertyManager
+import com.cout970.reactive.core.ReconciliationManager
+import org.liquidengine.legui.component.TextInput
 
 /**
  * Created by cout970 on 2017/04/08.
@@ -66,6 +69,9 @@ class GuiInitializer(
         log(Level.FINE) { "[GuiInitializer] Creating initial canvas" }
         canvasContainer.newCanvas()
         log(Level.FINE) { "[GuiInitializer] GUI Initialization done" }
+
+        ReconciliationManager.registerMergeStrategy(TextInput::class.java, TextInputMergeStrategy)
+        ReconciliationManager.registerMergeStrategy(StringInput::class.java, TextInputMergeStrategy)
 
         PropertyManager.setupProperties(listeners)
 

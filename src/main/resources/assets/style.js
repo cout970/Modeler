@@ -77,9 +77,25 @@ var exported = {
         borderStyle: "none"
     },
     model_tree_item: {
-        backgroundColor: "#292929",
+        backgroundColor: transparent,
         borderStyle: "none",
         borderRadius: "3"
+    },
+    model_tree_item_icon: {
+        backgroundColor: transparent,
+        borderStyle: "none"
+    },
+    model_tree_item_text: {
+        backgroundColor: transparent,
+        borderStyle: "none",
+        textSize: "20",
+        textAlign: "left"
+    },
+    model_tree_item_text_field: {
+        backgroundColor: "#202020",
+    },
+    "model_tree_item_text_field:focus": {
+        backgroundColor: "#202020",
     },
     model_tree_item_selected: {
         backgroundColor: "#616161"

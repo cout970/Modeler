@@ -76,7 +76,7 @@ class Search : RComponent<EmptyProps, SearchState>() {
                 }
             }
 
-            comp(TextInput(state.text)) {
+            comp(TextInput(state.text), "search_bar") {
 
                 style {
                     fontSize = 20f
@@ -85,7 +85,7 @@ class Search : RComponent<EmptyProps, SearchState>() {
                     sizeY = 30f
                     defaultTextColor()
                     classes("search_bar_input")
-                    horizontalAlign = HorizontalAlign.RIGHT
+                    horizontalAlign = HorizontalAlign.LEFT
                 }
 
                 postMount {
@@ -109,24 +109,21 @@ class Search : RComponent<EmptyProps, SearchState>() {
             }
         }
 
-        if (state.results.isNotEmpty()) {
+        div("SearchResults") {
 
-            div("SearchResults") {
+            style {
+                posX = 4f
+                posY = 60f + 8f
+                sizeX = 472f
+                classes("search_bar_results")
+            }
 
-                style {
-                    posX = 4f
-                    posY = 60f + 8f
-                    sizeX = 472f
-                    classes("search_bar_results")
-                }
+            postMount {
+                sizeY = min(parent.sizeY - posY, childComponents.size * 24f)
+            }
 
-                postMount {
-                    sizeY = min(parent.sizeY - posY, childComponents.size * 24f)
-                }
-
-                state.results.forEachIndexed { index, result ->
-                    searchResult(index, result)
-                }
+            state.results.forEachIndexed { index, result ->
+                searchResult(index, result)
             }
         }
 

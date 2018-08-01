@@ -60,20 +60,36 @@ private fun deleteListItem(component: Component, programState: IProgramState): I
 
 @UseCase("tree.view.hide.item")
 private fun hideListItem(component: Component, model: IModel): ITask {
-    return component.ref().asObjectRef().map { ref ->
-        val newModel = ModelHelper.setObjectVisible(model, ref, false)
+    val ref = component.metadata["ref"] ?: return TaskNone
 
-        TaskUpdateModel(oldModel = model, newModel = newModel)
-    }.getOr(TaskNone)
+    return when (ref) {
+        is IObjectRef -> {
+            val newModel = ModelHelper.setObjectVisible(model, ref, false)
+            TaskUpdateModel(oldModel = model, newModel = newModel)
+        }
+        is IGroupRef -> {
+            val newModel = ModelHelper.setGroupVisible(model, ref, false)
+            TaskUpdateModel(oldModel = model, newModel = newModel)
+        }
+        else -> TaskNone
+    }
 }
 
 @UseCase("tree.view.show.item")
 private fun showListItem(component: Component, model: IModel): ITask {
-    return component.ref().asObjectRef().map { ref ->
-        val newModel = ModelHelper.setObjectVisible(model, ref, true)
+    val ref = component.metadata["ref"] ?: return TaskNone
 
-        TaskUpdateModel(oldModel = model, newModel = newModel)
-    }.getOr(TaskNone)
+    return when (ref) {
+        is IObjectRef -> {
+            val newModel = ModelHelper.setObjectVisible(model, ref, true)
+            TaskUpdateModel(oldModel = model, newModel = newModel)
+        }
+        is IGroupRef -> {
+            val newModel = ModelHelper.setGroupVisible(model, ref, true)
+            TaskUpdateModel(oldModel = model, newModel = newModel)
+        }
+        else -> TaskNone
+    }
 }
 
 @UseCase("model.toggle.visibility")

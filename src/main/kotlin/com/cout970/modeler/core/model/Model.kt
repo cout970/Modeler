@@ -53,6 +53,21 @@ data class Model(
 
     private constructor() : this(emptyMap(), emptyMap(), emptyMap(), emptyMap(), ImmutableGroupTree(emptyBiMultimap(), emptyBiMultimap()))
 
+    fun updateTree(): IModel {
+        val unGroupedObjects = objectMap.keys.filter { tree.objects.getReverse(it) == null }
+        val phantomObjects = tree.objects.flatMap { it.second }.filter { it !in objectMap }
+
+        if (unGroupedObjects.isNotEmpty() || phantomObjects.isNotEmpty()) {
+            val newTree = tree.mutate {
+                objects += unGroupedObjects
+                objects.removeAll { it !in objectMap }
+            }
+            return this.withGroupTree(newTree)
+        }
+
+        return this
+    }
+
     override fun getObject(ref: IObjectRef): IObject {
         if (ref in objectMap) {
             return objectMap[ref]!!
@@ -79,7 +94,7 @@ data class Model(
         return copy(
                 objectMap = newObjs,
                 tree = tree.mutate { objects.addAll(objs.map { it.ref }) }
-        )
+        ).updateTree()
     }
 
     override fun removeObjects(objs: List<IObjectRef>): IModel {
@@ -88,7 +103,7 @@ data class Model(
         return copy(
                 objectMap = newObjs,
                 tree = tree.mutate { removeObjects(toRemove) }
-        )
+        ).updateTree()
     }
 
     override fun modifyObjects(predicate: (IObjectRef) -> Boolean, func: (IObjectRef, IObject) -> IObject): IModel {
@@ -101,7 +116,7 @@ data class Model(
             }
         }.toMap()
 
-        return copy(objectMap = newObjs)
+        return copy(objectMap = newObjs).updateTree()
     }
 
     override fun addMaterial(material: IMaterial): IModel {
@@ -132,12 +147,12 @@ data class Model(
 
     override fun addGroup(group: IGroup): IModel {
         require(group.ref !in groupMap)
-        return copy(groupMap = groupMap + (group.ref to group))
+        return copy(groupMap = groupMap + (group.ref to group)).updateTree()
     }
 
     override fun modifyGroup(ref: IGroupRef, group: IGroup): IModel {
         require(ref == group.ref)
-        return copy(groupMap = groupMap + (group.ref to group))
+        return copy(groupMap = groupMap + (group.ref to group)).updateTree()
     }
 
     override fun removeGroup(ref: IGroupRef): IModel {
@@ -149,7 +164,7 @@ data class Model(
                 objectMap = newObjs,
                 groupMap = groupMap - groups,
                 tree = tree.mutate { removeGroup(ref) }
-        )
+        ).updateTree()
     }
 
     override fun addAnimation(animation: IAnimation): IModel {

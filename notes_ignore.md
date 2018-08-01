@@ -18,10 +18,10 @@ Loads of skyboxes "http://www.custommapmakers.org/skyboxes.php"
 - [x] Add interface to edit group properties
 - [x] Fix model group transform
 - [x] Fix adding cube breaks all groups
-- [ ] Add control panel for all the program flags
-- [ ] Upgrade model tree and fix object out of groups
-- [ ] Add interface to edit texture properties
+- [x] Upgrade model tree and fix object out of groups
 - [ ] Fix gltf import/export
+- [ ] Add control panel for all the program flags
+- [ ] Add interface to edit texture properties
 - [ ] Upgrade animation panel/keyframe editor
 
 # Old TODO list

@@ -50,6 +50,18 @@ interface IGroupRef {
 
 object RootGroupRef : IGroupRef {
     override val id: UUID = UUID.fromString("713e7999-081e-488c-9ced-17d010bdd270")
+
+    override fun equals(other: Any?): Boolean {
+        return (other as? IGroupRef)?.id == id
+    }
+
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
+
+    override fun toString(): String {
+        return "RootGroupRef"
+    }
 }
 
 data class GroupRef(override val id: UUID = UUID.randomUUID()) : IGroupRef {

@@ -19,6 +19,12 @@ import org.liquidengine.legui.system.context.Context
 /**
  * Created by cout970 on 2017/05/16.
  */
+private lateinit var listeners: Listeners
+
+fun sendCmd(cmd: String, args: Map<String, Any> = emptyMap()) {
+    listeners.runGuiCommand(cmd, args)
+}
+
 class Listeners : ITickeable, IGuiCmdRunner {
 
     private lateinit var gui: Gui
@@ -26,6 +32,7 @@ class Listeners : ITickeable, IGuiCmdRunner {
 
     fun initListeners(eventController: EventController, projectManager: ProjectManager, gui: Gui) {
         this.gui = gui
+        listeners = this
 
         eventController.let {
             it.addListener(EventKeyUpdate::class.java, this::onKeyPress)

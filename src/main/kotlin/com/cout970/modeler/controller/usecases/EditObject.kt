@@ -17,7 +17,6 @@ import com.cout970.modeler.render.tool.getFacePos
 import com.cout970.modeler.render.tool.removeFaces
 import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.asNullable
-import com.cout970.modeler.util.getOr
 import com.cout970.modeler.util.text
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.*
@@ -33,25 +32,16 @@ import java.util.*
 private fun changeObjectName(component: Component, programState: IProgramState): ITask {
     val model = programState.model
     val selection = programState.modelSelection
+    val ref = component.metadata["ref"] ?: selection.flatMap { it.objects.firstOrNull() }.getOrNull() ?: return TaskNone
 
-    val name = component.asNullable()
-            .filterIsInstance<TextInput>()
-            .map { it.text }
-            .filter { !it.isBlank() }
+    val textInput = component as? TextInput ?: return TaskNone
+    val name = textInput.text
 
-    val objRef = selection
-            .filter { it.size == 1 }
-            .flatMap { it.refs.firstOrNull() }
-            .filterIsInstance<IObjectRef>()
+    val newModel = model.modifyObjects({ it == ref }) { _, obj ->
+        obj.withName(name)
+    }
 
-    return name.zip(objRef).map { (name, ref) ->
-
-        val newModel = model.modifyObjects({ it == ref }) { _, obj ->
-            obj.withName(name)
-        }
-
-        TaskUpdateModel(newModel = newModel, oldModel = model)
-    }.getOr(TaskNone)
+    return TaskUpdateModel(newModel = newModel, oldModel = model)
 }
 
 @UseCase("model.group.change.name")

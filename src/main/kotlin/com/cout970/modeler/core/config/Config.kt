@@ -54,6 +54,9 @@ object Config {
     @ConfigComment("Amount of milliseconds between backups")
     var backupInterval: Int = 60_000
 
+    @ConfigComment("Size of an model tree element")
+    var modelTreeScale: Float = 20f
+
     var user: Author = Author()
     var colorPalette = ColorPalette.defaultPalette
     var keyBindings = KeyBindings()

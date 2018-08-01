@@ -11,11 +11,9 @@ import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.model.selection.ObjectRefNone
 import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.gui.leguicomp.*
+import com.cout970.modeler.gui.sendCmd
 import com.cout970.modeler.input.event.IInput
-import com.cout970.modeler.util.getOr
-import com.cout970.modeler.util.toColor
-import com.cout970.modeler.util.toIVector
-import com.cout970.modeler.util.toJoml2f
+import com.cout970.modeler.util.*
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
 import com.cout970.reactive.core.RProps
@@ -31,12 +29,17 @@ import org.liquidengine.legui.component.Panel
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.style.border.SimpleLineBorder
 import org.liquidengine.legui.style.color.ColorConstants
+import org.liquidengine.legui.system.context.Context
 import kotlin.math.min
 
 data class Slot(val obj: IObjectRef?, val group: IGroupRef?, val level: Int)
 
 data class ModelTreeProps(val programState: IProgramState, val input: IInput) : RProps
 data class ModelTreeState(val selectedObj: IObjectRef) : RState
+
+private inline val LEVEL_WIDTH: Float get() = Config.modelTreeScale
+private inline val LEVEL_HEIGHT: Float get() = Config.modelTreeScale
+private inline val ICON_WIDTH: Float get() = Config.modelTreeScale
 
 class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
 
@@ -177,7 +180,7 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
                 style {
                     transparent()
                     borderless()
-                    height = objectMap.size * 26f + 10f
+                    height = objectMap.size * (LEVEL_HEIGHT + 2f) + 10f
                     width = 251f
                 }
 
@@ -206,22 +209,22 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
 
     fun RBuilder.group(index: Int, level: Int, group: IGroup, hasChilds: Boolean) {
         val cmd = if (group.visible) "tree.view.hide.group" else "tree.view.show.group"
-        val off = (level + 1) * 24f
+        val off = (level + 1) * LEVEL_WIDTH
+        val textWidth = 246f - ICON_WIDTH * 2
 
         val icon = if (hasChilds) {
             if (group.visible) "button_down" else "button_right"
         } else "button_right_dark"
 
-        +IconButton(cmd, icon, 0f, 0f, 24f, 24f).apply {
-            sizeY = 24f
-            posX = 5f + level * 24f
+        +IconButton(cmd, icon, 0f, 0f, LEVEL_WIDTH, LEVEL_HEIGHT).apply {
+            posX = 5f + level * LEVEL_WIDTH
             posY = 5f + index * (sizeY + 2f)
             metadata += "ref" to group.ref
         }
 
-        div(group.name) {
+        div(group.id.toString()) {
             style {
-                sizeY = 24f
+                sizeY = LEVEL_HEIGHT
                 posX = 5f + off
                 posY = 5f + index * (sizeY + 2f)
                 classes("model_tree_item")
@@ -231,31 +234,29 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
             }
 
             postMount {
-                sizeX = parent.sizeX - 5f - level * 24f
+                sizeX = parent.sizeX - 5f - level * LEVEL_WIDTH - ICON_WIDTH - 1f
             }
 
-            +IconButton(cmd, "group_icon", 0f, 0f, 24f, 24f).apply {
+            +IconButton(cmd, "group_icon", 0f, 0f, ICON_WIDTH, LEVEL_HEIGHT).apply {
                 metadata += "ref" to group.ref
-                hoveredStyle.background.color.set(0f)
+                classes("model_tree_item_icon")
             }
 
-            child(ToggleName::class, ToggleName.Props(group, off))
+            child(ToggleName::class, ToggleName.Props(group.ref, group.name, off, textWidth, "tree.view.select.group", "model.group.change.name"))
 
-            +IconButton("tree.view.delete.group", "deleteIcon", 222f - off, 0f, 24f, 24f).apply {
-                transparent()
-                borderless()
+            +IconButton("tree.view.delete.group", "deleteIcon", textWidth + ICON_WIDTH - off, 0f, ICON_WIDTH, LEVEL_HEIGHT).apply {
                 metadata += "ref" to group.ref
                 setTooltip("Delete group")
-                hoveredStyle.background.color.set(0f)
+                classes("model_tree_item_icon")
             }
         }
     }
 
     fun RBuilder.obj(index: Int, level: Int, obj: IObject, selected: Boolean) {
-        div(obj.name) {
+        div(obj.id.toString()) {
             style {
-                sizeY = 24f
-                posX = 5f + 24f * level
+                sizeY = LEVEL_HEIGHT
+                posX = 5f + LEVEL_WIDTH * level
                 posY = 5f + index * (sizeY + 2f)
 
                 classes("model_tree_item")
@@ -266,51 +267,35 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
             }
 
             postMount {
-                sizeX = parent.sizeX - 5f - level * 24f
+                sizeX = parent.sizeX - 5f - level * LEVEL_WIDTH
             }
 
             val icon = if (obj is IObjectCube) "obj_type_cube" else "obj_type_mesh"
-            val off = level * 24f
+            val off = level * LEVEL_WIDTH
+            val textWidth = 246f - ICON_WIDTH * 3
 
-            +IconButton("tree.view.select.item", icon, 0f, 0f, 24f, 24f).apply {
+            +IconButton("tree.view.select.item", icon, 0f, 0f, ICON_WIDTH, LEVEL_HEIGHT).apply {
                 hoveredStyle.background.color.set(0f)
                 metadata += "ref" to obj.ref
+                classes("model_tree_item_icon")
             }
 
-            +TextButton("tree.view.select.item", obj.name, 24f, 0f, 172f - off, 24f).apply {
-                transparent()
-                borderless()
-                hoveredStyle.background.color.set(0f)
-                fontSize = 20f
-                horizontalAlign = HorizontalAlign.LEFT
-                paddingLeft(2f)
+            child(ToggleName::class, ToggleName.Props(obj.ref, obj.name, off, textWidth, "tree.view.select.item", "model.obj.change.name"))
+
+            val showIcon = if (obj.visible) "hideIcon" else "showIcon"
+            val showTooltip = if (obj.visible) "Hide object" else "Show object"
+            val showAction = if (obj.visible) "tree.view.hide.item" else "tree.view.show.item"
+
+            +IconButton(showAction, showIcon, textWidth + ICON_WIDTH - off, 0f, ICON_WIDTH, LEVEL_HEIGHT).apply {
                 metadata += "ref" to obj.ref
+                setTooltip(showTooltip)
+                classes("model_tree_item_icon")
             }
 
-            if (obj.visible) {
-                +IconButton("tree.view.hide.item", "hideIcon", 196f - off, 0f, 24f, 24f).apply {
-                    transparent()
-                    borderless()
-                    metadata += "ref" to obj.ref
-                    hoveredStyle.background.color.set(0f)
-                    setTooltip("Hide object")
-                }
-            } else {
-                +IconButton("tree.view.show.item", "showIcon", 196f - off, 0f, 24f, 24f).apply {
-                    transparent()
-                    borderless()
-                    metadata += "ref" to obj.ref
-                    hoveredStyle.background.color.set(0f)
-                    setTooltip("Show object")
-                }
-            }
-
-            +IconButton("tree.view.delete.item", "deleteIcon", 222f - off, 0f, 24f, 24f).apply {
-                transparent()
-                borderless()
-                hoveredStyle.background.color.set(0f)
+            +IconButton("tree.view.delete.item", "deleteIcon", textWidth + ICON_WIDTH * 2 - off, 0f, ICON_WIDTH, LEVEL_HEIGHT).apply {
                 metadata += "ref" to obj.ref
                 setTooltip("Delete object")
+                classes("model_tree_item_icon")
             }
         }
     }
@@ -318,52 +303,82 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
 
 class ToggleName : RComponent<ToggleName.Props, ToggleName.State>() {
 
+    var timer = 0.0
+    var context: Context? = null
+
     override fun getInitialState() = State(true)
 
-    override fun RBuilder.render() {
-
+    override fun RBuilder.render() = div {
+        style {
+            posX = ICON_WIDTH
+            posY = 0f
+            sizeX = props.width - props.offset
+            sizeY = LEVEL_HEIGHT
+            transparent()
+            borderless()
+        }
         if (state.hidden) {
-            comp(TextButton("", props.group.name, 24f, 0f, 172f - props.offset, 24f)) {
+            comp(TextButton("", props.text, 0f, 0f, props.width - props.offset, LEVEL_HEIGHT)) {
                 style {
-                    transparent()
-                    borderless()
-                    fontSize = 20f
-                    horizontalAlign = HorizontalAlign.LEFT
                     paddingLeft(2f)
-                    metadata += "ref" to props.group.ref
+                    metadata += "ref" to props.ref
+                    classes("model_tree_item_text")
                 }
-                onDoubleClick { setState { copy(hidden = false) } }
-                onClick { dispatcher.onEvent("tree.view.select.group", it.targetComponent) }
+
+                onClick {
+                    if (Timer.miliTime - timer < 500) {
+                        sendCmd("setToggleNameActive")
+                        context = it.context
+                        setState {
+                            copy(hidden = false)
+                        }
+                    } else {
+                        dispatcher.onEvent(props.clickEvent, it.targetComponent)
+                    }
+                    timer = Timer.miliTime
+                }
             }
         } else {
-            comp(StringInput("model.group.change.name", props.group.name, 24f, 0f, 172f - props.offset, 24f)) {
+            comp(StringInput(props.textEvent, props.text, 0f, 0f, props.width - props.offset, LEVEL_HEIGHT)) {
                 style {
-                    transparent()
-                    borderless()
-                    textState.horizontalAlign = HorizontalAlign.LEFT
-                    textState.fontSize = 20f
-                    paddingLeft(2f)
-                    metadata += "ref" to props.group.ref
-                }
+                    metadata += "ref" to props.ref
+                    classes("model_tree_item_text", "model_tree_item_text_field")
+                    val oldOnLoseFocus = onLoseFocus
+                    onLoseFocus = {
+                        oldOnLoseFocus?.invoke()
+                        setState { copy(hidden = true) }
+                    }
 
-                onFocus {
-                    if (!it.isFocused) setState { copy(hidden = true) }
+                    val oldOnTextChange = onTextChange
+                    onTextChange = {
+                        oldOnTextChange?.invoke(it)
+                        context?.focus(this)
+                    }
+
+                    context?.focus(this)
                 }
             }
         }
+        onCmd("setToggleNameActive") {
+            setState { copy(hidden = true) }
+        }
+    }
+
+    override fun shouldComponentUpdate(nextProps: Props, nextState: State): Boolean {
+        return true
     }
 
     data class State(val hidden: Boolean) : RState
-    data class Props(val group: IGroup, val offset: Float) : RProps
+    data class Props(val ref: Any, val text: String, val offset: Float, val width: Float, val clickEvent: String, val textEvent: String) : RProps
 }
-
 
 class ModelTreeAnimation(val programState: IProgramState, val objMap: List<Slot>, val component: Component, val input: IInput, val reset: () -> Unit) : Animation() {
     var pressTime = 0L
     var unPressTime = 0L
     var selected: Int? = null
     var initialMousePos: IVector2 = Vector2.ORIGIN
-    var containerStartHeight: Float = 0f
+    var containerStartPosY: Float = 0f
+    var initialScroll: Float = 0f
 
     override fun animate(delta: Double): Boolean {
         val now = Timer.miliTime.toLong()
@@ -375,7 +390,8 @@ class ModelTreeAnimation(val programState: IProgramState, val objMap: List<Slot>
             if (selected != null) {
                 applyChanges()
                 selected = null
-                containerStartHeight = 0f
+                containerStartPosY = 0f
+                initialScroll = 0f
             }
             initialMousePos = mousePos
             unPressTime = now
@@ -388,7 +404,8 @@ class ModelTreeAnimation(val programState: IProgramState, val objMap: List<Slot>
                 component.childComponents.filter { it is Panel }.forEachIndexed { index, comp ->
                     if (comp.intersects(mPos)) {
                         selected = index
-                        containerStartHeight = comp.absolutePosition.y - comp.position.y
+                        containerStartPosY = comp.absolutePosition.y - comp.position.y
+                        initialScroll = component.posY
                         initialMousePos = mPos.toIVector()
                     }
                 }
@@ -432,8 +449,9 @@ class ModelTreeAnimation(val programState: IProgramState, val objMap: List<Slot>
 
     private fun calculateMouseCoords(): Vector2i {
         val mPos = input.mouse.getMousePos()
-        val itemUnderMouseHeight = mPos.yf - containerStartHeight
-        val index = (itemUnderMouseHeight / 26f).toInt()
+        val scrollDiff = component.posY - initialScroll
+        val itemUnderMouseHeight = mPos.yf - containerStartPosY - scrollDiff
+        val index = (itemUnderMouseHeight / (LEVEL_HEIGHT + 2f)).toInt()
 
         val slot = objMap.getOrNull(index)
         val level = if (slot != null) if (slot.group != null) slot.level + 1 else slot.level else 0
