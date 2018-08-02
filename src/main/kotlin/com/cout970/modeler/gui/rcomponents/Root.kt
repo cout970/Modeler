@@ -43,7 +43,7 @@ class RootComp : RComponent<RootProps, RootState>() {
 
         child(CenterPanel::class, CenterPanelProps(props.gui.canvasContainer, props.gui.timer))
 
-        child(LeftPanel::class, LeftPanelProps(state.leftVisible, props.gui.programState,
+        child(LeftPanel::class, LeftPanelProps(state.leftVisible, props.gui.state,
                 props.gui.gridLines, props.gui.animator))
 
         child(RightPanel::class, RightPanelProps(state.rightVisible, props.gui.programState,

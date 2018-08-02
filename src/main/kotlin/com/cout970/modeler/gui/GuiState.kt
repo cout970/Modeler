@@ -60,6 +60,7 @@ class GuiState(val projectManager: IProgramState) : IProgramState by projectMana
             "useTexture" to BooleanPropertyWrapper(this::useTexture),
             "useColor" to BooleanPropertyWrapper(this::useColor),
             "useLight" to BooleanPropertyWrapper(this::useLight),
-            "showInvisible" to BooleanPropertyWrapper(this::showHiddenFaces)
+            "showInvisible" to BooleanPropertyWrapper(this::showHiddenFaces),
+            "drawOutline" to BooleanPropertyWrapper(this::drawOutline)
     )
 }
