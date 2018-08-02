@@ -98,7 +98,7 @@ fun IModel.getSelectionCenter(selection: ISelection, animator: Animator,
 
 private fun getRecursiveMatrix(ref: IObjectRef, model: IModel, animator: Animator, animation: IAnimation): IMatrix4? {
     model.tree.objects[RootGroupRef].forEach { obj ->
-        if (obj == ref) return model.getObject(obj).transformation.matrix * animator.animate(animation, RootGroupRef, obj)
+        if (obj == ref) return animator.animate(animation, obj, model.getObject(obj).transformation).matrix
     }
 
     model.tree.groups[RootGroupRef].forEach {
@@ -111,10 +111,10 @@ private fun getRecursiveMatrix(ref: IObjectRef, model: IModel, animator: Animato
 private fun getRecursiveMatrix(ref: IObjectRef, model: IModel, group: IGroupRef,
                                matrix: IMatrix4, animator: Animator, animation: IAnimation): IMatrix4? {
 
-    val mat = model.getGroup(group).transform.matrix * matrix * animator.animate(animation, group, ObjectRefNone)
+    val mat = animator.animate(animation, group, model.getGroup(group).transform).matrix * matrix
 
     model.tree.objects[group].forEach { obj ->
-        if (obj == ref) return mat * model.getObject(obj).transformation.matrix * animator.animate(animation, group, obj)
+        if (obj == ref) return mat * animator.animate(animation, obj, model.getObject(obj).transformation).matrix
     }
 
     model.tree.groups[group].forEach {
@@ -139,7 +139,7 @@ private fun getParentRecursiveMatrix(ref: IObjectRef, model: IModel, animator: A
 private fun getParentRecursiveMatrix(ref: IObjectRef, model: IModel, group: IGroupRef,
                                      matrix: IMatrix4, animator: Animator, animation: IAnimation): IMatrix4? {
 
-    val mat = model.getGroup(group).transform.matrix * matrix * animator.animate(animation, group, ObjectRefNone)
+    val mat = animator.animate(animation, group, model.getGroup(group).transform).matrix * matrix
 
     model.tree.objects[group].forEach { obj ->
         if (obj == ref) return mat

@@ -234,10 +234,6 @@ object TransformationHelper {
         }
     }
 
-    private fun ITransformation.invert(): TRSTransformation {
-        return TRSTransformation.fromMatrix(matrix.toJOML().invert().toIMatrix())
-    }
-
     fun transformTextureObjects(source: IModel, sel: ISelection, transform: (IVector2) -> IVector2): IModel {
         val objRefs = sel.objects.toSet()
         return source.modifyObjects(objRefs) { _, obj ->
@@ -350,4 +346,19 @@ object TransformationHelper {
             else -> model
         }
     }
+}
+
+fun ITransformation.invert(): TRSTransformation {
+    return TRSTransformation.fromMatrix(matrix.toJOML().invert().toIMatrix())
+}
+
+fun IMatrix4.invert(): IMatrix4 {
+    return toJOML().invert().toIMatrix()
+}
+
+fun IMatrix4.print() {
+    println("%.2f, %.2f, %.2f, %.2f".format(m00d, m10d, m20d, m30d))
+    println("%.2f, %.2f, %.2f, %.2f".format(m01d, m11d, m21d, m31d))
+    println("%.2f, %.2f, %.2f, %.2f".format(m02d, m12d, m22d, m32d))
+    println("%.2f, %.2f, %.2f, %.2f".format(m03d, m13d, m23d, m33d))
 }

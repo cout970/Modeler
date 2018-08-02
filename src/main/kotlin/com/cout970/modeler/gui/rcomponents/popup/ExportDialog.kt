@@ -2,7 +2,10 @@ package com.cout970.modeler.gui.rcomponents.popup
 
 import com.cout970.modeler.core.export.ExportFormat
 import com.cout970.modeler.core.export.ExportProperties
-import com.cout970.modeler.gui.leguicomp.*
+import com.cout970.modeler.gui.leguicomp.FixedLabel
+import com.cout970.modeler.gui.leguicomp.TextButton
+import com.cout970.modeler.gui.leguicomp.classes
+import com.cout970.modeler.gui.leguicomp.onClick
 import com.cout970.modeler.input.dialogs.FileDialogs
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
@@ -58,7 +61,8 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
 
 
         +TextButton("", "Obj (*.obj)", 90f, 50f, 110f, 24f).apply {
-            if (state.selection != 0) background { dark2 }
+            classes("popup_export_type")
+            if (state.selection == 0) classes("popup_export_type_selected")
 
             onClick {
                 lastType = 0
@@ -67,7 +71,8 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
         }
 
         +TextButton("", "MCX (*.mcx)", 210f, 50f, 110f, 24f).apply {
-            if (state.selection != 1) background { dark2 }
+            classes("popup_export_type")
+            if (state.selection == 1) classes("popup_export_type_selected")
 
             onClick {
                 lastType = 1
@@ -76,7 +81,8 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
         }
 
         +TextButton("", "GLTF (*.gltf)", 330f, 50f, 110f, 24f).apply {
-            if (state.selection != 2) background { dark2 }
+            classes("popup_export_type")
+            if (state.selection == 2) classes("popup_export_type_selected")
 
             onClick {
                 lastType = 2

@@ -315,6 +315,12 @@ var exported = {
     inputGroup: {
         backgroundColor: transparent,
         borderStyle: "none"
+    },
+    popup_export_type: {
+        backgroundColor: "#272727"
+    },
+    popup_export_type_selected: {
+        backgroundColor: "#656565"
     }
 };
 

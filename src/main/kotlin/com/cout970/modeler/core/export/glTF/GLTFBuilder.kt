@@ -378,7 +378,7 @@ class GLTFBuilder {
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun UnpackedBuffer.build(): Int {
+    fun UnpackedBuffer.build(animation: Boolean = false): Int {
         val size = elementType.size * containerType.numComponents * data.size
         val index = bakedBufferViews.size
         val view = GltfBufferView(
@@ -387,7 +387,7 @@ class GLTFBuilder {
                 byteLength = size,
                 byteOffset = buffer.position(),
                 byteStride = null,
-                target = if (indices) 34963 else 34962
+                target = if (animation) null else if (indices) 34963 else 34962
         )
         val accessor = GltfAccessor(
                 bufferView = index,
@@ -537,9 +537,9 @@ class GLTFBuilder {
             )
 
             samplers += GltfAnimationSampler(
-                    input = chan.timeValues!!.build(),
+                    input = chan.timeValues!!.build(true),
                     interpolation = chan.interpolation,
-                    output = chan.transformValues!!.build()
+                    output = chan.transformValues!!.build(true)
             )
         }
 

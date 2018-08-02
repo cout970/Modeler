@@ -23,6 +23,7 @@ import com.cout970.modeler.core.model.`object`.ObjectNone
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.resource.ResourcePath
+import com.cout970.modeler.render.tool.Animator
 import com.cout970.modeler.util.toIQuaternion
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.util.toJOML
@@ -161,7 +162,7 @@ class GlTFExporter {
         animationMap.values.forEach { anim ->
             animation {
                 name = anim.name
-                addAnimation(this, anim, targetToNode)
+                addAnimation(this@toGlTF, this, anim, targetToNode)
             }
         }
     }
@@ -214,29 +215,27 @@ class GlTFExporter {
         }
     }
 
-    fun GLTFBuilder.addAnimation(builder: GLTFBuilder.Animation, anim: IAnimation, groupToNode: Map<AnimationTarget, UUID>) = builder.apply {
+    fun GLTFBuilder.addAnimation(model: IModel, builder: GLTFBuilder.Animation, anim: IAnimation, groupToNode: Map<AnimationTarget, UUID>) = builder.apply {
         anim.channels.values.map { chan ->
-            val groupRef = anim.channelMapping[chan.ref]
-            val groupNode = groupToNode[groupRef] ?: return@map
+            val target = anim.channelMapping[chan.ref] ?: return@map
+            val groupNode = groupToNode[target] ?: return@map
+
             val useTranslation = chan.usesTranslation()
             val useRotation = chan.usesRotation()
             val useScale = chan.usesScale()
 
             if (!useTranslation && !useRotation && !useScale) return@map
 
+            val keyframeValues = chan.keyframes.map {
+                Animator.combine(target.getTransformation(model), it.value)
+            }
+
             if (useTranslation)
                 channel {
                     node = groupNode
                     transformType = TRANSLATION
                     timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
-                    transformValues = buffer(FLOAT, chan.keyframes.map {
-                        val trans = it.value
-                        when (trans) {
-                            is TRSTransformation -> trans.translation
-                            is TRTSTransformation -> trans.toTRS().translation
-                            else -> error("Invalid transformation type: $trans")
-                        }
-                    })
+                    transformValues = buffer(FLOAT, keyframeValues.map { it.translation * 0.0625 })
                 }
 
 
@@ -245,14 +244,7 @@ class GlTFExporter {
                     node = groupNode
                     transformType = ROTATION
                     timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
-                    transformValues = buffer(FLOAT, chan.keyframes.map {
-                        val trans = it.value
-                        when (trans) {
-                            is TRSTransformation -> trans.rotation.toVector4()
-                            is TRTSTransformation -> trans.toTRS().rotation.toVector4()
-                            else -> error("Invalid transformation type: $trans")
-                        }
-                    })
+                    transformValues = buffer(FLOAT, keyframeValues.map { it.rotation.toVector4() })
                 }
 
             if (useScale)
@@ -260,15 +252,15 @@ class GlTFExporter {
                     node = groupNode
                     transformType = SCALE
                     timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
-                    transformValues = buffer(FLOAT, chan.keyframes.map {
-                        val trans = it.value
-                        when (trans) {
-                            is TRSTransformation -> trans.scale
-                            is TRTSTransformation -> trans.scale
-                            else -> error("Invalid transformation type: $trans")
-                        }
-                    })
+                    transformValues = buffer(FLOAT, keyframeValues.map { it.scale })
                 }
+        }
+    }
+
+    private fun AnimationTarget.getTransformation(model: IModel): ITransformation {
+        return when (this) {
+            is AnimationTargetGroup -> model.getGroup(ref).transform
+            is AnimationTargetObject -> model.getObject(ref).transformation
         }
     }
 

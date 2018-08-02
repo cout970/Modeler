@@ -5,7 +5,7 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.`object`.RootGroupRef
 import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.animation.*
-import com.cout970.modeler.core.model.TRTSTransformation
+import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.model.selection.Selection
 import com.cout970.modeler.core.project.IProgramState
@@ -63,8 +63,8 @@ private fun addAnimationChannel(programState: IProgramState): ITask {
             name = "Channel ${lastAnimation++}",
             interpolation = InterpolationMethod.LINEAR,
             keyframes = listOf(
-                    Keyframe(0f, TRTSTransformation.IDENTITY),
-                    Keyframe(anim.timeLength, TRTSTransformation.IDENTITY)
+                    Keyframe(0f, TRSTransformation.IDENTITY),
+                    Keyframe(anim.timeLength, TRSTransformation.IDENTITY)
             )
     )
     val newAnimation = anim.withChannel(channel).withMapping(channel.ref, target)
@@ -196,8 +196,8 @@ private fun addKeyframe(animator: Animator, model: IModel): ITask {
     val prev = channel.keyframes.filter { it.time <= now }
     val next = channel.keyframes.filter { it.time >= now }
 
-    val pair = animator.getPrevAndNext(now, channel.keyframes)
-    val value = animator.interpolate(now, pair.first, pair.second)
+    val pair = Animator.getPrevAndNext(now, channel.keyframes)
+    val value = Animator.interpolate(now, pair.first, pair.second)
     val keyframe = Keyframe(now, value)
 
     val newList = prev + keyframe + next

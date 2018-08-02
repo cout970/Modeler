@@ -128,8 +128,8 @@ class Listeners : ITickeable, IGuiCmdRunner {
     fun onKeyPress(e: EventKeyUpdate): Boolean {
         if (e.keyState != EnumKeyState.PRESS) return false
         if (gui.canvasContainer.layout.onEvent(gui, e)) return true
-        if (gui.root.context.focusedGui is TextInput) return false
-        if (gui.root.context.focusedGui is TextArea) return false
+        if (gui.root.context.focusedGui is TextInput && gui.root.context.focusedGui.isEnabled) return false
+        if (gui.root.context.focusedGui is TextArea && gui.root.context.focusedGui.isEnabled) return false
         return gui.keyboardBinder.onEvent(e)
     }
 
