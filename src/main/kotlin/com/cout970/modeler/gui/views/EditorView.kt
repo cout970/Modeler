@@ -42,7 +42,6 @@ class EditorView : IView {
 
     fun update(mount: Component) {
         gui.root.bindButtons(gui.buttonBinder)
-        gui.root.bindProperties(gui.state)
         gui.root.loadResources(gui.resources)
         LayoutManager.getInstance().layout(gui.root)
         mount.forEachRecursive {
@@ -62,5 +61,3 @@ class EditorView : IView {
         }
     }
 }
-
-data class VisibleElements(val left: Boolean, val bottom: Boolean, val right: Boolean)

@@ -28,7 +28,7 @@ class EditorControls : RComponent<EditorControlsProps, VisibleWidget>() {
     override fun RBuilder.render() = div("EditorControls") {
         style {
             classes("left_panel_group", "editor_controls")
-            height = if (state.on) 11f * 26f else 24f
+            height = if (state.on) 12f * 26f else 24f
         }
 
         postMount {
@@ -42,7 +42,7 @@ class EditorControls : RComponent<EditorControlsProps, VisibleWidget>() {
                 transparent()
                 borderless()
                 posY = 24f
-                sizeY = 11f * 24f
+                sizeY = 12f * 24f
             }
 
             postMount {
@@ -60,6 +60,7 @@ class EditorControls : RComponent<EditorControlsProps, VisibleWidget>() {
             checkbox("Render texture marks", "drawTextureProjection")
             checkbox("Render skybox", "renderSkybox")
             checkbox("Draw face outline", "drawOutline")
+            checkbox("Sync selection render", "syncSelection")
         }
     }
 

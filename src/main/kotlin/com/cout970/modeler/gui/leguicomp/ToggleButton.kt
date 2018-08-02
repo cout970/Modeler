@@ -12,7 +12,6 @@ import org.liquidengine.legui.component.ToggleButton as LeguiToggleButton
  */
 
 class ToggleButton(
-        val id: String = "",
         var icon: String = "",
         val default: Boolean = false,
         posX: Float = 0f, posY: Float = 0f,
@@ -25,19 +24,7 @@ class ToggleButton(
         classes("toggle_button")
     }
 
-    override fun isToggled(): Boolean = properties[id]?.get() ?: default
-
-    override fun setToggled(toggled: Boolean) {
-        properties[id]?.set(toggled)
-        super.setToggled(toggled)
-//        style.border = SimpleLineBorder(Config.colorPalette.selectedButton.toColor(), 1f)
-        style.border?.isEnabled = toggled
-    }
-
-    fun bindProperties(map: Map<String, IPropertyBind<Boolean>>) {
-        properties = map
-        isToggled = isToggled
-    }
+    override fun isToggled(): Boolean = default
 
     override fun loadResources(resources: GuiResources) {
         resources.getIconOrNull("active_$icon")?.let {

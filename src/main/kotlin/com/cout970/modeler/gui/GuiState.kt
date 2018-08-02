@@ -27,6 +27,7 @@ class GuiState(val projectManager: IProgramState) : IProgramState by projectMana
     var renderLights: Boolean = false
     var renderSkybox: Boolean = true
     var renderBaseBlock: Boolean = true
+    var syncSelection: Boolean = true
 
     var popup: Popup? = null
 
@@ -61,6 +62,7 @@ class GuiState(val projectManager: IProgramState) : IProgramState by projectMana
             "useColor" to BooleanPropertyWrapper(this::useColor),
             "useLight" to BooleanPropertyWrapper(this::useLight),
             "showInvisible" to BooleanPropertyWrapper(this::showHiddenFaces),
-            "drawOutline" to BooleanPropertyWrapper(this::drawOutline)
+            "drawOutline" to BooleanPropertyWrapper(this::drawOutline),
+            "syncSelection" to BooleanPropertyWrapper(this::syncSelection)
     )
 }

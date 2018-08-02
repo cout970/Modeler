@@ -171,6 +171,12 @@ class ModelRenderer {
             GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL)
         }
 
+        if (!ctx.gui.state.syncSelection) {
+            matrixCache.clear()
+            val realModel = ctx.gui.programState.model
+            getRecursiveMatrix(matrixCache, realModel, animator, animation)
+        }
+
         // Model Selection
         ctx.shader.apply {
             useTexture.setInt(0)

@@ -107,25 +107,25 @@ class SelectionTypeBar : RComponent<EmptyProps, SelectionTypeState>() {
         val thirdButton = state.type == SelectionType.EDGE
         val fourthButton = state.type == SelectionType.VERTEX
 
-        +ToggleButton("", "selection_mode_object", firstButton, 4f, 4f, 32f, 32f).apply {
+        +ToggleButton("selection_mode_object", firstButton, 4f, 4f, 32f, 32f).apply {
             tooltip = InstantTooltip("Selection mode: OBJECT")
             borderless()
             onClick { set(SelectionType.OBJECT) }
         }
 
-        +ToggleButton("", "selection_mode_face", secondButton, 32f + 5f + 4f, 4f, 32f, 32f).apply {
+        +ToggleButton("selection_mode_face", secondButton, 32f + 5f + 4f, 4f, 32f, 32f).apply {
             tooltip = InstantTooltip("Selection mode: FACE")
             borderless()
             onClick { set(SelectionType.FACE) }
         }
 
-        +ToggleButton("", "selection_mode_edge", thirdButton, 64f + 10f + 4f, 4f, 32f, 32f).apply {
+        +ToggleButton("selection_mode_edge", thirdButton, 64f + 10f + 4f, 4f, 32f, 32f).apply {
             tooltip = InstantTooltip("Selection mode: EDGE")
             borderless()
             onClick { set(SelectionType.EDGE) }
         }
 
-        +ToggleButton("", "selection_mode_vertex", fourthButton, 96f + 15f + 4f, 4f, 32f, 32f).apply {
+        +ToggleButton("selection_mode_vertex", fourthButton, 96f + 15f + 4f, 4f, 32f, 32f).apply {
             tooltip = InstantTooltip("Selection mode: VERTEX")
             borderless()
             onClick { set(SelectionType.VERTEX) }
@@ -160,13 +160,13 @@ class CursorOrientationBar : RStatelessComponent<CursorProps>() {
         val secondButton = props.cursor.orientation == CursorOrientation.GLOBAL
         val firstButton = props.cursor.orientation == CursorOrientation.LOCAL
 
-        +ToggleButton("", "selection_orientation_global", secondButton, 4f, 4f, 32f, 32f).apply {
+        +ToggleButton("selection_orientation_global", secondButton, 4f, 4f, 32f, 32f).apply {
             tooltip = InstantTooltip("Cursor orientation: Global")
             borderless()
             onClick { dispatcher.onEvent("cursor.set.orientation.global", null) }
         }
 
-        +ToggleButton("", "selection_orientation_local", firstButton, 32f + 5f + 4f, 4f, 32f, 32f).apply {
+        +ToggleButton("selection_orientation_local", firstButton, 32f + 5f + 4f, 4f, 32f, 32f).apply {
             tooltip = InstantTooltip("Cursor orientation: Local")
             borderless()
             onClick { dispatcher.onEvent("cursor.set.orientation.local", null) }
@@ -193,19 +193,19 @@ class CursorModeBar : RStatelessComponent<CursorProps>() {
         val secondButton = props.cursor.mode == CursorMode.ROTATION
         val thirdButton = props.cursor.mode == CursorMode.SCALE
 
-        +ToggleButton("", "selection_mode_translation", firstButton, 4f, 4f, 32f, 32f).apply {
+        +ToggleButton("selection_mode_translation", firstButton, 4f, 4f, 32f, 32f).apply {
             tooltip = InstantTooltip("Cursor mode: Translation")
             borderless()
             onClick { dispatcher.onEvent("cursor.set.mode.translate", null) }
         }
 
-        +ToggleButton("", "selection_mode_rotation", secondButton, 32f + 5f + 4f, 4f, 32f, 32f).apply {
+        +ToggleButton("selection_mode_rotation", secondButton, 32f + 5f + 4f, 4f, 32f, 32f).apply {
             tooltip = InstantTooltip("Cursor mode: Rotation")
             borderless()
             onClick { dispatcher.onEvent("cursor.set.mode.rotate", null) }
         }
 
-        +ToggleButton("", "selection_mode_scale", thirdButton, 32f + 5f + 32f + 5f + 4f, 4f, 32f, 32f).apply {
+        +ToggleButton("selection_mode_scale", thirdButton, 32f + 5f + 32f + 5f + 4f, 4f, 32f, 32f).apply {
             tooltip = InstantTooltip("Cursor mode: Scale")
             borderless()
             onClick { dispatcher.onEvent("cursor.set.mode.scale", null) }
