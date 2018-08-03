@@ -2,6 +2,7 @@ package com.cout970.modeler.controller.usecases
 
 import com.cout970.modeler.PathConstants
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.export.ExportProperties
 import com.cout970.modeler.core.export.ExportTextureProperties
@@ -11,10 +12,13 @@ import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.Popup
 import com.cout970.reactive.core.AsyncManager
 import com.cout970.vector.extensions.vec2Of
+import org.liquidengine.legui.component.Component
 import java.io.File
 
-inline fun <reified T> openPopup(gui: Gui, name: String, crossinline func: (T) -> Unit = {}) {
-    gui.state.popup = Popup(name) {
+inline fun <reified T> openPopup(gui: Gui, name: String, metadata: Map<String, Any> = emptyMap(),
+                                 crossinline func: (T) -> Unit = {}) {
+
+    gui.state.popup = Popup(name, metadata) {
         gui.state.popup = null
         AsyncManager.runLater { gui.root.reRender() }
         (it as? T)?.let { value -> func(value) }
@@ -22,6 +26,15 @@ inline fun <reified T> openPopup(gui: Gui, name: String, crossinline func: (T) -
     AsyncManager.runLater { gui.root.reRender() }
 }
 
+
+@UseCase("material.view.config")
+private fun showMaterialConfigMenu(gui: Gui, component: Component): ITask = TaskAsync { returnCallback ->
+    val old = component.metadata["material"] as IMaterial
+
+    openPopup<IMaterial>(gui, "edit_texture", component.metadata) { new ->
+        returnCallback(TaskUpdateMaterial(old, new))
+    }
+}
 
 @UseCase("project.edit")
 private fun showConfigMenu(gui: Gui): ITask = TaskAsync {

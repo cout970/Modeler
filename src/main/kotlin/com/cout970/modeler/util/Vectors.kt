@@ -26,6 +26,7 @@ inline fun IVector3.withX(x: Number) = vec3Of(x, y, z)
 inline fun IVector3.withY(y: Number) = vec3Of(x, y, z)
 inline fun IVector3.withZ(z: Number) = vec3Of(x, y, z)
 
+fun IVector4.toVector3() = vec3Of(xd, yd, zd)
 
 fun IVector3.toVector2() = vec2Of(xd, yd)
 

@@ -65,7 +65,8 @@ class TexturedMaterial(override val name: String, val path: ResourcePath,
         texture?.bind() ?: MaterialNone.whiteTexture.bind()
     }
 
-    fun copy(name: String = this.name, path: ResourcePath = this.path) = TexturedMaterial(name, path)
+    fun copy(name: String = this.name, path: ResourcePath = this.path) =
+            TexturedMaterial(name, path, id)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

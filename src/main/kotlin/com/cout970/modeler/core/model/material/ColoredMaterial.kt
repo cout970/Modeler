@@ -20,6 +20,9 @@ class ColoredMaterial(override val name: String, val color: IVector3,
         return false
     }
 
+    fun copy(name: String = this.name, color: IVector3 = this.color) =
+            ColoredMaterial(name = name, color = color, id = id)
+
     override fun hasChanged(): Boolean = false
 
     override fun bind() {

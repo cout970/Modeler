@@ -11,6 +11,7 @@ import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.animation.AnimationRef
 import com.cout970.modeler.core.animation.AnimationRefNone
+import com.cout970.modeler.core.config.ColorPalette.Companion.colorToHex
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.TRTSTransformation
 import com.cout970.modeler.core.model.material.MaterialRef
@@ -95,9 +96,7 @@ class Vector4Serializer : JsonSerializer<IVector4>, JsonDeserializer<IVector4> {
 class ColorSerializer : JsonSerializer<IVector3>, JsonDeserializer<IVector3> {
 
     override fun serialize(src: IVector3, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-        val str = Integer.toHexString(Color(src.xf, src.yf, src.zf, 1f).rgb).run {
-            substring(2, length)
-        }
+        val str = colorToHex(src)
         return JsonPrimitive(str)
     }
 

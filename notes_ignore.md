@@ -21,7 +21,7 @@ Loads of skyboxes "http://www.custommapmakers.org/skyboxes.php"
 - [x] Upgrade model tree and fix object out of groups
 - [x] Fix gltf import/export (mostly)
 - [x] Add control panel for all the program flags
-- [ ] Add interface to edit texture properties
+- [x] Add interface to edit texture properties
 - [ ] Upgrade animation panel/keyframe editor
 - [ ] Add support for materials in gltf
 

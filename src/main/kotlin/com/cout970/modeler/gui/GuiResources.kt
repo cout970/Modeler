@@ -56,6 +56,8 @@ class GuiResources {
         iconMap["showIcon"] = BufferedImage("assets/textures/show.png")
         iconMap["hideIcon"] = BufferedImage("assets/textures/hide.png")
 
+        iconMap["add_color_material"] = BufferedImage("assets/textures/add_colored_material.png")
+        iconMap["config_material"] = BufferedImage("assets/textures/gear.png")
         iconMap["apply_material"] = BufferedImage("assets/textures/apply_material.png")
         iconMap["load_material"] = BufferedImage("assets/textures/load_material.png")
         iconMap["duplicate_material"] = BufferedImage("assets/textures/duplicate_material.png")

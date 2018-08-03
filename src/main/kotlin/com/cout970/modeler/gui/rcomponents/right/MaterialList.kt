@@ -68,29 +68,33 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
 
             postMount {
                 marginX(5f)
+                floatLeft(0f, 0f)
             }
 
             +IconButton("material.view.import", "add_material", 0f, 0f, 32f, 32f).also {
                 it.setTooltip("Import material")
             }
 
-            +IconButton("material.view.duplicate", "duplicate_material", 32f, 0f, 32f, 32f).also {
-                it.setTooltip("Duplicate material")
-                it.metadata += "ref" to props.selectedMaterial()
-
+            +IconButton("material.new.colored", "add_color_material", 0f, 0f, 32f, 32f).also {
+                it.setTooltip("Create color material")
             }
 
-            +IconButton("material.view.load", "load_material", 64f, 0f, 32f, 32f).also {
+            +IconButton("material.view.duplicate", "duplicate_material", 0f, 0f, 32f, 32f).also {
+                it.setTooltip("Duplicate material")
+                it.metadata += "ref" to props.selectedMaterial()
+            }
+
+            +IconButton("material.view.load", "load_material", 0f, 0f, 32f, 32f).also {
                 it.setTooltip("Load different texture")
                 it.metadata += "ref" to props.selectedMaterial()
             }
 
-            +IconButton("material.view.remove", "remove_material", 96f, 0f, 32f, 32f).also {
+            +IconButton("material.view.remove", "remove_material", 0f, 0f, 32f, 32f).also {
                 it.setTooltip("Delete material")
                 it.metadata += "ref" to props.selectedMaterial()
             }
 
-            +IconButton("material.view.inverse_select", "picker", 128f, 0f, 32f, 32f).also {
+            +IconButton("material.view.inverse_select", "picker", 0f, 0f, 32f, 32f).also {
                 it.setTooltip("Select objects with this material")
                 it.metadata += "ref" to props.selectedMaterial()
             }
@@ -178,7 +182,7 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
                             metadata += "ref" to material.ref
                         }
 
-                        +TextButton("material.view.select", material.name, 24f, 0f, 196f, 24f).apply {
+                        +TextButton("material.view.select", material.name, 24f, 0f, 196f - 24f, 24f).apply {
                             horizontalAlign = HorizontalAlign.LEFT
                             paddingLeft(2f)
                             fontSize = 20f
@@ -186,11 +190,18 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
                             metadata += "ref" to material.ref
                         }
 
-                        +IconButton("material.view.apply", "apply_material", 222f, 0f, 24f, 24f).apply {
+                        +IconButton("material.view.apply", "apply_material", 198f, 0f, 24f, 24f).apply {
                             transparent()
                             borderless()
                             setTooltip("Apply material")
                             metadata += "ref" to material.ref
+                        }
+
+                        +IconButton("material.view.config", "config_material", 222f, 0f, 24f, 24f).apply {
+                            transparent()
+                            borderless()
+                            setTooltip("Configure")
+                            metadata += "material" to material
                         }
                     }
                 }

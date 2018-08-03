@@ -107,5 +107,12 @@ data class ColorPalette(
             val color = Color(c.toInt(16))
             return Vector4f(color.red / 255f, color.green / 255f, color.blue / 255f, 1f)
         }
+
+        fun colorToHex(color: IVector3): String {
+            val r = (color.xf * 255).toInt().coerceIn(0, 255).toString(16).let { if (it.length == 1) "$it$it" else it }
+            val g = (color.yf * 255).toInt().coerceIn(0, 255).toString(16).let { if (it.length == 1) "$it$it" else it }
+            val b = (color.zf * 255).toInt().coerceIn(0, 255).toString(16).let { if (it.length == 1) "$it$it" else it }
+            return "$r$g$b".toUpperCase()
+        }
     }
 }

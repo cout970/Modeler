@@ -11,7 +11,7 @@ val UI = newSingleThreadContext("UI")
 // Heavy computations, model transformations and things that take long enough to reduce the fps
 val COMPUTE = newSingleThreadContext("COMPUTE")
 
-data class Popup(val name: String, val returnFunc: (Any?) -> Unit)
+data class Popup(val name: String, val metadata: Map<String, Any> = emptyMap(), val returnFunc: (Any?) -> Unit)
 
 fun CoroutineContext.setTimeout(time: Int, func: () -> Unit) {
     launch(this) {

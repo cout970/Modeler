@@ -40,6 +40,7 @@ class PopUp : RStatelessComponent<PopUpProps>() {
                 "export" -> child(ExportDialog::class, PopupReturnProps(it.returnFunc))
                 "export_texture" -> child(ExportTextureDialog::class, PopupReturnProps(it.returnFunc))
                 "config" -> child(ConfigMenu::class, ConfigMenuProps(it.returnFunc, props.propertyHolder))
+                "edit_texture" -> child(EditTexture::class, EditTextureProps(it.returnFunc, props.state, it.metadata))
             }
         }
     }

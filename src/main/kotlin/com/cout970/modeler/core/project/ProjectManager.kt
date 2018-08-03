@@ -64,10 +64,10 @@ class ProjectManager(
         }
     }
 
-    fun updateMaterial(ref: IMaterialRef, new: IMaterial) {
-        if (ref in loadedMaterials) {
-            materialChangeListeners.forEach { it.invoke(model.getMaterial(ref), new) }
-            model = model.modifyMaterial(ref, new)
+    fun updateMaterial(new: IMaterial) {
+        if (new.ref in loadedMaterials) {
+            materialChangeListeners.forEach { it.invoke(model.getMaterial(new.ref), new) }
+            model = model.modifyMaterial(new.ref, new)
         }
     }
 

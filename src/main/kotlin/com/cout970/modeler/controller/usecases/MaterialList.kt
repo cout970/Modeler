@@ -6,6 +6,7 @@ import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.controller.tasks.*
+import com.cout970.modeler.core.config.ColorPalette
 import com.cout970.modeler.core.model.material.ColoredMaterial
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.MaterialRefNone
@@ -22,6 +23,7 @@ import com.cout970.modeler.util.getOr
 import com.cout970.modeler.util.toResourcePath
 import com.cout970.vector.extensions.vec3Of
 import org.liquidengine.legui.component.Component
+import java.awt.Color
 import java.io.File
 
 /**
@@ -47,17 +49,14 @@ private fun applyMaterial(component: Component, programState: IProgramState): IT
 
 @UseCase("material.view.load")
 private fun loadMaterial(component: Component, projectManager: ProjectManager): ITask {
-    return component
-            .asNullable()
-            .map { it.metadata["ref"] }
-            .flatMap { it as? IMaterialRef }
-            .map {
-                if (it == MaterialRefNone)
-                    importMaterial()
-                else
-                    showLoadMaterialMenu(it, projectManager)
-            }
-            .getOr(TaskNone)
+    val ref = component.metadata["ref"] ?: return TaskNone
+    val materialRef = ref as? IMaterialRef ?: return TaskNone
+
+    return if (materialRef == MaterialRefNone) {
+        importMaterial()
+    } else {
+        showLoadMaterialMenu(materialRef, projectManager)
+    }
 }
 
 private fun showLoadMaterialMenu(ref: IMaterialRef, projectManager: ProjectManager): ITask = TaskAsync { returnFunc ->
@@ -69,9 +68,8 @@ private fun showLoadMaterialMenu(ref: IMaterialRef, projectManager: ProjectManag
     if (path != null) {
 
         val archive = File(path)
-        val material = TexturedMaterial(archive.nameWithoutExtension, archive.toResourcePath())
+        val material = TexturedMaterial(archive.nameWithoutExtension, archive.toResourcePath(), ref.materialId)
         returnFunc(TaskUpdateMaterial(
-                ref = ref,
                 oldMaterial = projectManager.loadedMaterials[ref]!!,
                 newMaterial = material
         ))
@@ -96,8 +94,9 @@ private fun importMaterial(): ITask = TaskAsync { returnFunc ->
 @UseCase("material.new.colored")
 private fun newColoredMaterial(): ITask = TaskAsync { returnFunc ->
 
-    val name = "unnamed"
-    val color = vec3Of(1, 0, 0)
+    val c = Color.getHSBColor(Math.random().toFloat(), 0.5f, 1.0f)
+    val color = vec3Of(c.red / 255f, c.green / 255f, c.blue / 255f)
+    val name = "Color #${ColorPalette.colorToHex(color)}"
 
     returnFunc(TaskImportMaterial(ColoredMaterial(name, color)))
 }
