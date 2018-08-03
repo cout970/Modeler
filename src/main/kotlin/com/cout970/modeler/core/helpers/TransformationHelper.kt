@@ -146,7 +146,7 @@ object TransformationHelper {
         }
     }
 
-    private fun getScaleAndTranslation(vec: IVector3): Pair<IVector3, IVector3> {
+    fun getScaleAndTranslation(vec: IVector3): Pair<IVector3, IVector3> {
         val x = vec.xd >= 0
         val y = vec.yd >= 0
         val z = vec.zd >= 0
@@ -227,8 +227,8 @@ object TransformationHelper {
             SelectionType.VERTEX -> sel.pos.map { it.toObjectRef() }.toSet()
         }
         return source.modifyObjects(objRefs) { _, obj ->
-            val mat = obj.getParentGlobalMatrix(source, animator)
-            val inv = mat.toJOML().invert().toIMatrix()
+            val mat = obj.getParentGlobalTransform(source, animator)
+            val inv = mat.matrix.toJOML().invert().toIMatrix()
 
             func(obj, TRSTransformation.fromMatrix(inv))
         }

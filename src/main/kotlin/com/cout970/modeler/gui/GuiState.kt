@@ -63,6 +63,7 @@ class GuiState(val projectManager: IProgramState) : IProgramState by projectMana
             "useLight" to BooleanPropertyWrapper(this::useLight),
             "showInvisible" to BooleanPropertyWrapper(this::showHiddenFaces),
             "drawOutline" to BooleanPropertyWrapper(this::drawOutline),
-            "syncSelection" to BooleanPropertyWrapper(this::syncSelection)
+            "syncSelection" to BooleanPropertyWrapper(this::syncSelection),
+            "useLinearScale" to BooleanPropertyWrapper(cursor::useLinearScale)
     )
 }

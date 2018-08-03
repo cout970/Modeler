@@ -26,9 +26,10 @@ class EditorControls : RComponent<EditorControlsProps, VisibleWidget>() {
     override fun getInitialState() = VisibleWidget(false)
 
     override fun RBuilder.render() = div("EditorControls") {
+        val items = 13f
         style {
             classes("left_panel_group", "editor_controls")
-            height = if (state.on) 12f * 26f else 24f
+            height = if (state.on) items * 26f else 24f
         }
 
         postMount {
@@ -42,7 +43,7 @@ class EditorControls : RComponent<EditorControlsProps, VisibleWidget>() {
                 transparent()
                 borderless()
                 posY = 24f
-                sizeY = 12f * 24f
+                sizeY = items * 24f
             }
 
             postMount {
@@ -61,6 +62,7 @@ class EditorControls : RComponent<EditorControlsProps, VisibleWidget>() {
             checkbox("Render skybox", "renderSkybox")
             checkbox("Draw face outline", "drawOutline")
             checkbox("Sync selection render", "syncSelection")
+            checkbox("Scale by addition", "useLinearScale")
         }
     }
 

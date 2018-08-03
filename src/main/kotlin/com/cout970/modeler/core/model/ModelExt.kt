@@ -1,8 +1,5 @@
 package com.cout970.modeler.core.model
 
-import com.cout970.matrix.api.IMatrix4
-import com.cout970.matrix.extensions.Matrix4
-import com.cout970.matrix.extensions.times
 import com.cout970.modeler.api.animation.IAnimation
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.ITransformation
@@ -37,23 +34,6 @@ fun IObject.toPair(): Pair<IObjectRef, IObject> = Pair(ObjectRef(id), this)
 inline val IObject.ref: IObjectRef get() = if (id == ObjectNone.id) ObjectRefNone else ObjectRef(id)
 inline val IMaterial.ref: IMaterialRef get() = if (id == MaterialNone.id) MaterialRefNone else MaterialRef(id)
 inline val IGroup.ref: IGroupRef get() = if (id == GroupNone.id) RootGroupRef else GroupRef(id)
-
-fun IObject.getGlobalMesh(model: IModel, animator: Animator, animation: IAnimation = animator.animation): IMesh {
-    val mat = getRecursiveMatrix(ref, model, animator, animation) ?: return mesh
-    return mesh.transform(mat)
-}
-
-fun IObject.getGlobalMatrix(model: IModel, animator: Animator, animation: IAnimation = animator.animation): IMatrix4 {
-    return getRecursiveMatrix(ref, model, animator, animation) ?: Matrix4.IDENTITY
-}
-
-fun IObject.getParentGlobalMatrix(model: IModel, animator: Animator, animation: IAnimation = animator.animation): IMatrix4 {
-    return getParentRecursiveMatrix(ref, model, animator, animation) ?: Matrix4.IDENTITY
-}
-
-fun IObject.getGlobalTransform(model: IModel): ITransformation {
-    return getRecursiveTransform(ref, model) ?: TRSTransformation.IDENTITY
-}
 
 fun IModel.getSelectionCenter(selection: ISelection, animator: Animator,
                               animation: IAnimation = animator.animation): IVector3 {
@@ -96,86 +76,73 @@ fun IModel.getSelectionCenter(selection: ISelection, animator: Animator,
     }
 }
 
-private fun getRecursiveMatrix(ref: IObjectRef, model: IModel, animator: Animator, animation: IAnimation): IMatrix4? {
+fun IObject.getGlobalMesh(model: IModel, animator: Animator, animation: IAnimation = animator.animation): IMesh {
+    val mat = getGlobalTransform(model, animator, animation)
+    return mesh.transform(mat)
+}
+
+fun IObject.getGlobalTransform(model: IModel, animator: Animator, animation: IAnimation = animator.animation): ITransformation {
+    return getRecursiveGlobalTransform(ref, model, animator, animation)
+}
+
+fun IObject.getParentGlobalTransform(model: IModel, animator: Animator, animation: IAnimation = animator.animation): ITransformation {
+    return getParentRecursiveGlobalTransform(ref, model, animator, animation)
+}
+
+private fun getRecursiveGlobalTransform(ref: IObjectRef, model: IModel, animator: Animator, animation: IAnimation): ITransformation {
     model.tree.objects[RootGroupRef].forEach { obj ->
-        if (obj == ref) return animator.animate(animation, obj, model.getObject(obj).transformation).matrix
+        if (obj == ref) return animator.animate(animation, obj, model.getObject(obj).transformation)
     }
 
     model.tree.groups[RootGroupRef].forEach {
-        val mat = getRecursiveMatrix(ref, model, it, Matrix4.IDENTITY, animator, animation)
+        val mat = getRecursiveGlobalTransform(ref, model, it, TRSTransformation.IDENTITY, animator, animation)
         if (mat != null) return mat
     }
-    return null
+    return TRSTransformation.IDENTITY
 }
 
-private fun getRecursiveMatrix(ref: IObjectRef, model: IModel, group: IGroupRef,
-                               matrix: IMatrix4, animator: Animator, animation: IAnimation): IMatrix4? {
+private fun getRecursiveGlobalTransform(ref: IObjectRef, model: IModel, group: IGroupRef,
+                                        matrix: ITransformation, animator: Animator, animation: IAnimation): ITransformation? {
 
-    val mat = animator.animate(animation, group, model.getGroup(group).transform).matrix * matrix
+    val mat = animator.animate(animation, group, model.getGroup(group).transform) + matrix
 
     model.tree.objects[group].forEach { obj ->
-        if (obj == ref) return mat * animator.animate(animation, obj, model.getObject(obj).transformation).matrix
+        if (obj == ref) return animator.animate(animation, obj, model.getObject(obj).transformation) + mat
     }
 
     model.tree.groups[group].forEach {
-        val newMat = getRecursiveMatrix(ref, model, it, mat, animator, animation)
+        val newMat = getRecursiveGlobalTransform(ref, model, it, mat, animator, animation)
         if (newMat != null) return newMat
     }
     return null
 }
 
-private fun getParentRecursiveMatrix(ref: IObjectRef, model: IModel, animator: Animator, animation: IAnimation): IMatrix4? {
+private fun getParentRecursiveGlobalTransform(ref: IObjectRef, model: IModel, animator: Animator, animation: IAnimation): ITransformation {
     model.tree.objects[RootGroupRef].forEach { obj ->
-        if (obj == ref) return null
+        if (obj == ref) return TRSTransformation.IDENTITY
     }
 
     model.tree.groups[RootGroupRef].forEach {
-        val mat = getParentRecursiveMatrix(ref, model, it, Matrix4.IDENTITY, animator, animation)
+        val mat = getParentRecursiveGlobalTransform(ref, model, it, TRSTransformation.IDENTITY, animator, animation)
         if (mat != null) return mat
     }
-    return null
+    return TRSTransformation.IDENTITY
 }
 
-private fun getParentRecursiveMatrix(ref: IObjectRef, model: IModel, group: IGroupRef,
-                                     matrix: IMatrix4, animator: Animator, animation: IAnimation): IMatrix4? {
+private fun getParentRecursiveGlobalTransform(ref: IObjectRef, model: IModel, group: IGroupRef,
+                                              matrix: ITransformation, animator: Animator, animation: IAnimation): ITransformation? {
 
-    val mat = animator.animate(animation, group, model.getGroup(group).transform).matrix * matrix
+    val mat = animator.animate(animation, group, model.getGroup(group).transform) + matrix
 
     model.tree.objects[group].forEach { obj ->
         if (obj == ref) return mat
     }
 
     model.tree.groups[group].forEach {
-        val newMat = getParentRecursiveMatrix(ref, model, it, mat, animator, animation)
+        val newMat = getParentRecursiveGlobalTransform(ref, model, it, mat, animator, animation)
         if (newMat != null) return newMat
     }
-    return null
-}
 
-private fun getRecursiveTransform(ref: IObjectRef, model: IModel): ITransformation? {
-    model.tree.objects[RootGroupRef].forEach { obj ->
-        if (obj == ref) return model.getObject(obj).transformation
-    }
-
-    model.tree.groups[RootGroupRef].forEach {
-        val mat = getRecursiveTransform(ref, model, it, TRSTransformation.IDENTITY)
-        if (mat != null) return mat
-    }
-    return null
-}
-
-private fun getRecursiveTransform(ref: IObjectRef, model: IModel, group: IGroupRef, matrix: TRSTransformation): ITransformation? {
-
-    val mat = model.getGroup(group).transform + matrix
-
-    model.tree.objects[group].forEach { obj ->
-        if (obj == ref) return mat + model.getObject(obj).transformation
-    }
-
-    model.tree.groups[group].forEach {
-        val newMat = getRecursiveTransform(ref, model, it, mat.toTRS())
-        if (newMat != null) return newMat
-    }
     return null
 }
 

@@ -10,10 +10,7 @@ import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.modeler.core.animation.Animation
-import com.cout970.modeler.core.animation.Channel
-import com.cout970.modeler.core.animation.Keyframe
-import com.cout970.modeler.core.animation.ref
+import com.cout970.modeler.core.animation.*
 import com.cout970.modeler.core.export.glTF.*
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
@@ -254,13 +251,6 @@ class GlTFExporter {
                     timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
                     transformValues = buffer(FLOAT, keyframeValues.map { it.scale })
                 }
-        }
-    }
-
-    private fun AnimationTarget.getTransformation(model: IModel): ITransformation {
-        return when (this) {
-            is AnimationTargetGroup -> model.getGroup(ref).transform
-            is AnimationTargetObject -> model.getObject(ref).transformation
         }
     }
 

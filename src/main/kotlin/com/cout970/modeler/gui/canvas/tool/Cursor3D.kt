@@ -1,5 +1,6 @@
 package com.cout970.modeler.gui.canvas.tool
 
+import com.cout970.modeler.api.animation.IAnimation
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.mesh.IMesh
@@ -10,6 +11,7 @@ import com.cout970.modeler.core.model.*
 import com.cout970.modeler.core.model.mesh.MeshFactory
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.canvas.cursor.CursorParameters
+import com.cout970.modeler.render.tool.Animator
 import com.cout970.modeler.render.tool.camera.Camera
 import com.cout970.modeler.util.RenderUtil
 import com.cout970.modeler.util.getClosest
@@ -33,7 +35,7 @@ class Cursor3D {
     var mode: CursorMode = CursorMode.TRANSLATION
     var orientation: CursorOrientation = CursorOrientation.GLOBAL
 
-    var useLinearScalation: Boolean = true
+    var useLinearScale: Boolean = true
     var rotation: IQuaternion = Quaternion.IDENTITY
 
     var scaleBoxIndex = -1
@@ -69,7 +71,7 @@ class Cursor3D {
     fun getParts(): List<CursorPart> = when (mode) {
         CursorMode.TRANSLATION -> translationParts
         CursorMode.ROTATION -> rotationParts
-        CursorMode.SCALE -> if (useLinearScalation) linearScaleParts else scaleParts
+        CursorMode.SCALE -> if (useLinearScale) linearScaleParts else scaleParts
     }
 
     fun update(gui: Gui) {
@@ -81,12 +83,13 @@ class Cursor3D {
         } else {
             visible = true
             val selection = sel.getNonNull()
-            position = model.getSelectionCenter(selection, gui.animator)
-            rotation = getSelectionMatrix(model, selection).toTRS().rotation
+            val animation = model.animationMap[gui.animator.selectedAnimation] ?: gui.animator.animation
+            position = model.getSelectionCenter(selection, gui.animator, animation)
+            rotation = getSelectionMatrix(model, selection, gui.animator, animation).toTRS().rotation
         }
     }
 
-    fun getSelectionMatrix(model: IModel, sel: ISelection): ITransformation {
+    fun getSelectionMatrix(model: IModel, sel: ISelection, animator: Animator, animation: IAnimation): ITransformation {
         if (orientation == CursorOrientation.GLOBAL) {
             return TRSTransformation.IDENTITY
         }
@@ -96,28 +99,28 @@ class Cursor3D {
                 if (sel.size != 1) return TRSTransformation.IDENTITY
                 val obj = sel.objects.first()
 
-                return model.getObject(obj).getGlobalTransform(model)
+                return model.getObject(obj).getGlobalTransform(model, animator, animation)
             }
             SelectionType.FACE -> {
                 val groups = sel.faces.groupBy { it.objectId }
                 if (groups.size != 1) return TRSTransformation.IDENTITY
 
                 val firstRef = groups.entries.first().value.first()
-                return model.getObject(firstRef.toObjectRef()).getGlobalTransform(model)
+                return model.getObject(firstRef.toObjectRef()).getGlobalTransform(model, animator, animation)
             }
             SelectionType.EDGE -> {
                 val groups = sel.edges.groupBy { it.objectId }
                 if (groups.size != 1) return TRSTransformation.IDENTITY
 
                 val firstRef = groups.entries.first().value.first()
-                return model.getObject(firstRef.toObjectRef()).getGlobalTransform(model)
+                return model.getObject(firstRef.toObjectRef()).getGlobalTransform(model, animator, animation)
             }
             SelectionType.VERTEX -> {
                 val groups = sel.pos.groupBy { it.objectId }
                 if (groups.size != 1) return TRSTransformation.IDENTITY
 
                 val firstRef = groups.entries.first().value.first()
-                return model.getObject(firstRef.toObjectRef()).getGlobalTransform(model)
+                return model.getObject(firstRef.toObjectRef()).getGlobalTransform(model, animator, animation)
             }
         }
     }

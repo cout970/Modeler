@@ -33,14 +33,7 @@ class Mesh(
     }
 
     override fun transform(trans: ITransformation): IMesh {
-        val matrix = trans.matrix.toJOML()
-        return Mesh(
-                pos = pos.map {
-                    matrix.transform(Vector4d(it.xd, it.yd, it.zd, 1.0))
-                }.map { vec3Of(it.x, it.y, it.z) },
-                tex = tex,
-                faces = faces
-        )
+        return transform(trans.matrix)
     }
 
     override fun transform(matrix: IMatrix4): IMesh {

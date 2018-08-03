@@ -110,8 +110,8 @@ class ModelRenderer {
         val matrixCache = mutableMapOf<IObjectRef, IMatrix4>()
         // Calculate matrix & animations
 
-        val animation = ctx.gui.programState.animation
         val animator = ctx.gui.animator
+        val animation = model.animationMap[ctx.gui.programState.selectedAnimation] ?: animator.animation
 
         getRecursiveMatrix(matrixCache, model, animator, animation)
 

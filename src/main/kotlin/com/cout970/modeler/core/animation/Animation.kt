@@ -1,6 +1,7 @@
 package com.cout970.modeler.core.animation
 
 import com.cout970.modeler.api.animation.*
+import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.RootGroupRef
 import java.util.*
@@ -109,4 +110,11 @@ object AnimationNone : IAnimation {
     override fun removeChannels(list: List<IChannelRef>): IAnimation = this
 
     override fun plus(other: IAnimation): IAnimation = other
+}
+
+fun AnimationTarget.getTransformation(model: IModel): ITransformation {
+    return when (this) {
+        is AnimationTargetGroup -> model.getGroup(ref).transform
+        is AnimationTargetObject -> model.getObject(ref).transformation
+    }
 }

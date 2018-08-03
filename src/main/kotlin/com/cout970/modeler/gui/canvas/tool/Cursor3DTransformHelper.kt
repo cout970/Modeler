@@ -1,9 +1,18 @@
 package com.cout970.modeler.gui.canvas.tool
 
+import com.cout970.modeler.api.animation.AnimationTarget
+import com.cout970.modeler.api.animation.AnimationTargetGroup
+import com.cout970.modeler.api.animation.AnimationTargetObject
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.`object`.IGroupRef
 import com.cout970.modeler.api.model.selection.ISelection
+import com.cout970.modeler.api.model.selection.SelectionTarget
+import com.cout970.modeler.api.model.selection.SelectionType
+import com.cout970.modeler.core.animation.AnimationRefNone
+import com.cout970.modeler.core.helpers.AnimationHelper
 import com.cout970.modeler.core.helpers.TransformationHelper
 import com.cout970.modeler.core.model.TRSTransformation
+import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.canvas.Canvas
 import com.cout970.modeler.gui.canvas.helpers.CanvasHelper
@@ -52,21 +61,49 @@ class Cursor3DTransformHelper {
         if (newOffset != offset) {
             this.offset = newOffset
 
-            val model = when (hovered.mode) {
-                CursorMode.TRANSLATION -> {
-                    val transform = TRSTransformation(translation = vector * offset)
-                    TransformationHelper.transformLocal(oldModel, selection, gui.animator, transform)
+            val animator = gui.animator
+
+            val model = if (animator.selectedAnimation != AnimationRefNone &&
+                    animator.selectedChannel != null &&
+                    animator.selectedKeyframe != null &&
+                    matchesSelection(selection, gui.state.selectedGroup,
+                            animator.animation.channelMapping[animator.selectedChannel!!])) {
+
+                when (hovered.mode) {
+                    CursorMode.TRANSLATION -> {
+                        val transform = TRSTransformation(translation = vector * offset)
+                        AnimationHelper.transformKeyframe(transform, oldModel, animator)
+                    }
+                    CursorMode.ROTATION -> {
+                        val transform = TRSTransformation.fromRotationPivot(cursor.position, quatOfAxisAngled(vector, offset).toAxisRotations())
+                        AnimationHelper.transformKeyframe(transform, oldModel, animator)
+                    }
+                    CursorMode.SCALE -> {
+                        if (cursor.useLinearScale) {
+                            AnimationHelper.scaleKeyframe(oldModel, animator, vector, offset)
+                        } else {
+                            val transform = TRSTransformation.fromScalePivot(cursor.position, Vector3.ONE + vector * offset)
+                            AnimationHelper.transformKeyframe(transform, oldModel, animator)
+                        }
+                    }
                 }
-                CursorMode.ROTATION -> {
-                    val transform = TRSTransformation.fromRotationPivot(cursor.position, quatOfAxisAngled(vector, offset).toAxisRotations())
-                    TransformationHelper.transformLocal(oldModel, selection, gui.animator, transform)
-                }
-                CursorMode.SCALE -> {
-                    if (cursor.useLinearScalation) {
-                        TransformationHelper.scaleLocal(oldModel, selection, gui.animator, vector, offset)
-                    } else {
-                        val transform = TRSTransformation.fromScalePivot(cursor.position, Vector3.ONE + vector * offset)
-                        TransformationHelper.transformLocal(oldModel, selection, gui.animator, transform)
+            } else {
+                when (hovered.mode) {
+                    CursorMode.TRANSLATION -> {
+                        val transform = TRSTransformation(translation = vector * offset)
+                        TransformationHelper.transformLocal(oldModel, selection, animator, transform)
+                    }
+                    CursorMode.ROTATION -> {
+                        val transform = TRSTransformation.fromRotationPivot(cursor.position, quatOfAxisAngled(vector, offset).toAxisRotations())
+                        TransformationHelper.transformLocal(oldModel, selection, animator, transform)
+                    }
+                    CursorMode.SCALE -> {
+                        if (cursor.useLinearScale) {
+                            TransformationHelper.scaleLocal(oldModel, selection, animator, vector, offset)
+                        } else {
+                            val transform = TRSTransformation.fromScalePivot(cursor.position, Vector3.ONE + vector * offset)
+                            TransformationHelper.transformLocal(oldModel, selection, animator, transform)
+                        }
                     }
                 }
             }
@@ -77,6 +114,23 @@ class Cursor3DTransformHelper {
             this.cache = modelCache
             this.offset = newOffset
             return this.cache!!
+        }
+    }
+
+    fun matchesSelection(selection: ISelection, group: IGroupRef, target: AnimationTarget?): Boolean {
+        target ?: return false
+
+        when (target) {
+            is AnimationTargetObject -> {
+                if (selection.selectionTarget != SelectionTarget.MODEL) return false
+                if (selection.selectionType != SelectionType.OBJECT) return false
+                if (selection.size != 1) return false
+                if (target.ref != selection.objects.first()) return false
+                return true
+            }
+            is AnimationTargetGroup -> {
+                return target.ref == group
+            }
         }
     }
 

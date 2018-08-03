@@ -5,7 +5,6 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.`object`.RootGroupRef
 import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.animation.*
-import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.model.selection.Selection
 import com.cout970.modeler.core.project.IProgramState
@@ -49,6 +48,7 @@ private fun addAnimationChannel(programState: IProgramState): ITask {
     val group = programState.selectedGroup
     val selection = programState.modelSelection
     val anim = programState.animation
+    val model = programState.model
 
     val target = if (group == RootGroupRef) {
         if (selection.isNull()) return TaskNone
@@ -63,8 +63,8 @@ private fun addAnimationChannel(programState: IProgramState): ITask {
             name = "Channel ${lastAnimation++}",
             interpolation = InterpolationMethod.LINEAR,
             keyframes = listOf(
-                    Keyframe(0f, TRSTransformation.IDENTITY),
-                    Keyframe(anim.timeLength, TRSTransformation.IDENTITY)
+                    Keyframe(0f, target.getTransformation(model)),
+                    Keyframe(anim.timeLength, target.getTransformation(model))
             )
     )
     val newAnimation = anim.withChannel(channel).withMapping(channel.ref, target)
@@ -173,6 +173,7 @@ private fun onAnimationPanelClick(comp: Component, animator: Animator, input: II
                         animator.selectedChannel = channel.ref
                         animator.selectedKeyframe = index
                         animator.animationTime = roundTime
+                        it.state.cursor.update(it)
                     }
                 }
             }
@@ -182,6 +183,7 @@ private fun onAnimationPanelClick(comp: Component, animator: Animator, input: II
     return ModifyGui {
         animator.selectedKeyframe = null
         animator.animationTime = roundTime
+        it.state.cursor.update(it)
     }
 }
 
@@ -272,6 +274,7 @@ private fun prevKeyframe(animator: Animator): ITask {
 
     return ModifyGui {
         it.animator.animationTime = prev.time
+        it.state.cursor.update(it)
     }
 }
 
@@ -284,5 +287,6 @@ private fun nextKeyframe(animator: Animator): ITask {
 
     return ModifyGui {
         it.animator.animationTime = next.time
+        it.state.cursor.update(it)
     }
 }

@@ -8,8 +8,6 @@ import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.toTRS
 import com.cout970.modeler.gui.Gui
-import com.cout970.vector.extensions.plus
-import com.cout970.vector.extensions.times
 
 class Animator {
 
@@ -38,6 +36,8 @@ class Animator {
             sendUpdate()
         }
 
+
+    val selectedAnimation: IAnimationRef get() = gui.programState.selectedAnimation
     val animation get() = gui.programState.animation
 
     fun sendUpdate() {
@@ -106,13 +106,12 @@ class Animator {
     companion object {
 
         fun combine(original: ITransformation, animation: ITransformation): TRSTransformation {
-            val old = original.toTRS()
             val new = animation.toTRS()
 
             return TRSTransformation(
-                    translation = old.translation + new.translation,
-                    rotation = old.rotation * new.rotation,
-                    scale = old.scale + new.scale
+                    translation = new.translation,
+                    rotation = new.rotation,
+                    scale = new.scale
             )
         }
 

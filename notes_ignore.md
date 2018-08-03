@@ -22,7 +22,8 @@ Loads of skyboxes "http://www.custommapmakers.org/skyboxes.php"
 - [x] Fix gltf import/export (mostly)
 - [x] Add control panel for all the program flags
 - [x] Add interface to edit texture properties
-- [ ] Upgrade animation panel/keyframe editor
+- [x] Upgrade keyframe editor
+- [ ] Upgrade animation panel
 - [ ] Add support for materials in gltf
 
 # Old TODO list
