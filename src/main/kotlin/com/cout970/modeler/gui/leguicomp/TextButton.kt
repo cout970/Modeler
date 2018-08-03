@@ -2,8 +2,6 @@ package com.cout970.modeler.gui.leguicomp
 
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.util.toColor
-import com.cout970.reactive.dsl.borderless
-import com.cout970.reactive.dsl.rectCorners
 import org.liquidengine.legui.component.Button
 
 /**
@@ -20,10 +18,7 @@ class TextButton(
 
     init {
         textState.textColor = Config.colorPalette.textColor.toColor()
-        hoveredStyle.background.color = color { bright3 }
-        background { buttonColor }
-        rectCorners()
-        borderless()
+        classes("text_button")
     }
 
     fun setTooltip(tooltip: String) {

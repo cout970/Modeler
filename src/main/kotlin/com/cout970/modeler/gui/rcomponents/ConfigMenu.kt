@@ -20,6 +20,7 @@ import com.google.gson.JsonObject
 import org.joml.Vector2f
 import org.joml.Vector4f
 import org.liquidengine.legui.component.Component
+import org.liquidengine.legui.component.ScrollBar
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.event.MouseClickEvent
 import org.liquidengine.legui.style.color.ColorConstants
@@ -80,14 +81,11 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
         +TextButton("", "Apply", 600f, 505f, 90f, 24f).apply {
             if (state.editingConfig == ConfigManager.getConfigAsJson()) {
                 isEnabled = false
-                background { dark2 }
-                onCursorEnter {
-                    isHovered = false
-                }
+                classes("button_disabled")
             } else {
                 onClick {
                     ConfigManager.setConfigFromJson(state.editingConfig)
-
+                    setState { state.copy(editingConfig = ConfigManager.getConfigAsJson()) }
                 }
             }
         }
@@ -100,30 +98,31 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                 posY = 20f
                 width = 660f
                 height = 32f
-                classes("popup_section")
+                classes("popup_section", "popup_section_tabs_back")
+            }
+
+            postMount {
+                floatLeft(1f, 0f)
             }
 
             +TextButton("", "Project", 0f, 0f, 80f, 32f).apply {
-                if (state.tab == Tab.PROJECT) background { grey } else background { dark2 }
-                textState.fontSize = 18f
-                style.border = PixelBorder().apply { enableRight = true }
+                classes("popup_section_tabs")
+                if (state.tab == Tab.PROJECT) classes("popup_section_tabs_selected")
                 onClick { setState { copy(tab = Tab.PROJECT) } }
             }
-            +TextButton("", "Parameters", 80f, 0f, 80f, 32f).apply {
-                if (state.tab == Tab.PARAMETERS) background { grey } else background { dark2 }
-                textState.fontSize = 18f
-                style.border = PixelBorder().apply { enableRight = true }
+            +TextButton("", "Parameters", 0f, 0f, 80f, 32f).apply {
+                classes("popup_section_tabs")
+                if (state.tab == Tab.PARAMETERS) classes("popup_section_tabs_selected")
                 onClick { setState { copy(tab = Tab.PARAMETERS) } }
             }
-            +TextButton("", "Controls", 160f, 0f, 80f, 32f).apply {
-                if (state.tab == Tab.CONTROLS) background { grey } else background { dark2 }
-                textState.fontSize = 18f
-                style.border = PixelBorder().apply { enableRight = true }
+            +TextButton("", "Controls", 0f, 0f, 80f, 32f).apply {
+                classes("popup_section_tabs")
+                if (state.tab == Tab.CONTROLS) classes("popup_section_tabs_selected")
                 onClick { setState { copy(tab = Tab.CONTROLS) } }
             }
-            +TextButton("", "About", 240f, 0f, 80f, 32f).apply {
-                if (state.tab == Tab.ABOUT) background { grey } else background { dark2 }
-                textState.fontSize = 18f
+            +TextButton("", "About", 0f, 0f, 80f, 32f).apply {
+                classes("popup_section_tabs")
+                if (state.tab == Tab.ABOUT) classes("popup_section_tabs_selected")
                 onClick { setState { copy(tab = Tab.ABOUT) } }
             }
         }
@@ -141,7 +140,7 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
 
             val project = props.propertyHolder.projectProperties
 
-            +FixedLabel("Project", 0f, 4f, 660f, 24f).apply {
+            +FixedLabel("Project Info", 0f, 4f, 660f, 24f).apply {
                 textState.fontSize = 22f
             }
 
@@ -151,9 +150,8 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                 textState.horizontalAlign = HorizontalAlign.LEFT
             }
 
-            +FixedLabel(project.owner.name, 160f, 30f, 480f).apply {
+            +FixedLabel(project.owner.name, 160f, 30f, 480f, 24f).apply {
                 background { dark3 }
-                paddingRight(10f)
                 textState.fontSize = 20f
                 textState.textColor = ColorConstants.lightBlue()
                 textState.horizontalAlign = HorizontalAlign.RIGHT
@@ -214,7 +212,7 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
 
             val user = Config.user
 
-            +FixedLabel("User", 0f, 4f, 660f, 24f).apply {
+            +FixedLabel("User Info", 0f, 4f, 660f, 24f).apply {
                 textState.fontSize = 22f
             }
 
@@ -302,10 +300,11 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
 
             verticalScroll {
                 style {
+                    // add this if the amount of properties is enough to need scroll
                     //                                        if (properties.size * 30f + 10f > 430f) {
-                    visibleAmount = 50f
+//                    visibleAmount = 50f
 //                    } else {
-//                        hide()
+                    hide()
 //                    }
                 }
             }
@@ -364,15 +363,30 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                 posY = 60f
                 sizeX = 660f
                 sizeY = 430f
-                classes("popup_section")
+                classes("popup_section", "popup_scroll_panel")
             }
 
             horizontalScroll { style { hide() } }
 
             verticalScroll {
                 style {
-                    visibleAmount = 10f
-                    classes("popup_section")
+                    style.minWidth = 16f
+                    visibleAmount = 50f
+                    style.top = 0f
+                    style.bottom = 0f
+                    classes("popup_scroll_panel_scroll")
+                }
+
+                postMount {
+                    (this as ScrollBar).scrollColor = ColorConstants.gray()
+                }
+            }
+
+            viewport {
+                style {
+                    style.right = 18f
+                    style.bottom = 0f
+                    classes("popup_scroll_panel_viewport")
                 }
             }
 
@@ -382,9 +396,9 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                 val keybinds = getKeyBinds()
 
                 style {
-                    classes("popup_section")
-                    width = 650f
+                    width = 639f
                     height = mouseKeybinds.size * 30f + keybinds.size * 30f + 10f
+                    classes("popup_scroll_panel_container")
                 }
 
                 mouseKeybinds.sortedBy { it.first }.forEachIndexed { index, (name, tooltip, prop) ->
@@ -673,10 +687,8 @@ class MouseButtonInput : RComponent<MouseButtonInputProps, MouseButtonInput.Stat
 
         comp(TextButton("", text, 0f, 0f, 150f, 24f)) {
             style {
-                background { grey }
-                horizontalAlign = HorizontalAlign.LEFT
-                fontSize = 20f
                 paddingLeft(5f)
+                classes("popup_parameter_item_value_button")
             }
 
             postMount {
@@ -748,7 +760,7 @@ class KeyboardKeyInput : RComponent<KeyboardKeyInputProps, KeyboardKeyInput.Stat
 
         comp(StringInput("", text, 0f, 0f, 150f, 24f)) {
             style {
-                background { grey }
+                classes("popup_parameter_item_value_button")
             }
 
             postMount {

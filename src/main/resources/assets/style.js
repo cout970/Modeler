@@ -241,14 +241,37 @@ var exported = {
         borderRadius: "5"
     },
     popup_parameter_item: {
-        backgroundColor: "#797979",
+        backgroundColor: "#333333",
         borderStyle: "none"
     },
     popup_parameter_item_value: {
-        backgroundColor: "#797979",
-        borderStyle: "solid",
-        borderWidth: "1",
-        borderColor: "#a0a0a0"
+        borderStyle: "none",
+    },
+    popup_parameter_item_value_button: {
+        backgroundColor: "#545454",
+        borderRadius: "2",
+        textAlign: "left",
+        textSize: "20"
+    },
+    popup_scroll_panel_scroll: {
+        backgroundColor: transparent,
+        borderRadius: "5",
+        borderStyle: "none"
+    },
+    popup_scroll_panel: {
+        backgroundColor: transparent,
+        borderRadius: "0",
+        borderStyle: "none"
+    },
+    popup_scroll_panel_viewport: {
+        backgroundColor: "#404040",
+        borderRadius: "0",
+        borderStyle: "none"
+    },
+    popup_scroll_panel_container: {
+        backgroundColor: "#404040",
+        borderRadius: "0",
+        borderStyle: "none"
     },
     notification_panel: {
         backgroundColor: transparent
@@ -321,6 +344,35 @@ var exported = {
     },
     popup_export_type_selected: {
         backgroundColor: "#656565"
+    },
+    text_button: {
+        backgroundColor: "#565656",
+        borderRadius: "0",
+        borderStyle: "none"
+    },
+    "text_button:hover": {
+        backgroundColor: "#787878"
+    },
+    button_disabled: {
+        backgroundColor: "#232323"
+    },
+    "button_disabled:hover": {
+        backgroundColor: "#232323"
+    },
+    "button_disabled:focus": {
+        backgroundColor: "#232323"
+    },
+    "button_disabled:pressed": {
+        backgroundColor: "#232323"
+    },
+    popup_section_tabs: {
+        backgroundColor: "#4b4b4b",
+    },
+    popup_section_tabs_selected: {
+        backgroundColor: "#848484"
+    },
+    popup_section_tabs_back: {
+        backgroundColor: transparent
     }
 };
 
