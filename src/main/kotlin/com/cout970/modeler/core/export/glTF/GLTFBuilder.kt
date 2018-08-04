@@ -1,5 +1,6 @@
 package com.cout970.modeler.core.export.glTF
 
+import com.cout970.glutilities.texture.Texture
 import com.cout970.matrix.api.IMatrix2
 import com.cout970.matrix.api.IMatrix3
 import com.cout970.matrix.api.IMatrix4
@@ -9,6 +10,7 @@ import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.api.IVector4
 import com.cout970.vector.extensions.Vector3
+import com.cout970.vector.extensions.Vector4
 import com.cout970.vector.extensions.vec3Of
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -107,6 +109,10 @@ class GLTFBuilder {
 
     private val scenes = mutableListOf<Scene>()
     private val bakedMaterials = mutableListOf<GltfMaterial>()
+    private val materialsMap = mutableMapOf<UUID, Int>()
+    private val bakedImages = mutableListOf<GltfImage>()
+    private val bakedSamplers = mutableListOf<GltfSampler>()
+    private val bakedTextures = mutableListOf<GltfTexture>()
     private val bakedNodes = mutableListOf<GltfNode>()
     private val nodeIdToIndex = mutableMapOf<UUID, Int>()
     private val bakedMeshes = mutableListOf<GltfMesh>()
@@ -140,7 +146,10 @@ class GLTFBuilder {
                 scenes = scenes,
                 buffers = listOf(GltfBuffer(uri = bufferName, byteLength = binary.size)),
                 materials = bakedMaterials,
-                animations = animations
+                animations = animations,
+                images = bakedImages,
+                textures = bakedTextures,
+                samplers = bakedSamplers
         ) to binary
     }
 
@@ -329,13 +338,7 @@ class GLTFBuilder {
     }
 
     fun Primitive.build(): GltfPrimitive {
-
-        val mat = material?.build()
-        var matIndex: Int? = null
-        if (mat != null) {
-            matIndex = bakedMaterials.size
-            bakedMaterials.add(mat)
-        }
+        val matIndex: Int? = material?.build()
 
         return GltfPrimitive(
                 attributes = attributes.mapValues { it.value.build() },
@@ -350,17 +353,27 @@ class GLTFBuilder {
         material = Material().apply(func)
     }
 
-    fun Material.build(): GltfMaterial {
-        return GltfMaterial(
-                pbrMetallicRoughness = pbrMetallicRoughness,
+    fun Material.build(): Int {
+
+        require(id != null) { "Material doesn't have ID" }
+
+        if (id in materialsMap) {
+            return materialsMap[id]!!
+        }
+
+        materialsMap[id!!] = bakedMaterials.size
+        bakedMaterials.add(GltfMaterial(
+                pbrMetallicRoughness = pbrMetallicRoughness?.build(),
                 normalTexture = normalTexture,
                 occlusionTexture = occlusionTexture,
                 emissiveTexture = emissiveTexture,
                 emissiveFactor = emissiveFactor,
-                alphaMode = alphaMode,
-                alphaCutoff = alphaCutoff,
+                alphaMode = alphaMode ?: GltfAlphaMode.MASK,
+                alphaCutoff = alphaCutoff ?: 0.5,
                 doubleSided = doubleSided
-        )
+        ))
+
+        return bakedMaterials.size - 1
     }
 
     data class UnpackedBuffer(
@@ -502,15 +515,86 @@ class GLTFBuilder {
     }
 
     data class Material(
-            var pbrMetallicRoughness: GltfPbrMetallicRoughness? = null,
+            var id: UUID? = null,
+            var pbrMetallicRoughness: PbrMetallicRoughness? = null,
             var normalTexture: GltfNormalTextureInfo? = null,
             var occlusionTexture: GltfOcclusionTextureInfo? = null,
             var emissiveTexture: GltfTextureInfo? = null,
-            var emissiveFactor: IVector3 = Vector3.ZERO,
-            var alphaMode: GltfAlphaMode = GltfAlphaMode.OPAQUE,
-            var alphaCutoff: Double = 0.5,
+            var emissiveFactor: IVector3? = null,
+            var alphaMode: GltfAlphaMode? = null,
+            var alphaCutoff: Double? = null,
             var doubleSided: Boolean = false
     )
+
+    data class PbrMetallicRoughness(
+            var baseColorFactor: IVector4? = null,
+            var baseColorTexture: TextureInfo? = null,
+            var metallicFactor: Double? = null,
+            var roughnessFactor: Double? = null,
+            var metallicRoughnessTexture: TextureInfo? = null
+    )
+
+    data class TextureInfo(
+            var image: Image? = null,
+            var texCoord: Int = 0
+    )
+
+    data class Image(
+            var uri: String? = null,
+            var mimeType: String? = null,
+            var name: String? = null
+    )
+
+    fun Material.pbrMetallicRoughness(func: PbrMetallicRoughness.() -> Unit) {
+        val data = PbrMetallicRoughness()
+        func(data)
+        pbrMetallicRoughness = data
+    }
+
+    fun PbrMetallicRoughness.baseColor(func: Image.() -> Unit) {
+        baseColorTexture = TextureInfo(Image().apply(func))
+    }
+
+    fun PbrMetallicRoughness.build(): GltfPbrMetallicRoughness {
+        return GltfPbrMetallicRoughness(
+                baseColorFactor = baseColorFactor ?: Vector4.ONE,
+                baseColorTexture = baseColorTexture?.build(),
+                metallicFactor = metallicFactor ?: 1.0,
+                roughnessFactor = roughnessFactor ?: 1.0,
+                metallicRoughnessTexture = metallicRoughnessTexture?.build()
+        )
+    }
+
+    fun TextureInfo.build(): GltfTextureInfo {
+        return GltfTextureInfo(
+                index = image!!.build(),
+                texCoord = texCoord
+        )
+    }
+
+    fun Image.build(): Int {
+        if (bakedSamplers.isEmpty()) {
+            bakedSamplers.add(GltfSampler(
+                    magFilter = Texture.PIXELATED,
+                    minFilter = Texture.PIXELATED,
+                    wrapS = Texture.REPEAT,
+                    wrapT = Texture.REPEAT,
+                    name = "pixelated"
+            ))
+        }
+
+        bakedImages.add(GltfImage(
+                uri = uri
+        ))
+
+        bakedTextures.add(GltfTexture(
+                sampler = 0,
+                source = bakedImages.size - 1,
+                name = name
+        ))
+
+        return bakedTextures.size - 1
+    }
 
     fun animation(func: Animation.() -> Unit) {
         val anim = Animation()

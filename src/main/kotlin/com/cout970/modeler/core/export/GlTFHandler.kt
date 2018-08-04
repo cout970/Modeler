@@ -14,9 +14,13 @@ import com.cout970.modeler.core.animation.*
 import com.cout970.modeler.core.export.glTF.*
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
+import com.cout970.modeler.core.log.print
 import com.cout970.modeler.core.model.*
 import com.cout970.modeler.core.model.`object`.Object
 import com.cout970.modeler.core.model.`object`.ObjectNone
+import com.cout970.modeler.core.model.material.ColoredMaterial
+import com.cout970.modeler.core.model.material.MaterialRefNone
+import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.resource.ResourcePath
@@ -30,9 +34,11 @@ import com.cout970.vector.api.IVector3
 import com.cout970.vector.api.IVector4
 import com.cout970.vector.extensions.*
 import com.google.gson.*
+import org.apache.commons.io.FilenameUtils
 import org.joml.Quaterniond
 import org.joml.Vector3d
 import java.io.File
+import java.io.IOException
 import java.lang.reflect.Type
 import java.util.*
 
@@ -130,202 +136,267 @@ private object BufferViewSerializer : JsonSerializer<GltfBufferView> {
 class GlTFExporter {
 
     fun export(file: File, _model: IModel) {
-        val (model, buffer) = _model.toGlTF(file.nameWithoutExtension)
+        val (model, buffer, images) = ModelToGltf(_model, file.nameWithoutExtension).build()
         File(file.parent, model.buffers[0].uri).writeBytes(buffer)
         file.writeBytes(GSON.toJson(model).toByteArray())
+
+        images.forEach { (name, path) ->
+            try {
+                File(name).writeBytes(path.inputStream().readBytes())
+            } catch (e: IOException) {
+                e.print()
+            }
+        }
     }
 
-    fun IModel.toGlTF(buffer: String) = glftModel {
-        bufferName = "$buffer.bin"
+    @Suppress("ArrayInDataClass")
+    data class GltfModel(val file: GltfFile, val buffer: ByteArray, val images: List<Pair<String, ResourcePath>>)
+
+    class ModelToGltf(val model: IModel, val prefix: String) {
 
         val targetToNode = mutableMapOf<AnimationTarget, UUID>()
+        val pathToImg = mutableMapOf<String, ResourcePath>()
+        val definedMaterials = mutableSetOf<IMaterialRef>()
 
-        scene {
+        fun build(): GltfModel {
+
+            val (model, buffer) = glftModel {
+                bufferName = "$prefix.bin"
+
+                scene {
+
+                    node {
+                        name = "root"
+
+                        val tree = model.tree.toMutable()
+                        targetToNode += AnimationTargetGroup(tree.group) to id
+
+                        tree.children.forEach {
+                            addSceneTree(this, it)
+                        }
+
+                        tree.objects.map { model.getObject(it) }
+                                .forEach { addObject(this, it) }
+                    }
+                }
+
+                model.animationMap.values.forEach { anim ->
+                    animation {
+                        name = anim.name
+                        addAnimation(this, anim)
+                    }
+                }
+            }
+
+            return GltfModel(model, buffer, pathToImg.toList())
+        }
+
+        fun GLTFBuilder.addSceneTree(builder: GLTFBuilder.Node, tree: MutableGroupTree): Unit = builder.run {
 
             node {
-                name = "root"
+                val group = model.getGroup(tree.group)
+                name = group.name
 
-                val tree = tree.toMutable()
+                val transform = group.transform.toTRS()
+                if (transform.matrix != Matrix4.IDENTITY) {
+                    transformation = GLTFBuilder.Transformation.TRS(
+                            transform.translation * 0.0625f,
+                            transform.rotation,
+                            transform.scale
+                    )
+                }
+
                 targetToNode += AnimationTargetGroup(tree.group) to id
 
                 tree.children.forEach {
-                    addSceneTree(this, this@toGlTF, it, targetToNode)
+                    addSceneTree(this, it)
                 }
 
-                tree.objects.map { getObject(it) }.forEach { addObject(this, it, targetToNode) }
+                tree.objects.map { model.getObject(it) }.forEach { addObject(this, it) }
             }
         }
 
-        animationMap.values.forEach { anim ->
-            animation {
-                name = anim.name
-                addAnimation(this@toGlTF, this, anim, targetToNode)
-            }
-        }
-    }
+        fun GLTFBuilder.addObject(parent: GLTFBuilder.Node, it: IObject) = parent.run {
+            node {
+                name = it.name
 
-    fun GLTFBuilder.addSceneTree(
-            builder: GLTFBuilder.Node,
-            model: IModel,
-            tree: MutableGroupTree,
-            targetToNode: MutableMap<AnimationTarget, UUID>
-    ): Unit = builder.run {
-
-        node {
-            val group = model.getGroup(tree.group)
-            name = group.name
-
-            val transform = group.transform.toTRS()
-            if (transform.matrix != Matrix4.IDENTITY) {
-                transformation = GLTFBuilder.Transformation.TRS(
-                        transform.translation * 0.0625f,
-                        transform.rotation,
-                        transform.scale
-                )
-            }
-
-            targetToNode += AnimationTargetGroup(tree.group) to id
-
-            tree.children.forEach {
-                addSceneTree(this, model, it, targetToNode)
-            }
-
-            tree.objects.map { model.getObject(it) }.forEach { addObject(this, it, targetToNode) }
-        }
-    }
-
-    fun GLTFBuilder.addObject(parent: GLTFBuilder.Node, it: IObject, targetToNode: MutableMap<AnimationTarget, UUID>) = parent.run {
-        node {
-            name = it.name
-
-            val objTransform = it.transformation.toTRS()
-            if (objTransform.matrix != Matrix4.IDENTITY) {
-                transformation = GLTFBuilder.Transformation.TRS(
-                        objTransform.translation * 0.0625f,
-                        objTransform.rotation,
-                        objTransform.scale
-                )
-            }
-
-            targetToNode += AnimationTargetObject(it.ref) to id
-            addMesh(this, it)
-        }
-    }
-
-    fun GLTFBuilder.addAnimation(model: IModel, builder: GLTFBuilder.Animation, anim: IAnimation, groupToNode: Map<AnimationTarget, UUID>) = builder.apply {
-        anim.channels.values.map { chan ->
-            val target = anim.channelMapping[chan.ref] ?: return@map
-            val groupNode = groupToNode[target] ?: return@map
-
-            val useTranslation = chan.usesTranslation()
-            val useRotation = chan.usesRotation()
-            val useScale = chan.usesScale()
-
-            if (!useTranslation && !useRotation && !useScale) return@map
-
-            val keyframeValues = chan.keyframes.map {
-                Animator.combine(target.getTransformation(model), it.value)
-            }
-
-            if (useTranslation)
-                channel {
-                    node = groupNode
-                    transformType = TRANSLATION
-                    timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
-                    transformValues = buffer(FLOAT, keyframeValues.map { it.translation * 0.0625 })
+                val objTransform = it.transformation.toTRS()
+                if (objTransform.matrix != Matrix4.IDENTITY) {
+                    transformation = GLTFBuilder.Transformation.TRS(
+                            objTransform.translation * 0.0625f,
+                            objTransform.rotation,
+                            objTransform.scale
+                    )
                 }
 
-
-            if (useRotation)
-                channel {
-                    node = groupNode
-                    transformType = ROTATION
-                    timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
-                    transformValues = buffer(FLOAT, keyframeValues.map { it.rotation.toVector4() })
-                }
-
-            if (useScale)
-                channel {
-                    node = groupNode
-                    transformType = SCALE
-                    timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
-                    transformValues = buffer(FLOAT, keyframeValues.map { it.scale })
-                }
+                targetToNode += AnimationTargetObject(it.ref) to id
+                addMesh(this, it)
+            }
         }
-    }
 
-    fun GLTFBuilder.addMesh(node: GLTFBuilder.Node, obj: IObject) = node.apply {
-        if (obj == ObjectNone) return@apply
-        mesh {
-            name = obj.name
+        fun GLTFBuilder.addAnimation(builder: GLTFBuilder.Animation, anim: IAnimation) = builder.apply {
+            anim.channels.values.map { chan ->
+                val target = anim.channelMapping[chan.ref] ?: return@map
+                val groupNode = targetToNode[target] ?: return@map
 
-            primitive {
+                val useTranslation = chan.usesTranslation()
+                val useRotation = chan.usesRotation()
+                val useScale = chan.usesScale()
 
-                val pos = obj.mesh.pos
-                val tex = obj.mesh.tex
-                val scale = 1f / 16f
+                if (!useTranslation && !useRotation && !useScale) return@map
 
-                val vertexPos = obj.mesh.faces.flatMap { face ->
-                    when (face.vertexCount) {
-                        3 -> listOf(
-                                pos[face.pos[0]] * scale,
-                                pos[face.pos[1]] * scale,
-                                pos[face.pos[2]] * scale
-                        )
-                        4 -> listOf(
-                                pos[face.pos[0]] * scale,
-                                pos[face.pos[1]] * scale,
-                                pos[face.pos[2]] * scale,
+                val keyframeValues = chan.keyframes.map {
+                    Animator.combine(target.getTransformation(model), it.value)
+                }
 
-                                pos[face.pos[0]] * scale,
-                                pos[face.pos[2]] * scale,
-                                pos[face.pos[3]] * scale
-                        )
-                        else -> error("Invalid vertexCount: ${face.vertexCount}")
+                if (useTranslation)
+                    channel {
+                        node = groupNode
+                        transformType = TRANSLATION
+                        timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
+                        transformValues = buffer(FLOAT, keyframeValues.map { it.translation * 0.0625 })
+                    }
+
+
+                if (useRotation)
+                    channel {
+                        node = groupNode
+                        transformType = ROTATION
+                        timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
+                        transformValues = buffer(FLOAT, keyframeValues.map { it.rotation.toVector4() })
+                    }
+
+                if (useScale)
+                    channel {
+                        node = groupNode
+                        transformType = SCALE
+                        timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
+                        transformValues = buffer(FLOAT, keyframeValues.map { it.scale })
+                    }
+            }
+        }
+
+        fun GLTFBuilder.addMesh(node: GLTFBuilder.Node, obj: IObject) = node.apply {
+            if (obj == ObjectNone) return@apply
+            mesh {
+                name = obj.name
+
+                primitive {
+
+                    val pos = obj.mesh.pos
+                    val tex = obj.mesh.tex
+                    val scale = 1f / 16f
+
+                    val vertexPos = obj.mesh.faces.flatMap { face ->
+                        when (face.vertexCount) {
+                            3 -> listOf(
+                                    pos[face.pos[0]] * scale,
+                                    pos[face.pos[1]] * scale,
+                                    pos[face.pos[2]] * scale
+                            )
+                            4 -> listOf(
+                                    pos[face.pos[0]] * scale,
+                                    pos[face.pos[1]] * scale,
+                                    pos[face.pos[2]] * scale,
+
+                                    pos[face.pos[0]] * scale,
+                                    pos[face.pos[2]] * scale,
+                                    pos[face.pos[3]] * scale
+                            )
+                            else -> error("Invalid vertexCount: ${face.vertexCount}")
+                        }
+                    }
+                    val vertexTex = obj.mesh.faces.flatMap { face ->
+                        when (face.vertexCount) {
+                            3 -> listOf(
+                                    tex[face.tex[0]],
+                                    tex[face.tex[1]],
+                                    tex[face.tex[2]]
+                            )
+                            4 -> listOf(
+                                    tex[face.tex[0]],
+                                    tex[face.tex[1]],
+                                    tex[face.tex[2]],
+
+                                    tex[face.tex[0]],
+                                    tex[face.tex[2]],
+                                    tex[face.tex[3]]
+                            )
+                            else -> error("Invalid vertexCount: ${face.vertexCount}")
+                        }
+                    }
+
+                    if (vertexPos.isEmpty()) {
+                        log(Level.WARNING) { "Exporting primitive with empty mesh" }
+                    }
+                    attributes[POSITION] = buffer(FLOAT, vertexPos)
+                    attributes[TEXCOORD_0] = buffer(FLOAT, vertexTex)
+
+                    if (obj.material != MaterialRefNone) {
+                        addMaterial(this, obj)
                     }
                 }
-                val vertexTex = obj.mesh.faces.flatMap { face ->
-                    when (face.vertexCount) {
-                        3 -> listOf(
-                                tex[face.tex[0]],
-                                tex[face.tex[1]],
-                                tex[face.tex[2]]
-                        )
-                        4 -> listOf(
-                                tex[face.tex[0]],
-                                tex[face.tex[1]],
-                                tex[face.tex[2]],
+            }
+        }
 
-                                tex[face.tex[0]],
-                                tex[face.tex[2]],
-                                tex[face.tex[3]]
-                        )
-                        else -> error("Invalid vertexCount: ${face.vertexCount}")
+        fun GLTFBuilder.addMaterial(builder: GLTFBuilder.Primitive, obj: IObject) = builder.apply {
+            val material = model.getMaterial(obj.material)
+
+            when (material) {
+                is TexturedMaterial -> {
+                    material {
+                        id = material.ref.materialId
+
+                        if (material.ref !in definedMaterials) {
+                            definedMaterials += material.ref
+
+                            pbrMetallicRoughness {
+                                baseColor {
+                                    val name = "${prefix}_${FilenameUtils.getName(material.path.uri.toURL().path)}"
+                                    var count = 1
+                                    var finalName = name
+                                    while (finalName in pathToImg) { // || File(folder, finalName).exists()) {
+                                        finalName = "${name}_$count"
+                                        count++
+                                    }
+                                    pathToImg[finalName] = material.path
+                                    uri = name
+                                }
+                            }
+                        }
                     }
                 }
 
-                if (vertexPos.isEmpty()) {
-                    log(Level.WARNING) { "Exporting primitive with empty mesh" }
+                is ColoredMaterial -> {
+                    material {
+                        id = material.ref.materialId
+
+                        if (material.ref !in definedMaterials) {
+                            definedMaterials += material.ref
+
+                            pbrMetallicRoughness {
+                                baseColorFactor = material.color.toVector4(1.0)
+                            }
+                        }
+                    }
                 }
-                attributes[POSITION] = buffer(FLOAT, vertexPos)
-                attributes[TEXCOORD_0] = buffer(FLOAT, vertexTex)
             }
         }
-    }
 
-    fun IChannel.usesTranslation() = keyframes.any {
-        it.value.toTRS().translation != Vector3.ZERO
-    }
+        fun IChannel.usesTranslation() = keyframes.any {
+            it.value.toTRS().translation != Vector3.ZERO
+        }
 
-    fun IChannel.usesRotation() = keyframes.any {
-        it.value.toTRS().rotation != Quaternion.IDENTITY
-    }
+        fun IChannel.usesRotation() = keyframes.any {
+            it.value.toTRS().rotation != Quaternion.IDENTITY
+        }
 
-    fun IChannel.usesScale() = keyframes.any {
-        it.value.toTRS().scale != Vector3.ONE
-    }
+        fun IChannel.usesScale() = keyframes.any {
+            it.value.toTRS().scale != Vector3.ONE
+        }
 
-    fun IQuaternion.toVector4() = vec4Of(x, y, z, w)
+        fun IQuaternion.toVector4() = vec4Of(x, y, z, w)
+    }
 }
 
 class GlTFImporter {
