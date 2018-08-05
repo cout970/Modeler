@@ -41,18 +41,15 @@ interface IModel : Comparable<IModel> {
     }
 
     fun addMaterial(material: IMaterial): IModel
-    // TODO
-    fun modifyMaterial(ref: IMaterialRef, new: IMaterial): IModel
+    fun modifyMaterial(new: IMaterial): IModel
     fun removeMaterial(materialRef: IMaterialRef): IModel
 
     fun addGroup(group: IGroup): IModel
-    // TODO
-    fun modifyGroup(ref: IGroupRef, group: IGroup): IModel
+    fun modifyGroup(group: IGroup): IModel
     fun removeGroup(ref: IGroupRef): IModel
 
     fun addAnimation(animation: IAnimation): IModel
-    // TODO
-    fun modifyAnimation(ref: IAnimationRef, new: IAnimation): IModel
+    fun modifyAnimation(new: IAnimation): IModel
     fun removeAnimation(animationRef: IAnimationRef): IModel
 
     fun withGroupTree(newGroupTree: ImmutableGroupTree): IModel

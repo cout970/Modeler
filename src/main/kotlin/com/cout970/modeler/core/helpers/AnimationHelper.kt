@@ -6,7 +6,6 @@ import com.cout970.modeler.api.animation.IChannelRef
 import com.cout970.modeler.api.animation.IKeyframe
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.core.animation.AnimationNone
-import com.cout970.modeler.core.animation.ref
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.getParentGlobalTransform
 import com.cout970.modeler.core.model.toTRS
@@ -33,15 +32,14 @@ object AnimationHelper {
         val newChannel = channel.withKeyframes(newKeyframes)
         val newAnimation = animation.withChannel(newChannel)
 
-        return model.modifyAnimation(newAnimation.ref, newAnimation)
+        return model.modifyAnimation(newAnimation)
     }
 
     fun transformKeyframe(diff: TRSTransformation, model: IModel, animator: Animator): IModel {
-        return model.modifyAnimation(animator.selectedAnimation, transformAnimationKeyframe(diff, animator))
+        return model.modifyAnimation(transformAnimationKeyframe(diff, animator))
     }
 
     fun transformAnimationKeyframe(diff: TRSTransformation, animator: Animator): IAnimation {
-
         return editKeyframe(animator.animation, animator.selectedChannel!!, animator.selectedKeyframe!!) { keyframe ->
             keyframe.withValue(keyframe.value + diff)
         }
@@ -86,6 +84,6 @@ object AnimationHelper {
             keyframe.withValue(keyframeTransform)
         }
 
-        return oldModel.modifyAnimation(animator.selectedAnimation, anim)
+        return oldModel.modifyAnimation(anim)
     }
 }

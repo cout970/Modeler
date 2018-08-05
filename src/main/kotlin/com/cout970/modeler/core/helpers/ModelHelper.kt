@@ -12,6 +12,6 @@ object ModelHelper {
 
     fun setGroupVisible(model: IModel, ref: IGroupRef, visible: Boolean): IModel {
         val newGroup = model.getGroup(ref).withVisibility(visible)
-        return model.modifyGroup(ref, newGroup)
+        return model.modifyGroup(newGroup)
     }
 }

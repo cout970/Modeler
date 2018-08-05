@@ -4,7 +4,6 @@ import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.animation.AnimationNone
 import com.cout970.modeler.core.animation.Keyframe
-import com.cout970.modeler.core.animation.ref
 import com.cout970.modeler.core.helpers.AnimationHelper
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.render.tool.Animator
@@ -32,7 +31,7 @@ private fun changeKeyframe(comp: Component, animator: Animator, model: IModel): 
     val newChannel = channel.withKeyframes(prev + newKeyframe + next)
     val newAnimation = animator.animation.withChannel(newChannel)
 
-    return TaskUpdateModel(model, model.modifyAnimation(newAnimation.ref, newAnimation))
+    return TaskUpdateModel(model, model.modifyAnimation(newAnimation))
 }
 
 @UseCase("animation.add.keyframe")
@@ -55,7 +54,7 @@ private fun addKeyframe(animator: Animator, model: IModel): ITask {
     val newAnimation = animator.animation.withChannel(newChannel)
 
     return TaskChain(listOf(
-            TaskUpdateModel(model, model.modifyAnimation(newAnimation.ref, newAnimation)),
+            TaskUpdateModel(model, model.modifyAnimation(newAnimation)),
             ModifyGui { animator.selectedKeyframe = newList.indexOf(keyframe) }
     ))
 }
@@ -75,7 +74,7 @@ private fun removeKeyframe(animator: Animator, model: IModel): ITask {
 
     return TaskChain(listOf(
             ModifyGui { it.animator.selectedKeyframe = null },
-            TaskUpdateModel(model, model.modifyAnimation(newAnimation.ref, newAnimation))
+            TaskUpdateModel(model, model.modifyAnimation(newAnimation))
     ))
 }
 

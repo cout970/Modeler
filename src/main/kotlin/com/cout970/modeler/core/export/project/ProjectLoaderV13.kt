@@ -21,7 +21,6 @@ import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
-import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.model.selection.ObjectRefNone
 import com.cout970.modeler.core.project.ProjectProperties
 import com.cout970.modeler.core.resource.ResourcePath
@@ -122,7 +121,7 @@ object ProjectLoaderV13 {
                 val name = FilenameUtils.getName(mat.path.uri.toURL().path)
                 val newPath = File(path).toResourcePath().enterZip("textures/$name")
 
-                acc.modifyMaterial(mat.ref, mat.copy(path = newPath))
+                acc.modifyMaterial(mat.copy(path = newPath))
             }
 
             it.putNextEntry(ZipEntry("model.json"))

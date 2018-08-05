@@ -123,12 +123,13 @@ data class Model(
         return copy(materialMap = materialMap + (material.ref to material))
     }
 
-    override fun modifyMaterial(ref: IMaterialRef, new: IMaterial): IModel {
+    override fun modifyMaterial(new: IMaterial): IModel {
+        require(new.ref in materialMap)
         return copy(
                 objectMap = objectMap.mapValues { (_, obj) ->
-                    if (obj.material == ref) obj.withMaterial(new.ref) else obj
+                    if (obj.material == new.ref) obj.withMaterial(new.ref) else obj
                 },
-                materialMap = materialMap.toMutableMap().apply { remove(ref); put(new.ref, new) }
+                materialMap = materialMap.toMutableMap().apply { put(new.ref, new) }
         )
     }
 
@@ -150,8 +151,8 @@ data class Model(
         return copy(groupMap = groupMap + (group.ref to group)).updateTree()
     }
 
-    override fun modifyGroup(ref: IGroupRef, group: IGroup): IModel {
-        require(ref == group.ref)
+    override fun modifyGroup(group: IGroup): IModel {
+        require(group.ref in groupMap)
         return copy(groupMap = groupMap + (group.ref to group)).updateTree()
     }
 
@@ -172,8 +173,8 @@ data class Model(
         return copy(animationMap = animationMap + (animation.ref to animation))
     }
 
-    override fun modifyAnimation(ref: IAnimationRef, new: IAnimation): IModel {
-        require(ref == new.ref)
+    override fun modifyAnimation(new: IAnimation): IModel {
+        require(new.ref in animationMap)
         return copy(animationMap = animationMap + (new.ref to new))
     }
 

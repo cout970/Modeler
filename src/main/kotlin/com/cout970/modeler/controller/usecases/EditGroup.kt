@@ -20,5 +20,5 @@ private fun changeGroup(comp: Component, access: IProgramState): ITask {
 
     if (group.transform == newGroup.transform) return TaskNone
 
-    return TaskUpdateModel(model, model.modifyGroup(ref, newGroup))
+    return TaskUpdateModel(model, model.modifyGroup(newGroup))
 }

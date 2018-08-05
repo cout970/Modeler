@@ -3,6 +3,7 @@ package com.cout970.modeler.controller.usecases
 import com.cout970.modeler.api.model.`object`.RootGroupRef
 import com.cout970.modeler.api.model.selection.*
 import com.cout970.modeler.controller.tasks.*
+import com.cout970.modeler.core.helpers.invert
 import com.cout970.modeler.core.model.`object`.Object
 import com.cout970.modeler.core.model.faces
 import com.cout970.modeler.core.model.getSelectedObjects
@@ -57,7 +58,7 @@ private fun changeGroupName(component: Component, programState: IProgramState): 
             .getOrNull() ?: return TaskNone
 
     val group = model.getGroup(groupRef)
-    val newModel = model.modifyGroup(groupRef, group = group.withName(name))
+    val newModel = model.modifyGroup(group.withName(name))
 
     return TaskUpdateModel(newModel = newModel, oldModel = model)
 }
@@ -71,12 +72,19 @@ private fun joinObjects(programState: IProgramState): ITask {
     val model = programState.model
     val objs = model.getSelectedObjects(selection)
     val objsRefs = selection.objects
+
+    val baseObj = objs.first()
+
+    val objMeshes = objs.map { obj ->
+        obj.mesh.transform(obj.transformation).transform(baseObj.transformation.invert())
+    }
+    val mesh = objMeshes.reduce { acc, mesh -> acc.merge(mesh) }
+
     val newObj = Object(
             name = objs.first().name,
-            // TODO get relative transformation between this and the other objects so the meshes are in the same coordinate system
-            mesh = objs.map { it.mesh }.reduce { acc, mesh -> acc.merge(mesh) },
-            material = objs.first().material,
-            transformation = objs.first().transformation
+            mesh = mesh,
+            material = baseObj.material,
+            transformation = baseObj.transformation
     )
     val newModel = model.removeObjects(objsRefs).addObjects(listOf(newObj))
 

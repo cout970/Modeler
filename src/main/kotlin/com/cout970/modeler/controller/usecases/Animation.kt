@@ -69,7 +69,7 @@ private fun addAnimationChannel(programState: IProgramState): ITask {
     val newAnimation = anim.withChannel(channel).withMapping(channel.ref, target)
 
     return TaskChain(listOf(
-            TaskUpdateModel(programState.model, programState.model.modifyAnimation(newAnimation.ref, newAnimation)),
+            TaskUpdateModel(programState.model, programState.model.modifyAnimation(newAnimation)),
             ModifyGui { it.animator.selectedChannel = channel.ref }
     ))
 }
@@ -110,7 +110,7 @@ private fun enableAnimationChannel(comp: Component, programState: IProgramState)
 
     val newAnimation = animation.withChannel(channel.withEnable(true))
 
-    return TaskUpdateModel(programState.model, programState.model.modifyAnimation(newAnimation.ref, newAnimation))
+    return TaskUpdateModel(programState.model, programState.model.modifyAnimation(newAnimation))
 }
 
 @UseCase("animation.channel.disable")
@@ -121,7 +121,7 @@ private fun disableAnimationChannel(comp: Component, programState: IProgramState
 
     val newAnimation = animation.withChannel(channel.withEnable(false))
 
-    return TaskUpdateModel(programState.model, programState.model.modifyAnimation(newAnimation.ref, newAnimation))
+    return TaskUpdateModel(programState.model, programState.model.modifyAnimation(newAnimation))
 }
 
 @UseCase("animation.channel.delete")
@@ -130,7 +130,7 @@ private fun removeAnimationChannel(comp: Component, programState: IProgramState)
     val channel = comp.metadata["ref"] as IChannelRef
     val newAnimation = animation.removeChannels(listOf(channel))
 
-    return TaskUpdateModel(programState.model, programState.model.modifyAnimation(newAnimation.ref, newAnimation))
+    return TaskUpdateModel(programState.model, programState.model.modifyAnimation(newAnimation))
 }
 
 @UseCase("animation.set.length")
@@ -142,7 +142,7 @@ private fun setAnimationLength(comp: Component, programState: IProgramState): IT
 
     val newAnimation = animation.withTimeLength(time)
 
-    return TaskUpdateModel(programState.model, programState.model.modifyAnimation(newAnimation.ref, newAnimation))
+    return TaskUpdateModel(programState.model, programState.model.modifyAnimation(newAnimation))
 }
 
 @UseCase("animation.panel.click")

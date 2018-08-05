@@ -10,7 +10,6 @@ import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.core.animation.AnimationNone
 import com.cout970.modeler.core.animation.AnimationRefNone
-import com.cout970.modeler.core.animation.ref
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.export.ExportManager
 import com.cout970.modeler.core.export.ProgramSave
@@ -67,7 +66,7 @@ class ProjectManager(
     fun updateMaterial(new: IMaterial) {
         if (new.ref in loadedMaterials) {
             materialChangeListeners.forEach { it.invoke(model.getMaterial(new.ref), new) }
-            model = model.modifyMaterial(new.ref, new)
+            model = model.modifyMaterial(new)
         }
     }
 
@@ -84,11 +83,6 @@ class ProjectManager(
         this.model = model
 
         modelChangeListeners.forEach { it.invoke(old, model) }
-    }
-
-    @Deprecated("Use model mutating tasks instead")
-    fun updateAnimation(newAnimation: IAnimation) {
-        updateModel(model.modifyAnimation(newAnimation.ref, newAnimation))
     }
 
     fun loadProjectProperties(aNew: ProjectProperties) {
