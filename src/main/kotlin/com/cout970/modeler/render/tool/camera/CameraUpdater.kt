@@ -75,7 +75,7 @@ class CameraUpdater(
                 rotateModelCamera(selectedScene, speed)
             }
         } else {
-            moveTextureCamera(selectedScene, speed)
+            moveTextureCamera(selectedScene)
         }
     }
 
@@ -103,7 +103,7 @@ class CameraUpdater(
         selectedScene.modelCamera.translate(a + b)
     }
 
-    fun moveTextureCamera(selectedScene: Canvas, speed: Double) {
+    fun moveTextureCamera(selectedScene: Canvas) {
         val prev = input.mouse.getMousePos() - input.mouse.getMousePosDiff()
         val current = input.mouse.getMousePos()
 

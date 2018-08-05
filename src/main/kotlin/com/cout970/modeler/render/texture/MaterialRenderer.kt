@@ -312,10 +312,10 @@ class MaterialRenderer {
 
     fun renderGridLines(ctx: RenderContext, material: IMaterial) {
         val pixelVao = gridLinesPixel.getOrCreate(ctx) {
-            ctx.buffer.build(DrawMode.LINES) { renderGridLines(ctx, material, true) }
+            ctx.buffer.build(DrawMode.LINES) { renderGridLines(material, true) }
         }
         val blockVao = gridLinesBlock.getOrCreate(ctx) {
-            ctx.buffer.build(DrawMode.LINES) { renderGridLines(ctx, material, false) }
+            ctx.buffer.build(DrawMode.LINES) { renderGridLines(material, false) }
         }
         val vao = if (ctx.camera.zoom < Config.zoomLevelToChangeGridDetail) pixelVao else blockVao
 
@@ -328,7 +328,7 @@ class MaterialRenderer {
         }
     }
 
-    private fun BufferPTNC.renderGridLines(ctx: RenderContext, material: IMaterial, pixel: Boolean) {
+    private fun BufferPTNC.renderGridLines(material: IMaterial, pixel: Boolean) {
         val min = 0
         val maxX = material.size.xi
         val maxY = material.size.yi

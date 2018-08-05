@@ -1,5 +1,6 @@
 package com.cout970.modeler.core.config
 
+import com.cout970.modeler.Debugger
 import com.cout970.modeler.PathConstants
 import com.cout970.modeler.core.export.ColorSerializer
 import com.cout970.modeler.core.log.Level
@@ -30,9 +31,9 @@ object ConfigManager {
 
     fun loadConfig() {
         val file = File(PathConstants.CONFIG_FILE_PATH)
-//        if (file.exists()) {// && !Debugger.STATIC_DEBUG
-//            deserializeConfig(file.readText())
-//        }
+        if (file.exists() && !Debugger.STATIC_DEBUG) {
+            deserializeConfig(file.readText())
+        }
         saveConfig()
     }
 

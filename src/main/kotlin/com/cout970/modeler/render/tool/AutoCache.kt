@@ -35,7 +35,7 @@ class AutoCache(vararg val flags: CacheFlags) {
             hash = (hash shl 1) xor ctx.gui.state.materialsHash
         }
         if (CacheFlags.MODEL_CURSOR in flags) {
-            hash = (hash shl 1) xor (ctx.gui.state.cursor.hashCode() ?: -1)
+            hash = (hash shl 1) xor (ctx.gui.state.cursor.hashCode())
         }
         if (CacheFlags.GRID_LINES in flags) {
             hash = (hash shl 1) xor ctx.gui.state.gridLinesHash

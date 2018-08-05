@@ -1,8 +1,10 @@
 package com.cout970.modeler.gui
 
+import com.cout970.modeler.Debugger
 import com.cout970.modeler.core.config.ColorPalette.Companion.colorOf
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
+import com.cout970.modeler.core.log.print
 import com.cout970.reactive.dsl.hide
 import com.cout970.reactive.dsl.show
 import jdk.nashorn.api.scripting.ScriptObjectMirror
@@ -17,6 +19,7 @@ import javax.script.ScriptEngineManager
 
 object CSSTheme : Theme(createThemeManager()) {
 
+    private val engine = ScriptEngineManager().getEngineByExtension("js")
     private lateinit var style: Map<Selector, ScriptObjectMirror>
 
     init {
@@ -24,9 +27,18 @@ object CSSTheme : Theme(createThemeManager()) {
     }
 
     fun loadCss() {
-        val engine = ScriptEngineManager().getEngineByExtension("js")
-        val obj = engine.eval(File("../src/main/resources/assets/style.js").reader()) as ScriptObjectMirror
-        style = obj.keys.map { it.toSelector() to (obj[it] as ScriptObjectMirror) }.toMap()
+        try {
+            val reader = if (Debugger.STATIC_DEBUG) {
+                File("../src/main/resources/assets/style.js").reader()
+            } else {
+                Thread.currentThread().contextClassLoader.getResourceAsStream("assets/style.js").reader()
+            }
+            val obj = engine.eval(reader) as ScriptObjectMirror
+            style = obj.keys.map { it.toSelector() to (obj[it] as ScriptObjectMirror) }.toMap()
+        } catch (e: Exception) {
+            log(Level.ERROR) { "Unable to load style file (style.js)" }
+            e.print()
+        }
     }
 
     private fun String.toSelector(): Selector {

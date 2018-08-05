@@ -373,6 +373,12 @@ var exported = {
     },
     popup_section_tabs_back: {
         backgroundColor: transparent
+    },
+    multiline_input: {
+        fontSize: "18",
+        borderRadius: "0",
+        borderStyle: "none",
+        backgroundColor: transparent
     }
 };
 

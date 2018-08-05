@@ -1,9 +1,6 @@
 package com.cout970.modeler.gui.leguicomp
 
 import com.cout970.glutilities.device.Keyboard
-import com.cout970.modeler.util.rectangularCorners
-import com.cout970.modeler.util.setBorderless
-import com.cout970.modeler.util.setTransparent
 import org.liquidengine.legui.component.TextArea
 import org.liquidengine.legui.component.event.textinput.TextInputContentChangeEvent
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
@@ -25,16 +22,12 @@ class MultilineStringInput(
 
     init {
         textState.text = text
-        setTransparent()
-        setBorderless()
         defaultTextColor()
         focusedStrokeColor { grey }
         highlightColor { bright3 }
-        rectangularCorners()
-        // TODO
-        textState.fontSize = 18f
         textState.horizontalAlign = HorizontalAlign.LEFT
         textState.verticalAlign = VerticalAlign.TOP
+        classes("multiline_input")
 
         listenerMap.addListener(FocusEvent::class.java) {
             if (!it.isFocused) {

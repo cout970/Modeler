@@ -1,10 +1,10 @@
 group 'com.cout970'
-version '1.7.0-SNAPSHOT'
+version '2.0.0--pre-beta'
 
 buildscript {
     ext.kotlin_version = '1.2.31'
     ext.lwjglVersion = "3.1.6-SNAPSHOT"
-    ext.legui_version = "1.4.5-222"
+    ext.legui_version = "1.4.5-226"
     ext.arrow_version = "0.7.2"
 
     repositories {

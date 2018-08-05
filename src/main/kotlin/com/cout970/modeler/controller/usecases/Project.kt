@@ -1,6 +1,5 @@
 package com.cout970.modeler.controller.usecases
 
-import com.cout970.modeler.api.animation.IAnimation
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.export.ExportManager
@@ -20,7 +19,7 @@ import com.cout970.modeler.input.dialogs.MessageDialogs
 private var lastSaveFile: String? = null
 
 @UseCase("project.new")
-private fun newProject(gui: Gui, model: IModel, animation: IAnimation, properties: ProjectProperties): ITask = TaskAsync { returnFunc ->
+private fun newProject(gui: Gui, model: IModel, properties: ProjectProperties): ITask = TaskAsync { returnFunc ->
     var accepts = true
     if (model.objects.isNotEmpty() || model.groupMap.isNotEmpty()) {
         accepts = MessageDialogs.warningBoolean(
@@ -45,7 +44,7 @@ private fun newProject(gui: Gui, model: IModel, animation: IAnimation, propertie
 }
 
 @UseCase("project.load")
-private fun loadProject(properties: ProjectProperties, projectManager: ProjectManager,
+private fun loadProject(projectManager: ProjectManager,
                         exportManager: ExportManager): ITask = TaskAsync { returnFunc ->
 
     if (projectManager.model.objects.isNotEmpty()) {

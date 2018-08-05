@@ -72,7 +72,7 @@ class ModelCursorRenderer {
             useTexture.setInt(0)
 
             useGlobalColor.setBoolean(true)
-            parts.forEachIndexed { index, p ->
+            parts.forEach { p ->
                 matrixM.setMatrix4(p.transform)
                 globalColor.setVector3(p.color)
                 accept(p.model)

@@ -14,7 +14,6 @@ import com.cout970.modeler.core.model.getSelectedObjects
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.core.project.ProjectManager
-import com.cout970.modeler.render.tool.Animator
 import com.cout970.vector.extensions.vec2Of
 import org.liquidengine.legui.component.Component
 
@@ -23,7 +22,7 @@ import org.liquidengine.legui.component.Component
  */
 
 @UseCase("update.object.transform")
-private fun changeCube(comp: Component, access: ProjectManager, animator: Animator): ITask {
+private fun changeCube(comp: Component, access: ProjectManager): ITask {
     val ref = getObjectRef(access) ?: return TaskNone
     val offset = comp.metadata["offset"] as? Float ?: return TaskNone
     val cmd = comp.metadata["command"] as? String ?: return TaskNone

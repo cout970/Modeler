@@ -105,14 +105,10 @@ class Animator {
 
     companion object {
 
+        @Suppress("UNUSED_PARAMETER")
         fun combine(original: ITransformation, animation: ITransformation): TRSTransformation {
-            val new = animation.toTRS()
-
-            return TRSTransformation(
-                    translation = new.translation,
-                    rotation = new.rotation,
-                    scale = new.scale
-            )
+            // Change if needed a different algorithm
+            return animation.toTRS()
         }
 
         fun interpolate(time: Float, prev: IKeyframe, next: IKeyframe): TRSTransformation {

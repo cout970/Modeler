@@ -7,9 +7,11 @@ import com.cout970.matrix.extensions.Matrix4
 import com.cout970.matrix.extensions.times
 import com.cout970.matrix.extensions.toMutable
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.TRTSTransformation
+import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.render.tool.AutoCache
 import com.cout970.modeler.render.tool.CacheFlags
 import com.cout970.modeler.render.tool.RenderContext
@@ -76,12 +78,12 @@ class WorldRenderer {
         val vao = pivot.getOrCreate(ctx) {
             ctx.gui.resources.lightMesh.createVao(ctx.buffer, vec3Of(0, 0, 1))
         }
-        val acc = ctx.gui.animator
-        val channel = acc.selectedChannel ?: return
-        val keyframe = acc.selectedKeyframe ?: return
+        val (model, selection) = ctx.gui.programState
+        val sel = selection.getOrNull() ?: return
+        if (sel.size != 1 || sel.selectionType != SelectionType.OBJECT) return
 
-        val key = acc.animation.channels[channel]?.keyframes?.get(keyframe) ?: return
-        val value = key.value as? TRTSTransformation ?: return
+        val obj = model.getObject(sel.objects.first())
+        val value = obj.transformation as? TRTSTransformation ?: return
 
         val transform = TRSTransformation(translation = value.pivot, scale = Vector3.ONE * 0.25)
         ctx.shader.render(vao, transform.matrix, ShaderFlag.LIGHT, ShaderFlag.COLOR)
