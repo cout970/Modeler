@@ -115,7 +115,7 @@ class Animator {
             )
         }
 
-        fun interpolate(time: Float, prev: IKeyframe, next: IKeyframe): ITransformation {
+        fun interpolate(time: Float, prev: IKeyframe, next: IKeyframe): TRSTransformation {
             if (next.time == prev.time) return next.value
 
             val size = next.time - prev.time
@@ -124,8 +124,8 @@ class Animator {
             return interpolate(prev.value, next.value, step)
         }
 
-        fun interpolate(a: ITransformation, b: ITransformation, delta: Float): ITransformation {
-            return a.toTRS().lerp(b.toTRS(), delta)
+        fun interpolate(a: TRSTransformation, b: TRSTransformation, delta: Float): TRSTransformation {
+            return a.lerp(b, delta)
         }
 
         fun getPrevAndNext(time: Float, keyframes: List<IKeyframe>): Pair<IKeyframe, IKeyframe> {

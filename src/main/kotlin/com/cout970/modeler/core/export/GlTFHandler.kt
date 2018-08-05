@@ -469,7 +469,7 @@ class GlTFImporter {
         return Model.of(objs, materials, groups, animations, root.toImmutable())
     }
 
-    fun transformationOf(value: Any, type: GltfChannelPath): ITransformation = when (type) {
+    fun transformationOf(value: Any, type: GltfChannelPath): TRSTransformation = when (type) {
         GltfChannelPath.translation -> TRSTransformation(translation = value as IVector3)
         GltfChannelPath.rotation -> TRSTransformation(rotation = (value as IVector4).toQuat())
         GltfChannelPath.scale -> TRSTransformation(scale = value as IVector3)

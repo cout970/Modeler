@@ -3,9 +3,7 @@ package com.cout970.modeler.controller.usecases
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.TRTSTransformation
-import com.cout970.modeler.util.quatOfAngles
-import com.cout970.modeler.util.toAxisRotations
-import com.cout970.vector.extensions.times
+import com.cout970.modeler.util.EulerRotation
 import com.cout970.vector.extensions.vec3Of
 import javax.script.ScriptEngineManager
 
@@ -24,9 +22,9 @@ fun updateTransformation(value: ITransformation, cmd: String, input: String, off
             "pos.y" -> setTRSPosY(value, y = getValue(input, value.translation.yf) + offset)
             "pos.z" -> setTRSPosZ(value, z = getValue(input, value.translation.zf) + offset)
 
-            "rot.x" -> setTRSRotationX(value, x = getValue(input, value.rotation.toAxisRotations().xf) + offset * 15f)
-            "rot.y" -> setTRSRotationY(value, getValue(input, value.rotation.toAxisRotations().yf), offset * 15f)
-            "rot.z" -> setTRSRotationZ(value, z = getValue(input, value.rotation.toAxisRotations().zf) + offset * 15f)
+            "rot.x" -> setTRSRotationX(value, x = getValue(input, value.euler.angles.xf) + offset * 15f)
+            "rot.y" -> setTRSRotationY(value, getValue(input, value.euler.angles.yf) + offset * 15f)
+            "rot.z" -> setTRSRotationZ(value, z = getValue(input, value.euler.angles.zf) + offset * 15f)
 
             else -> value
         }
@@ -99,23 +97,18 @@ private fun setTRTSPosZ(trans: TRTSTransformation, z: Float): TRTSTransformation
 
 // TRS
 private fun setTRSRotationX(trans: TRSTransformation, x: Float): TRSTransformation {
-    val oldRot = trans.rotation.toAxisRotations()
-    return trans.copy(rotation = quatOfAngles(x.clampRot(), oldRot.y, oldRot.z))
+    val oldRot = trans.euler.angles
+    return trans.copy(rotation = EulerRotation(vec3Of(x.clampRot(), oldRot.yd, oldRot.zd)))
 }
 
-private fun setTRSRotationY(trans: TRSTransformation, y: Float, offset: Float): TRSTransformation {
-    val oldRot = trans.rotation.toAxisRotations()
-
-    return if (offset == 0f) {
-        trans.copy(rotation = quatOfAngles(oldRot.x, y, oldRot.z))
-    } else {
-        trans.copy(rotation = trans.rotation * quatOfAngles(0, offset, 0))
-    }
+private fun setTRSRotationY(trans: TRSTransformation, y: Float): TRSTransformation {
+    val oldRot = trans.euler.angles
+    return trans.copy(rotation = EulerRotation(vec3Of(oldRot.xd, y.clampRot(), oldRot.zd)))
 }
 
 private fun setTRSRotationZ(trans: TRSTransformation, z: Float): TRSTransformation {
-    val oldRot = trans.rotation.toAxisRotations()
-    return trans.copy(rotation = quatOfAngles(oldRot.x, oldRot.y, z.clampRot()))
+    val oldRot = trans.euler.angles
+    return trans.copy(rotation = EulerRotation(vec3Of(oldRot.xd, oldRot.yd, z.clampRot())))
 }
 
 // TRTS

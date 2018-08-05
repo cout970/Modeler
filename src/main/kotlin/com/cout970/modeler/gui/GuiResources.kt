@@ -81,7 +81,6 @@ class GuiResources {
         iconMap["active_model_grid"] = BufferedImage("assets/textures/active_model_grids.png")
         iconMap["active_color"] = BufferedImage("assets/textures/active_color.png")
         iconMap["active_light"] = BufferedImage("assets/textures/active_light.png")
-        iconMap["active_texture"] = BufferedImage("assets/textures/active_texture.png")
         iconMap["active_focus"] = BufferedImage("assets/textures/active_focus.png")
         iconMap["active_invisible"] = BufferedImage("assets/textures/active_invisible.png")
 
@@ -124,6 +123,7 @@ class GuiResources {
         iconMap["add_channel"] = BufferedImage("assets/textures/add.png")
         iconMap["remove_channel"] = BufferedImage("assets/textures/remove.png")
         iconMap["picker"] = BufferedImage("assets/textures/picker.png")
+        iconMap["spread_value"] = BufferedImage("assets/textures/spread.png")
 
         iconMap["missing"] = BufferedImage("assets/textures/missing.png")
 

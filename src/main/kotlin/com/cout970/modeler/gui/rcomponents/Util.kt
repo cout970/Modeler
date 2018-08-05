@@ -8,7 +8,6 @@ import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.input.window.Loop
 import com.cout970.modeler.util.disableInput
 import com.cout970.modeler.util.text
-import com.cout970.modeler.util.toAxisRotations
 import com.cout970.modeler.util.toJoml2f
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RProps
@@ -220,7 +219,7 @@ data class TransformationInputProps(val usecase: String, val transformation: ITr
 class TransformationInput : RStatelessComponent<TransformationInputProps>() {
 
     companion object {
-        private val line = 0.4f
+        private const val line = 0.4f
     }
 
     override fun RBuilder.render() {
@@ -231,7 +230,7 @@ class TransformationInput : RStatelessComponent<TransformationInputProps>() {
             is TRSTransformation -> {
                 scale(t.scale)
                 position(t.translation)
-                rotation(t.rotation.toAxisRotations())
+                rotation(t.euler.angles)
                 pivot(Vector3.ZERO, false)
             }
             is TRTSTransformation -> {

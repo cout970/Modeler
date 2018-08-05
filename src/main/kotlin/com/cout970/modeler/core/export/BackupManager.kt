@@ -97,8 +97,10 @@ object BackupManager {
         val finalPath = "$path/${getBackupName(level)}"
 
         try {
-            exportManager.saveProject(PathConstants.LAST_BACKUP_FILE_PATH, save)
-            Files.copy(File(PathConstants.LAST_BACKUP_FILE_PATH).toPath(), File(finalPath).toPath())
+            val tmp = createTempFile(directory = File(PathConstants.BACKUP_FOLDER_PATH))
+            exportManager.saveProject(tmp.absolutePath, save)
+            Files.copy(tmp.toPath(), File(finalPath).toPath())
+            tmp.delete()
             log(Level.NORMAL) { "Backup saved at ${File(finalPath).absolutePath}" }
         } catch (e: Throwable) {
             e.print()

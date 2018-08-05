@@ -3,6 +3,7 @@ package com.cout970.modeler.api.animation
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.IGroupRef
 import com.cout970.modeler.api.model.selection.IObjectRef
+import com.cout970.modeler.core.model.TRSTransformation
 import java.util.*
 
 interface IAnimationRef {
@@ -48,7 +49,7 @@ interface IChannel {
 
 interface IKeyframe {
     val time: Float
-    val value: ITransformation
+    val value: TRSTransformation
 
     fun withValue(trs: ITransformation): IKeyframe
 }

@@ -1,12 +1,12 @@
 package com.cout970.modeler.controller.usecases
 
 import com.cout970.modeler.api.animation.*
-import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.`object`.RootGroupRef
 import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.animation.*
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.model.selection.Selection
+import com.cout970.modeler.core.model.toTRS
 import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.input.event.IInput
@@ -42,7 +42,6 @@ private fun removeAnimation(programState: ProjectManager): ITask {
     ))
 }
 
-
 @UseCase("animation.channel.add")
 private fun addAnimationChannel(programState: IProgramState): ITask {
     val group = programState.selectedGroup
@@ -63,8 +62,8 @@ private fun addAnimationChannel(programState: IProgramState): ITask {
             name = "Channel ${lastAnimation++}",
             interpolation = InterpolationMethod.LINEAR,
             keyframes = listOf(
-                    Keyframe(0f, target.getTransformation(model)),
-                    Keyframe(anim.timeLength, target.getTransformation(model))
+                    Keyframe(0f, target.getTransformation(model).toTRS()),
+                    Keyframe(anim.timeLength, target.getTransformation(model).toTRS())
             )
     )
     val newAnimation = anim.withChannel(channel).withMapping(channel.ref, target)
@@ -134,7 +133,6 @@ private fun removeAnimationChannel(comp: Component, programState: IProgramState)
     return TaskUpdateModel(programState.model, programState.model.modifyAnimation(newAnimation.ref, newAnimation))
 }
 
-
 @UseCase("animation.set.length")
 private fun setAnimationLength(comp: Component, programState: IProgramState): ITask {
     val animation = programState.animation
@@ -187,49 +185,6 @@ private fun onAnimationPanelClick(comp: Component, animator: Animator, input: II
     }
 }
 
-@UseCase("animation.add.keyframe")
-private fun addKeyframe(animator: Animator, model: IModel): ITask {
-    val channelRef = animator.selectedChannel ?: return TaskNone
-    val channel = animator.animation.channels[channelRef] ?: return TaskNone
-
-    val now = (animator.animationTime * 60f).toInt() / 60f
-    if (channel.keyframes.any { it.time == now }) return TaskNone
-
-    val prev = channel.keyframes.filter { it.time <= now }
-    val next = channel.keyframes.filter { it.time >= now }
-
-    val pair = Animator.getPrevAndNext(now, channel.keyframes)
-    val value = Animator.interpolate(now, pair.first, pair.second)
-    val keyframe = Keyframe(now, value)
-
-    val newList = prev + keyframe + next
-    val newChannel = channel.withKeyframes(newList)
-    val newAnimation = animator.animation.withChannel(newChannel)
-
-    return TaskChain(listOf(
-            TaskUpdateModel(model, model.modifyAnimation(newAnimation.ref, newAnimation)),
-            ModifyGui { animator.selectedKeyframe = newList.indexOf(keyframe) }
-    ))
-}
-
-@UseCase("animation.delete.keyframe")
-private fun removeKeyframe(animator: Animator, model: IModel): ITask {
-    val channelRef = animator.selectedChannel ?: return TaskNone
-    val keyframeIndex = animator.selectedKeyframe ?: return TaskNone
-
-    val channel = animator.animation.channels[channelRef]!!
-    val keyframe = channel.keyframes[keyframeIndex]
-
-    if (channel.keyframes.size <= 1) return TaskNone
-
-    val newChannel = channel.withKeyframes(channel.keyframes - keyframe)
-    val newAnimation = animator.animation.withChannel(newChannel)
-
-    return TaskChain(listOf(
-            ModifyGui { it.animator.selectedKeyframe = null },
-            TaskUpdateModel(model, model.modifyAnimation(newAnimation.ref, newAnimation))
-    ))
-}
 
 @UseCase("animation.state.toggle")
 private fun animationTogglePlay(): ITask = ModifyGui {

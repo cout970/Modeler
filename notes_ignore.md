@@ -24,12 +24,12 @@ Loads of skyboxes "http://www.custommapmakers.org/skyboxes.php"
 - [x] Add interface to edit texture properties
 - [x] Upgrade keyframe editor
 - [x] Add support for materials in gltf
+- [x] Upgrade animation panel
 - [ ] Name the program
+- [ ] Beta test
 
 # New TODO list
-- [ ] Upgrade animation panel
-
-
+- Fix bugs
 
 ### Current
 import texture template after creation

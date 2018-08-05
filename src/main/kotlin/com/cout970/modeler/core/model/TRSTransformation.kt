@@ -61,6 +61,8 @@ data class TRSTransformation(
     // Gson pls
     private constructor() : this(Vector3.ORIGIN, Quaternion.IDENTITY, Vector3.ONE)
 
+    val euler: EulerRotation get() = rotation.toEuler()
+
     override val matrix: IMatrix4 by lazy {
         Matrix4d().apply {
             translate(translation.xd, translation.yd, translation.zd)

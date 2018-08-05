@@ -16,6 +16,7 @@ import org.joml.*
  */
 
 operator fun IVector2.component1() = x
+
 operator fun IVector2.component2() = y
 
 operator fun IVector3.component1() = x
@@ -60,8 +61,9 @@ fun getClosestPointOnLineSegment(A: IVector3, B: IVector3, P: IVector3): IVector
 
 inline fun Number.modulus(other: Number): Double {
     val rem = this.toDouble() % other.toDouble()
-    return if(rem < 0) rem + other.toDouble() else rem
+    return if (rem < 0) rem + other.toDouble() else rem
 }
+
 fun Number.toRads() = Math.toRadians(this.toDouble())
 fun Number.toDegrees() = Math.toDegrees(this.toDouble())
 
@@ -115,7 +117,7 @@ fun Quaterniond.toIQuaternion(): IQuaternion = quatOf(x,
 
 fun IVector2.isInside(pos: IVector2, size: IVector2): Boolean {
     return xd > pos.xd && xd < pos.xd + size.xd &&
-           yd > pos.yd && yd < pos.yd + size.yd
+            yd > pos.yd && yd < pos.yd + size.yd
 }
 
 private fun IVector3.scale(center: IVector3, scale: IVector3): IVector3 {
@@ -208,6 +210,17 @@ fun IVector3.getDominantAxis(): Int {
 }
 
 fun Boolean.toInt() = if (this) 1 else 0
+
+data class EulerRotation(val angles: IVector3) : IQuaternion {
+    val quaternion = quatOfAngles(angles)
+
+    override val w: Number get() = quaternion.w
+    override val x: Number get() = quaternion.x
+    override val y: Number get() = quaternion.y
+    override val z: Number get() = quaternion.z
+}
+
+fun IQuaternion.toEuler() = this as? EulerRotation ?: EulerRotation(this.toAxisRotations())
 
 infix fun IVector3.rotationTo(other: IVector3): IQuaternion {
     val q = Quaterniond().rotationTo(this.toJoml3d(), other.toJoml3d())

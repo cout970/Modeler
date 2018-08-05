@@ -134,12 +134,14 @@ inline fun TextArea.focusedStrokeColor(f: ColorPalette.() -> IVector3) {
     style.focusedStrokeColor = Config.colorPalette.f().toColor()
 }
 
-fun debugPixelBorder() = PixelBorder().apply {
-    enableBottom = true
-    enableTop = true
-    enableLeft = true
-    enableRight = true
-    color = Vector4f(1f, 0f, 0f, 1f)
+fun Component.debugPixelBorder() {
+    style.border = PixelBorder().apply {
+        enableBottom = true
+        enableTop = true
+        enableLeft = true
+        enableRight = true
+        color = Vector4f(1f, 0f, 0f, 1f)
+    }
 }
 
 fun Component.forEachRecursive(func: (Component) -> Unit) {
