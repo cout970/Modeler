@@ -33,10 +33,6 @@ object Logger {
         }
     })!!
 
-    init {
-        System.setOut(stream)
-    }
-
     private fun getFileName(): String {
         val time = Calendar.getInstance()
         val year = time[Calendar.YEAR]

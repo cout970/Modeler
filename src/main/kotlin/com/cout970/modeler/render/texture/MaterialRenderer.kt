@@ -68,7 +68,7 @@ class MaterialRenderer {
         }
 
         if (Debugger.DYNAMIC_DEBUG) {
-            renderDebugCursor(ctx, material)
+            renderDebugCursor(ctx)
         }
 
         GLStateMachine.depthTest.enable()
@@ -353,7 +353,7 @@ class MaterialRenderer {
         ctx.shader.matrixVP.setMatrix4(projection * view)
     }
 
-    fun renderDebugCursor(ctx: RenderContext, material: IMaterial) {
+    fun renderDebugCursor(ctx: RenderContext) {
         val vao = debugCache.getOrCreate(ctx) {
             ctx.buffer.build(DrawMode.TRIANGLES) {
                 MeshFactory.createCube(vec3Of(0.5), Vector3.ORIGIN).append(this, vec3Of(1, 0, 1))

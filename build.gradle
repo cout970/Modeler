@@ -1,5 +1,5 @@
 group 'com.cout970'
-version '2.0.0--pre-beta'
+version '2.0.0-pre-beta'
 
 buildscript {
     ext.kotlin_version = '1.2.31'

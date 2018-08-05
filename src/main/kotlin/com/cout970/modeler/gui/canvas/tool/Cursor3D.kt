@@ -30,7 +30,7 @@ enum class CursorOrientation { GLOBAL, LOCAL }
 class Cursor3D {
 
     var position: IVector3 = Vector3.ZERO
-    var visible: Boolean = true
+    var visible: Boolean = false
 
     var mode: CursorMode = CursorMode.TRANSLATION
     var orientation: CursorOrientation = CursorOrientation.GLOBAL

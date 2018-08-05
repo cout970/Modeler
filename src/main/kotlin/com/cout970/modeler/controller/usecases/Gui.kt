@@ -7,7 +7,6 @@ import com.cout970.modeler.controller.tasks.ModifyGui
 import com.cout970.modeler.controller.tasks.TaskNone
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.canvas.CanvasManager
-import com.cout970.modeler.gui.canvas.cursor.CursorManager
 import com.cout970.modeler.gui.canvas.tool.CursorMode
 import com.cout970.modeler.gui.canvas.tool.CursorOrientation
 import com.cout970.vector.extensions.unaryMinus
@@ -85,7 +84,7 @@ private fun setCursorOrientationGlobal(): ITask = ModifyGui {
 }
 
 @UseCase("camera.move.to.cursor")
-private fun moveCameraToCursor(canvasManager: CanvasManager, cursorManager: CursorManager, gui: Gui): ITask {
+private fun moveCameraToCursor(canvasManager: CanvasManager, gui: Gui): ITask {
     canvasManager.getCanvasUnderTheMouse().ifNotNull { canvas ->
         if (canvas.viewMode == SelectionTarget.TEXTURE) return TaskNone
         val center = gui.state.cursor.position
