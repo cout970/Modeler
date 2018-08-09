@@ -26,12 +26,27 @@ data class ImportProperties(
         val append: Boolean
 )
 
-data class ExportProperties(
+sealed class ExportProperties(
         val path: String,
-        val format: ExportFormat,
-        val materialLib: String = "materials",
-        val domain: String = "error"
+        val format: ExportFormat
 )
+
+class GltfExportProperties(
+        path: String
+) : ExportProperties(path, ExportFormat.GLTF)
+
+
+class McxExportProperties(
+        path: String,
+        val domain: String
+) : ExportProperties(path, ExportFormat.MCX)
+
+class ObjExportProperties(
+        path: String,
+        val materialLib: String,
+        val useNormals: Boolean,
+        val flipUV: Boolean
+) : ExportProperties(path, ExportFormat.OBJ)
 
 data class ExportTextureProperties(
         val path: String,

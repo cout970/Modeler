@@ -4,9 +4,8 @@ import com.cout970.modeler.controller.tasks.TaskExportModel
 import com.cout970.modeler.controller.tasks.TaskReloadMaterial
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.export.BackupManager
-import com.cout970.modeler.core.export.ExportFormat
 import com.cout970.modeler.core.export.ExportManager
-import com.cout970.modeler.core.export.ExportProperties
+import com.cout970.modeler.core.export.McxExportProperties
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.core.log.log
@@ -47,7 +46,7 @@ class AutoRunner(
                 log(Level.FINE) { "Exporting model" }
 
                 processor.processTask(TaskExportModel(projectManager.model,
-                        ExportProperties(path, ExportFormat.MCX, "", "magneticraft")
+                        McxExportProperties(path, "magneticraft")
                 ))
             }
             Profiler.endSection()

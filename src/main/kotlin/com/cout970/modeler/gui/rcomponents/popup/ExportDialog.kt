@@ -1,12 +1,16 @@
 package com.cout970.modeler.gui.rcomponents.popup
 
+import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.export.ExportFormat
-import com.cout970.modeler.core.export.ExportProperties
+import com.cout970.modeler.core.export.GltfExportProperties
+import com.cout970.modeler.core.export.McxExportProperties
+import com.cout970.modeler.core.export.ObjExportProperties
 import com.cout970.modeler.gui.leguicomp.FixedLabel
 import com.cout970.modeler.gui.leguicomp.TextButton
 import com.cout970.modeler.gui.leguicomp.classes
 import com.cout970.modeler.gui.leguicomp.onClick
 import com.cout970.modeler.input.dialogs.FileDialogs
+import com.cout970.modeler.util.toColor
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
 import com.cout970.reactive.core.RState
@@ -14,11 +18,23 @@ import com.cout970.reactive.dsl.*
 import com.cout970.reactive.nodes.comp
 import com.cout970.reactive.nodes.div
 import com.cout970.reactive.nodes.style
+import org.joml.Vector2f
+import org.liquidengine.legui.component.CheckBox
 import org.liquidengine.legui.component.TextInput
+import org.liquidengine.legui.component.event.checkbox.CheckBoxChangeValueEvent
 import org.liquidengine.legui.component.event.textinput.TextInputContentChangeEvent
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
+import org.liquidengine.legui.icon.CharIcon
+import java.io.File
 
-data class ExportDialogState(val text: String, val prefix: String, val selection: Int, var forceUpdate: Boolean) : RState
+data class ExportDialogState(
+        val text: String,
+        val prefix: String,
+        val selection: Int,
+        val flipUV: Boolean = false,
+        val useNormals: Boolean = true,
+        var forceUpdate: Boolean = false
+) : RState
 
 class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
 
@@ -35,12 +51,12 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
         private var lastType: Int = 1
     }
 
-    override fun getInitialState() = ExportDialogState(lastPath, "magneticraft:blocks/", lastType, false)
+    override fun getInitialState() = ExportDialogState(lastPath, "magneticraft:blocks", lastType)
 
     override fun RBuilder.render() = div("ExportDialog") {
         style {
             width = 460f
-            height = 240f
+            height = 290f
             classes("popup_back")
         }
 
@@ -126,26 +142,99 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
         }
 
         comp(TextInput(state.prefix, 90f, 150f, 350f, 24f)) {
+            style {
+                if (state.selection != 1) {
+                    isEnabled = false
+                    isEditable = false
+                    classes("string_input_disabled")
+                }
+            }
+
             on<TextInputContentChangeEvent<TextInput>> {
                 setState { copy(prefix = it.newValue, forceUpdate = false) }
             }
         }
 
         //fifth line
-        +TextButton("", "Export", 270f, 200f, 80f, 24f).apply {
-            onClick {
-                props.returnFunc(ExportProperties(
-                        path = state.text,
-                        format = ExportFormat.values()[state.selection],
-                        domain = state.prefix,
-                        materialLib = "materials"
-                ))
+        +CheckBox("Flip UV", 25f, 200f, 120f, 24f).apply {
+
+            textState.fontSize = 18f
+            paddingLeft(5f)
+            isChecked = state.flipUV
+            style.setBorderRadius(0f)
+
+            if (state.selection != 0) { // disable
+                isEnabled = false
+                textState.textColor = Config.colorPalette.dark3.toColor()
+                (iconChecked as CharIcon).color = Config.colorPalette.dark3.toColor()
+                (iconUnchecked as CharIcon).color = Config.colorPalette.dark3.toColor()
+            } else { // enable
+                textState.textColor = Config.colorPalette.textColor.toColor()
+                (iconChecked as CharIcon).color = Config.colorPalette.bright4.toColor()
+                (iconUnchecked as CharIcon).color = Config.colorPalette.bright4.toColor()
+            }
+
+            (iconChecked as CharIcon).size = Vector2f(24f)
+            (iconUnchecked as CharIcon).size = Vector2f(24f)
+
+            on<CheckBoxChangeValueEvent<CheckBox>> {
+                setState { copy(flipUV = it.isNewValue) }
             }
         }
 
-        +TextButton("", "Cancel", 360f, 200f, 80f, 24f).apply {
-            onClick {
-                props.returnFunc(null)
+        +CheckBox("Include normals", 25f + 120f + 10f, 200f, 180f, 24f).apply {
+
+            textState.fontSize = 18f
+            paddingLeft(5f)
+            isChecked = state.useNormals
+            style.setBorderRadius(0f)
+
+            if (state.selection != 0) { // disable
+                isEnabled = false
+                textState.textColor = Config.colorPalette.dark3.toColor()
+                (iconChecked as CharIcon).color = Config.colorPalette.dark3.toColor()
+                (iconUnchecked as CharIcon).color = Config.colorPalette.dark3.toColor()
+            } else { // enable
+                textState.textColor = Config.colorPalette.textColor.toColor()
+                (iconChecked as CharIcon).color = Config.colorPalette.bright4.toColor()
+                (iconUnchecked as CharIcon).color = Config.colorPalette.bright4.toColor()
+            }
+
+            (iconChecked as CharIcon).size = Vector2f(24f)
+            (iconUnchecked as CharIcon).size = Vector2f(24f)
+
+            on<CheckBoxChangeValueEvent<CheckBox>> {
+                setState { copy(useNormals = it.isNewValue) }
+            }
+        }
+
+        //last line
+        div {
+            style { classes("div") }
+
+            postMount {
+                posY = 250f
+                height = 24f
+                marginX(25f)
+                floatRight(10f, 50f)
+            }
+
+            +TextButton("", "Cancel", 0f, 0f, 80f, 24f).apply {
+                onClick {
+                    props.returnFunc(null)
+                }
+            }
+
+            +TextButton("", "Export", 0f, 0f, 80f, 24f).apply {
+                onClick {
+                    val exportProps = when (ExportFormat.values()[state.selection]) {
+                        ExportFormat.OBJ -> ObjExportProperties(state.text, File(state.text).nameWithoutExtension, state.useNormals, state.flipUV)
+                        ExportFormat.MCX -> McxExportProperties(state.text, state.prefix)
+                        ExportFormat.GLTF -> GltfExportProperties(state.text)
+                    }
+
+                    props.returnFunc(exportProps)
+                }
             }
         }
     }

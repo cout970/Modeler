@@ -365,6 +365,18 @@ var exported = {
     "button_disabled:pressed": {
         backgroundColor: "#232323"
     },
+    string_input_disabled: {
+        backgroundColor: "#404040"
+    },
+    "string_input_disabled:hover": {
+        backgroundColor: "#404040"
+    },
+    "string_input_disabled:focus": {
+        backgroundColor: "#404040"
+    },
+    "string_input_disabled:pressed": {
+        backgroundColor: "#404040"
+    },
     popup_section_tabs: {
         backgroundColor: "#4b4b4b",
     },

@@ -31,7 +31,7 @@ private val GSON = GsonBuilder()
 
 class McxExporter {
 
-    fun export(output: OutputStream, model: IModel, prefix: String) {
+    fun export(output: OutputStream, model: IModel, args: McxExportProperties) {
 
         val posSet = mutableSetOf<IVector3>()
         val texSet = mutableSetOf<IVector2>()
@@ -50,7 +50,7 @@ class McxExporter {
         model.objects.forEach { obj ->
 
             val name = model.getMaterial(obj.material).name.replace("\\.png$".toRegex(), "")
-            val texture = "$prefix$name"
+            val texture = "${args.domain}/$name"
             val mesh = obj.mesh
             val localIndices = mesh.faces.map { face ->
                 val (ap, bp, cp, dp) = face.pos
@@ -75,7 +75,7 @@ class McxExporter {
         val data = ModelData(
                 useAmbientOcclusion = true,
                 use3dInGui = true,
-                particleTexture = particleTexture ?: "${prefix}unknown",
+                particleTexture = particleTexture ?: "${args.domain}/unknown",
                 parts = parts,
                 quads = QuadStorage(pos.map { it * (1 / 16.0) }, tex, indices)
         )

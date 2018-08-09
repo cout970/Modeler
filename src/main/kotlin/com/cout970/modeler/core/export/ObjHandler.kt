@@ -27,7 +27,7 @@ import java.util.*
  */
 class ObjExporter {
 
-    fun export(output: OutputStream, model: IModel, mtllib: String) {
+    fun export(output: OutputStream, model: IModel, args: ObjExportProperties) {
 
         val vertex = LinkedList<IVector3>()
         val vertexMap = LinkedHashSet<IVector3>()
@@ -35,8 +35,8 @@ class ObjExporter {
         val texCoords = LinkedList<IVector2>()
         val texCoordsMap = LinkedHashSet<IVector2>()
 
-//        val normals = LinkedList<IVector3>()
-//        val normalsMap = LinkedHashSet<IVector3>()
+        val normals = LinkedList<IVector3>()
+        val normalsMap = LinkedHashSet<IVector3>()
 
         val groups = mutableListOf<ObjGroup>()
 
@@ -66,6 +66,30 @@ class ObjExporter {
                         texCoordsMap.add(vertTex)
                     }
                 }
+
+                if (args.useNormals) {
+                    val (a, b, c, d) = face.pos.map { obj.mesh.pos[it] }
+                    val ac = c - a
+                    val bd = d - b
+                    val normal = (ac cross bd).normalize()
+
+                    if (normalsMap.contains(normal)) {
+                        val index = normals.indexOf(normal) + 1
+                        objQuad.normalIndices[0] = index
+                        objQuad.normalIndices[1] = index
+                        objQuad.normalIndices[2] = index
+                        objQuad.normalIndices[3] = index
+                    } else {
+                        val index = normals.size + 1
+                        objQuad.normalIndices[0] = index
+                        objQuad.normalIndices[1] = index
+                        objQuad.normalIndices[2] = index
+                        objQuad.normalIndices[3] = index
+                        normals.add(normal)
+                        normalsMap.add(normal)
+                    }
+                }
+
                 quads += objQuad
             }
             groups.add(ObjGroup(obj.name, model.getMaterial(obj.material).name, quads))
@@ -76,19 +100,30 @@ class ObjExporter {
 
         val writer = output.writer()
 
-        writer.write("mtllib $mtllib.mtl\n")
+        writer.write("mtllib ${args.materialLib}.mtl\n")
 
         for (a in vertex.map { it * 0.0625 }) {
             writer.write(String.format("v %s %s %s\n", format.format(a.xd), format.format(a.yd), format.format(a.zd)))
         }
         writer.append('\n')
-        for (a in texCoords) {
-            writer.write(String.format("vt %s %s\n", format.format(a.xd), format.format(a.yd)))
+        if (args.flipUV) {
+            for (a in texCoords) {
+                writer.write(String.format("vt %s %s\n", format.format(a.xd), format.format(1 - a.yd)))
+            }
+        } else {
+            for (a in texCoords) {
+                writer.write(String.format("vt %s %s\n", format.format(a.xd), format.format(a.yd)))
+            }
         }
         writer.append('\n')
-//        for (a in normals) {
-//            writer.write(String.format("vn %s %s %s\n", format.format(a.xd), format.format(a.yd), format.format(a.zd)))
-//        }
+
+        if (args.useNormals) {
+            for (a in normals) {
+                writer.write(String.format("vn %s %s %s\n", format.format(a.xd), format.format(a.yd), format.format(a.zd)))
+            }
+            writer.append('\n')
+        }
+
         for (group in groups) {
             writer.write("usemtl ${group.material.replace(' ', '_')}\n\n")
             writer.append("g ${group.name.replace(' ', '_')}\n")
