@@ -120,6 +120,9 @@ class GLTFBuilder {
     private val bakedBufferViews = mutableListOf<GltfBufferView>()
     private val bakedAccessors = mutableListOf<GltfAccessor>()
     private val animations = mutableListOf<Animation>()
+    private val meshToId = mutableMapOf<Mesh, Int>()
+    private val bufferToId = mutableMapOf<UnpackedBuffer, Int>()
+
 
     var bufferName = "model.bin"
 
@@ -254,7 +257,7 @@ class GLTFBuilder {
                 rotation = (t as? Transformation.TRS)?.rotation,
                 scale = (t as? Transformation.TRS)?.scale,
                 children = bakedChildren?.map { bakedNodes.indexOf(it) } ?: emptyList(),
-                mesh = m?.let { bakedMeshes.indexOf(it) },
+                mesh = m,
                 extras = extras
         )
 
@@ -273,10 +276,14 @@ class GLTFBuilder {
         mesh = Mesh().apply(func)
     }
 
-    fun Mesh.build(): GltfMesh {
+    fun Mesh.build(): Int? {
+        if (this in meshToId) {
+            return meshToId[this]
+        }
         val mesh = GltfMesh(primitives.map { it.build() }, weights, name)
         bakedMeshes.add(mesh)
-        return mesh
+        meshToId[this] = bakedMeshes.size - 1
+        return bakedMeshes.size - 1
     }
 
     @Suppress("PropertyName", "unused")
@@ -392,6 +399,11 @@ class GLTFBuilder {
 
     @Suppress("UNCHECKED_CAST")
     fun UnpackedBuffer.build(animation: Boolean = false): Int {
+
+        if (this in bufferToId) {
+            return bufferToId[this]!!
+        }
+
         val size = elementType.size * containerType.numComponents * data.size
         val index = bakedBufferViews.size
         val view = GltfBufferView(
@@ -439,6 +451,7 @@ class GLTFBuilder {
 
         bakedBufferViews.add(view)
         bakedAccessors.add(accessor)
+        bufferToId[this] = index
         return index
     }
 

@@ -51,7 +51,7 @@ class EditKeyframe : RComponent<EditKeyframeProps, VisibleWidget>() {
         val keyframeRef = props.animator.selectedKeyframe
 
         val channel = props.animator.animation.channels[channelRef]
-        val keyframe = keyframeRef?.let { channel?.keyframes?.get(it) }.asNullable()
+        val keyframe = keyframeRef?.let { channel?.keyframes?.getOrNull(it) }.asNullable()
         val value = keyframe.map { it.value }.getOr(TRSTransformation.IDENTITY)
 
 

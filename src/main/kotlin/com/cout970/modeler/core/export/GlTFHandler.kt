@@ -181,10 +181,7 @@ class GlTFExporter {
                 }
 
                 model.animationMap.values.forEach { anim ->
-                    animation {
-                        name = anim.name
-                        addAnimation(this, anim)
-                    }
+                    addAnimation(anim)
                 }
             }
 
@@ -234,52 +231,65 @@ class GlTFExporter {
             }
         }
 
-        fun GLTFBuilder.addAnimation(builder: GLTFBuilder.Animation, anim: IAnimation) = builder.apply {
-            anim.channels.values.map { chan ->
-                val target = anim.channelMapping[chan.ref] ?: return@map
-                val groupNode = targetToNode[target] ?: return@map
+        fun GLTFBuilder.addAnimation(anim: IAnimation) {
 
-                val useTranslation = chan.usesTranslation()
-                val useRotation = chan.usesRotation()
-                val useScale = chan.usesScale()
+            val used = anim.channels.values.any { chan ->
+                val target = anim.channelMapping[chan.ref] ?: return@any false
+                targetToNode[target] ?: return@any false
 
-                if (!useTranslation && !useRotation && !useScale) return@map
+                chan.usesTranslation() || chan.usesRotation() || chan.usesScale()
+            }
 
-                val keyframeValues = chan.keyframes.map {
-                    Animator.combine(target.getTransformation(model), it.value)
+            if (!used) return
+
+            animation {
+                name = anim.name
+                anim.channels.values.map { chan ->
+                    val target = anim.channelMapping[chan.ref] ?: return@map
+                    val groupNode = targetToNode[target] ?: return@map
+
+                    val useTranslation = chan.usesTranslation()
+                    val useRotation = chan.usesRotation()
+                    val useScale = chan.usesScale()
+
+                    if (!useTranslation && !useRotation && !useScale) return@map
+
+                    val keyframeValues = chan.keyframes.map {
+                        Animator.combine(target.getTransformation(model), it.value)
+                    }
+
+                    if (useTranslation)
+                        channel {
+                            node = groupNode
+                            transformType = TRANSLATION
+                            timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
+                            transformValues = buffer(FLOAT, keyframeValues.map { it.translation * 0.0625 })
+                        }
+
+
+                    if (useRotation)
+                        channel {
+                            node = groupNode
+                            transformType = ROTATION
+                            timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
+                            transformValues = buffer(FLOAT, keyframeValues.map { it.rotation.toVector4() })
+                        }
+
+                    if (useScale)
+                        channel {
+                            node = groupNode
+                            transformType = SCALE
+                            timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
+                            transformValues = buffer(FLOAT, keyframeValues.map { it.scale })
+                        }
                 }
-
-                if (useTranslation)
-                    channel {
-                        node = groupNode
-                        transformType = TRANSLATION
-                        timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
-                        transformValues = buffer(FLOAT, keyframeValues.map { it.translation * 0.0625 })
-                    }
-
-
-                if (useRotation)
-                    channel {
-                        node = groupNode
-                        transformType = ROTATION
-                        timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
-                        transformValues = buffer(FLOAT, keyframeValues.map { it.rotation.toVector4() })
-                    }
-
-                if (useScale)
-                    channel {
-                        node = groupNode
-                        transformType = SCALE
-                        timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
-                        transformValues = buffer(FLOAT, keyframeValues.map { it.scale })
-                    }
             }
         }
 
         fun GLTFBuilder.addMesh(node: GLTFBuilder.Node, obj: IObject) = node.apply {
             if (obj == ObjectNone) return@apply
+
             mesh {
-                name = obj.name
 
                 primitive {
 

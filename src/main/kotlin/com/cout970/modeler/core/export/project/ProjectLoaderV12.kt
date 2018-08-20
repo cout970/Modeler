@@ -252,7 +252,7 @@ object ProjectLoaderV12 {
             val obj = json.asJsonObject
 
             val channelsObj = obj["channels"]
-            val channels = if (!channelsObj.isJsonArray) emptyList() else channelsObj.asJsonArray.map {
+            val channels = if (!channelsObj.isJsonArray) emptyList() else channelsObj.asJsonArray.map { it ->
                 val channel = it.asJsonObject
 
                 val interName = channel["interpolation"].asString
