@@ -23,7 +23,27 @@ private var lastAnimation = 0
 @UseCase("animation.add")
 private fun addAnimation(programState: ProjectManager): ITask {
     val model = programState.model
-    val animation = Animation.of()
+    val animation = Animation.of("Animation_${lastAnimation++}")
+
+    return TaskChain(listOf(
+        TaskUpdateModel(model, model.addAnimation(animation)),
+        ModifyGui { programState.selectedAnimation = animation.ref; it.animator.sendUpdate() }
+    ))
+}
+
+@UseCase("animation.dup")
+private fun duplicateAnimation(programState: ProjectManager): ITask {
+    val model = programState.model
+    val selected = programState.animation
+
+    if (selected == AnimationNone) return TaskNone
+
+    val animation = Animation.of(
+        selected.name + "_copy",
+        selected.timeLength,
+        selected.channels,
+        selected.channelMapping
+    )
 
     return TaskChain(listOf(
             TaskUpdateModel(model, model.addAnimation(animation)),
@@ -160,6 +180,7 @@ private fun onAnimationPanelClick(comp: Component, animator: Animator, input: II
     val time = (diffX - pixelOffset) / timeToPixel
     val roundTime = (time * 60f).roundToInt() / 60f
 
+    // TODO fix incorrect bounding box
     channels.forEachIndexed { i, channel ->
         if (diffY > i * 26 && diffY <= (i + 1) * 26f) {
 

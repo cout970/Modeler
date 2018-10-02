@@ -393,6 +393,7 @@ class GlTFExporter {
             }
         }
 
+        // TODO fix this
         fun IChannel.usesTranslation() = keyframes.any {
             it.value.toTRS().translation != Vector3.ZERO
         }

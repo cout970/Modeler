@@ -102,21 +102,21 @@ private fun spreadTranslationZ(model: IModel, animator: Animator): ITask {
 @UseCase("keyframe.spread.rotation.x")
 private fun spreadRotationX(model: IModel, animator: Animator): ITask {
     return spreadValue(model, animator) { old, new ->
-        old.copy(rotation = EulerRotation(vec3Of(new.euler.xd, old.euler.yd, old.euler.zd)))
+        old.copy(rotation = EulerRotation(vec3Of(new.euler.angles.xd, old.euler.angles.yd, old.euler.angles.zd)))
     }
 }
 
 @UseCase("keyframe.spread.rotation.y")
 private fun spreadRotationY(model: IModel, animator: Animator): ITask {
     return spreadValue(model, animator) { old, new ->
-        old.copy(rotation = EulerRotation(vec3Of(old.euler.xd, new.euler.yd, old.euler.zd)))
+        old.copy(rotation = EulerRotation(vec3Of(old.euler.angles.xd, new.euler.angles.yd, old.euler.angles.zd)))
     }
 }
 
 @UseCase("keyframe.spread.rotation.z")
 private fun spreadRotationZ(model: IModel, animator: Animator): ITask {
     return spreadValue(model, animator) { old, new ->
-        old.copy(rotation = EulerRotation(vec3Of(old.euler.xd, old.euler.yd, new.euler.zd)))
+        old.copy(rotation = EulerRotation(vec3Of(old.euler.angles.xd, old.euler.angles.yd, new.euler.angles.zd)))
     }
 }
 

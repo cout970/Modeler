@@ -8,6 +8,7 @@ import com.cout970.modeler.core.export.ExportProperties
 import com.cout970.modeler.core.export.ExportTextureProperties
 import com.cout970.modeler.core.export.ImportProperties
 import com.cout970.modeler.core.model.AABB
+import com.cout970.modeler.core.model.toTRS
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.Popup
 import com.cout970.reactive.core.AsyncManager
@@ -59,10 +60,11 @@ private fun showExportMenu(gui: Gui, model: IModel): ITask = TaskAsync { returnC
 @UseCase("model.export.hitboxes")
 private fun showExportHitboxMenu(model: IModel): ITask {
     val aabb = model.objectRefs
-            .map { model.getObject(it) }
-            .filter { it.visible }
-            .map { AABB.fromMesh(it.mesh) }
+        .map { model.getObject(it) }
+        .filter { it.visible }
+        .map { AABB.fromMesh(it.mesh).transform(it.transformation.toTRS()) }
 
+    // TODO fix parent transform not being applied
     return TaskAsync {
         AABB.export(aabb, File(PathConstants.AABB_SAVE_FILE_PATH))
     }

@@ -3,8 +3,8 @@ package core.export
 import com.cout970.modeler.core.export.ModelImporters.objImporter
 import com.cout970.modeler.util.toResourcePath
 import core.utils.getPath
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.fail
+import org.junit.Assert.assertEquals
+import org.junit.Assert.fail
 import org.junit.Test
 import java.io.File
 

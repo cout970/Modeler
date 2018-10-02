@@ -79,9 +79,9 @@ class Transformations {
         val trans3 = TRSTransformation(scale = vec3Of(1, 1, 2))
 
         val trs = TRSTransformation(
-                translation = vec3Of(1, 0, 0),
-                rotation = quatOfAxisAngled(90, 0, 1, 0),
-                scale = vec3Of(1, 1, 2)
+            translation = vec3Of(1, 0, 0),
+            rotation = quatOfAxisAngled(90, 0, 1, 0),
+            scale = vec3Of(1, 1, 2)
         )
 
         Assert.assertEquals(trs, (trans1 * trans2 * trans3))

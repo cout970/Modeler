@@ -1,5 +1,5 @@
 group 'com.cout970'
-version '2.0.1-pre-beta'
+version '2.0.2-beta'
 
 buildscript {
     ext.kotlin_version = '1.2.31'
@@ -14,6 +14,7 @@ buildscript {
             url = "https://dl.bintray.com/kotlin/kotlin-eap-1.1/"
         }
     }
+
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }

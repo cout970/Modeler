@@ -2,6 +2,7 @@ package com.cout970.modeler.core.model
 
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.util.createParentsIfNeeded
+import com.cout970.modeler.util.transformVertex
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
@@ -32,6 +33,8 @@ class AABB(a: IVector3, b: IVector3) {
     fun rotate(rot: IQuaternion): AABB = AABB(rot.rotate(min).round(), rot.rotate(max).round())
     fun scale(a: IVector3): AABB = AABB(min * a, max * a)
 
+    fun transform(trs: TRSTransformation) = AABB(trs.matrix.transformVertex(min), trs.matrix.transformVertex(max))
+
     override fun toString(): String {
         return "AABB(min=$min, max=$max)"
     }
@@ -61,13 +64,13 @@ class AABB(a: IVector3, b: IVector3) {
                 writer.print("listOf(\n")
                 for (i in list.take(list.size - 1)) {
                     writer.print("$vectorClass(${f.format(i.min.x)}, ${f.format(i.min.y)}, ${f.format(
-                            i.min.z)}) * PIXEL ${"to $vectorClass(" + f.format(i.max.x) + ", " + f.format(
-                            i.max.y) + ", " + f.format(i.max.z) + ") * PIXEL,\n"}")
+                        i.min.z)}) * PIXEL ${"to $vectorClass(" + f.format(i.max.x) + ", " + f.format(
+                        i.max.y) + ", " + f.format(i.max.z) + ") * PIXEL,\n"}")
                 }
                 val i = list.last()
                 writer.print("$vectorClass(${f.format(i.min.x)}, ${f.format(i.min.y)}, ${f.format(i.min.z)}" +
-                             ") * PIXEL ${"to $vectorClass(" + f.format(i.max.x) + ", " + f.format(
-                                     i.max.y) + ", " + f.format(i.max.z) + ") * PIXEL\n"}")
+                    ") * PIXEL ${"to $vectorClass(" + f.format(i.max.x) + ", " + f.format(
+                        i.max.y) + ", " + f.format(i.max.z) + ") * PIXEL\n"}")
 
                 writer.print(")\n")
                 writer.flush()

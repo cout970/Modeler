@@ -205,10 +205,12 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
             setTooltip("Add animation")
         }
 
+        +IconButton("animation.dup", "dup_animation", 0f, 3f, 26f, 26f).apply {
+            setTooltip("Duplicate animation")
+        }
+
         +IconButton("animation.remove", "remove_animation", 0f, 3f, 26f, 26f).apply {
             setTooltip("Remove animation")
-            disable()
-            disableInput()
         }
     }
 

@@ -102,6 +102,11 @@ class GuiResources {
         iconMap["play_pause"] = BufferedImage("assets/textures/play_pause.png")
         iconMap["next_keyframe"] = BufferedImage("assets/textures/next_keyframe.png")
         iconMap["seek_end"] = BufferedImage("assets/textures/seek_end.png")
+        iconMap["add_keyframe"] = BufferedImage("assets/textures/add_keyframe.png")
+        iconMap["remove_keyframe"] = BufferedImage("assets/textures/remove_keyframe.png")
+        iconMap["dup_animation"] = BufferedImage("assets/textures/duplicate_material.png")
+        iconMap["add_animation"] = BufferedImage("assets/textures/add.png")
+        iconMap["remove_animation"] = BufferedImage("assets/textures/remove.png")
 
         iconMap["active_selection_mode_object"] = BufferedImage("assets/textures/selection_mode_object.png")
         iconMap["active_selection_mode_face"] = BufferedImage("assets/textures/selection_mode_face.png")
@@ -114,11 +119,6 @@ class GuiResources {
 
         iconMap["active_selection_orientation_local"] = BufferedImage("assets/textures/local_orientation.png")
         iconMap["active_selection_orientation_global"] = BufferedImage("assets/textures/global_orientation.png")
-
-        iconMap["add_keyframe"] = BufferedImage("assets/textures/add_keyframe.png")
-        iconMap["remove_keyframe"] = BufferedImage("assets/textures/remove_keyframe.png")
-        iconMap["add_animation"] = BufferedImage("assets/textures/add.png")
-        iconMap["remove_animation"] = BufferedImage("assets/textures/remove.png")
 
         iconMap["add_channel"] = BufferedImage("assets/textures/add.png")
         iconMap["remove_channel"] = BufferedImage("assets/textures/remove.png")

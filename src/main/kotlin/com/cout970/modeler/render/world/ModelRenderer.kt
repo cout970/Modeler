@@ -225,7 +225,7 @@ class ModelRenderer {
     private fun getRecursiveMatrix(matrixCache: MutableMap<IObjectRef, IMatrix4>, model: IModel,
                                    group: IGroupRef, matrix: IMatrix4, animator: Animator, animation: IAnimation) {
 
-        val mat = animator.animate(animation, group, model.getGroup(group).transform).matrix * matrix
+        val mat = matrix * animator.animate(animation, group, model.getGroup(group).transform).matrix
 
         model.tree.objects[group].forEach { obj ->
             matrixCache[obj] = mat * animator.animate(animation, obj, model.getObject(obj).transformation).matrix
@@ -279,8 +279,11 @@ class ModelRenderer {
     private fun BufferPTNC.appendEdgeSelection(obj: IObject, selection: ISelection, color: IVector3) {
 
         selection.edges.filter { it.objectId == obj.id }.forEach { ref ->
-            add(obj.mesh.pos[ref.firstIndex], Vector2.ORIGIN, Vector3.ZERO, color)
-            add(obj.mesh.pos[ref.secondIndex], Vector2.ORIGIN, Vector3.ZERO, color)
+            val a = obj.mesh.pos.getOrNull(ref.firstIndex) ?: return@forEach
+            val b = obj.mesh.pos.getOrNull(ref.secondIndex) ?: return@forEach
+
+            add(a, Vector2.ORIGIN, Vector3.ZERO, color)
+            add(b, Vector2.ORIGIN, Vector3.ZERO, color)
         }
     }
 
