@@ -8,6 +8,9 @@ object ModelImporters {
     val objImporter = ObjImporter()
     val objExporter = ObjExporter()
 
+    val vsImporter = VsImporter()
+    val vsExporter = VsExporter()
+
     val gltfImporter = GlTFImporter()
     val gltfExporter = GlTFExporter()
 

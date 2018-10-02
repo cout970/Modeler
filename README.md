@@ -14,9 +14,7 @@ This tool is written in Kotlin, using [LWJGL3](https://www.lwjgl.org/) for rende
 ![animations](https://i.imgur.com/c1KTFaO.png)
 
 ### Current state
-The program is in alpha and there are tons of features that need to be implemented.
-
-I doing this as a side project so don't expect it be finished soon.
+The program is in beta so if you find a bug please report it as soon as possible.
 
 ### Formatts
 Valid input formats:
@@ -25,12 +23,13 @@ Valid input formats:
 - TBL: [Tabula model format](https://github.com/iChun/Tabula)
 - JSON: [Minecraft json models](https://minecraft.gamepedia.com/Model)
 - MCX: Custom model format used in [ModeLoader](https://minecraft.curseforge.com/projects/modelloader)
-- GLTF: WIP (mostly supported)
+- GLTF: mostly supported
 
 Valid output formats:
 - OBJ: Wavefront .obj file
 - MCX: Custom model format used in [ModeLoader](https://minecraft.curseforge.com/projects/modelloader)
-- GLTF: WIP (only some parts supported)
+- GLTF: mostly support, has animations
+- VS: Vintage Story model format (not all features are supported)
 
 The formats TCN, TBL and JSON are based on storing objects as cubes with properties, they don't allow 
 arbitrary kinds of shapes so it's impossible to export complex models to them.

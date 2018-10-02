@@ -53,12 +53,12 @@ object MeshFactory {
         )
         val tex = listOf(vec2Of(0, 0), vec2Of(1, 0), vec2Of(1, 1), vec2Of(0, 1))
         val faces = listOf(
-                FaceIndex.from(listOf(0, 1, 2, 3), listOf(0, 1, 2, 3)),
-                FaceIndex.from(listOf(4, 5, 6, 7), listOf(0, 1, 2, 3)),
-                FaceIndex.from(listOf(7, 6, 0, 3), listOf(0, 1, 2, 3)),
-                FaceIndex.from(listOf(1, 5, 4, 2), listOf(0, 1, 2, 3)),
-                FaceIndex.from(listOf(2, 4, 7, 3), listOf(0, 1, 2, 3)),
-                FaceIndex.from(listOf(6, 5, 1, 0), listOf(0, 1, 2, 3))
+            FaceIndex.from(listOf(0, 1, 2, 3), listOf(0, 1, 2, 3)), // down
+            FaceIndex.from(listOf(4, 5, 6, 7), listOf(0, 1, 2, 3)), // up
+            FaceIndex.from(listOf(7, 6, 0, 3), listOf(0, 1, 2, 3)), // north
+            FaceIndex.from(listOf(1, 5, 4, 2), listOf(0, 1, 2, 3)), // south
+            FaceIndex.from(listOf(2, 4, 7, 3), listOf(0, 1, 2, 3)), // west
+            FaceIndex.from(listOf(6, 5, 1, 0), listOf(0, 1, 2, 3))  // east
         )
         return Mesh(pos, tex, faces)
     }

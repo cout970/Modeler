@@ -16,7 +16,8 @@ enum class ImportFormat {
 enum class ExportFormat {
     OBJ, //wavefront models
     MCX,
-    GLTF
+    GLTF,
+    VS   // Vintage Story model format (json)
 }
 
 data class ImportProperties(
@@ -34,6 +35,10 @@ sealed class ExportProperties(
 class GltfExportProperties(
         path: String
 ) : ExportProperties(path, ExportFormat.GLTF)
+
+class VsExportProperties(
+    path: String
+) : ExportProperties(path, ExportFormat.VS)
 
 
 class McxExportProperties(

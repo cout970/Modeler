@@ -1,10 +1,7 @@
 package com.cout970.modeler.gui.rcomponents.popup
 
 import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.core.export.ExportFormat
-import com.cout970.modeler.core.export.GltfExportProperties
-import com.cout970.modeler.core.export.McxExportProperties
-import com.cout970.modeler.core.export.ObjExportProperties
+import com.cout970.modeler.core.export.*
 import com.cout970.modeler.gui.leguicomp.FixedLabel
 import com.cout970.modeler.gui.leguicomp.TextButton
 import com.cout970.modeler.gui.leguicomp.classes
@@ -28,23 +25,24 @@ import org.liquidengine.legui.icon.CharIcon
 import java.io.File
 
 data class ExportDialogState(
-        val text: String,
-        val prefix: String,
-        val selection: Int,
-        val flipUV: Boolean = false,
-        val useNormals: Boolean = true,
-        var forceUpdate: Boolean = false
+    val text: String,
+    val prefix: String,
+    val selection: Int,
+    val flipUV: Boolean = false,
+    val useNormals: Boolean = true,
+    var forceUpdate: Boolean = false
 ) : RState
 
 class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
 
     companion object {
-        private val options = listOf("Obj (*.obj)", "MCX (*.mcx)", "GLTF (*.gltf)")
+        private val options = listOf("Obj (*.obj)", "MCX (*.mcx)", "GLTF (*.gltf)", "VS (*.json)")
 
         private fun getExportFileExtensions(format: ExportFormat): List<String> = when (format) {
             ExportFormat.OBJ -> listOf("*.obj")
             ExportFormat.MCX -> listOf("*.mcx")
             ExportFormat.GLTF -> listOf("*.gltf")
+            ExportFormat.VS -> listOf("*.json")
         }
 
         private var lastPath: String = ""
@@ -76,7 +74,7 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
         }
 
 
-        +TextButton("", "Obj (*.obj)", 90f, 50f, 110f, 24f).apply {
+        +TextButton("", "Obj (*.obj)", 90f, 50f, 82.5f, 24f).apply {
             classes("popup_export_type")
             if (state.selection == 0) classes("popup_export_type_selected")
 
@@ -86,7 +84,7 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
             }
         }
 
-        +TextButton("", "MCX (*.mcx)", 210f, 50f, 110f, 24f).apply {
+        +TextButton("", "MCX (*.mcx)", 180f, 50f, 82.5f, 24f).apply {
             classes("popup_export_type")
             if (state.selection == 1) classes("popup_export_type_selected")
 
@@ -96,7 +94,7 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
             }
         }
 
-        +TextButton("", "GLTF (*.gltf)", 330f, 50f, 110f, 24f).apply {
+        +TextButton("", "GLTF (*.gltf)", 270f, 50f, 82.5f, 24f).apply {
             classes("popup_export_type")
             if (state.selection == 2) classes("popup_export_type_selected")
 
@@ -105,6 +103,17 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
                 setState { copy(selection = 2) }
             }
         }
+
+        +TextButton("", "VS (*.json)", 360f, 50f, 82.5f, 24f).apply {
+            classes("popup_export_type")
+            if (state.selection == 3) classes("popup_export_type_selected")
+
+            onClick {
+                lastType = 3
+                setState { copy(selection = 3) }
+            }
+        }
+
 
         //third line
         +FixedLabel("Path", 25f, 100f, 400f, 24f).apply {
@@ -122,10 +131,10 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
             onRelease {
 
                 val file = FileDialogs.saveFile(
-                        title = "Export",
-                        description = options[state.selection],
-                        defaultPath = "model." + ExportFormat.values()[state.selection].name.toLowerCase(),
-                        filters = getExportFileExtensions(ExportFormat.values()[state.selection])
+                    title = "Export",
+                    description = options[state.selection],
+                    defaultPath = "model." + ExportFormat.values()[state.selection].name.toLowerCase(),
+                    filters = getExportFileExtensions(ExportFormat.values()[state.selection])
                 )
                 if (file != null) {
                     lastPath = file
@@ -231,6 +240,7 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
                         ExportFormat.OBJ -> ObjExportProperties(state.text, File(state.text).nameWithoutExtension, state.useNormals, state.flipUV)
                         ExportFormat.MCX -> McxExportProperties(state.text, state.prefix)
                         ExportFormat.GLTF -> GltfExportProperties(state.text)
+                        ExportFormat.VS -> VsExportProperties(state.text)
                     }
 
                     props.returnFunc(exportProps)

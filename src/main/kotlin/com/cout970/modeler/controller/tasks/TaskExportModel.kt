@@ -28,6 +28,9 @@ class TaskExportModel(
                 is GltfExportProperties -> {
                     ModelImporters.gltfExporter.export(file, model)
                 }
+                is VsExportProperties -> {
+                    ModelImporters.vsExporter.export(file, model)
+                }
             }
             pushNotification("Model exported successfully", "The model has been exported successfully to '${prop.path}'")
         } catch (e: Exception) {

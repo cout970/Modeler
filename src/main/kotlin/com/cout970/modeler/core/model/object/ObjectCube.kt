@@ -45,7 +45,7 @@ data class ObjectCube(
 
     fun generateMesh(): IMesh {
         val cube = MeshFactory.createCube(Vector3.ONE, Vector3.ORIGIN)
-        return updateTextures(Mesh(cube.pos, cube.tex, cube.faces), size, textureOffset, textureSize)
+        return updateTextures(cube, size, textureOffset, textureSize)
     }
 
     fun updateTextures(mesh: IMesh, size: IVector3, offset: IVector2, textureSize: IVector2): IMesh {

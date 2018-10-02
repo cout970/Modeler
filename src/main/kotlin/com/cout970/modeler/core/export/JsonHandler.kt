@@ -32,8 +32,7 @@ import org.joml.Matrix4d
 
 class JsonImporter {
 
-    val gson = GsonBuilder().setPrettyPrinting().create()!!
-
+    private val gson = GsonBuilder().setPrettyPrinting().create()!!
 
     fun import(path: ResourcePath): IModel {
         val model = parse(path)

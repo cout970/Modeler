@@ -55,26 +55,6 @@ private val GSON = GsonBuilder()
         .setPrettyPrinting()
         .create()
 
-private object EmptyListAdapter : JsonSerializer<List<*>> {
-
-    override fun serialize(src: List<*>?, typeOfSrc: Type, context: JsonSerializationContext): JsonElement? {
-        if (src == null || src.isEmpty())
-            return null
-
-        return context.serialize(src)
-    }
-}
-
-private object EmptyMapAdapter : JsonSerializer<Map<*, *>> {
-
-    override fun serialize(src: Map<*, *>?, typeOfSrc: Type, context: JsonSerializationContext): JsonElement? {
-        if (src == null || src.isEmpty())
-            return null
-
-        return context.serialize(src)
-    }
-}
-
 private object AccessorSerializer : JsonSerializer<GltfAccessor> {
 
     override fun serialize(src: GltfAccessor, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
@@ -142,7 +122,7 @@ class GlTFExporter {
 
         images.forEach { (name, path) ->
             try {
-                File(name).writeBytes(path.inputStream().readBytes())
+                File(file.parentFile, name).writeBytes(path.inputStream().readBytes())
             } catch (e: IOException) {
                 e.print()
             }

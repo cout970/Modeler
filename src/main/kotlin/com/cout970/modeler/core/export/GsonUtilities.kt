@@ -316,6 +316,26 @@ class QuadIndicesSerializer : JsonSerializer<QuadIndices>, JsonDeserializer<Quad
     }
 }
 
+object EmptyListAdapter : JsonSerializer<List<*>> {
+
+    override fun serialize(src: List<*>?, typeOfSrc: Type, context: JsonSerializationContext): JsonElement? {
+        if (src == null || src.isEmpty())
+            return null
+
+        return context.serialize(src)
+    }
+}
+
+object EmptyMapAdapter : JsonSerializer<Map<*, *>> {
+
+    override fun serialize(src: Map<*, *>?, typeOfSrc: Type, context: JsonSerializationContext): JsonElement? {
+        if (src == null || src.isEmpty())
+            return null
+
+        return context.serialize(src)
+    }
+}
+
 interface BiSerializer<T> : JsonSerializer<T>, JsonDeserializer<T>
 
 inline fun <reified T> serializerOf(): BiSerializer<T> {
