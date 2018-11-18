@@ -51,5 +51,5 @@ arbitrary kinds of shapes so it's impossible to export complex models to them.
 - Axis Aligned Bounding Box export to text format
 
 ### FAQ
-Q: Hot to open/enable animation panel?
-A: Press ALT + B
+- Q: Hot to open/enable animation panel?
+- A: Press ALT + B
