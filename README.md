@@ -53,3 +53,5 @@ arbitrary kinds of shapes so it's impossible to export complex models to them.
 ### FAQ
 - Q: Hot to open/enable animation panel?
 - A: Press ALT + B
+- Q: Where can I find the shortcuts of the program?
+- A: [Here](Shortcuts.md)
