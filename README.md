@@ -50,3 +50,6 @@ arbitrary kinds of shapes so it's impossible to export complex models to them.
 - Texture template export
 - Axis Aligned Bounding Box export to text format
 
+### FAQ
+Q: Hot to open/enable animation panel?
+A: Press ALT + B
