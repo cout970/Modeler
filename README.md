@@ -14,7 +14,7 @@ This tool is written in Kotlin, using [LWJGL3](https://www.lwjgl.org/) for rende
 ![animations](https://i.imgur.com/c1KTFaO.png)
 
 ### Current state
-The program is in beta so if you find a bug please report it as soon as possible.
+Currently this is project is not in active development. So don't expect updates soon, unless I need 3D models for other project, then I will continue updating this 3D editor.
 
 ### Formatts
 Valid input formats:
@@ -50,3 +50,8 @@ arbitrary kinds of shapes so it's impossible to export complex models to them.
 - Texture template export
 - Axis Aligned Bounding Box export to text format
 
+### FAQ
+- Q: How to open/enable animation panel?
+- A: Press ALT + B
+- Q: Where can I find the shortcuts of the program?
+- A: [Here](Shortcuts.md)
