@@ -139,8 +139,8 @@ class SelectionTypeBar : RComponent<EmptyProps, SelectionTypeState>() {
     @Suppress("UNCHECKED_CAST")
     private fun set(newType: SelectionType) {
         PropertyManager.findProperty("SelectionType")
-                ?.let { it as IPropertyBind<SelectionType> }
-                ?.set(newType)
+            ?.let { it as IPropertyBind<SelectionType> }
+            ?.set(newType)
     }
 }
 

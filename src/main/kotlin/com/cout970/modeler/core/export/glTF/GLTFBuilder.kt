@@ -365,7 +365,7 @@ class GLTFBuilder {
         require(id != null) { "Material doesn't have ID" }
 
         if (id in materialsMap) {
-            return materialsMap[id]!!
+            return materialsMap[id!!]!!
         }
 
         materialsMap[id!!] = bakedMaterials.size

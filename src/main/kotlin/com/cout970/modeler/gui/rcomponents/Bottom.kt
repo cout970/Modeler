@@ -16,7 +16,6 @@ import com.cout970.reactive.dsl.*
 import com.cout970.reactive.nodes.*
 import org.joml.Vector2f
 import org.liquidengine.legui.component.Component
-import org.liquidengine.legui.component.SelectBox
 import org.liquidengine.legui.component.event.selectbox.SelectBoxChangeSelectionEvent
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.event.ScrollEvent
@@ -190,8 +189,8 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
                 }
             }
 
-            on<SelectBoxChangeSelectionEvent<SelectBox>> { event ->
-                val selected = event.targetComponent.selectBoxElements.indexOfFirst { it.text == event.newValue }
+            on<SelectBoxChangeSelectionEvent<String>> { event ->
+                val selected = event.targetComponent.selectBoxElements.indexOfFirst { it.`object` == event.newValue }
 
                 if (selected in animations.indices) {
                     dispatcher.onEvent("animation.select", Panel().also {

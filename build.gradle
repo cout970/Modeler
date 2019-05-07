@@ -1,10 +1,10 @@
 group 'com.cout970'
-version '2.0.2-beta'
+version '2.1.1-beta'
 
 buildscript {
-    ext.kotlin_version = '1.2.31'
+    ext.kotlin_version = '1.3.31'
     ext.lwjglVersion = "3.1.6-SNAPSHOT"
-    ext.legui_version = "1.4.5-226"
+    ext.legui_version = "1.5.0"
     ext.arrow_version = "0.7.2"
 
     repositories {
@@ -34,15 +34,15 @@ repositories {
     jcenter()
     maven {
         name = "Releases"
-        url = "https://raw.github.com/LiquidEngine/repo/releases"
+        url = "https://raw.github.com/SpinyOwl/repo/releases"
     }
     maven {
         name = "Snapshots"
-        url = "https://raw.github.com/LiquidEngine/repo/snapshots"
+        url = "https://raw.github.com/SpinyOwl/repo/snapshots"
     }
     maven {
         name = "Develop"
-        url = "https://raw.github.com/LiquidEngine/repo/develop"
+        url = "https://raw.github.com/SpinyOwl/repo/develop"
     }
     maven {
         name = "kotlin-eap"
@@ -62,7 +62,7 @@ dependencies {
             "./lib/RaytraceLib-1.0.3.jar",
             "./lib/VectorLib-1.0.3.jar",
             "./lib/CollisionLib-1.0.4.jar",
-            "./lib/reactive-1.3.0.jar")
+            "./lib/reactive-1.3.1.jar")
 
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
