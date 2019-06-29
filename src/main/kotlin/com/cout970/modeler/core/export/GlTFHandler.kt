@@ -34,7 +34,6 @@ import com.cout970.vector.api.IVector3
 import com.cout970.vector.api.IVector4
 import com.cout970.vector.extensions.*
 import com.google.gson.*
-import org.apache.commons.io.FilenameUtils
 import org.joml.Quaterniond
 import org.joml.Vector3d
 import java.io.File
@@ -43,17 +42,17 @@ import java.lang.reflect.Type
 import java.util.*
 
 private val GSON = GsonBuilder()
-        .registerTypeAdapter(IVector4::class.java, Vector4Serializer())
-        .registerTypeAdapter(IVector3::class.java, Vector3Serializer())
-        .registerTypeAdapter(IVector2::class.java, Vector2Serializer())
-        .registerTypeAdapter(IQuaternion::class.java, QuaternionSerializer())
-        .registerTypeAdapter(IMatrix4::class.java, Matrix4Serializer())
-        .registerTypeAdapter(GltfAccessor::class.java, AccessorSerializer)
-        .registerTypeAdapter(GltfBufferView::class.java, BufferViewSerializer)
-        .registerTypeAdapter(List::class.java, EmptyListAdapter)
-        .registerTypeAdapter(Map::class.java, EmptyMapAdapter)
-        .setPrettyPrinting()
-        .create()
+    .registerTypeAdapter(IVector4::class.java, Vector4Serializer())
+    .registerTypeAdapter(IVector3::class.java, Vector3Serializer())
+    .registerTypeAdapter(IVector2::class.java, Vector2Serializer())
+    .registerTypeAdapter(IQuaternion::class.java, QuaternionSerializer())
+    .registerTypeAdapter(IMatrix4::class.java, Matrix4Serializer())
+    .registerTypeAdapter(GltfAccessor::class.java, AccessorSerializer)
+    .registerTypeAdapter(GltfBufferView::class.java, BufferViewSerializer)
+    .registerTypeAdapter(List::class.java, EmptyListAdapter)
+    .registerTypeAdapter(Map::class.java, EmptyMapAdapter)
+    .setPrettyPrinting()
+    .create()
 
 private object AccessorSerializer : JsonSerializer<GltfAccessor> {
 
@@ -117,7 +116,7 @@ class GlTFExporter {
 
     fun export(file: File, _model: IModel) {
         val (model, buffer, images) = ModelToGltf(_model, file.nameWithoutExtension).build()
-        File(file.parent, model.buffers[0].uri).writeBytes(buffer)
+        File(file.parent, model.buffers[0].uri!!).writeBytes(buffer)
         file.writeBytes(GSON.toJson(model).toByteArray())
 
         images.forEach { (name, path) ->
@@ -156,7 +155,7 @@ class GlTFExporter {
                         }
 
                         tree.objects.map { model.getObject(it) }
-                                .forEach { addObject(this, it) }
+                            .forEach { addObject(this, it) }
                     }
                 }
 
@@ -177,9 +176,9 @@ class GlTFExporter {
                 val transform = group.transform.toTRS()
                 if (transform.matrix != Matrix4.IDENTITY) {
                     transformation = GLTFBuilder.Transformation.TRS(
-                            transform.translation * 0.0625f,
-                            transform.rotation,
-                            transform.scale
+                        transform.translation * 0.0625f,
+                        transform.rotation,
+                        transform.scale
                     )
                 }
 
@@ -200,9 +199,9 @@ class GlTFExporter {
                 val objTransform = it.transformation.toTRS()
                 if (objTransform.matrix != Matrix4.IDENTITY) {
                     transformation = GLTFBuilder.Transformation.TRS(
-                            objTransform.translation * 0.0625f,
-                            objTransform.rotation,
-                            objTransform.scale
+                        objTransform.translation * 0.0625f,
+                        objTransform.rotation,
+                        objTransform.scale
                     )
                 }
 
@@ -280,18 +279,18 @@ class GlTFExporter {
                     val vertexPos = obj.mesh.faces.flatMap { face ->
                         when (face.vertexCount) {
                             3 -> listOf(
-                                    pos[face.pos[0]] * scale,
-                                    pos[face.pos[1]] * scale,
-                                    pos[face.pos[2]] * scale
+                                pos[face.pos[0]] * scale,
+                                pos[face.pos[1]] * scale,
+                                pos[face.pos[2]] * scale
                             )
                             4 -> listOf(
-                                    pos[face.pos[0]] * scale,
-                                    pos[face.pos[1]] * scale,
-                                    pos[face.pos[2]] * scale,
+                                pos[face.pos[0]] * scale,
+                                pos[face.pos[1]] * scale,
+                                pos[face.pos[2]] * scale,
 
-                                    pos[face.pos[0]] * scale,
-                                    pos[face.pos[2]] * scale,
-                                    pos[face.pos[3]] * scale
+                                pos[face.pos[0]] * scale,
+                                pos[face.pos[2]] * scale,
+                                pos[face.pos[3]] * scale
                             )
                             else -> error("Invalid vertexCount: ${face.vertexCount}")
                         }
@@ -299,18 +298,18 @@ class GlTFExporter {
                     val vertexTex = obj.mesh.faces.flatMap { face ->
                         when (face.vertexCount) {
                             3 -> listOf(
-                                    tex[face.tex[0]],
-                                    tex[face.tex[1]],
-                                    tex[face.tex[2]]
+                                tex[face.tex[0]],
+                                tex[face.tex[1]],
+                                tex[face.tex[2]]
                             )
                             4 -> listOf(
-                                    tex[face.tex[0]],
-                                    tex[face.tex[1]],
-                                    tex[face.tex[2]],
+                                tex[face.tex[0]],
+                                tex[face.tex[1]],
+                                tex[face.tex[2]],
 
-                                    tex[face.tex[0]],
-                                    tex[face.tex[2]],
-                                    tex[face.tex[3]]
+                                tex[face.tex[0]],
+                                tex[face.tex[2]],
+                                tex[face.tex[3]]
                             )
                             else -> error("Invalid vertexCount: ${face.vertexCount}")
                         }
@@ -342,11 +341,12 @@ class GlTFExporter {
 
                             pbrMetallicRoughness {
                                 baseColor {
-                                    val name = "${prefix}_${FilenameUtils.getName(material.path.uri.toURL().path)}"
+                                    val name = "${prefix}_${material.name}".toLowerCase().removeSuffix(".png").removeSuffix(".png")
                                     var count = 1
-                                    var finalName = name
+                                    var finalName = "$name.png"
+
                                     while (finalName in pathToImg) { // || File(folder, finalName).exists()) {
-                                        finalName = "${name}_$count"
+                                        finalName = "${name}_$count.png"
                                         count++
                                     }
                                     pathToImg[finalName] = material.path
@@ -429,15 +429,15 @@ class GlTFImporter {
             val channels = anim.channels.map { (gl, channel) ->
                 val keyframes = channel.times.mapIndexed { index, time ->
                     Keyframe(
-                            time,
-                            transformationOf(channel.values[index], channel.path)
+                        time,
+                        transformationOf(channel.values[index], channel.path)
                     )
                 }
 
                 val chan = Channel(
-                        name = "Channel",
-                        interpolation = InterpolationMethod.LINEAR,
-                        keyframes = keyframes
+                    name = "Channel",
+                    interpolation = InterpolationMethod.LINEAR,
+                    keyframes = keyframes
                 )
 
                 val thing = nodeMapping[gl.target.node]
@@ -449,10 +449,10 @@ class GlTFImporter {
             }
 
             val a = Animation(
-                    channels.associateBy { it.ref },
-                    channelMapping,
-                    channels.map { it.keyframes.last().time }.max() ?: 1f,
-                    gltf.name ?: "Animation"
+                channels.associateBy { it.ref },
+                channelMapping,
+                channels.map { it.keyframes.last().time }.max() ?: 1f,
+                gltf.name ?: "Animation"
             )
             animations += a.ref to a
         }
@@ -510,9 +510,9 @@ class GlTFImporter {
         }
 
         return TRSTransformation(
-                gltfNode.translation?.times(16) ?: Vector3.ZERO,
-                gltfNode.rotation ?: Quaternion.IDENTITY,
-                gltfNode.scale ?: Vector3.ONE
+            gltfNode.translation?.times(16) ?: Vector3.ZERO,
+            gltfNode.rotation ?: Quaternion.IDENTITY,
+            gltfNode.scale ?: Vector3.ONE
         )
     }
 
@@ -553,9 +553,9 @@ class GlTFImporter {
         }
 
         return Object(
-                name = name,
-                mesh = meshes.parallelStream().reduce { acc, other -> acc.merge(other) }.get(),
-                transformation = transform
+            name = name,
+            mesh = meshes.parallelStream().reduce { acc, other -> acc.merge(other) }.get(),
+            transformation = transform
         )
     }
 

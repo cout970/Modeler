@@ -8,15 +8,17 @@ import com.cout970.modeler.gui.leguicomp.classes
 import com.cout970.modeler.gui.leguicomp.clear
 import com.cout970.modeler.gui.leguicomp.color
 import com.cout970.modeler.render.tool.Animator
-import com.cout970.reactive.core.RBuilder
-import com.cout970.reactive.core.RProps
-import com.cout970.reactive.core.RState
-import com.cout970.reactive.core.RStatelessComponent
+import com.cout970.reactive.core.*
 import com.cout970.reactive.dsl.*
 import com.cout970.reactive.nodes.*
 import org.liquidengine.legui.component.Button
+import org.liquidengine.legui.component.Component
+import org.liquidengine.legui.component.TextInput
+import org.liquidengine.legui.component.misc.listener.scrollablepanel.ScrollablePanelViewportScrollListener
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.event.ScrollEvent
+import org.liquidengine.legui.input.Mouse
+import org.liquidengine.legui.system.handler.SehUtil
 
 data class LeftPanelProps(
     val visible: Boolean, val programState: GuiState,
@@ -52,8 +54,6 @@ class LeftPanel : RStatelessComponent<LeftPanelProps>() {
                 posY = 5f
                 sizeX = parent.sizeX
                 sizeY = parent.sizeY - posY + 8f
-
-                child("Container")?.listenerMap?.clear(ScrollEvent::class.java)
             }
 
             horizontalScroll { style { hide() } }
@@ -75,6 +75,7 @@ class LeftPanel : RStatelessComponent<LeftPanelProps>() {
 
                 postMount {
                     listenerMap.clear(ScrollEvent::class.java)
+                    listenerMap.addListener(ScrollEvent::class.java, CustomScrollablePanelViewportScrollListener())
                 }
             }
 
@@ -134,3 +135,15 @@ class GroupTitle : RStatelessComponent<GroupTitleProps>() {
     }
 }
 
+class CustomScrollablePanelViewportScrollListener : ScrollablePanelViewportScrollListener() {
+    override fun process(event: ScrollEvent<*>) {
+        val targetList = mutableListOf<Component>()
+        SehUtil.recursiveTargetComponentListSearch(Mouse.getCursorPosition(), event.targetComponent, targetList)
+        for (component in targetList) {
+            if (component is TextInput || component.metadata[Renderer.METADATA_KEY] == "TinyFloatInput") {
+                return
+            }
+        }
+        super.process(event)
+    }
+}
