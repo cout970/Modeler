@@ -179,7 +179,7 @@ class Search : RComponent<EmptyProps, SearchState>() {
 
         if (e.key == Keyboard.KEY_UP && state.selected > 0) {
             setState { copy(selected = selected - 1) }
-        } else if (e.key == Keyboard.KEY_DOWN && Math.min(state.results.size, MAX_SEARCH_RESULTS) > state.selected + 1) {
+        } else if (e.key == Keyboard.KEY_DOWN && min(state.results.size, MAX_SEARCH_RESULTS) > state.selected + 1) {
             setState { copy(selected = selected + 1) }
         } else if (e.key == Keyboard.KEY_ENTER) {
             dispatcher.onEvent(state.results[state.selected].cmd, null)

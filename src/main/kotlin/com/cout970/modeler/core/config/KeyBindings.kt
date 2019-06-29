@@ -93,6 +93,7 @@ class KeyBindings {
     var scaleTextureDown = KeyBind(KEY_PAGE_DOWN, CTRL)
 
     var joinObjects = KeyBind(KEY_J, CTRL)
+    var splitSelection = KeyBind(KEY_J, CTRL, SHIFT)
     var arrangeUvs = KeyBind(KEY_L, CTRL)
     var extrudeFace = KeyBind(KEY_E, CTRL)
     var setIsometricView = KeyBind(KEY_I, ALT)
@@ -111,7 +112,7 @@ class KeyBindings {
     var deleteCanvas = KeyBind(KEY_D, ALT)
 
     var newProject = KeyBind(KEY_N, CTRL, ALT, SHIFT)
-    var openProject = KeyBind(KEY_O, CTRL, ALT, SHIFT)
+    var loadProject = KeyBind(KEY_L, CTRL, ALT, SHIFT)
     var saveProject = KeyBind(KEY_S, CTRL)
     var saveProjectAs = KeyBind(KEY_S, CTRL, SHIFT)
     var importModel = KeyBind(KEY_I, CTRL, SHIFT)

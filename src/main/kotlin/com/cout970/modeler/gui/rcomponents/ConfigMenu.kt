@@ -521,13 +521,29 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                     openLink("https://github.com/cout970/Modeler")
                 }
             }
-            +FixedLabel("You can ask for support at the Magneticraft discord:",
+
+            +FixedLabel("Shortcuts:",
                     10f, 260f, width - 40f, 24f).apply {
                 fontSize(22f)
                 textState.horizontalAlign = HorizontalAlign.LEFT
             }
-            +FixedLabel("Discord",
+            +FixedLabel("https://github.com/cout970/Modeler/blob/master/Shortcuts.md",
                     10f, 280f, width - 40f, 24f).apply {
+                fontSize(22f)
+                textState.horizontalAlign = HorizontalAlign.LEFT
+                textState.textColor = Vector4f(0f, 119f / 255f, 204f / 255f, 1.0f)
+                onClick {
+                    openLink("https://github.com/cout970/Modeler/blob/master/Shortcuts.md")
+                }
+            }
+
+            +FixedLabel("You can ask for support at the Magneticraft discord:",
+                10f, 320f, width - 40f, 24f).apply {
+                fontSize(22f)
+                textState.horizontalAlign = HorizontalAlign.LEFT
+            }
+            +FixedLabel("Discord",
+                10f, 340f, width - 40f, 24f).apply {
                 fontSize(22f)
                 textState.horizontalAlign = HorizontalAlign.LEFT
                 textState.textColor = Vector4f(0f, 119f / 255f, 204f / 255f, 1.0f)

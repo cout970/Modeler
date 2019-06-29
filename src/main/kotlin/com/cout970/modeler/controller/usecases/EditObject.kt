@@ -101,6 +101,44 @@ private fun joinObjects(programState: IProgramState): ITask {
     ))
 }
 
+@UseCase("model.obj.split")
+private fun splitObjects(programState: IProgramState): ITask {
+    val selection = programState.modelSelection.getOrNull() ?: return TaskNone
+    if (selection.selectionType == SelectionType.OBJECT) return TaskNone
+
+    // TODO note: this is a copy of joinObjects
+    val model = programState.model
+    val objs = model.getSelectedObjects(selection)
+    val objsRefs = selection.objects
+
+    val baseObj = objs.first()
+
+    val objMeshes = objs.map { obj ->
+        obj.mesh.transform(obj.transformation).transform(baseObj.transformation.invert())
+    }
+    val mesh = objMeshes.reduce { acc, mesh -> acc.merge(mesh) }
+
+    val newObj = Object(
+        name = objs.first().name,
+        mesh = mesh,
+        material = baseObj.material,
+        transformation = baseObj.transformation
+    )
+    val newModel = model.removeObjects(objsRefs).addObjects(listOf(newObj))
+
+    return TaskChain(listOf(
+        TaskUpdateModelSelection(
+            oldSelection = programState.modelSelection,
+            newSelection = Nullable.castNull()
+        ),
+        TaskUpdateTextureSelection(
+            oldSelection = programState.textureSelection,
+            newSelection = Nullable.castNull()
+        ),
+        TaskUpdateModel(oldModel = model, newModel = newModel)
+    ))
+}
+
 @UseCase("model.obj.arrange.uv")
 private fun arrangeUVs(programState: IProgramState): ITask {
     val selection = programState.modelSelection.getOrNull() ?: return TaskNone

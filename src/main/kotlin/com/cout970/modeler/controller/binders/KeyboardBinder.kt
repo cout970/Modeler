@@ -13,6 +13,8 @@ class KeyboardBinder(val dispatcher: Dispatcher) {
     fun onEvent(e: EventKeyUpdate): Boolean {
         Config.keyBindings.apply {
             val key = when {
+                newProject.check(e) -> "project.new"
+                loadProject.check(e) -> "project.load"
                 saveProject.check(e) -> "project.save"
                 saveProjectAs.check(e) -> "project.save.as"
                 exportModel.check(e) -> "model.export"
@@ -49,10 +51,12 @@ class KeyboardBinder(val dispatcher: Dispatcher) {
                 scaleTextureDown.check(e) -> "model.texture.scale.down"
 
                 joinObjects.check(e) -> "model.obj.join"
+                splitSelection.check(e) -> "model.obj.split"
                 arrangeUvs.check(e) -> "model.obj.arrange.uv"
                 extrudeFace.check(e) -> "model.face.extrude"
                 setIsometricView.check(e) -> "camera.set.isometric"
 
+                newColoredMaterial.check(e) -> "material.new.colored"
                 addAnimation.check(e) -> "animation.add"
                 toggleAnimation.check(e) -> "animation.state.toggle"
 
@@ -60,7 +64,7 @@ class KeyboardBinder(val dispatcher: Dispatcher) {
                 e.keycode == Keyboard.KEY_F1 -> "debug"
                 e.keycode == Keyboard.KEY_F2 -> "debug.changeColors"
                 e.keycode == Keyboard.KEY_F3 -> "debug.show.profiling"
-            // wtf F4 doesn't work
+                // wtf F4 doesn't work
                 e.keycode == Keyboard.KEY_F5 -> "debug.toggle.dynamic"
                 e.keycode == Keyboard.KEY_F6 -> "debug.gc"
                 e.keycode == Keyboard.KEY_F7 -> "debug.print.focused"
