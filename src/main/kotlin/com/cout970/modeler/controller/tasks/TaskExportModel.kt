@@ -20,7 +20,7 @@ class TaskExportModel(
         try {
             when (prop) {
                 is ObjExportProperties -> {
-                    ModelImporters.objExporter.export(file.outputStream(), model, prop)
+                    ModelImporters.objExporter.export(file.outputStream(), model, state.gui, prop)
                 }
                 is McxExportProperties -> {
                     ModelImporters.mcxExporter.export(file.outputStream(), model, prop)

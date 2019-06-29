@@ -10,7 +10,6 @@ import com.cout970.modeler.gui.leguicomp.PixelBorder
 import com.cout970.modeler.gui.leguicomp.ProfilerDiagram
 import com.cout970.modeler.input.event.CustomCallbackKeeper
 import com.cout970.modeler.render.gui.LeguiComponentRenderer
-import org.joml.Vector4f
 import org.liquidengine.legui.animation.Animator
 import org.liquidengine.legui.component.Frame
 import org.liquidengine.legui.component.LayerContainer
@@ -58,11 +57,6 @@ class GuiRenderer(val rootFrame: Frame, window: Long) {
             it.putComponentRenderer(LayerContainer::class.java, LeguiComponentRenderer as NvgComponentRenderer<LayerContainer>)
         }
     }
-
-    private fun rgba(r: Int, g: Int, b: Int, a: Float): Vector4f {
-        return Vector4f(r / 255f, g / 255f, b / 255f, a)
-    }
-
 
     fun updateEvents() {
         context.updateGlfwWindow()

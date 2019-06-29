@@ -56,7 +56,7 @@ object CSSTheme : Theme(createThemeManager()) {
                     "pressed" to component.pressedStyle
             )
 
-            modes.forEach { type, styleObj ->
+            modes.forEach { (type, styleObj) ->
                 classes.split(",").forEach classLoop@{ thisClass ->
                     val style = style[Selector(thisClass, type)] ?: return@classLoop
                     applyStyle(style, styleObj, component)

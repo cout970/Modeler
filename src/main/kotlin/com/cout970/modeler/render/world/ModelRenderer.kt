@@ -90,7 +90,7 @@ class ModelRenderer {
                 objectCacheHash[obj.ref] = obj.hashCode() xor modelSelectionHash xor textureSelectionHash
             }
 
-            oldMap.forEach { ref, cache ->
+            oldMap.forEach { (ref, cache) ->
                 if (ref !in objectCache) {
                     cache.geometry.close()
                     cache.modelSelection?.close()

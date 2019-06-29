@@ -49,7 +49,11 @@ class McxExporter {
 
         model.objects.forEach { obj ->
 
-            val name = model.getMaterial(obj.material).name.replace("\\.png$".toRegex(), "")
+            val name = model.getMaterial(obj.material).name
+                .replace("\\.png$".toRegex(), "")
+                .replace(" ", "_")
+                .toLowerCase()
+
             val texture = "${args.domain}/$name"
             val mesh = obj.mesh
             val localIndices = mesh.faces.map { face ->

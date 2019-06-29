@@ -46,8 +46,9 @@ object Profiler : ITickeable {
             val log = ProfilingLog(profiledSections.toList())
             acumLogs.add(log)
 
-            if (System.currentTimeMillis() - lastTime > 500) {
-                lastTime = System.currentTimeMillis()
+            val time = System.currentTimeMillis()
+            if (time - lastTime > 500) {
+                lastTime = time
                 renderLog = acumLogs
                         .flatMap { it.data }
                         .groupBy { it.name }

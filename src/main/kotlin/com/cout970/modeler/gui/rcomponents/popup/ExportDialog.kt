@@ -236,16 +236,29 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
 
             +TextButton("", "Export", 0f, 0f, 80f, 24f).apply {
                 onClick {
-                    val exportProps = when (ExportFormat.values()[state.selection]) {
-                        ExportFormat.OBJ -> ObjExportProperties(state.text, File(state.text).nameWithoutExtension, state.useNormals, state.flipUV)
-                        ExportFormat.MCX -> McxExportProperties(state.text, state.prefix)
-                        ExportFormat.GLTF -> GltfExportProperties(state.text)
-                        ExportFormat.VS -> VsExportProperties(state.text)
+                    val format = ExportFormat.values()[state.selection]
+                    val path = addExtensionIfNeeded(state.text, format)
+                    lastPath = path
+
+                    val exportProps = when (format) {
+                        ExportFormat.OBJ -> ObjExportProperties(path, File(path).nameWithoutExtension, state.useNormals, state.flipUV)
+                        ExportFormat.MCX -> McxExportProperties(path, state.prefix)
+                        ExportFormat.GLTF -> GltfExportProperties(path)
+                        ExportFormat.VS -> VsExportProperties(path)
                     }
 
                     props.returnFunc(exportProps)
                 }
             }
+        }
+    }
+
+    fun addExtensionIfNeeded(path: String, format: ExportFormat): String {
+        return when (format) {
+            ExportFormat.OBJ -> if (path.endsWith(".obj")) path else "$path.obj"
+            ExportFormat.MCX -> if (path.endsWith(".mcx")) path else "$path.mcx"
+            ExportFormat.GLTF -> if (path.endsWith(".gltf")) path else "$path.gltf"
+            ExportFormat.VS -> if (path.endsWith(".json")) path else "$path.json"
         }
     }
 

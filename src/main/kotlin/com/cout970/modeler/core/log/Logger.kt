@@ -41,21 +41,27 @@ object Logger {
         val hour = time[Calendar.HOUR_OF_DAY]
         val minute = time[Calendar.MINUTE]
 
-        val name = "log_${year}_${month + 1}_${day}_$hour-$minute.log"
+        val prefix = "log_${year}_${month + 1}_${day}_$hour-$minute"
         var tryNum = 0
-        if (File(logs, name).exists()) {
-            while (File(logs, "log_${year}_${month + 1}_${day}_$hour-${minute}_$tryNum.log").exists()) {
+        if (File(logs, "$prefix.log").exists()) {
+            while (File(logs, "${prefix}_$tryNum.log").exists()) {
                 tryNum++
             }
-            return "log_${year}_${month + 1}_${day}_$hour-${minute}_$tryNum.log"
+            return "${prefix}_$tryNum.log"
         }
-        return name
+        return "$prefix.log"
     }
 }
 
-enum class Level(
-        val priority: Int) { DEBUG(250), ERROR(1000), WARNING(500), NORMAL(250), FINE(100), FINEST(50), LOG_CLASSES(25) }
-
+enum class Level(val priority: Int) {
+    DEBUG(75),
+    ERROR(1000),
+    WARNING(500),
+    NORMAL(250),
+    FINE(100),
+    FINEST(50),
+    LOG_CLASSES(25)
+}
 
 inline fun log(level: Level, func: () -> String) {
     if (level.priority >= Logger.level.priority) {

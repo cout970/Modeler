@@ -1,8 +1,15 @@
 package com.cout970.modeler.core.export
 
+import com.cout970.matrix.api.IMatrix4
+import com.cout970.matrix.extensions.Matrix4
+import com.cout970.matrix.extensions.times
+import com.cout970.modeler.api.animation.IAnimation
 import com.cout970.modeler.api.model.IModel
+import com.cout970.modeler.api.model.`object`.IGroupRef
+import com.cout970.modeler.api.model.`object`.RootGroupRef
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.mesh.IMesh
+import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
@@ -14,6 +21,8 @@ import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.resource.ResourcePath
+import com.cout970.modeler.gui.Gui
+import com.cout970.modeler.render.tool.Animator
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
@@ -27,28 +36,36 @@ import java.util.*
  */
 class ObjExporter {
 
-    fun export(output: OutputStream, model: IModel, args: ObjExportProperties) {
+    fun export(output: OutputStream, model: IModel, gui: Gui, args: ObjExportProperties) {
 
         val vertex = LinkedList<IVector3>()
-        val vertexMap = LinkedHashSet<IVector3>()
+        val vertexMap = HashSet<IVector3>()
 
         val texCoords = LinkedList<IVector2>()
-        val texCoordsMap = LinkedHashSet<IVector2>()
+        val texCoordsMap = HashSet<IVector2>()
 
         val normals = LinkedList<IVector3>()
         val normalsMap = LinkedHashSet<IVector3>()
 
         val groups = mutableListOf<ObjGroup>()
 
+        val matrixCache = mutableMapOf<IObjectRef, IMatrix4>()
+        val animator = gui.animator
+        val animation = model.animationMap[gui.programState.selectedAnimation] ?: animator.animation
+
+        getRecursiveMatrix(matrixCache, model, animator, animation)
+
         model.objects.forEach { obj ->
 
             val quads = mutableListOf<ObjQuad>()
-            obj.mesh.faces.forEach { face ->
+            val mesh = obj.mesh.transform(matrixCache[obj.ref] ?: Matrix4.IDENTITY)
+
+            mesh.faces.forEach { face ->
                 val objQuad = ObjQuad()
 
                 for (i in 0 until face.vertexCount) {
-                    val vertPos = obj.mesh.pos[face.pos[i]]
-                    val vertTex = obj.mesh.tex[face.tex[i]]
+                    val vertPos = mesh.pos[face.pos[i]]
+                    val vertTex = mesh.tex[face.tex[i]]
 
                     if (vertexMap.contains(vertPos)) {
                         objQuad.vertexIndices[i] = vertex.indexOf(vertPos) + 1
@@ -68,7 +85,7 @@ class ObjExporter {
                 }
 
                 if (args.useNormals) {
-                    val (a, b, c, d) = face.pos.map { obj.mesh.pos[it] }
+                    val (a, b, c, d) = face.pos.map { mesh.pos[it] }
                     val ac = c - a
                     val bd = d - b
                     val normal = (ac cross bd).normalize()
@@ -102,7 +119,9 @@ class ObjExporter {
 
         writer.write("mtllib ${args.materialLib}.mtl\n")
 
-        for (a in vertex.map { it * 0.0625 }) {
+        // The program stores positions multiplied by 16 to avoid working with decimals
+        // but the values must be converted back to the original size
+        for (a in vertex.map { it * (1.0 / 16.0) }) {
             writer.write(String.format("v %s %s %s\n", format.format(a.xd), format.format(a.yd), format.format(a.zd)))
         }
         writer.append('\n')
@@ -125,15 +144,15 @@ class ObjExporter {
         }
 
         for (group in groups) {
-            writer.write("usemtl ${group.material.replace(' ', '_')}\n\n")
-            writer.append("g ${group.name.replace(' ', '_')}\n")
+            writer.write("\nusemtl ${group.material.replace(' ', '_').toLowerCase()}\n")
+            writer.append("g ${group.name.replace(' ', '_').toLowerCase()}\n")
             for (quad in group.quads) {
                 val a = quad.vertexIndices
                 val b = quad.textureIndices
                 val c = quad.normalIndices
                 writer.write(String.format("f %d/%d/%d %d/%d/%d %d/%d/%d %d/%d/%d\n",
-                        a[0], b[0], c[0], a[1], b[1], c[1],
-                        a[2], b[2], c[2], a[3], b[3], c[3]))
+                    a[0], b[0], c[0], a[1], b[1], c[1],
+                    a[2], b[2], c[2], a[3], b[3], c[3]))
             }
 
         }
@@ -142,6 +161,33 @@ class ObjExporter {
         writer.flush()
         writer.close()
     }
+
+    private fun getRecursiveMatrix(matrixCache: MutableMap<IObjectRef, IMatrix4>, model: IModel,
+                                   animator: Animator, animation: IAnimation) {
+
+        model.tree.objects[RootGroupRef].forEach { obj ->
+            matrixCache[obj] = animator.animate(animation, obj, model.getObject(obj).transformation).matrix
+        }
+
+        model.tree.groups[RootGroupRef].forEach {
+            getRecursiveMatrix(matrixCache, model, it, Matrix4.IDENTITY, animator, animation)
+        }
+    }
+
+    private fun getRecursiveMatrix(matrixCache: MutableMap<IObjectRef, IMatrix4>, model: IModel,
+                                   group: IGroupRef, matrix: IMatrix4, animator: Animator, animation: IAnimation) {
+
+        val mat = matrix * animator.animate(animation, group, model.getGroup(group).transform).matrix
+
+        model.tree.objects[group].forEach { obj ->
+            matrixCache[obj] = mat * animator.animate(animation, obj, model.getObject(obj).transformation).matrix
+        }
+
+        model.tree.groups[group].forEach {
+            getRecursiveMatrix(matrixCache, model, it, mat, animator, animation)
+        }
+    }
+
 }
 
 class ObjImporter {
@@ -171,8 +217,8 @@ class ObjImporter {
 
         val objs = groups.map { group ->
             Object(name = group.name,
-                    mesh = group.toMesh(data).optimize(),
-                    material = materialMap[group.material] ?: MaterialRefNone
+                mesh = group.toMesh(data).optimize(),
+                material = materialMap[group.material] ?: MaterialRefNone
             )
         }
 
@@ -184,9 +230,9 @@ class ObjImporter {
         groups.firstOrNull() ?: return Mesh()
 
         return groups
-                .map { objGroup -> objGroup.toMesh(data) }
-                .reduce { acc, iMesh -> acc.merge(iMesh) }
-                .optimize()
+            .map { objGroup -> objGroup.toMesh(data) }
+            .reduce { acc, iMesh -> acc.merge(iMesh) }
+            .optimize()
     }
 
     private fun ObjGroup.toMesh(data: MeshData): IMesh {
@@ -228,26 +274,26 @@ class ObjImporter {
             if (line.startsWith(sVertex)) { //vertex
                 //reads a vertex
                 vertices.add(vec3Of(lineSpliced[startIndex].toFloat(),
-                        lineSpliced[startIndex + 1].toFloat(),
-                        lineSpliced[startIndex + 2].toFloat()))
+                    lineSpliced[startIndex + 1].toFloat(),
+                    lineSpliced[startIndex + 2].toFloat()))
 
             } else if (line.startsWith(sNormal)) { //normals
 
                 hasNormals = true
                 //read normals
                 normals.add(vec3Of(lineSpliced[startIndex].toFloat(),
-                        lineSpliced[startIndex + 1].toFloat(),
-                        lineSpliced[startIndex + 2].toFloat()))
+                    lineSpliced[startIndex + 1].toFloat(),
+                    lineSpliced[startIndex + 2].toFloat()))
 
             } else if (line.startsWith(sTexture) || line.startsWith(sTexture2)) { //textures
 
                 hasTextures = true
                 //reads a texture coords
                 texCoords.add(vec2Of(lineSpliced[startIndex].toFloat(),
-                        if (flipUvs)
-                            1 - lineSpliced[startIndex + 1].toFloat()
-                        else
-                            lineSpliced[startIndex + 1].toFloat()))
+                    if (flipUvs)
+                        1 - lineSpliced[startIndex + 1].toFloat()
+                    else
+                        lineSpliced[startIndex + 1].toFloat()))
 
             } else if (line.startsWith(sFace)) { //faces
                 val quad = ObjQuad()
@@ -285,7 +331,7 @@ class ObjImporter {
                 } catch (e: Exception) {
                     log(Level.ERROR) { "Error reading the material library: ${e.message}" }
                 }
-            } else if (!line.startsWith(sComment) && !line.isEmpty()) {
+            } else if (!line.startsWith(sComment) && line.isNotEmpty()) {
                 if (lineSpliced[0] !in setOf("s")) {
                     log(Level.ERROR) { "Invalid line parsing OBJ ($path): '$line'" }
                 }
@@ -311,19 +357,18 @@ class ObjImporter {
                 material = ObjMaterial(lineSpliced[1])
             } else if (line.startsWith(sMap_Ka) || line.startsWith(sMap_Kd)) {
                 try {
-                    val subPath: String
-                    if (lineSpliced[1].contains(":")) {
+                    val subPath = if (lineSpliced[1].contains(":")) {
                         val slash = lineSpliced[1].substringAfter("/")
-                        subPath = "textures/" + (if (slash.isEmpty()) lineSpliced[1].substringAfter(
-                                ":") else slash) + ".png"
+                        val textureName = if (slash.isEmpty()) lineSpliced[1].substringAfter(":") else slash
+                        "textures/$textureName.png"
                     } else {
-                        subPath = lineSpliced[1] + ".png"
+                        lineSpliced[1] + ".png"
                     }
                     material!!.map_Ka = resource.toPath().resolve(subPath).toString()
                 } catch (e: Exception) {
                     e.print()
                 }
-            } else if (!line.startsWith(sComment) && !line.isEmpty()) {
+            } else if (!line.startsWith(sComment) && line.isNotEmpty()) {
                 // Ignoring line
             }
         }
@@ -339,15 +384,15 @@ private data class ObjMaterial(val name: String) {
 }
 
 private class MeshData(
-        val vertices: List<IVector3>,
-        val texCoords: List<IVector2>,
-        val normals: List<IVector3>
+    val vertices: List<IVector3>,
+    val texCoords: List<IVector2>,
+    val normals: List<IVector3>
 )
 
 private class ObjGroup(
-        val name: String,
-        var material: String,
-        val quads: MutableList<ObjQuad>
+    val name: String,
+    var material: String,
+    val quads: MutableList<ObjQuad>
 )
 
 private class ObjQuad {

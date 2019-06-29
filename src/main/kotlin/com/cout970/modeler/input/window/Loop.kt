@@ -1,6 +1,5 @@
 package com.cout970.modeler.input.window
 
-import com.cout970.glutilities.structure.GameLoop
 import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.util.ITickeable
 
@@ -11,17 +10,16 @@ class Loop(val tickeables: List<ITickeable>, val timer: Timer, val shouldClose: 
 
     companion object {
         var currentTick = 0L
-    }
-    fun run() {
-        GameLoop(this::tick).start()
+            private set
     }
 
-    private fun tick(loop: GameLoop) {
-        currentTick++
-        timer.tick()
-        tickeables.forEach(ITickeable::preTick)
-        tickeables.forEach(ITickeable::tick)
-        tickeables.forEach(ITickeable::postTick)
-        if (shouldClose()) loop.stop()
+    fun run() {
+        while (!shouldClose()) {
+            currentTick++
+            timer.tick()
+            tickeables.forEach(ITickeable::preTick)
+            tickeables.forEach(ITickeable::tick)
+            tickeables.forEach(ITickeable::postTick)
+        }
     }
 }
