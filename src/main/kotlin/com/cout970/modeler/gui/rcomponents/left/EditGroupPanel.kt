@@ -25,9 +25,11 @@ class EditGroupPanel : RComponent<ModelAccessorProps, VisibleWidget>() {
     override fun getInitialState() = VisibleWidget(false)
 
     override fun RBuilder.render() = div("EditGroupPanel") {
+        val groupRef = props.access.selectedGroup
+
         style {
             classes("left_panel_group", "edit_cube")
-            height = if (state.on) 457f else 24f
+            height = if (state.on && groupRef != RootGroupRef) 457f else 24f
         }
 
         postMount {
@@ -35,7 +37,6 @@ class EditGroupPanel : RComponent<ModelAccessorProps, VisibleWidget>() {
             alignAsColumn(5f, 16f)
         }
 
-        val groupRef = props.access.selectedGroup
         val group = props.access.model.getGroup(groupRef)
 
         child(GroupTitle::class.java, GroupTitleProps("Edit Group", state.on) { setState { copy(on = !on) } })
@@ -62,9 +63,9 @@ class EditGroupPanel : RComponent<ModelAccessorProps, VisibleWidget>() {
         }
 
         child(TransformationInput::class, TransformationInputProps(
-                usecase = "update.group.transform",
-                transformation = group.transform,
-                enable = groupRef != RootGroupRef
+            usecase = "update.group.transform",
+            transformation = group.transform,
+            enable = groupRef != RootGroupRef
         ))
 
         onCmd("updateModel") { rerender() }

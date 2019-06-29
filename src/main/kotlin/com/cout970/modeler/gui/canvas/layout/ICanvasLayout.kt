@@ -16,4 +16,6 @@ interface ICanvasLayout {
     fun onEvent(gui: Gui, e: EventKeyUpdate): Boolean {
         return false
     }
+
+    fun runAction(action: String)
 }

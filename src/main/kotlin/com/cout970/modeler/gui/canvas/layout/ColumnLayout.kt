@@ -48,17 +48,29 @@ class ColumnLayout(override val container: CanvasContainer) : ICanvasLayout {
     override fun onEvent(gui: Gui, e: EventKeyUpdate): Boolean {
         Config.keyBindings.apply {
             when {
-                moveLayoutSplitterLeft.check(e) -> splitter -= 0.03125f
-                moveLayoutSplitterRight.check(e) -> splitter += 0.03125f
-                newCanvas.check(e) -> container.newCanvas()
-                deleteCanvas.check(e) -> if (container.canvas.isNotEmpty()) {
-                    container.removeCanvas(container.canvas.lastIndex)
-                    gui.root.reRender()
-                }
+                moveLayoutSplitterLeft.check(e) -> runAction("move.splitter.left")
+                moveLayoutSplitterRight.check(e) -> runAction("move.splitter.right")
+                newCanvas.check(e) -> runAction("canvas.new")
+                deleteCanvas.check(e) -> runAction("canvas.delete")
                 else -> return false
             }
         }
         gui.root.reRender()
         return true
+    }
+
+    override fun runAction(action: String) {
+        when (action) {
+            "move.splitter.left" -> splitter -= 1f / 32f
+            "move.splitter.right" -> splitter += 1f / 32f
+            "canvas.new" -> {
+                container.newCanvas()
+                container.selectLayout()
+            }
+            "canvas.delete" -> if (container.canvas.isNotEmpty()) {
+                container.removeCanvas(container.canvas.lastIndex)
+                container.selectLayout()
+            }
+        }
     }
 }

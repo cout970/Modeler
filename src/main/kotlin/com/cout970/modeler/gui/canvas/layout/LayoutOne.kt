@@ -21,20 +21,25 @@ class LayoutOne(override val container: CanvasContainer) : ICanvasLayout {
     override fun onEvent(gui: Gui, e: EventKeyUpdate): Boolean {
         Config.keyBindings.apply {
             when {
-                newCanvas.check(e) -> {
-                    container.newCanvas()
-                    container.selectLayout()
-                }
-                deleteCanvas.check(e) -> {
-                    if (container.canvas.isNotEmpty()) {
-                        container.removeCanvas(container.canvas.lastIndex)
-                        container.selectLayout()
-                    }
-                }
+                newCanvas.check(e) -> runAction("canvas.new")
+                deleteCanvas.check(e) -> runAction("canvas.delete")
                 else -> return false
             }
         }
         gui.root.reRender()
         return true
+    }
+
+    override fun runAction(action: String) {
+        when (action) {
+            "canvas.new" -> {
+                container.newCanvas()
+                container.selectLayout()
+            }
+            "canvas.delete" -> if (container.canvas.isNotEmpty()) {
+                container.removeCanvas(container.canvas.lastIndex)
+                container.selectLayout()
+            }
+        }
     }
 }

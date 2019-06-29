@@ -122,13 +122,13 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
             }
 
             +IconButton("cube.template.new", "addTemplateCubeIcon", 5f, 0f, 32f, 32f).also {
-                it.setTooltip("Create Template Cube")
+                it.setTooltip("Create Cube")
             }
             +IconButton("cube.mesh.new", "addMeshCubeIcon", 40f, 0f, 32f, 32f).also {
-                it.setTooltip("Create Cube Mesh")
+                it.setTooltip("Create Mesh")
             }
             +IconButton("group.add", "addMeshCubeIcon", 75f, 0f, 32f, 32f).also {
-                it.setTooltip("Create Object GroupRef")
+                it.setTooltip("Create Group")
             }
         }
 
@@ -174,8 +174,8 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
                 val model = props.programState.model
                 val objectMap = generateObjectMap()
                 val selected = props.programState.modelSelection
-                        .map { sel -> { obj: IObjectRef -> sel.isSelected(obj) } }
-                        .getOr { _: IObjectRef -> false }
+                    .map { sel -> { obj: IObjectRef -> sel.isSelected(obj) } }
+                    .getOr({ _: IObjectRef -> false })
 
                 style {
                     transparent()
@@ -187,18 +187,20 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
                 postMount {
                     animation?.stopAnimation()
                     val anim = ModelTreeAnimation(props.programState, objectMap,
-                            this, props.input, this@ModelTree::rerender)
+                        this, props.input, this@ModelTree::rerender)
 
                     animation = anim.apply { startAnimation() }
                 }
+
+                val allowDrop = props.programState.modelSelection.isNonNull()
 
                 objectMap.forEachIndexed { index, slot ->
                     val group = slot.group
                     val obj = slot.obj
 
                     if (group != null) {
-                        val hasChilds = model.tree.groups[group].isNotEmpty() || model.tree.objects[group].isNotEmpty()
-                        group(index, slot.level, model.getGroup(group), hasChilds)
+                        val children = model.tree.groups[group].isNotEmpty() || model.tree.objects[group].isNotEmpty()
+                        group(index, slot.level, model.getGroup(group), children, allowDrop)
                     } else if (obj != null) {
                         obj(index, slot.level, model.getObject(obj), selected(obj))
                     }
@@ -207,10 +209,10 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
         }
     }
 
-    fun RBuilder.group(index: Int, level: Int, group: IGroup, hasChilds: Boolean) {
+    fun RBuilder.group(index: Int, level: Int, group: IGroup, hasChilds: Boolean, allowDrop: Boolean) {
         val cmd = if (group.visible) "tree.view.hide.group" else "tree.view.show.group"
         val off = (level + 1) * LEVEL_WIDTH
-        val textWidth = 246f - ICON_WIDTH * 2
+        var textWidth = 246f - ICON_WIDTH * 2 - (if (allowDrop) ICON_WIDTH else 0f)
 
         val icon = if (hasChilds) {
             if (group.visible) "button_down" else "button_right"
@@ -243,6 +245,16 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
             }
 
             child(ToggleName::class, ToggleName.Props(group.ref, group.name, off, textWidth, "tree.view.select.group", "model.group.change.name"))
+
+            if (allowDrop) {
+                textWidth += ICON_WIDTH
+                +IconButton("tree.view.select.group", "moveToGroupIcon", textWidth - off, 0f, ICON_WIDTH, LEVEL_HEIGHT).apply {
+                    metadata += "ref" to group.ref
+                    metadata += "append" to true
+                    setTooltip("Add objects to group")
+                    classes("model_tree_item_icon")
+                }
+            }
 
             +IconButton("tree.view.delete.group", "deleteIcon", textWidth + ICON_WIDTH - off, 0f, ICON_WIDTH, LEVEL_HEIGHT).apply {
                 metadata += "ref" to group.ref
@@ -372,6 +384,8 @@ class ToggleName : RComponent<ToggleName.Props, ToggleName.State>() {
     data class Props(val ref: Any, val text: String, val offset: Float, val width: Float, val clickEvent: String, val textEvent: String) : RProps
 }
 
+private const val TIME_THRESHOLD_FOR_MOVE_OBJECT = 200
+
 class ModelTreeAnimation(val programState: IProgramState, val objMap: List<Slot>, val component: Component, val input: IInput, val reset: () -> Unit) : Animation() {
     var pressTime = 0L
     var unPressTime = 0L
@@ -397,11 +411,11 @@ class ModelTreeAnimation(val programState: IProgramState, val objMap: List<Slot>
             unPressTime = now
         }
 
-        if (selected == null && pressTime - unPressTime > 500) {
+        if (selected == null && pressTime - unPressTime > TIME_THRESHOLD_FOR_MOVE_OBJECT) {
             if (initialMousePos == mousePos) {
                 val mPos = mousePos.toJoml2f()
 
-                component.childComponents.filter { it is Panel }.forEachIndexed { index, comp ->
+                component.childComponents.filterIsInstance<Panel>().forEachIndexed { index, comp ->
                     if (comp.intersects(mPos)) {
                         selected = index
                         containerStartPosY = comp.absolutePosition.y - comp.position.y
@@ -427,7 +441,7 @@ class ModelTreeAnimation(val programState: IProgramState, val objMap: List<Slot>
             else
                 { i, _ -> i == sel }
 
-            component.childComponents.filter { it is Panel }.forEachIndexed { index, component ->
+            component.childComponents.filterIsInstance<Panel>().forEachIndexed { index, component ->
                 component.borderless()
 
                 objMap.getOrNull(index)?.let { slot ->
@@ -436,7 +450,7 @@ class ModelTreeAnimation(val programState: IProgramState, val objMap: List<Slot>
                     }
                 }
             }
-            component.childComponents.filter { it is Panel }.getOrNull(coords.y)?.let { comp ->
+            component.childComponents.filterIsInstance<Panel>().getOrNull(coords.y)?.let { comp ->
                 comp.style.border = SimpleLineBorder(ColorConstants.red(), 2f)
             }
         }

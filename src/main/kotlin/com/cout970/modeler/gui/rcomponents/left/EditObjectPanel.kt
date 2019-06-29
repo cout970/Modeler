@@ -31,17 +31,17 @@ class EditObjectPanel : RComponent<ModelAccessorProps, VisibleWidget>() {
     override fun getInitialState() = VisibleWidget(true)
 
     override fun RBuilder.render() = div("EditCubePanel") {
+        val pair = getObject()
+
         style {
             classes("left_panel_group", "edit_cube")
-            height = if (state.on) 557f else 24f
+            height = if (state.on && pair != null) 557f else 24f
         }
 
         postMount {
             marginX(5f)
             alignAsColumn(5f, 16f)
         }
-
-        val pair = getObject()
 
         val trans = pair?.second?.transformation ?: TRTSTransformation.IDENTITY
         val tex = (pair?.second as? IObjectCube)?.textureOffset ?: Vector2.ORIGIN
@@ -72,9 +72,9 @@ class EditObjectPanel : RComponent<ModelAccessorProps, VisibleWidget>() {
         }
 
         child(TransformationInput::class, TransformationInputProps(
-                usecase = "update.object.transform",
-                transformation = trans,
-                enable = pair != null
+            usecase = "update.object.transform",
+            transformation = trans,
+            enable = pair != null
         ))
 
         textureControls(vec3Of(tex.xf, tex.yf, scale.xf), pair != null && pair.second is IObjectCube)

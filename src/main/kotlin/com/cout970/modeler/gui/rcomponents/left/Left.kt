@@ -2,6 +2,7 @@ package com.cout970.modeler.gui.rcomponents.left
 
 import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.gui.GuiState
+import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.gui.canvas.GridLines
 import com.cout970.modeler.gui.leguicomp.classes
 import com.cout970.modeler.gui.leguicomp.clear
@@ -18,8 +19,10 @@ import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.event.ScrollEvent
 
 data class LeftPanelProps(
-        val visible: Boolean, val programState: GuiState,
-        val grids: GridLines, val animator: Animator
+    val visible: Boolean, val programState: GuiState,
+    val grids: GridLines, val animator: Animator,
+    val canvasContainer: CanvasContainer,
+    val reRender: () -> Unit
 ) : RProps
 
 class LeftPanel : RStatelessComponent<LeftPanelProps>() {
@@ -92,6 +95,7 @@ class LeftPanel : RStatelessComponent<LeftPanelProps>() {
                 child(EditGroupPanel::class, ModelAccessorProps(props.programState))
                 child(EditKeyframe::class, EditKeyframeProps(props.animator, props.programState))
                 child(EditGrids::class, EditGridsProps(props.grids))
+                child(EditCanvas::class, EditCanvasProps(props.canvasContainer, props.reRender))
             }
         }
     }

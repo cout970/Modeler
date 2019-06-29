@@ -83,6 +83,7 @@ class GuiResources {
         iconMap["active_light"] = BufferedImage("assets/textures/active_light.png")
         iconMap["active_focus"] = BufferedImage("assets/textures/active_focus.png")
         iconMap["active_invisible"] = BufferedImage("assets/textures/active_invisible.png")
+        iconMap["moveToGroupIcon"] = BufferedImage("assets/textures/move_to_group.png")
 
         iconMap["button_up"] = BufferedImage("assets/textures/up.png")
         iconMap["button_down"] = BufferedImage("assets/textures/down.png")

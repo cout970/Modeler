@@ -115,7 +115,7 @@ private fun selectListGroup(component: Component, input: IInput, programState: P
     val (model, selection) = programState
     val ref = component.ref().asGroupRef().getOrNull() ?: return TaskNone
 
-    val addToGroup = Config.keyBindings.addToGroup.check(input)
+    val addToGroup = Config.keyBindings.addToGroup.check(input) || component.metadata["append"] == true
 
     if (addToGroup) {
         component.metadata["parent"] = ref

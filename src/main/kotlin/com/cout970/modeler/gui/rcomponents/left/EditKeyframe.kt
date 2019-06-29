@@ -7,8 +7,7 @@ import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.gui.rcomponents.TinyFloatInput
 import com.cout970.modeler.gui.rcomponents.TinyFloatInputProps
 import com.cout970.modeler.render.tool.Animator
-import com.cout970.modeler.util.asNullable
-import com.cout970.modeler.util.getOr
+import com.cout970.modeler.util.hasNaN
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
 import com.cout970.reactive.core.RProps
@@ -18,6 +17,7 @@ import com.cout970.reactive.nodes.div
 import com.cout970.reactive.nodes.label
 import com.cout970.reactive.nodes.style
 import com.cout970.vector.api.IVector3
+import com.cout970.vector.extensions.Vector3
 import org.joml.Vector2f
 
 
@@ -35,9 +35,15 @@ class EditKeyframe : RComponent<EditKeyframeProps, VisibleWidget>() {
     override fun getInitialState() = VisibleWidget(false)
 
     override fun RBuilder.render() = div("EditKeyframe") {
+        val channelRef = props.animator.selectedChannel
+        val keyframeRef = props.animator.selectedKeyframe
+
+        val channel = props.animator.animation.channels[channelRef]
+        val keyframe = keyframeRef?.let { channel?.keyframes?.getOrNull(it) }
+
         style {
             classes("left_panel_group", "edit_animation")
-            height = if (state.on) 320f else 24f
+            height = if (state.on && keyframe != null) 320f else 24f
         }
 
         postMount {
@@ -47,18 +53,10 @@ class EditKeyframe : RComponent<EditKeyframeProps, VisibleWidget>() {
 
         child(GroupTitle::class.java, GroupTitleProps("Edit Keyframe", state.on) { setState { copy(on = !on) } })
 
-        val channelRef = props.animator.selectedChannel
-        val keyframeRef = props.animator.selectedKeyframe
-
-        val channel = props.animator.animation.channels[channelRef]
-        val keyframe = keyframeRef?.let { channel?.keyframes?.getOrNull(it) }.asNullable()
-        val value = keyframe.map { it.value }.getOr(TRSTransformation.IDENTITY)
-
-
-        val t = value.toTRS()
+        val t = keyframe?.value?.toTRS() ?: TRSTransformation.IDENTITY
         scale(t.scale)
         position(t.translation)
-        rotation(t.euler.angles)
+        rotation(if (t.euler.angles.hasNaN()) Vector3.ZERO else t.euler.angles)
 
         onCmd("updateModel") { rerender() }
         onCmd("updateSelection") { rerender() }
@@ -131,27 +129,27 @@ class EditKeyframe : RComponent<EditKeyframeProps, VisibleWidget>() {
                 }
 
                 child(TinyFloatInput::class, TinyFloatInputProps(
-                        pos = Vector2f(5f, 0f),
-                        increment = 1f,
-                        getter = { translation.xf },
-                        setter = { cmd("pos.x", it) },
-                        enabled = enable
+                    pos = Vector2f(5f, 0f),
+                    increment = 1f,
+                    getter = { translation.xf },
+                    setter = { cmd("pos.x", it) },
+                    enabled = enable
                 ))
 
                 child(TinyFloatInput::class, TinyFloatInputProps(
-                        pos = Vector2f(5f, 0f),
-                        increment = 1f,
-                        getter = { translation.yf },
-                        setter = { cmd("pos.y", it) },
-                        enabled = enable
+                    pos = Vector2f(5f, 0f),
+                    increment = 1f,
+                    getter = { translation.yf },
+                    setter = { cmd("pos.y", it) },
+                    enabled = enable
                 ))
 
                 child(TinyFloatInput::class, TinyFloatInputProps(
-                        pos = Vector2f(5f, 0f),
-                        increment = 1f,
-                        getter = { translation.zf },
-                        setter = { cmd("pos.z", it) },
-                        enabled = enable
+                    pos = Vector2f(5f, 0f),
+                    increment = 1f,
+                    getter = { translation.zf },
+                    setter = { cmd("pos.z", it) },
+                    enabled = enable
                 ))
             }
 
@@ -168,8 +166,11 @@ class EditKeyframe : RComponent<EditKeyframeProps, VisibleWidget>() {
                 }
 
                 +IconButton("keyframe.spread.translate.x", "spread_value", 4f, 0f, 24f, 24f)
+                    .apply { setTooltip("Copy value to all keyframes") }
                 +IconButton("keyframe.spread.translate.y", "spread_value", 4f, 0f, 24f, 24f)
+                    .apply { setTooltip("Copy value to all keyframes") }
                 +IconButton("keyframe.spread.translate.z", "spread_value", 4f, 0f, 24f, 24f)
+                    .apply { setTooltip("Copy value to all keyframes") }
             }
         }
     }
@@ -240,27 +241,27 @@ class EditKeyframe : RComponent<EditKeyframeProps, VisibleWidget>() {
                 }
 
                 child(TinyFloatInput::class, TinyFloatInputProps(
-                        pos = Vector2f(5f, 0f),
-                        increment = 15f,
-                        getter = { rotation.xf },
-                        setter = { cmd("rot.x", it) },
-                        enabled = enable
+                    pos = Vector2f(5f, 0f),
+                    increment = 15f,
+                    getter = { rotation.xf },
+                    setter = { cmd("rot.x", it) },
+                    enabled = enable
                 ))
 
                 child(TinyFloatInput::class, TinyFloatInputProps(
-                        pos = Vector2f(5f, 0f),
-                        increment = 15f,
-                        getter = { rotation.yf },
-                        setter = { cmd("rot.y", it) },
-                        enabled = enable
+                    pos = Vector2f(5f, 0f),
+                    increment = 15f,
+                    getter = { rotation.yf },
+                    setter = { cmd("rot.y", it) },
+                    enabled = enable
                 ))
 
                 child(TinyFloatInput::class, TinyFloatInputProps(
-                        pos = Vector2f(5f, 0f),
-                        increment = 15f,
-                        getter = { rotation.zf },
-                        setter = { cmd("rot.z", it) },
-                        enabled = enable
+                    pos = Vector2f(5f, 0f),
+                    increment = 15f,
+                    getter = { rotation.zf },
+                    setter = { cmd("rot.z", it) },
+                    enabled = enable
                 ))
             }
 
@@ -277,8 +278,11 @@ class EditKeyframe : RComponent<EditKeyframeProps, VisibleWidget>() {
                 }
 
                 +IconButton("keyframe.spread.rotation.x", "spread_value", 4f, 0f, 24f, 24f)
+                    .apply { setTooltip("Copy value to all keyframes") }
                 +IconButton("keyframe.spread.rotation.y", "spread_value", 4f, 0f, 24f, 24f)
+                    .apply { setTooltip("Copy value to all keyframes") }
                 +IconButton("keyframe.spread.rotation.z", "spread_value", 4f, 0f, 24f, 24f)
+                    .apply { setTooltip("Copy value to all keyframes") }
             }
         }
     }
@@ -349,27 +353,27 @@ class EditKeyframe : RComponent<EditKeyframeProps, VisibleWidget>() {
                 }
 
                 child(TinyFloatInput::class, TinyFloatInputProps(
-                        pos = Vector2f(5f, 0f),
-                        increment = 1f,
-                        getter = { scale.xf },
-                        setter = { cmd("size.x", it) },
-                        enabled = enable
+                    pos = Vector2f(5f, 0f),
+                    increment = 1f,
+                    getter = { scale.xf },
+                    setter = { cmd("size.x", it) },
+                    enabled = enable
                 ))
 
                 child(TinyFloatInput::class, TinyFloatInputProps(
-                        pos = Vector2f(5f, 0f),
-                        increment = 1f,
-                        getter = { scale.yf },
-                        setter = { cmd("size.y", it) },
-                        enabled = enable
+                    pos = Vector2f(5f, 0f),
+                    increment = 1f,
+                    getter = { scale.yf },
+                    setter = { cmd("size.y", it) },
+                    enabled = enable
                 ))
 
                 child(TinyFloatInput::class, TinyFloatInputProps(
-                        pos = Vector2f(5f, 0f),
-                        increment = 1f,
-                        getter = { scale.zf },
-                        setter = { cmd("size.z", it) },
-                        enabled = enable
+                    pos = Vector2f(5f, 0f),
+                    increment = 1f,
+                    getter = { scale.zf },
+                    setter = { cmd("size.z", it) },
+                    enabled = enable
                 ))
             }
 
@@ -386,8 +390,11 @@ class EditKeyframe : RComponent<EditKeyframeProps, VisibleWidget>() {
                 }
 
                 +IconButton("keyframe.spread.scale.x", "spread_value", 4f, 0f, 24f, 24f)
+                    .apply { setTooltip("Copy value to all keyframes") }
                 +IconButton("keyframe.spread.scale.y", "spread_value", 4f, 0f, 24f, 24f)
+                    .apply { setTooltip("Copy value to all keyframes") }
                 +IconButton("keyframe.spread.scale.z", "spread_value", 4f, 0f, 24f, 24f)
+                    .apply { setTooltip("Copy value to all keyframes") }
             }
         }
     }

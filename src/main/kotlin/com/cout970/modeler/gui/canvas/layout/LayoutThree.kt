@@ -25,14 +25,14 @@ class LayoutThree(override val container: CanvasContainer) : ICanvasLayout {
                 }
                 container.canvas[1].apply {
                     size = Vector2f(container.panel.size.x * (1 - horizontalSplitter),
-                            container.panel.size.y * verticalSplitter)
+                        container.panel.size.y * verticalSplitter)
                     position = Vector2f(container.panel.size.x * horizontalSplitter, 0f)
                 }
                 container.canvas[2].apply {
                     size = Vector2f(container.panel.size.x * (1 - horizontalSplitter),
-                            container.panel.size.y * (1 - verticalSplitter))
+                        container.panel.size.y * (1 - verticalSplitter))
                     position = Vector2f(container.panel.size.x * horizontalSplitter,
-                            container.panel.size.y * verticalSplitter)
+                        container.panel.size.y * verticalSplitter)
                 }
             }
             Mode.RIGHT -> {
@@ -42,12 +42,12 @@ class LayoutThree(override val container: CanvasContainer) : ICanvasLayout {
                 }
                 container.canvas[1].apply {
                     size = Vector2f(container.panel.size.x * (1 - horizontalSplitter),
-                            container.panel.size.y * verticalSplitter)
+                        container.panel.size.y * verticalSplitter)
                     position = Vector2f()
                 }
                 container.canvas[2].apply {
                     size = Vector2f(container.panel.size.x * (1 - horizontalSplitter),
-                            container.panel.size.y * (1 - verticalSplitter))
+                        container.panel.size.y * (1 - verticalSplitter))
                     position = Vector2f(0f, container.panel.size.y * verticalSplitter)
                 }
             }
@@ -58,14 +58,14 @@ class LayoutThree(override val container: CanvasContainer) : ICanvasLayout {
                 }
                 container.canvas[1].apply {
                     size = Vector2f(container.panel.size.x * horizontalSplitter,
-                            container.panel.size.y * (1 - verticalSplitter))
+                        container.panel.size.y * (1 - verticalSplitter))
                     position = Vector2f(0f, container.panel.size.y * verticalSplitter)
                 }
                 container.canvas[2].apply {
                     size = Vector2f(container.panel.size.x * (1 - horizontalSplitter),
-                            container.panel.size.y * (1 - verticalSplitter))
+                        container.panel.size.y * (1 - verticalSplitter))
                     position = Vector2f(container.panel.size.x * horizontalSplitter,
-                            container.panel.size.y * verticalSplitter)
+                        container.panel.size.y * verticalSplitter)
                 }
             }
             Mode.BOTTOM -> {
@@ -75,12 +75,12 @@ class LayoutThree(override val container: CanvasContainer) : ICanvasLayout {
                 }
                 container.canvas[1].apply {
                     size = Vector2f(container.panel.size.x * horizontalSplitter,
-                            container.panel.size.y * (1 - verticalSplitter))
+                        container.panel.size.y * (1 - verticalSplitter))
                     position = Vector2f()
                 }
                 container.canvas[2].apply {
                     size = Vector2f(container.panel.size.x * (1 - horizontalSplitter),
-                            container.panel.size.y * (1 - verticalSplitter))
+                        container.panel.size.y * (1 - verticalSplitter))
                     position = Vector2f(container.panel.size.x * horizontalSplitter, 0f)
                 }
             }
@@ -90,25 +90,36 @@ class LayoutThree(override val container: CanvasContainer) : ICanvasLayout {
     override fun onEvent(gui: Gui, e: EventKeyUpdate): Boolean {
         Config.keyBindings.apply {
             when {
-                layoutChangeMode.check(e) -> mode = mode.next()
-                moveLayoutSplitterLeft.check(e) -> horizontalSplitter -= 1f / 32f
-                moveLayoutSplitterRight.check(e) -> horizontalSplitter += 1f / 32f
-                moveLayoutSplitterUp.check(e) -> verticalSplitter -= 1f / 32f
-                moveLayoutSplitterDown.check(e) -> verticalSplitter += 1f / 32f
-                newCanvas.check(e) -> {
-                    container.newCanvas()
-                    container.selectLayout()
-                }
-                deleteCanvas.check(e) -> {
-                    container.removeCanvas(container.canvas.lastIndex)
-                    container.selectLayout()
-                }
-
+                layoutChangeMode.check(e) -> runAction("layout.change.mode")
+                moveLayoutSplitterLeft.check(e) -> runAction("move.splitter.left")
+                moveLayoutSplitterRight.check(e) -> runAction("move.splitter.right")
+                moveLayoutSplitterUp.check(e) -> runAction("move.splitter.up")
+                moveLayoutSplitterDown.check(e) -> runAction("move.splitter.down")
+                newCanvas.check(e) -> runAction("canvas.new")
+                deleteCanvas.check(e) -> runAction("canvas.delete")
                 else -> return false
             }
         }
         gui.root.reRender()
         return true
+    }
+
+    override fun runAction(action: String) {
+        when (action) {
+            "layout.change.mode" -> mode = mode.next()
+            "move.splitter.left" -> horizontalSplitter -= 1f / 32f
+            "move.splitter.right" -> horizontalSplitter += 1f / 32f
+            "move.splitter.up" -> verticalSplitter -= 1f / 32f
+            "move.splitter.down" -> verticalSplitter += 1f / 32f
+            "canvas.new" -> {
+                container.newCanvas()
+                container.selectLayout()
+            }
+            "canvas.delete" -> {
+                container.removeCanvas(container.canvas.lastIndex)
+                container.selectLayout()
+            }
+        }
     }
 
     enum class Mode {

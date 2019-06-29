@@ -45,22 +45,33 @@ class LayoutTwo(override val container: CanvasContainer) : ICanvasLayout {
 
         Config.keyBindings.apply {
             when {
-                layoutChangeMode.check(e) -> orientation = orientation.next()
-                moveLayoutSplitterLeft.check(e) -> splitter -= 1f / 32f
-                moveLayoutSplitterRight.check(e) -> splitter += 1f / 32f
-                newCanvas.check(e) -> {
-                    container.newCanvas()
-                    container.selectLayout()
-                }
-                deleteCanvas.check(e) -> {
-                    container.removeCanvas(container.canvas.lastIndex)
-                    container.selectLayout()
-                }
-
+                layoutChangeMode.check(e) -> runAction("layout.change.mode")
+                moveLayoutSplitterLeft.check(e) -> runAction("move.splitter.left")
+                moveLayoutSplitterRight.check(e) -> runAction("move.splitter.right")
+                newCanvas.check(e) -> runAction("canvas.new")
+                deleteCanvas.check(e) -> runAction("canvas.delete")
                 else -> return false
             }
         }
         gui.root.reRender()
         return true
+    }
+
+    override fun runAction(action: String) {
+        when (action) {
+            "layout.change.mode" -> orientation = orientation.next()
+            "move.splitter.left" -> if (orientation == Orientation.HORIZONTAL) splitter -= 1f / 32f
+            "move.splitter.right" -> if (orientation == Orientation.HORIZONTAL) splitter += 1f / 32f
+            "move.splitter.up" -> if (orientation == Orientation.VERTICAL) splitter -= 1f / 32f
+            "move.splitter.down" -> if (orientation == Orientation.VERTICAL) splitter += 1f / 32f
+            "canvas.new" -> {
+                container.newCanvas()
+                container.selectLayout()
+            }
+            "canvas.delete" -> {
+                container.removeCanvas(container.canvas.lastIndex)
+                container.selectLayout()
+            }
+        }
     }
 }
