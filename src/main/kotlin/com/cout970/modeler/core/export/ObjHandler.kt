@@ -3,6 +3,8 @@ package com.cout970.modeler.core.export
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.matrix.extensions.Matrix4
 import com.cout970.matrix.extensions.times
+import com.cout970.modeler.api.animation.AnimationTargetGroup
+import com.cout970.modeler.api.animation.AnimationTargetObject
 import com.cout970.modeler.api.animation.IAnimation
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.`object`.IGroupRef
@@ -23,10 +25,14 @@ import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.resource.ResourcePath
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.render.tool.Animator
+import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.*
-import java.io.OutputStream
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
+import java.io.File
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
@@ -36,8 +42,9 @@ import java.util.*
  */
 class ObjExporter {
 
-    fun export(output: OutputStream, model: IModel, gui: Gui, args: ObjExportProperties) {
+    fun export(file: File, model: IModel, gui: Gui, args: ObjExportProperties) {
 
+        val output = file.outputStream()
         val vertex = LinkedList<IVector3>()
         val vertexMap = HashSet<IVector3>()
 
@@ -109,7 +116,7 @@ class ObjExporter {
 
                 quads += objQuad
             }
-            groups.add(ObjGroup(obj.name, model.getMaterial(obj.material).name, quads))
+            groups.add(ObjGroup(obj.name, obj.id.toString(), model.getMaterial(obj.material).name, quads))
         }
 
         val sym = DecimalFormatSymbols().apply { decimalSeparator = '.' }
@@ -145,6 +152,7 @@ class ObjExporter {
 
         for (group in groups) {
             writer.write("\nusemtl ${group.material.replace(' ', '_').toLowerCase()}\n")
+            writer.append("# id ${group.ref}\n")
             writer.append("g ${group.name.replace(' ', '_').toLowerCase()}\n")
             for (quad in group.quads) {
                 val a = quad.vertexIndices
@@ -160,6 +168,72 @@ class ObjExporter {
 
         writer.flush()
         writer.close()
+
+        // Animations
+        if (model.animationMap.isEmpty()) return
+        val json = JsonObject()
+
+        model.animationMap.forEach { (ref, anim) ->
+            val jsonAnim = JsonObject()
+            jsonAnim.addProperty("name", anim.name)
+            jsonAnim.addProperty("length", anim.timeLength)
+            val channels = JsonObject()
+
+            anim.channels.forEach { (id, channel) ->
+                val jsonChannel = JsonObject()
+                jsonChannel.addProperty("name", channel.name)
+                jsonChannel.addProperty("enabled", channel.enabled)
+                jsonChannel.addProperty("interpolation", channel.interpolation.toString().toLowerCase())
+                val keyframes = JsonArray()
+
+                channel.keyframes.forEach { key ->
+                    val frame = JsonObject()
+                    frame.addProperty("time", key.time)
+                    frame.add("position", key.value.translation.toJson())
+                    frame.add("quaternion_rotation", key.value.rotation.toJson())
+                    frame.add("euler_rotation", key.value.euler.angles.toJson())
+                    frame.add("scale", key.value.scale.toJson())
+
+                    keyframes.add(frame)
+                }
+
+                jsonChannel.add("keyframes", keyframes)
+
+                channels.add(id.id.toString(), jsonChannel)
+            }
+
+            jsonAnim.add("channels", channels)
+
+            val channelMappings = JsonObject()
+
+            anim.channelMapping.forEach { (ref, value) ->
+                val target = when (value) {
+                    is AnimationTargetGroup -> ref.id.toString()
+                    is AnimationTargetObject -> ref.id.toString()
+                }
+                channelMappings.addProperty(ref.id.toString(), target)
+            }
+
+            jsonAnim.add("channel_mappings", channelMappings)
+
+            json.add(ref.id.toString(), jsonAnim)
+        }
+
+        val textJson = GsonBuilder().setPrettyPrinting().create().toJson(json)
+        File(file.absoluteFile.parent, file.nameWithoutExtension + "_anim.json").writeText(textJson)
+    }
+
+    private fun IVector3.toJson() = JsonObject().apply {
+        addProperty("x", xd)
+        addProperty("y", yd)
+        addProperty("z", zd)
+    }
+
+    private fun IQuaternion.toJson() = JsonObject().apply {
+        addProperty("x", xd)
+        addProperty("y", yd)
+        addProperty("z", zd)
+        addProperty("w", wd)
     }
 
     private fun getRecursiveMatrix(matrixCache: MutableMap<IObjectRef, IMatrix4>, model: IModel,
@@ -260,7 +334,7 @@ class ObjImporter {
         var hasTextures = false
         var hasNormals = false
 
-        val noGroup = ObjGroup("noGroup", "noTexture", mutableListOf())
+        val noGroup = ObjGroup("noGroup", "", "noTexture", mutableListOf())
         val groups = mutableListOf<ObjGroup>()
         var quads = noGroup.quads
         var currentMaterial = "material"
@@ -317,7 +391,7 @@ class ObjImporter {
                 quads.add(quad)
 
             } else if (line.startsWith(sGroup) || line.startsWith(sObject)) {
-                val newGroup = ObjGroup(lineSpliced[1], currentMaterial, mutableListOf())
+                val newGroup = ObjGroup(lineSpliced[1], "", currentMaterial, mutableListOf())
                 quads = newGroup.quads
                 groups.add(newGroup)
 
@@ -391,6 +465,7 @@ private class MeshData(
 
 private class ObjGroup(
     val name: String,
+    val ref: String,
     var material: String,
     val quads: MutableList<ObjQuad>
 )
