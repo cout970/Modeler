@@ -30,27 +30,75 @@ import org.liquidengine.legui.component.Component
  */
 
 @UseCase("view.switch.ortho")
-private fun switchCameraProjection(canvasContainer: CanvasContainer): ITask {
-    canvasContainer.selectedCanvas?.cameraHandler?.let { handler ->
-        return ModifyGui { handler.setOrtho(handler.camera.perspective) }
+private fun switchCameraProjection(comp: Component?, canvasContainer: CanvasContainer): ITask {
+    val index: Int = comp?.metadata?.get("canvas") as? Int ?: -1
+    val canvas = canvasContainer.canvas.getOrNull(index) ?: canvasContainer.selectedCanvas
+
+    return if (canvas != null) {
+        ModifyGui { canvas.cameraHandler.setOrtho(canvas.cameraHandler.camera.perspective) }
+    } else {
+        TaskNone
     }
-    return TaskNone
 }
 
 @UseCase("view.set.texture.mode")
-private fun setCanvasModeTexture(canvasContainer: CanvasContainer): ITask {
-    canvasContainer.selectedCanvas?.let { canvas ->
-        return ModifyGui { canvas.viewMode = SelectionTarget.TEXTURE }
+private fun setCanvasModeTexture(comp: Component?, canvasContainer: CanvasContainer): ITask {
+    val index: Int = comp?.metadata?.get("canvas") as? Int ?: -1
+    val canvas = canvasContainer.canvas.getOrNull(index) ?: canvasContainer.selectedCanvas
+
+    return if (canvas != null) {
+        ModifyGui { canvas.viewMode = SelectionTarget.TEXTURE }
+    } else {
+        TaskNone
     }
-    return TaskNone
 }
 
 @UseCase("view.set.model.mode")
-private fun setCanvasModeModel(canvasContainer: CanvasContainer): ITask {
-    canvasContainer.selectedCanvas?.let { canvas ->
-        return ModifyGui { canvas.viewMode = SelectionTarget.MODEL }
+private fun setCanvasModeModel(comp: Component?, canvasContainer: CanvasContainer): ITask {
+    val index: Int = comp?.metadata?.get("canvas") as? Int ?: -1
+    val canvas = canvasContainer.canvas.getOrNull(index) ?: canvasContainer.selectedCanvas
+
+    return if (canvas != null) {
+        ModifyGui { canvas.viewMode = SelectionTarget.MODEL }
+    } else {
+        TaskNone
     }
-    return TaskNone
+}
+
+@UseCase("view.set.camera.lock.position")
+private fun setCanvasCameraLockPos(comp: Component?, canvasContainer: CanvasContainer): ITask {
+    val index: Int = comp?.metadata?.get("canvas") as? Int ?: -1
+    val canvas = canvasContainer.canvas.getOrNull(index) ?: canvasContainer.selectedCanvas
+
+    return if (canvas != null) {
+        ModifyGui { canvas.cameraHandler.lockPos = !canvas.cameraHandler.lockPos; it.root.reRender() }
+    } else {
+        TaskNone
+    }
+}
+
+@UseCase("view.set.camera.lock.rotation")
+private fun setCanvasCameraLockRot(comp: Component?, canvasContainer: CanvasContainer): ITask {
+    val index: Int = comp?.metadata?.get("canvas") as? Int ?: -1
+    val canvas = canvasContainer.canvas.getOrNull(index) ?: canvasContainer.selectedCanvas
+
+    return if (canvas != null) {
+        ModifyGui { canvas.cameraHandler.lockRot = !canvas.cameraHandler.lockRot; it.root.reRender() }
+    } else {
+        TaskNone
+    }
+}
+
+@UseCase("view.set.camera.lock.scale")
+private fun setCanvasCameraLockScale(comp: Component?, canvasContainer: CanvasContainer): ITask {
+    val index: Int = comp?.metadata?.get("canvas") as? Int ?: -1
+    val canvas = canvasContainer.canvas.getOrNull(index) ?: canvasContainer.selectedCanvas
+
+    return if (canvas != null) {
+        ModifyGui { canvas.cameraHandler.lockScale = !canvas.cameraHandler.lockScale; it.root.reRender() }
+    } else {
+        TaskNone
+    }
 }
 
 @UseCase("camera.set.isometric")
@@ -106,14 +154,14 @@ private fun onModel(canvas: Canvas, gui: Gui, input: IInput): ITask {
     val obj = PickupHelper.pickup3D(canvas, pos, model, gui.state.selectionType, gui.animator)?.second
 
     val newSelection = gui.programState.modelSelectionHandler.updateSelection(
-            selection.toNullable(),
-            multiSelection,
-            obj
+        selection.toNullable(),
+        multiSelection,
+        obj
     )
 
     return TaskUpdateModelSelection(
-            oldSelection = selection,
-            newSelection = newSelection
+        oldSelection = selection,
+        newSelection = newSelection
     )
 }
 
@@ -140,12 +188,12 @@ private fun onTexture(canvas: Canvas, input: IInput, gui: Gui): ITask {
     val selection = selHandler.getSelection()
 
     return TaskUpdateTextureSelection(
-            oldSelection = selection,
-            newSelection = selHandler.updateSelection(
-                    selection.toNullable(),
-                    multiSelection,
-                    obj
-            )
+        oldSelection = selection,
+        newSelection = selHandler.updateSelection(
+            selection.toNullable(),
+            multiSelection,
+            obj
+        )
     )
 }
 
@@ -170,11 +218,11 @@ private fun getOrientationCubeFaces(mesh: IMesh): List<Pair<IRayObstacle, IVecto
         }
     }
     return listOf(
-            obstacles[0] to vec2Of(-90.0, 0.0), // bottom
-            obstacles[1] to vec2Of(90.0, 0.0),  // top
-            obstacles[2] to vec2Of(0.0, 180.0), // north
-            obstacles[3] to vec2Of(0.0, 0.0),   // south
-            obstacles[4] to vec2Of(0.0, 90.0),  // west
-            obstacles[5] to vec2Of(0.0, -90.0)  // east
+        obstacles[0] to vec2Of(-90.0, 0.0), // bottom
+        obstacles[1] to vec2Of(90.0, 0.0),  // top
+        obstacles[2] to vec2Of(0.0, 180.0), // north
+        obstacles[3] to vec2Of(0.0, 0.0),   // south
+        obstacles[4] to vec2Of(0.0, 90.0),  // west
+        obstacles[5] to vec2Of(0.0, -90.0)  // east
     )
 }

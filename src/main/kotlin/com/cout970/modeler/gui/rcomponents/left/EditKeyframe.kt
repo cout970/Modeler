@@ -32,7 +32,7 @@ class EditKeyframe : RComponent<EditKeyframeProps, VisibleWidget>() {
 
     val enable: Boolean get() = props.animator.selectedKeyframe != null
 
-    override fun getInitialState() = VisibleWidget(false)
+    override fun getInitialState() = VisibleWidget(true)
 
     override fun RBuilder.render() = div("EditKeyframe") {
         val channelRef = props.animator.selectedChannel

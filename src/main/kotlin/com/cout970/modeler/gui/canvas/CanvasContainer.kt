@@ -2,6 +2,10 @@ package com.cout970.modeler.gui.canvas
 
 import com.cout970.modeler.gui.canvas.layout.*
 import com.cout970.modeler.gui.leguicomp.Panel
+import com.cout970.modeler.gui.leguicomp.defaultTextColor
+import com.cout970.reactive.dsl.posX
+import com.cout970.reactive.dsl.posY
+import org.liquidengine.legui.component.Label
 
 /**
  * Created by cout970 on 2017/05/03.
@@ -21,7 +25,14 @@ class CanvasContainer(var panel: Panel) {
 
     fun newCanvas() {
         if (canvasBuffer.isEmpty()) {
-            canvas.add(Canvas())
+            canvas.add(Canvas().also { c ->
+                c.add(Label("Canvas ${canvas.size + 1}").also { l ->
+                    l.defaultTextColor()
+                    l.posX = 10f
+                    l.posY = 8f
+                    l.textState.fontSize = 20f
+                })
+            })
         } else {
             val last = canvasBuffer.removeAt(canvasBuffer.size - 1)
             canvas.add(last)

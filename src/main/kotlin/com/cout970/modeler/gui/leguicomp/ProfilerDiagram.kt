@@ -42,10 +42,12 @@ class ProfilerDiagram(val timer: Timer) : Panel() {
         override fun renderComponent(component: ProfilerDiagram, context: Context, nanovg: Long) {
 
             // FPS counter
-            val parent = component.parent.absolutePositionV
+            val parent = component.parent
+            val parentPos = parent.absolutePositionV
+            val parentSize = parent.size
             NvgText.drawTextLineToRect(
                     nanovg,
-                    Vector4f(parent.xf + 10f, parent.yf, 60f, 24f),
+                Vector4f(parentPos.xf + parentSize.x - 50f, parentPos.yf, 60f, 24f),
                     false,
                     HorizontalAlign.LEFT,
                     VerticalAlign.MIDDLE,
@@ -64,7 +66,7 @@ class ProfilerDiagram(val timer: Timer) : Panel() {
             // Ram usage
             NvgText.drawTextLineToRect(
                     nanovg,
-                    Vector4f(parent.xf + 90f, parent.yf, 60f, 24f),
+                Vector4f(parentPos.xf + 90f, parentPos.yf, 60f, 24f),
                     false,
                     HorizontalAlign.LEFT,
                     VerticalAlign.MIDDLE,

@@ -22,7 +22,7 @@ import org.liquidengine.legui.component.optional.align.HorizontalAlign
 
 class EditGroupPanel : RComponent<ModelAccessorProps, VisibleWidget>() {
 
-    override fun getInitialState() = VisibleWidget(false)
+    override fun getInitialState() = VisibleWidget(true)
 
     override fun RBuilder.render() = div("EditGroupPanel") {
         val groupRef = props.access.selectedGroup

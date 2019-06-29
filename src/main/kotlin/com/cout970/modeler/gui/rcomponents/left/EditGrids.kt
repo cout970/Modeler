@@ -23,7 +23,7 @@ data class EditGridsProps(val gridLines: GridLines) : RProps
 
 class EditGrids : RComponent<EditGridsProps, VisibleWidget>() {
 
-    override fun getInitialState() = VisibleWidget(true)
+    override fun getInitialState() = VisibleWidget(false)
 
     override fun RBuilder.render() = div("EditGrids") {
         style {

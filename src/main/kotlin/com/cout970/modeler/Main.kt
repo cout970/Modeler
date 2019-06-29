@@ -4,6 +4,7 @@ import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.Logger
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
+import kotlin.system.exitProcess
 
 /**
  * Created by cout970 on 2016/11/29.
@@ -31,5 +32,5 @@ fun main(args: Array<String>) {
         log(Level.NORMAL) { "Eng of log" }
     }
 
-    System.exit(0)
+    exitProcess(0)
 }

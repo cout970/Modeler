@@ -387,10 +387,21 @@ var exported = {
         backgroundColor: transparent
     },
     multiline_input: {
-        fontSize: "18",
+        textSize: "18",
         borderRadius: "0",
         borderStyle: "none",
         backgroundColor: transparent
+    },
+    btn_active: {
+        backgroundColor: "#6a6a6a"
+    },
+    canvas_label: {
+        backgroundColor: transparent,
+        textSize: "20",
+        textAlign: "center"
+    },
+    btn_text: {
+        textSize: "18",
     }
 };
 
