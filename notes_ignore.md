@@ -8,9 +8,8 @@ Loads of skyboxes "http://www.custommapmakers.org/skyboxes.php"
 
 ### Current
 Fix animations
-- Channel edit menu
-- Add rotation pivot to animations and cubes
-- Add option to change objects linked to a channel
+- Fix animation export
+- Fix multiple objects in animation project save file
 
 Fix center cursor when moving the camera
 Add Java export format
@@ -27,7 +26,7 @@ Join/split objects
 Fix UV selection of triangles
 Join triangles into quads
 Custom skybox
-
+Add rotation pivot to cubes
 
 ### TODO later
 export hitbox dialog

@@ -107,6 +107,10 @@ fun IQuaternion.lerp(other: IQuaternion, amount: Double): IQuaternion {
     return this.toJOML().nlerp(other.toJOML(), amount).toIQuaternion()
 }
 
+fun IQuaternion.slerp(other: IQuaternion, amount: Double): IQuaternion {
+    return this.toJOML().slerp(other.toJOML(), amount).toIQuaternion()
+}
+
 fun IVector3.toColor() = Vector4f(xf, yf, zf, 1f)
 fun Quaterniond.toIQuaternion(): IQuaternion = quatOf(x,
         y, z, w)

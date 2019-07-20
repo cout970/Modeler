@@ -9,14 +9,16 @@ import com.cout970.vector.extensions.*
 import org.joml.Matrix4d
 import org.joml.Quaterniond
 import org.joml.Vector3d
+import kotlin.math.PI
+import kotlin.math.cos
 
 /**
  * Created by cout970 on 2017/05/14.
  */
 data class TRSTransformation(
-        val translation: IVector3 = Vector3.ORIGIN,
-        val rotation: IQuaternion = Quaternion.IDENTITY,
-        val scale: IVector3 = Vector3.ONE
+    val translation: IVector3 = Vector3.ORIGIN,
+    val rotation: IQuaternion = Quaternion.IDENTITY,
+    val scale: IVector3 = Vector3.ONE
 ) : ITransformation {
 
     companion object {
@@ -73,34 +75,58 @@ data class TRSTransformation(
 
     fun merge(other: TRSTransformation): TRSTransformation {
         return TRSTransformation(
-                translation = other.rotation.transform(this.translation) * other.scale + other.translation,
-                rotation = other.rotation * this.rotation,
-                scale = other.scale * this.scale
+            translation = other.rotation.transform(this.translation) * other.scale + other.translation,
+            rotation = other.rotation * this.rotation,
+            scale = other.scale * this.scale
         )
     }
 
     operator fun times(other: TRSTransformation): TRSTransformation {
         return TRSTransformation(
-                translation = this.rotation.transform(other.translation) + this.translation * other.scale,
-                rotation = this.rotation * other.rotation,
-                scale = this.scale * other.scale
+            translation = this.rotation.transform(other.translation) + this.translation * other.scale,
+            rotation = this.rotation * other.rotation,
+            scale = this.scale * other.scale
         )
     }
 
     fun lerp(other: TRSTransformation, step: Float): TRSTransformation {
         return TRSTransformation(
-                translation = this.translation.interpolate(other.translation, step.toDouble()),
-                rotation = this.rotation.lerp(other.rotation, step.toDouble()),
-                scale = this.scale.interpolate(other.scale, step.toDouble())
+            translation = this.translation.interpolate(other.translation, step.toDouble()),
+            rotation = this.rotation.lerp(other.rotation, step.toDouble()),
+            scale = this.scale.interpolate(other.scale, step.toDouble())
+        )
+    }
+
+    fun cosineInterpolate(other: TRSTransformation, step: Float): TRSTransformation {
+        fun cosine(y1: Double, y2: Double, mu: Float): Double {
+            val mu2 = (1 - cos(mu * PI)) / 2
+            return y1 * (1 - mu2) + y2 * mu2
+        }
+
+        val translation = vec3Of(
+            cosine(this.translation.xd, other.translation.xd, step),
+            cosine(this.translation.yd, other.translation.yd, step),
+            cosine(this.translation.zd, other.translation.zd, step)
+        )
+        val scale = vec3Of(
+            cosine(this.scale.xd, other.scale.xd, step),
+            cosine(this.scale.yd, other.scale.yd, step),
+            cosine(this.scale.zd, other.scale.zd, step)
+        )
+
+        return TRSTransformation(
+            translation = translation,
+            rotation = this.rotation.slerp(other.rotation, step.toDouble()),
+            scale = scale
         )
     }
 
     fun toTRTS(): TRTSTransformation {
         return TRTSTransformation(
-                translation = translation,
-                rotation = rotation.toAxisRotations(),
-                pivot = Vector3.ZERO,
-                scale = scale
+            translation = translation,
+            rotation = rotation.toAxisRotations(),
+            pivot = Vector3.ZERO,
+            scale = scale
         )
     }
 
@@ -116,5 +142,11 @@ data class TRSTransformation(
 fun ITransformation.toTRS() = when (this) {
     is TRSTransformation -> this
     is TRTSTransformation -> this.toTRS()
+    else -> error("Type: ${javaClass.name}")
+}
+
+fun ITransformation.toTRTS() = when (this) {
+    is TRSTransformation -> this.toTRTS()
+    is TRTSTransformation -> this
     else -> error("Type: ${javaClass.name}")
 }

@@ -4,6 +4,7 @@ import com.cout970.modeler.api.animation.*
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.RootGroupRef
+import com.cout970.modeler.core.model.TRTSTransformation
 import java.util.*
 
 /**
@@ -69,28 +70,31 @@ data class Animation(
 data class ChannelRef(override val id: UUID) : IChannelRef
 
 data class Channel(
-        override val name: String,
-        override val interpolation: InterpolationMethod,
-        override val keyframes: List<IKeyframe>,
-        override val enabled: Boolean = true,
-        override val id: UUID = UUID.randomUUID()
+    override val name: String,
+    override val interpolation: InterpolationMethod,
+    override val keyframes: List<IKeyframe>,
+    override val enabled: Boolean = true,
+    override val type: ChannelType = ChannelType.TRANSLATION,
+    override val id: UUID = UUID.randomUUID()
 ) : IChannel {
 
     override fun withName(name: String): IChannel = copy(name = name)
 
     override fun withEnable(enabled: Boolean): IChannel = copy(enabled = enabled)
 
-    override fun withInterpolation(method: InterpolationMethod): IChannel = copy(interpolation = interpolation)
+    override fun withInterpolation(method: InterpolationMethod): IChannel = copy(interpolation = method)
 
     override fun withKeyframes(keyframes: List<IKeyframe>): IChannel = copy(keyframes = keyframes)
+
+    override fun withType(type: ChannelType): IChannel = copy(type = type)
 }
 
 data class Keyframe(
     override val time: Float,
-    override val value: ITransformation
+    override val value: TRTSTransformation
 ) : IKeyframe {
 
-    override fun withValue(trs: ITransformation): IKeyframe = copy(value = trs)
+    override fun withValue(trs: TRTSTransformation): IKeyframe = copy(value = trs)
 
     override fun withTime(time: Float): IKeyframe = copy(time = time)
 }

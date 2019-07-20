@@ -3,6 +3,7 @@ package com.cout970.modeler.core.model
 import com.cout970.matrix.api.IMatrix4
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.util.*
+import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.Vector3
 import com.cout970.vector.extensions.interpolate
@@ -23,6 +24,8 @@ data class TRTSTransformation(
     companion object {
         val IDENTITY = TRTSTransformation(Vector3.ORIGIN, Vector3.ORIGIN, Vector3.ORIGIN, Vector3.ONE)
     }
+
+    val quatRotation: IQuaternion get() = quatOfAngles(rotation)
 
     // Gson pls
     private constructor() : this(Vector3.ORIGIN, Vector3.ORIGIN, Vector3.ORIGIN, Vector3.ONE)

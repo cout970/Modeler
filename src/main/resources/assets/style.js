@@ -34,6 +34,10 @@ var exported = {
         backgroundColor: "#474747",
         borderRadius: "2"
     },
+    string_input_rename: {
+        fontSize: "24",
+        horizontalAlign: "center",
+    },
     checkbox: {
         borderStyle: "none",
         backgroundColor: transparent,
@@ -305,6 +309,12 @@ var exported = {
         textAlign: "right",
         textSize: "22"
     },
+    big_text: {
+        textSize: "22"
+    },
+    center_text: {
+        textAlign: "center",
+    },
     tiny_float_input: {
         borderWidth: "1",
         borderColor: "#131313",
@@ -346,7 +356,8 @@ var exported = {
         backgroundColor: "#656565"
     },
     text_button: {
-        backgroundColor: "#565656",
+        // backgroundColor: "#565656",
+        backgroundColor: "#484848",
         borderRadius: "0",
         borderStyle: "none"
     },

@@ -91,7 +91,7 @@ fun IObject.getParentGlobalTransform(model: IModel, animator: Animator, animatio
 
 private fun getRecursiveGlobalTransform(ref: IObjectRef, model: IModel, animator: Animator, animation: IAnimation): ITransformation {
     model.tree.objects[RootGroupRef].forEach { obj ->
-        if (obj == ref) return animator.animate(animation, obj, model.getObject(obj).transformation)
+        if (obj == ref) return animator.animateObject(animation, obj, model.getObject(obj).transformation)
     }
 
     model.tree.groups[RootGroupRef].forEach {
@@ -104,10 +104,10 @@ private fun getRecursiveGlobalTransform(ref: IObjectRef, model: IModel, animator
 private fun getRecursiveGlobalTransform(ref: IObjectRef, model: IModel, group: IGroupRef,
                                         matrix: ITransformation, animator: Animator, animation: IAnimation): ITransformation? {
 
-    val mat = animator.animate(animation, group, model.getGroup(group).transform) + matrix
+    val mat = animator.animateGroup(animation, group, model.getGroup(group).transform) + matrix
 
     model.tree.objects[group].forEach { obj ->
-        if (obj == ref) return animator.animate(animation, obj, model.getObject(obj).transformation) + mat
+        if (obj == ref) return animator.animateObject(animation, obj, model.getObject(obj).transformation) + mat
     }
 
     model.tree.groups[group].forEach {
@@ -132,7 +132,7 @@ private fun getParentRecursiveGlobalTransform(ref: IObjectRef, model: IModel, an
 private fun getParentRecursiveGlobalTransform(ref: IObjectRef, model: IModel, group: IGroupRef,
                                               matrix: ITransformation, animator: Animator, animation: IAnimation): ITransformation? {
 
-    val mat = animator.animate(animation, group, model.getGroup(group).transform) + matrix
+    val mat = animator.animateGroup(animation, group, model.getGroup(group).transform) + matrix
 
     model.tree.objects[group].forEach { obj ->
         if (obj == ref) return mat

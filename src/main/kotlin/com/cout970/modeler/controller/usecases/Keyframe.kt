@@ -5,10 +5,9 @@ import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.animation.AnimationNone
 import com.cout970.modeler.core.animation.Keyframe
 import com.cout970.modeler.core.helpers.AnimationHelper
-import com.cout970.modeler.core.model.TRSTransformation
-import com.cout970.modeler.core.model.toTRS
+import com.cout970.modeler.core.model.TRTSTransformation
+import com.cout970.modeler.core.model.toTRTS
 import com.cout970.modeler.render.tool.Animator
-import com.cout970.modeler.util.EulerRotation
 import com.cout970.modeler.util.fromFrame
 import com.cout970.modeler.util.toFrame
 import com.cout970.vector.extensions.vec3Of
@@ -40,7 +39,7 @@ private fun changeKeyframe(comp: Component, animator: Animator, model: IModel): 
         channel.withKeyframes(newKeyframes)
     } else {
         val newValue = updateTransformation(keyframe.value, cmd, text, offset) ?: return TaskNone
-        val newKeyframe = keyframe.withValue(newValue)
+        val newKeyframe = keyframe.withValue(newValue.toTRTS())
 
         channel.withKeyframes(prev + newKeyframe + next)
     }
@@ -63,7 +62,7 @@ private fun addKeyframe(animator: Animator, model: IModel): ITask {
     val next = channel.keyframes.filter { it.time.toFrame() > now }
 
     val pair = Animator.getPrevAndNext(now.fromFrame(), channel.keyframes)
-    val value = Animator.interpolate(now.fromFrame(), pair.first, pair.second)
+    val value = Animator.interpolateKeyframes(now.fromFrame(), pair.first, pair.second, channel.interpolation)
     val keyframe = Keyframe(now.fromFrame(), value)
 
     val newList = prev + keyframe + next
@@ -119,24 +118,45 @@ private fun spreadTranslationZ(model: IModel, animator: Animator): ITask {
 @UseCase("keyframe.spread.rotation.x")
 private fun spreadRotationX(model: IModel, animator: Animator): ITask {
     return spreadValue(model, animator) { old, new ->
-        old.copy(rotation = EulerRotation(vec3Of(new.euler.angles.xd, old.euler.angles.yd, old.euler.angles.zd)))
+        old.copy(rotation = vec3Of(new.rotation.xd, old.rotation.yd, old.rotation.zd))
     }
 }
 
 @UseCase("keyframe.spread.rotation.y")
 private fun spreadRotationY(model: IModel, animator: Animator): ITask {
     return spreadValue(model, animator) { old, new ->
-        old.copy(rotation = EulerRotation(vec3Of(old.euler.angles.xd, new.euler.angles.yd, old.euler.angles.zd)))
+        old.copy(rotation = vec3Of(old.rotation.xd, new.rotation.yd, old.rotation.zd))
     }
 }
 
 @UseCase("keyframe.spread.rotation.z")
 private fun spreadRotationZ(model: IModel, animator: Animator): ITask {
     return spreadValue(model, animator) { old, new ->
-        old.copy(rotation = EulerRotation(vec3Of(old.euler.angles.xd, old.euler.angles.yd, new.euler.angles.zd)))
+        old.copy(rotation = vec3Of(old.rotation.xd, old.rotation.yd, new.rotation.zd))
     }
 }
 
+
+@UseCase("keyframe.spread.pivot.x")
+private fun spreadPivotX(model: IModel, animator: Animator): ITask {
+    return spreadValue(model, animator) { old, new ->
+        old.copy(pivot = vec3Of(new.pivot.xd, old.pivot.yd, old.pivot.zd))
+    }
+}
+
+@UseCase("keyframe.spread.pivot.y")
+private fun spreadPivotY(model: IModel, animator: Animator): ITask {
+    return spreadValue(model, animator) { old, new ->
+        old.copy(pivot = vec3Of(old.pivot.xd, new.pivot.yd, old.pivot.zd))
+    }
+}
+
+@UseCase("keyframe.spread.pivot.z")
+private fun spreadPivotZ(model: IModel, animator: Animator): ITask {
+    return spreadValue(model, animator) { old, new ->
+        old.copy(pivot = vec3Of(old.pivot.xd, old.pivot.yd, new.pivot.zd))
+    }
+}
 
 @UseCase("keyframe.spread.scale.x")
 private fun spreadScaleX(model: IModel, animator: Animator): ITask {
@@ -159,7 +179,7 @@ private fun spreadScaleZ(model: IModel, animator: Animator): ITask {
     }
 }
 
-private fun spreadValue(model: IModel, animator: Animator, func: (TRSTransformation, TRSTransformation) -> TRSTransformation): ITask {
+private fun spreadValue(model: IModel, animator: Animator, func: (TRTSTransformation, TRTSTransformation) -> TRTSTransformation): ITask {
     val animation = animator.animation
     if (animation == AnimationNone) return TaskNone
     val channelRef = animator.selectedChannel ?: return TaskNone
@@ -168,7 +188,7 @@ private fun spreadValue(model: IModel, animator: Animator, func: (TRSTransformat
     val value = animation.channels[channelRef]!!.keyframes[keyframe].value
 
     val newModel = AnimationHelper.editChannel(model, animator) {
-        it.withValue(func(it.value.toTRS(), value.toTRS()))
+        it.withValue(func(it.value, value))
     } ?: return TaskNone
 
     return TaskUpdateModel(model, newModel)

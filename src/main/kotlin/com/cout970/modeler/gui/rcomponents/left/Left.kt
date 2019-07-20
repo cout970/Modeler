@@ -94,6 +94,7 @@ class LeftPanel : RStatelessComponent<LeftPanelProps>() {
                 child(EditObjectPanel::class, ModelAccessorProps(props.programState))
                 child(EditGroupPanel::class, ModelAccessorProps(props.programState))
                 child(EditKeyframe::class, EditKeyframeProps(props.animator, props.programState))
+                child(EditChannel::class, EditChannelProps(props.animator, props.programState))
                 child(EditorControls::class, EditorControlsProps(props.programState))
                 child(EditGrids::class, EditGridsProps(props.grids))
                 child(EditCanvas::class, EditCanvasProps(props.canvasContainer, props.reRender))

@@ -22,7 +22,6 @@ import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.ref
-import com.cout970.modeler.core.model.toTRS
 import com.cout970.modeler.core.resource.ResourcePath
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.render.tool.Animator
@@ -241,7 +240,7 @@ class ObjExporter {
                                    animator: Animator, animation: IAnimation) {
 
         model.tree.objects[RootGroupRef].forEach { obj ->
-            matrixCache[obj] = animator.animate(animation, obj, model.getObject(obj).transformation).matrix
+            matrixCache[obj] = animator.animateObject(animation, obj, model.getObject(obj).transformation).matrix
         }
 
         model.tree.groups[RootGroupRef].forEach {
@@ -252,10 +251,10 @@ class ObjExporter {
     private fun getRecursiveMatrix(matrixCache: MutableMap<IObjectRef, IMatrix4>, model: IModel,
                                    group: IGroupRef, matrix: IMatrix4, animator: Animator, animation: IAnimation) {
 
-        val mat = matrix * animator.animate(animation, group, model.getGroup(group).transform).matrix
+        val mat = matrix * animator.animateGroup(animation, group, model.getGroup(group).transform).matrix
 
         model.tree.objects[group].forEach { obj ->
-            matrixCache[obj] = mat * animator.animate(animation, obj, model.getObject(obj).transformation).matrix
+            matrixCache[obj] = mat * animator.animateObject(animation, obj, model.getObject(obj).transformation).matrix
         }
 
         model.tree.groups[group].forEach {

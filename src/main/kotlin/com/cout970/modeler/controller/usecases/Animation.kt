@@ -2,11 +2,13 @@ package com.cout970.modeler.controller.usecases
 
 import com.cout970.modeler.api.animation.*
 import com.cout970.modeler.api.model.`object`.RootGroupRef
+import com.cout970.modeler.api.model.selection.SelectionTarget
+import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.controller.tasks.*
 import com.cout970.modeler.core.animation.*
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.model.selection.Selection
-import com.cout970.modeler.core.model.toTRS
+import com.cout970.modeler.core.model.toTRTS
 import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.core.project.ProjectManager
 import com.cout970.modeler.gui.Gui
@@ -107,7 +109,7 @@ private fun addAnimationChannel(programState: IProgramState): ITask {
         AnimationTargetGroup(group)
     }
 
-    val defaultTRS = target.getTransformation(model).toTRS()
+    val defaultTRS = target.getTransformation(model).toTRTS()
 
     val channel = Channel(
         name = "Channel ${lastChannel++}",
@@ -148,10 +150,33 @@ private fun selectAnimationChannel(comp: Component, projectManager: ProjectManag
     }
 }
 
-@UseCase("animation.select")
-private fun selectAnimation(comp: Component, projectManager: ProjectManager): ITask = ModifyGui {
-    val ref = comp.metadata["animation"] as IAnimationRef
-    selectAnimation(projectManager, it, ref)
+@UseCase("animation.channel.rename")
+private fun renameAnimationChannel(component: Component, programState: IProgramState, animator: Animator): ITask {
+    val ref = component.metadata["ref"] as IChannelRef
+    val text = (component as StringInput).text
+    if (text.isEmpty()) return TaskNone
+
+    val model = programState.model
+    val animation = animator.animation
+    val channel = animation.channels[ref] ?: error("Missing Channel $ref")
+
+    val newChannel = channel.withName(text)
+    val newAnimation = animator.animation.withChannel(newChannel)
+
+    return TaskChain(listOf(
+        TaskUpdateModel(model, model.modifyAnimation(newAnimation))
+    ))
+}
+
+@UseCase("animation.channel.disable")
+private fun disableAnimationChannel(comp: Component, programState: IProgramState): ITask {
+    val animation = programState.animation
+    val ref = comp.metadata["ref"] as IChannelRef
+    val channel = animation.channels[ref]!!
+
+    val newAnimation = animation.withChannel(channel.withEnable(false))
+
+    return TaskUpdateModel(programState.model, programState.model.modifyAnimation(newAnimation))
 }
 
 @UseCase("animation.channel.enable")
@@ -165,15 +190,55 @@ private fun enableAnimationChannel(comp: Component, programState: IProgramState)
     return TaskUpdateModel(programState.model, programState.model.modifyAnimation(newAnimation))
 }
 
-@UseCase("animation.channel.disable")
-private fun disableAnimationChannel(comp: Component, programState: IProgramState): ITask {
-    val animation = programState.animation
+@UseCase("animation.channel.interpolation")
+private fun setAnimationChannelInterpolation(comp: Component, programState: IProgramState): ITask {
     val ref = comp.metadata["ref"] as IChannelRef
-    val channel = animation.channels[ref]!!
+    val method = comp.metadata["type"] as InterpolationMethod
+    val animation = programState.animation
+    val channel = animation.channels[ref] ?: error("Missing channel $ref")
 
-    val newAnimation = animation.withChannel(channel.withEnable(false))
+    val newAnimation = animation.withChannel(channel.withInterpolation(method))
 
     return TaskUpdateModel(programState.model, programState.model.modifyAnimation(newAnimation))
+}
+
+@UseCase("animation.channel.type")
+private fun setAnimationChannelType(comp: Component, programState: IProgramState): ITask {
+    val ref = comp.metadata["ref"] as IChannelRef
+    val type = comp.metadata["type"] as ChannelType
+    val animation = programState.animation
+    val channel = animation.channels[ref] ?: error("Missing channel $ref")
+
+    val newAnimation = animation.withChannel(channel.withType(type))
+
+    return TaskUpdateModel(programState.model, programState.model.modifyAnimation(newAnimation))
+}
+
+@UseCase("animation.channel.update")
+private fun setAnimationChannelObjects(comp: Component, programState: IProgramState): ITask {
+    val ref = comp.metadata["ref"] as IChannelRef
+    val animation = programState.animation
+    val group = programState.selectedGroup
+
+    val target = if (group != RootGroupRef) {
+        AnimationTargetGroup(group)
+    } else {
+        val selection = programState.modelSelection.getOrNull() ?: return TaskNone
+        if (selection.selectionType != SelectionType.OBJECT) return TaskNone
+        if (selection.selectionTarget != SelectionTarget.MODEL) return TaskNone
+
+        AnimationTargetObject(selection.objects)
+    }
+
+    val newAnimation = animation.withMapping(ref, target)
+
+    return TaskUpdateModel(programState.model, programState.model.modifyAnimation(newAnimation))
+}
+
+@UseCase("animation.select")
+private fun selectAnimation(comp: Component, projectManager: ProjectManager): ITask = ModifyGui {
+    val ref = comp.metadata["animation"] as IAnimationRef
+    selectAnimation(projectManager, it, ref)
 }
 
 @UseCase("animation.channel.delete")
@@ -232,7 +297,7 @@ private fun onAnimationPanelClick(comp: Component, animator: Animator, input: II
 
     // TODO fix incorrect bounding box
     channels.forEachIndexed { i, channel ->
-        if (diffY > i * 26 && diffY <= (i + 1) * 26f) {
+        if (diffY > i * 24f && diffY <= (i + 1) * 24f) {
 
             channel.keyframes.forEachIndexed { index, keyframe ->
                 val pos = keyframe.time * timeToPixel + pixelOffset

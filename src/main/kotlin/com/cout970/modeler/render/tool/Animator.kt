@@ -5,10 +5,16 @@ import com.cout970.modeler.api.animation.*
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.IGroupRef
 import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.modeler.core.model.TRSTransformation
-import com.cout970.modeler.core.model.toTRS
+import com.cout970.modeler.core.model.TRTSTransformation
+import com.cout970.modeler.core.model.toTRTS
 import com.cout970.modeler.gui.Gui
+import com.cout970.modeler.util.slerp
+import com.cout970.modeler.util.toAxisRotations
 import com.cout970.modeler.util.toFrame
+import com.cout970.vector.api.IVector3
+import com.cout970.vector.extensions.vec3Of
+import kotlin.math.PI
+import kotlin.math.cos
 
 class Animator {
 
@@ -64,65 +70,104 @@ class Animator {
         }
     }
 
-    fun animate(anim: IAnimation, target: AnimationTarget, transform: ITransformation): ITransformation {
+    fun animateGroup(anim: IAnimation, group: IGroupRef, transform: ITransformation): ITransformation {
         val validChannels = anim.channels
-                .filter { it.value.enabled }
-                .filter { (chanRef) -> anim.channelMapping[chanRef] == target }
-                .map { it.value }
+            .filter { it.value.enabled }
+            .filter { (chanRef) -> (anim.channelMapping[chanRef] as? AnimationTargetGroup)?.ref == group }
+            .map { it.value }
 
-        return animate(validChannels, transform)
+        return animateTransform(validChannels, transform.toTRTS())
     }
 
-    fun animate(anim: IAnimation, group: IGroupRef, transform: ITransformation): ITransformation {
+    fun animateObject(anim: IAnimation, obj: IObjectRef, transform: ITransformation): ITransformation {
         val validChannels = anim.channels
-                .filter { it.value.enabled }
-                .filter { (chanRef) -> (anim.channelMapping[chanRef] as? AnimationTargetGroup)?.ref == group }
-                .map { it.value }
+            .filter { it.value.enabled }
+            .filter { (chanRef) -> (obj in (anim.channelMapping[chanRef] as? AnimationTargetObject)?.refs ?: emptyList()) }
+            .map { it.value }
 
-        return animate(validChannels, transform)
+        return animateTransform(validChannels, transform.toTRTS())
     }
 
-    fun animate(anim: IAnimation, obj: IObjectRef, transform: ITransformation): ITransformation {
-        val validChannels = anim.channels
-                .filter { it.value.enabled }
-            .filter { (chanRef) -> (anim.channelMapping[chanRef] as? AnimationTargetObject)?.refs?.first() == obj }
-                .map { it.value }
-
-        return animate(validChannels, transform)
-    }
-
-    fun animate(validChannels: List<IChannel>, transform: ITransformation): ITransformation {
+    fun animateTransform(validChannels: List<IChannel>, transform: TRTSTransformation): TRTSTransformation {
         val now = animationTime
 
         if (validChannels.isEmpty()) return transform
+        val overrideProperties = mutableListOf<ChannelType>()
 
-        val anim = validChannels.fold(TRSTransformation.IDENTITY as ITransformation) { acc, c ->
-            val (prev, next) = getPrevAndNext(now, c.keyframes)
-            acc + interpolate(now, prev, next)
+        val anim = validChannels.fold(TRTSTransformation.IDENTITY) { acc, channel ->
+            val (prev, next) = getPrevAndNext(now, channel.keyframes)
+            val combined = interpolateKeyframes(now, prev, next, channel.interpolation)
+
+            overrideProperties += channel.type
+            val focus = when (channel.type) {
+                ChannelType.TRANSLATION -> TRTSTransformation(translation = combined.translation)
+                ChannelType.ROTATION -> TRTSTransformation(rotation = combined.rotation, pivot = combined.pivot)
+                ChannelType.SCALE -> TRTSTransformation(scale = combined.scale)
+            }
+
+            acc.merge(focus)
         }
 
-        return combine(transform, anim)
+        val final = TRTSTransformation(
+            if (ChannelType.TRANSLATION in overrideProperties) anim.translation else transform.translation,
+            if (ChannelType.ROTATION in overrideProperties) anim.rotation else transform.rotation,
+            if (ChannelType.ROTATION in overrideProperties) anim.pivot else transform.pivot,
+            if (ChannelType.SCALE in overrideProperties) anim.scale else transform.scale
+        )
+
+        return combine(transform, final)
     }
 
     companion object {
 
         @Suppress("UNUSED_PARAMETER")
-        fun combine(original: ITransformation, animation: ITransformation): ITransformation {
+        fun combine(original: TRTSTransformation, animation: TRTSTransformation): TRTSTransformation {
             // Change if needed a different algorithm
-            return animation.toTRS()
+            return animation
         }
 
-        fun interpolate(time: Float, prev: IKeyframe, next: IKeyframe): ITransformation {
+        fun interpolateKeyframes(time: Float, prev: IKeyframe, next: IKeyframe, method: InterpolationMethod): TRTSTransformation {
             if (next.time == prev.time) return next.value
 
             val size = next.time - prev.time
             val step = (time - prev.time) / size
 
-            return interpolate(prev.value, next.value, step)
+            return interpolateTransforms(prev.value, next.value, step, method)
         }
 
-        fun interpolate(a: ITransformation, b: ITransformation, delta: Float): ITransformation {
-            return a.toTRS().lerp(b.toTRS(), delta)
+        fun interpolateTransforms(a: TRTSTransformation, b: TRTSTransformation, delta: Float, method: InterpolationMethod): TRTSTransformation {
+            val step = delta.toDouble()
+
+            return TRTSTransformation(
+                translation = interpolateVector3(a.translation, b.translation, step, method),
+                rotation = a.quatRotation.slerp(b.quatRotation, step).toAxisRotations(),
+                pivot = interpolateVector3(a.pivot, b.pivot, step, method),
+                scale = interpolateVector3(a.scale, b.scale, step, method)
+            )
+        }
+
+        fun interpolateVector3(a: IVector3, b: IVector3, mu: Double, method: InterpolationMethod): IVector3 {
+            return when (method) {
+                InterpolationMethod.LINEAR -> vec3Of(
+                    linear(a.xd, b.xd, mu),
+                    linear(a.yd, b.yd, mu),
+                    linear(a.zd, b.zd, mu)
+                )
+                InterpolationMethod.COSINE -> vec3Of(
+                    cosine(a.xd, b.xd, mu),
+                    cosine(a.yd, b.yd, mu),
+                    cosine(a.zd, b.zd, mu)
+                )
+            }
+        }
+
+        fun linear(y1: Double, y2: Double, mu: Double): Double {
+            return y1 * (1 - mu) + y2 * mu
+        }
+
+        fun cosine(y1: Double, y2: Double, mu: Double): Double {
+            val mu2 = (1 - cos(mu * PI)) / 2
+            return y1 * (1 - mu2) + y2 * mu2
         }
 
         fun getPrevAndNext(time: Float, keyframes: List<IKeyframe>): Pair<IKeyframe, IKeyframe> {

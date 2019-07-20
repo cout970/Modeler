@@ -353,6 +353,7 @@ object ProjectLoaderV13 {
                         addProperty("name", v.name)
                         addProperty("interpolation", v.interpolation.name)
                         addProperty("enabled", v.enabled)
+                        addProperty("type", v.type.toString())
 
                         add("keyframes", v.keyframes.toJsonArray {
                             JsonObject().apply {
@@ -393,6 +394,12 @@ object ProjectLoaderV13 {
                 val interName = channel["interpolation"].asString
                 val keyframesJson = channel["keyframes"].asJsonArray
 
+                val type = if (channel.has("type")) {
+                    ChannelType.valueOf(channel["type"].asString)
+                } else {
+                    ChannelType.TRANSLATION
+                }
+
                 val keyframes = keyframesJson.map { it.asJsonObject }.map {
                     Keyframe(
                         time = it["time"].asFloat,
@@ -405,6 +412,7 @@ object ProjectLoaderV13 {
                     interpolation = InterpolationMethod.valueOf(interName),
                     enabled = channel["enabled"].asBoolean,
                     keyframes = keyframes,
+                    type = type,
                     id = context.deserializeT(channel["id"])
                 )
             }

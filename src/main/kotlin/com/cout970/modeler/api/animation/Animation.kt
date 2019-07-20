@@ -1,8 +1,8 @@
 package com.cout970.modeler.api.animation
 
-import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.IGroupRef
 import com.cout970.modeler.api.model.selection.IObjectRef
+import com.cout970.modeler.core.model.TRTSTransformation
 import java.util.*
 
 interface IAnimationRef {
@@ -49,6 +49,7 @@ interface IChannel {
     val interpolation: InterpolationMethod
     val keyframes: List<IKeyframe>
     val enabled: Boolean
+    val type: ChannelType
 
     fun withName(name: String): IChannel
 
@@ -57,14 +58,20 @@ interface IChannel {
     fun withInterpolation(method: InterpolationMethod): IChannel
 
     fun withKeyframes(keyframes: List<IKeyframe>): IChannel
+
+    fun withType(type: ChannelType): IChannel
 }
 
 interface IKeyframe {
     val time: Float
-    val value: ITransformation
+    val value: TRTSTransformation
 
-    fun withValue(trs: ITransformation): IKeyframe
+    fun withValue(trs: TRTSTransformation): IKeyframe
     fun withTime(time: Float): IKeyframe
+}
+
+enum class ChannelType {
+    TRANSLATION, ROTATION, SCALE
 }
 
 enum class InterpolationMethod {

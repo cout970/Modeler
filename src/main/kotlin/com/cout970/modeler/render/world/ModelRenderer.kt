@@ -214,7 +214,7 @@ class ModelRenderer {
                                    animator: Animator, animation: IAnimation) {
 
         model.tree.objects[RootGroupRef].forEach { obj ->
-            matrixCache[obj] = animator.animate(animation, obj, model.getObject(obj).transformation).matrix
+            matrixCache[obj] = animator.animateObject(animation, obj, model.getObject(obj).transformation).matrix
         }
 
         model.tree.groups[RootGroupRef].forEach {
@@ -225,10 +225,10 @@ class ModelRenderer {
     private fun getRecursiveMatrix(matrixCache: MutableMap<IObjectRef, IMatrix4>, model: IModel,
                                    group: IGroupRef, matrix: IMatrix4, animator: Animator, animation: IAnimation) {
 
-        val mat = matrix * animator.animate(animation, group, model.getGroup(group).transform).matrix
+        val mat = matrix * animator.animateGroup(animation, group, model.getGroup(group).transform).matrix
 
         model.tree.objects[group].forEach { obj ->
-            matrixCache[obj] = mat * animator.animate(animation, obj, model.getObject(obj).transformation).matrix
+            matrixCache[obj] = mat * animator.animateObject(animation, obj, model.getObject(obj).transformation).matrix
         }
 
         model.tree.groups[group].forEach {

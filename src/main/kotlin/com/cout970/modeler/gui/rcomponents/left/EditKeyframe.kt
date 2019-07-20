@@ -1,8 +1,8 @@
 package com.cout970.modeler.gui.rcomponents.left
 
 import com.cout970.modeler.controller.Dispatch
-import com.cout970.modeler.core.model.TRSTransformation
-import com.cout970.modeler.core.model.toTRS
+import com.cout970.modeler.core.model.TRTSTransformation
+import com.cout970.modeler.core.model.toTRTS
 import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.gui.leguicomp.IconButton
 import com.cout970.modeler.gui.leguicomp.alignAsColumn
@@ -47,7 +47,7 @@ class EditKeyframe : RComponent<EditKeyframeProps, VisibleWidget>() {
 
         style {
             classes("left_panel_group", "edit_animation")
-            height = if (state.on && keyframe != null) 360f else 24f
+            height = if (state.on && keyframe != null) 460f else 24f
         }
 
         postMount {
@@ -58,11 +58,12 @@ class EditKeyframe : RComponent<EditKeyframeProps, VisibleWidget>() {
         child(GroupTitle::class.java, GroupTitleProps("Edit Keyframe", state.on) { setState { copy(on = !on) } })
 
 
-        val t = keyframe?.value?.toTRS() ?: TRSTransformation.IDENTITY
+        val t = keyframe?.value?.toTRTS() ?: TRTSTransformation.IDENTITY
         time((keyframe?.time ?: 0f) * 60f)
         scale(t.scale)
         position(t.translation)
-        rotation(if (t.euler.angles.hasNaN()) Vector3.ZERO else t.euler.angles)
+        rotation(if (t.rotation.hasNaN()) Vector3.ZERO else t.rotation)
+        pivot(t.pivot)
 
         onCmd("updateModel") { rerender() }
         onCmd("updateSelection") { rerender() }
@@ -232,6 +233,118 @@ class EditKeyframe : RComponent<EditKeyframeProps, VisibleWidget>() {
                 +IconButton("keyframe.spread.translate.y", "spread_value", 4f, 0f, 24f, 24f)
                     .apply { setTooltip("Copy value to all keyframes") }
                 +IconButton("keyframe.spread.translate.z", "spread_value", 4f, 0f, 24f, 24f)
+                    .apply { setTooltip("Copy value to all keyframes") }
+            }
+        }
+    }
+
+    fun RBuilder.pivot(pivot: IVector3) {
+        div("Pivot") {
+            style {
+                height = 93f
+                classes("inputGroup")
+            }
+
+            postMount {
+                fillX()
+            }
+
+            div {
+                style {
+                    classes("div")
+                }
+
+                postMount {
+                    width = parent.width * line
+                    fillY()
+                    floatTop(6f, 5f)
+                }
+
+                label("Pivot X") {
+                    style {
+                        width = 110f
+                        height = 25f
+                        classes("inputLabel")
+                    }
+
+                    postMount { marginX(10f) }
+                }
+
+                label("Pivot Y") {
+                    style {
+                        width = 110f
+                        height = 25f
+                        classes("inputLabel")
+                    }
+
+                    postMount { marginX(10f) }
+                }
+
+                label("Pivot Z") {
+                    style {
+                        width = 110f
+                        height = 25f
+                        classes("inputLabel")
+                    }
+
+                    postMount { marginX(10f) }
+                }
+            }
+
+            div {
+                style {
+                    classes("div")
+                }
+
+                postMount {
+                    posX = parent.width * line
+                    width = parent.width * (1 - (line + button_line))
+                    fillY()
+                    floatTop(6f, 5f)
+                }
+
+                child(TinyFloatInput::class, TinyFloatInputProps(
+                    pos = Vector2f(5f, 0f),
+                    increment = 1f,
+                    getter = { pivot.xf },
+                    setter = { cmd("pivot.x", it) },
+                    enabled = enable
+                ))
+
+                child(TinyFloatInput::class, TinyFloatInputProps(
+                    pos = Vector2f(5f, 0f),
+                    increment = 1f,
+                    getter = { pivot.yf },
+                    setter = { cmd("pivot.y", it) },
+                    enabled = enable
+                ))
+
+                child(TinyFloatInput::class, TinyFloatInputProps(
+                    pos = Vector2f(5f, 0f),
+                    increment = 1f,
+                    getter = { pivot.zf },
+                    setter = { cmd("pivot.z", it) },
+                    enabled = enable
+                ))
+            }
+
+            div("RightDiv") {
+                style {
+                    classes("div")
+                }
+
+                postMount {
+                    posX = parent.width * (1 - button_line)
+                    width = parent.width * button_line
+                    fillY()
+                    floatTop(6f, 5f)
+                }
+
+                +IconButton("keyframe.spread.pivot.x", "spread_value", 4f, 0f, 24f, 24f)
+                    .apply { setTooltip("Copy value to all keyframes") }
+                +IconButton("keyframe.spread.pivot.y", "spread_value", 4f, 0f, 24f, 24f)
+                    .apply { setTooltip("Copy value to all keyframes") }
+                +IconButton("keyframe.spread.pivot.z", "spread_value", 4f, 0f, 24f, 24f)
                     .apply { setTooltip("Copy value to all keyframes") }
             }
         }
