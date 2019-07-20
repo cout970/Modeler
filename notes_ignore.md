@@ -3,43 +3,31 @@ use "jvisualvm.exe -J-Dorg.netbeans.profiler.separateConsole=true" for performan
 
 Loads of skyboxes "http://www.custommapmakers.org/skyboxes.php"
 
-# TODO
-- [x] Fix selection raytrace
-- [x] Fix translation/rotation/scale based on cursor mode
-- [x] Add panel for transform mode
-- [x] Fix transform relative with object space
-- [x] Fix import/export
-- [x] Fix texture editing
-- [x] Finish cursor capabilities
-- [x] Fix selection raytrace (again)
-- [x] Fix UpdateAnimationTask
-- [x] Fix internal error notifications
-- [x] Fix animation selection
-- [x] Add interface to edit group properties
-- [x] Fix model group transform
-- [x] Fix adding cube breaks all groups
-- [x] Upgrade model tree and fix object out of groups
-- [x] Fix gltf import/export (mostly)
-- [x] Add control panel for all the program flags
-- [x] Add interface to edit texture properties
-- [x] Upgrade keyframe editor
-- [x] Add support for materials in gltf
-- [x] Upgrade animation panel
-- [ ] Name the program
-- [ ] Beta test
-
 # New TODO list
 - Fix bugs
 
 ### Current
-import texture template after creation
-menu to edit material properties
-add extra info into objects
+Fix animations
+- Channel edit menu
+- Add rotation pivot to animations and cubes
+- Add option to change objects linked to a channel
 
-### TODO soom
-add binary switches
-better logo.
-choose a name.
+Fix center cursor when moving the camera
+Add Java export format
+Spread textures UVs
+Fix left panel size
+Fix cursor in UV mode
+Buttons to show/hide panels
+Documentation
+Option to hide/show model tree and material list
+Last actions panel
+Several textures per cube
+Custom UVs in cubes
+Join/split objects
+Fix UV selection of triangles
+Join triangles into quads
+Custom skybox
+
 
 ### TODO later
 export hitbox dialog

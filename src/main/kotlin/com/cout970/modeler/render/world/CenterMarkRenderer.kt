@@ -2,12 +2,15 @@ package com.cout970.modeler.render.world
 
 import com.cout970.glutilities.structure.GLStateMachine
 import com.cout970.glutilities.tessellator.DrawMode
+import com.cout970.matrix.extensions.Matrix4
 import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.render.tool.AutoCache
 import com.cout970.modeler.render.tool.RenderContext
 import com.cout970.modeler.util.toIMatrix
-import com.cout970.vector.extensions.*
+import com.cout970.vector.extensions.Vector3
+import com.cout970.vector.extensions.div
+import com.cout970.vector.extensions.vec2Of
+import com.cout970.vector.extensions.vec3Of
 import org.joml.Matrix4d
 
 /**
@@ -37,18 +40,19 @@ class CenterMarkRenderer {
                 useLight.setInt(0)
                 useTexture.setInt(1)
 
+                matrixM.setMatrix4(Matrix4.IDENTITY)
                 matrixVP.setMatrix4(Matrix4d().apply {
                     scale(1 / ctx.viewport.xd, 1 / ctx.viewport.yd, 1.0)
                 }.toIMatrix())
 
-                matrixM.setMatrix4(TRSTransformation(
-                        translation = Vector3.ORIGIN,
-                        rotation = Quaternion.IDENTITY,
-                        scale = Vector3.ONE
-                ).matrix)
+
                 ctx.gui.resources.centerMarkTexture.bind()
                 GLStateMachine.blend.enable()
+                GLStateMachine.depthTest.disable()
+                GLStateMachine.cullFace.disable()
                 accept(vao)
+                GLStateMachine.cullFace.enable()
+                GLStateMachine.depthTest.enable()
                 GLStateMachine.blend.disable()
             }
         }

@@ -2,7 +2,9 @@ package com.cout970.modeler.gui.rcomponents
 
 import com.cout970.glutilities.device.Keyboard
 import com.cout970.modeler.api.animation.AnimationState
-import com.cout970.modeler.controller.dispatcher
+import com.cout970.modeler.controller.Dispatch
+import com.cout970.modeler.core.animation.AnimationNone
+import com.cout970.modeler.core.animation.AnimationRefNone
 import com.cout970.modeler.core.animation.ref
 import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.gui.leguicomp.*
@@ -23,10 +25,10 @@ import kotlin.math.max
 import kotlin.math.min
 
 data class BottomPanelProps(
-        val visible: Boolean,
-        val animator: Animator,
-        val programState: IProgramState,
-        val input: IInput) : RProps
+    val visible: Boolean,
+    val animator: Animator,
+    val programState: IProgramState,
+    val input: IInput) : RProps
 
 class BottomPanel : RStatelessComponent<BottomPanelProps>() {
 
@@ -142,9 +144,9 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
         +IconButton("animation.seek.end", "seek_end", 0f, 3f, 26f, 26f)
 
         child(TinyFloatInput::class, TinyFloatInputProps(
-                pos = Vector2f(0f, 4f),
-                getter = { props.animator.animation.timeLength },
-                setter = { dispatcher.onEvent("animation.set.length", Panel().apply { metadata["time"] = it }) }
+            pos = Vector2f(0f, 4f),
+            getter = { props.animator.animation.timeLength },
+            setter = { Dispatch.run("animation.set.length") { this["time"] = it } }
         ))
 
         +IconButton("animation.add.keyframe", "add_keyframe", 0f, 3f, 26f, 26f).apply {
@@ -171,14 +173,14 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
                 sizeX = 160f
                 sizeY = 26f
 
-                animations.forEachIndexed { index, animation -> addElement("$index ${animation.name}") }
                 addElement("None")
+                animations.forEachIndexed { index, animation -> addElement("$index ${animation.name}") }
 
                 val selectedIndex = animations.indexOfFirst { it.ref == props.programState.selectedAnimation }
                 if (selectedIndex != -1) {
-                    setSelected(selectedIndex, true)
+                    setSelected(selectedIndex + 1, true)
                 } else {
-                    setSelected(elements.size - 1, true)
+                    setSelected(0, true)
                 }
 
                 visibleCount = min(elements.size, 4)
@@ -190,13 +192,20 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
             }
 
             on<SelectBoxChangeSelectionEvent<String>> { event ->
-                val selected = event.targetComponent.selectBoxElements.indexOfFirst { it.`object` == event.newValue }
+                val ref = if (event.newValue == "None") {
+                    AnimationRefNone
+                } else {
+                    val selected = event.targetComponent.selectBoxElements
+                        .indexOfFirst { it.`object` == event.newValue } - 1
 
-                if (selected in animations.indices) {
-                    dispatcher.onEvent("animation.select", Panel().also {
-                        it.metadata["animation"] = animations[selected].ref
-                    })
+                    if (selected in animations.indices) {
+                        animations[selected].ref
+                    } else {
+                        AnimationRefNone
+                    }
                 }
+
+                Dispatch.run("animation.select") { this["animation"] = ref }
             }
         }
 
@@ -210,6 +219,13 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
 
         +IconButton("animation.remove", "remove_animation", 0f, 3f, 26f, 26f).apply {
             setTooltip("Remove animation")
+        }
+
+        +StringInput("animation.rename", props.animator.animation.name, 0f, 3f, 160f, 26f).apply {
+            if (props.animator.animation == AnimationNone) {
+                disableInput()
+                classes("string_input_disabled")
+            }
         }
     }
 
@@ -338,8 +354,20 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
                     height = parent.sizeY - posY
                 }
 
-                onClick { dispatcher.onEvent("animation.panel.click", it.targetComponent) }
+                onClick { Dispatch.run("animation.panel.click", it.targetComponent) }
+                onKey {
+                    if (it.action == 0) return@onKey
 
+                    val state = when {
+                        it.key == 263 -> "left"
+                        it.key == 262 -> "right"
+                        else -> return@onKey
+                    }
+
+                    Dispatch.run("animation.panel.key") {
+                        this["key"] = state
+                    }
+                }
                 onScroll(this@BottomPanel::handleScroll)
             }
         }
@@ -347,13 +375,15 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
 
     fun handleScroll(it: ScrollEvent<Component>) {
         if (props.input.keyboard.isKeyPressed(Keyboard.KEY_LEFT_CONTROL)) {
-            props.animator.zoom += when {
+            val add = when {
                 it.yoffset < 0 -> 1 / 16f
                 props.animator.zoom > 1 / 16f -> -1 / 16f
                 else -> 0f
             }
+            props.animator.zoom += add
+            props.animator.offset += add * 0.5f
         } else {
-            props.animator.offset += it.yoffset.toFloat() * -1 / 64f
+            props.animator.offset += it.yoffset.toFloat() * props.animator.zoom / 64f
         }
     }
 }

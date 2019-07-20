@@ -22,6 +22,7 @@ import com.cout970.modeler.core.model.material.TexturedMaterial
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
 import com.cout970.modeler.core.model.ref
+import com.cout970.modeler.core.model.toTRS
 import com.cout970.modeler.core.resource.ResourcePath
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.render.tool.Animator
@@ -189,10 +190,10 @@ class ObjExporter {
                 channel.keyframes.forEach { key ->
                     val frame = JsonObject()
                     frame.addProperty("time", key.time)
-                    frame.add("position", key.value.translation.toJson())
-                    frame.add("quaternion_rotation", key.value.rotation.toJson())
-                    frame.add("euler_rotation", key.value.euler.angles.toJson())
-                    frame.add("scale", key.value.scale.toJson())
+                    frame.add("position", key.value.toTRS().translation.toJson())
+                    frame.add("quaternion_rotation", key.value.toTRS().rotation.toJson())
+                    frame.add("euler_rotation", key.value.toTRS().euler.angles.toJson())
+                    frame.add("scale", key.value.toTRS().scale.toJson())
 
                     keyframes.add(frame)
                 }

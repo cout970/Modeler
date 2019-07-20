@@ -205,7 +205,7 @@ class GlTFExporter {
                     )
                 }
 
-                targetToNode += AnimationTargetObject(it.ref) to id
+                targetToNode += AnimationTargetObject(listOf(it.ref)) to id
                 addMesh(this, it)
             }
         }
@@ -234,7 +234,7 @@ class GlTFExporter {
                     if (!useTranslation && !useRotation && !useScale) return@map
 
                     val keyframeValues = chan.keyframes.map {
-                        Animator.combine(target.getTransformation(model), it.value)
+                        Animator.combine(target.getTransformation(model), it.value).toTRS()
                     }
 
                     if (useTranslation)
@@ -443,7 +443,7 @@ class GlTFImporter {
                 val thing = nodeMapping[gl.target.node]
 
                 (thing as? IGroupRef)?.let { channelMapping += chan.ref to AnimationTargetGroup(it) }
-                (thing as? IObjectRef)?.let { channelMapping += chan.ref to AnimationTargetObject(it) }
+                (thing as? IObjectRef)?.let { channelMapping += chan.ref to AnimationTargetObject(listOf(it)) }
 
                 chan
             }

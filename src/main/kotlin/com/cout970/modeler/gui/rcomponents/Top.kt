@@ -1,7 +1,7 @@
 package com.cout970.modeler.gui.rcomponents
 
 import com.cout970.modeler.api.model.selection.SelectionType
-import com.cout970.modeler.controller.dispatcher
+import com.cout970.modeler.controller.Dispatch
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.gui.canvas.tool.Cursor3D
 import com.cout970.modeler.gui.canvas.tool.CursorMode
@@ -163,13 +163,13 @@ class CursorOrientationBar : RStatelessComponent<CursorProps>() {
         +ToggleButton("selection_orientation_global", secondButton, 4f, 4f, 32f, 32f).apply {
             tooltip = InstantTooltip("Cursor orientation: Global")
             borderless()
-            onClick { dispatcher.onEvent("cursor.set.orientation.global", null) }
+            onClick { Dispatch.run("cursor.set.orientation.global") }
         }
 
         +ToggleButton("selection_orientation_local", firstButton, 32f + 5f + 4f, 4f, 32f, 32f).apply {
             tooltip = InstantTooltip("Cursor orientation: Local")
             borderless()
-            onClick { dispatcher.onEvent("cursor.set.orientation.local", null) }
+            onClick { Dispatch.run("cursor.set.orientation.local") }
         }
 
         onCmd("updateCursorOrientation") {
@@ -196,19 +196,19 @@ class CursorModeBar : RStatelessComponent<CursorProps>() {
         +ToggleButton("selection_mode_translation", firstButton, 4f, 4f, 32f, 32f).apply {
             tooltip = InstantTooltip("Cursor mode: Translation")
             borderless()
-            onClick { dispatcher.onEvent("cursor.set.mode.translate", null) }
+            onClick { Dispatch.run("cursor.set.mode.translate") }
         }
 
         +ToggleButton("selection_mode_rotation", secondButton, 32f + 5f + 4f, 4f, 32f, 32f).apply {
             tooltip = InstantTooltip("Cursor mode: Rotation")
             borderless()
-            onClick { dispatcher.onEvent("cursor.set.mode.rotate", null) }
+            onClick { Dispatch.run("cursor.set.mode.rotate") }
         }
 
         +ToggleButton("selection_mode_scale", thirdButton, 32f + 5f + 32f + 5f + 4f, 4f, 32f, 32f).apply {
             tooltip = InstantTooltip("Cursor mode: Scale")
             borderless()
-            onClick { dispatcher.onEvent("cursor.set.mode.scale", null) }
+            onClick { Dispatch.run("cursor.set.mode.scale") }
         }
 
         onCmd("updateCursorMode") {

@@ -1,7 +1,7 @@
 package com.cout970.modeler.gui.canvas.tool
 
 import com.cout970.modeler.api.model.selection.SelectionTarget
-import com.cout970.modeler.controller.dispatcher
+import com.cout970.modeler.controller.Dispatch
 import com.cout970.modeler.controller.tasks.TaskUpdateModel
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.helpers.PickupHelper
@@ -14,7 +14,6 @@ import com.cout970.vector.extensions.Vector2
 import com.cout970.vector.extensions.minus
 import com.cout970.vector.extensions.plus
 import com.cout970.vector.extensions.toVector3
-import org.liquidengine.legui.component.Panel
 
 class DragListener2D(val gui: Gui) : IDragListener {
 
@@ -51,7 +50,7 @@ class DragListener2D(val gui: Gui) : IDragListener {
         val model = helper.modelCache
         if (model != null) {
             val task = TaskUpdateModel(oldModel = gui.programState.model, newModel = model)
-            dispatcher.onEvent("run", Panel().apply { metadata["task"] = task })
+            Dispatch.run("run") { this["task"] = task }
         } else {
             updateSelection()
         }

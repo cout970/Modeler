@@ -17,8 +17,11 @@ import com.cout970.modeler.render.tool.CacheFlags
 import com.cout970.modeler.render.tool.RenderContext
 import com.cout970.modeler.render.tool.createVao
 import com.cout970.modeler.render.tool.shader.ShaderFlag
+import com.cout970.modeler.util.aprox
+import com.cout970.modeler.util.toDegrees
 import com.cout970.vector.extensions.*
 import org.lwjgl.opengl.GL11
+import kotlin.math.absoluteValue
 
 /**
  * Created by cout970 on 2017/06/14.
@@ -47,14 +50,24 @@ class WorldRenderer {
             renderBaseBlock(ctx)
         }
 
-        renderGridLines(ctx)
-
-
         if (ctx.gui.state.renderLights) {
             renderLights(ctx)
         }
 
         modelRenderer.renderModels(ctx, model)
+
+        // In otho mode, the grid lines must be on top of the model if the camera is fixed on an axis
+        val x = ctx.camera.angleX.toDegrees().absoluteValue
+        val y = ctx.camera.angleY.toDegrees().absoluteValue
+        val axisX = x.aprox(90.0, 0.1) && y.aprox(0.0, 0.1)
+        val axisY = x.aprox(0.0, 0.1) && y.aprox(0.0, 0.1)
+        val axisZ = x.aprox(0.0, 0.1) && (y.aprox(90.0, 0.1) || y.aprox(180.0, 0.1))
+
+        if (!ctx.camera.perspective && (axisX || axisY || axisZ)) {
+            GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
+        }
+
+        renderGridLines(ctx)
 
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT)
         renderOrientationCube(ctx)
@@ -100,8 +113,8 @@ class WorldRenderer {
 
     fun renderGridLines(ctx: RenderContext) {
         if (!ctx.gui.gridLines.enableXPlane &&
-                !ctx.gui.gridLines.enableYPlane &&
-                !ctx.gui.gridLines.enableZPlane) return
+            !ctx.gui.gridLines.enableYPlane &&
+            !ctx.gui.gridLines.enableZPlane) return
 
         val pixelVao = gridLinesPixel.getOrCreate(ctx) {
             ctx.buffer.build(DrawMode.LINES) { renderGridLines(ctx, true) }

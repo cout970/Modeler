@@ -4,8 +4,6 @@ import com.cout970.modeler.api.animation.*
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.RootGroupRef
-import com.cout970.modeler.core.model.TRSTransformation
-import com.cout970.modeler.core.model.toTRS
 import java.util.*
 
 /**
@@ -25,6 +23,8 @@ data class Animation(
         override val name: String,
         override val id: UUID = UUID.randomUUID()
 ) : IAnimation {
+
+    override fun withName(name: String): IAnimation = copy(name = name)
 
     override fun withChannel(channel: IChannel): IAnimation {
         return copy(channels = channels + (channel.ref to channel))
@@ -86,11 +86,13 @@ data class Channel(
 }
 
 data class Keyframe(
-        override val time: Float,
-        override val value: TRSTransformation
+    override val time: Float,
+    override val value: ITransformation
 ) : IKeyframe {
 
-    override fun withValue(trs: ITransformation): IKeyframe = copy(value = trs.toTRS())
+    override fun withValue(trs: ITransformation): IKeyframe = copy(value = trs)
+
+    override fun withTime(time: Float): IKeyframe = copy(time = time)
 }
 
 inline val IChannel.ref: IChannelRef get() = ChannelRef(id)
@@ -102,6 +104,8 @@ object AnimationNone : IAnimation {
     override val channels: Map<IChannelRef, IChannel> get() = emptyMap()
     override val channelMapping: Map<IChannelRef, AnimationTarget> get() = emptyMap()
     override val timeLength: Float get() = 1f
+
+    override fun withName(name: String): IAnimation = this
 
     override fun withChannel(channel: IChannel): IAnimation = this
 
@@ -117,6 +121,7 @@ object AnimationNone : IAnimation {
 fun AnimationTarget.getTransformation(model: IModel): ITransformation {
     return when (this) {
         is AnimationTargetGroup -> model.getGroup(ref).transform
-        is AnimationTargetObject -> model.getObject(ref).transformation
+        // TODO
+        is AnimationTargetObject -> model.getObject(refs.first()).transformation
     }
 }

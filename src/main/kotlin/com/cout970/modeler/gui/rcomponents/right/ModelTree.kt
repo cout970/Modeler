@@ -5,7 +5,7 @@ import com.cout970.glutilities.structure.Timer
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.`object`.*
 import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.modeler.controller.dispatcher
+import com.cout970.modeler.controller.Dispatch
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.model.selection.ObjectRefNone
@@ -345,7 +345,7 @@ class ToggleName : RComponent<ToggleName.Props, ToggleName.State>() {
                             copy(hidden = false)
                         }
                     } else {
-                        dispatcher.onEvent(props.clickEvent, it.targetComponent)
+                        Dispatch.run(props.clickEvent, it.targetComponent)
                     }
                     timer = Timer.miliTime
                 }
@@ -490,11 +490,11 @@ class ModelTreeAnimation(val programState: IProgramState, val objMap: List<Slot>
                 else -> return
             }
 
-            dispatcher.onEvent("model.tree.node.moved", Panel().apply {
-                metadata += "parent" to parent
-                metadata += "child" to slot
-                metadata += "multi" to isMultiSelect(sel)
-            })
+            Dispatch.run("model.tree.node.moved") {
+                this["parent"] = parent
+                this["child"] = slot
+                this["multi"] = isMultiSelect(sel)
+            }
         }
     }
 }

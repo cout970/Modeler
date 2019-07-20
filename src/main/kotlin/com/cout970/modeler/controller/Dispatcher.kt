@@ -8,29 +8,41 @@ import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import com.cout970.modeler.gui.event.pushNotification
+import com.cout970.modeler.gui.leguicomp.Panel
 import org.liquidengine.legui.component.Component
 import kotlin.reflect.KFunction
 import kotlin.reflect.KVisibility
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.kotlinFunction
-
 /**
  * Created by cout970 on 2017/07/17.
  */
 
+object Dispatch {
+
+    internal lateinit var dispatcher: IDispatcher
+    fun run(event: String, config: (MutableMap<String, Any?>.() -> Unit)? = null) {
+        val panel = config?.let { func -> Panel().apply { func(metadata) } }
+        dispatcher.onEvent(event, panel)
+    }
+
+    fun run(event: String, comp: Component) {
+        dispatcher.onEvent(event, comp)
+    }
+
+}
+
 interface IDispatcher {
     fun onEvent(key: String, comp: Component?)
 }
-
-lateinit var dispatcher: IDispatcher
 
 class Dispatcher : IDispatcher {
 
     lateinit var state: Program
 
     init {
-        dispatcher = this
+        Dispatch.dispatcher = this
     }
 
     val dependencyInjector = DependencyInjector()
@@ -75,8 +87,8 @@ class Dispatcher : IDispatcher {
 
         log(Level.FINEST) { "UseCase functions: $list" }
         val instances = list
-                .flatMap { it.declaredMethods.toList() }
-                .filter { it.isAnnotationPresent(UseCase::class.java) }
+            .flatMap { it.declaredMethods.toList() }
+            .filter { it.isAnnotationPresent(UseCase::class.java) }
 
 
         log(Level.FINE) { "[Dispatcher] Search done, found ${instances.size} functions" }

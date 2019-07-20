@@ -125,7 +125,7 @@ class Cursor3DTransformHelper {
                 if (selection.selectionTarget != SelectionTarget.MODEL) return false
                 if (selection.selectionType != SelectionType.OBJECT) return false
                 if (selection.size != 1) return false
-                if (target.ref != selection.objects.first()) return false
+                if (target.refs.first() != selection.objects.first()) return false
                 return true
             }
             is AnimationTargetGroup -> {

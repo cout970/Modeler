@@ -12,7 +12,6 @@ import org.joml.Vector2f
 import org.joml.Vector4f
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.component.optional.align.VerticalAlign
-import org.liquidengine.legui.style.color.ColorConstants
 import org.liquidengine.legui.style.color.ColorConstants.*
 import org.liquidengine.legui.style.font.FontRegistry
 import org.liquidengine.legui.system.context.Context
@@ -21,15 +20,16 @@ import org.liquidengine.legui.system.renderer.nvg.util.NvgRenderUtils.createScis
 import org.liquidengine.legui.system.renderer.nvg.util.NvgRenderUtils.resetScissor
 import org.liquidengine.legui.system.renderer.nvg.util.NvgShapes
 import org.liquidengine.legui.system.renderer.nvg.util.NvgText
-import kotlin.math.max
-import kotlin.math.roundToInt
+import kotlin.math.*
 
 private fun baseForZoom(zoom: Float): Int {
     return if (zoom < 2f) 1 else {
-        val log2 = Math.log(zoom.toDouble()) / Math.log(2.0)
-        max(1, 1 shl Math.floor(log2 - 1f).toInt())
+        val log2 = log(zoom.toDouble(), 2.0)
+        max(1, 1 shl floor(log2 - 1f).toInt())
     }
 }
+
+private const val FRAMES_BETWEEN_MARKS = 5f
 
 class AnimationPanel(val animator: Animator, val animation: IAnimation) : Panel() {
 
@@ -53,39 +53,44 @@ class AnimationPanel(val animator: Animator, val animation: IAnimation) : Panel(
             val pixelOffset = animator.offset * timeToPixel
             val frameSize = 1.0 / 60.0 * timeToPixel
 
-            val markSize = frameSize.toFloat() * 10f
-            val marks = Math.ceil(size.x / markSize.toDouble())
-
-            val markOffset = (pixelOffset / markSize).toInt()
-
-            val filterOdds = baseForZoom(zoom)
-
             // channels background
             val color = (style.background.color.toIVector() * vec4Of(1.3, 1.3, 1.3, 1.0)).toJoml4f()
             val channelLength = animation.timeLength * timeToPixel
 
+            // Channel background
             repeat(animation.channels.size) { index ->
-
                 NvgShapes.drawRect(nanovg,
-                        Vector2f(absPos.x + pixelOffset, absPos.y + index * 24f),
-                        Vector2f(channelLength, 24f),
-                        color, 0f)
+                    Vector2f(absPos.x + pixelOffset, absPos.y + index * 24f),
+                    Vector2f(channelLength, 24f),
+                    color, 0f)
+            }
+
+            // Channel separation line
+            repeat(animation.channels.size) { index ->
+                NvgShapes.drawRect(nanovg,
+                    Vector2f(absPos.x, 24f + absPos.y + index * 24f),
+                    Vector2f(size.x, 1f),
+                    black(), 0f)
             }
 
 
             // time lines
-            repeat(marks.toInt()) { index ->
+            val start = -animator.offset * 60f
+            val markSize = frameSize.toFloat() * FRAMES_BETWEEN_MARKS
+            val filterOdds = baseForZoom(zoom * 10f / FRAMES_BETWEEN_MARKS)
+            var barIndex = ceil(start / FRAMES_BETWEEN_MARKS).toInt()
+            var current = (barIndex * FRAMES_BETWEEN_MARKS / 60f) * timeToPixel + pixelOffset
 
-                val it = index - markOffset
-                if (it % filterOdds != 0) return@repeat
-
-                val offsetX = markSize * it + pixelOffset
-                if (offsetX < 0) return@repeat
-
-                NvgShapes.drawRect(nanovg,
-                        Vector2f(absPos.x + offsetX, absPos.y),
+            while (current < size.x) {
+                if (barIndex % filterOdds == 0) {
+                    NvgShapes.drawRect(nanovg,
+                        Vector2f(absPos.x + current, absPos.y),
                         Vector2f(2f, size.y),
                         black(), 0f)
+                }
+
+                current += markSize
+                barIndex++
             }
 
             // keyframes
@@ -98,14 +103,14 @@ class AnimationPanel(val animator: Animator, val animation: IAnimation) : Panel(
                     val innerColor = if (selected && animator.selectedKeyframe == i) lightGreen() else lightRed()
 
                     NvgShapes.drawRect(nanovg,
-                            Vector2f(absPos.x + pos - 12f + 2f, absPos.y + 2f + index * 24f),
-                            Vector2f(20f, 20f),
-                            lightBlack(), 0f)
+                        Vector2f(absPos.x + pos - 12f + 2f, absPos.y + 2f + index * 24f),
+                        Vector2f(20f, 20f),
+                        lightBlack(), 0f)
 
                     NvgShapes.drawRect(nanovg,
-                            Vector2f(absPos.x + pos - 7f, absPos.y + 5f + index * 24f),
-                            Vector2f(14f, 14f),
-                            innerColor, 0f)
+                        Vector2f(absPos.x + pos - 7f, absPos.y + 5f + index * 24f),
+                        Vector2f(14f, 14f),
+                        innerColor, 0f)
                 }
             }
 
@@ -139,36 +144,40 @@ class AnimationPanelHead(val animator: Animator, val animation: IAnimation) : Pa
             val pixelOffset = animator.offset * timeToPixel
             val frameSize = 1.0 / 60.0 * timeToPixel
 
-            val markSize = frameSize.toFloat() * 10f
-            val marks = Math.ceil(width / markSize.toDouble())
+            // time lines
+            val start = -animator.offset * 60f
+            val markSize = frameSize.toFloat() * FRAMES_BETWEEN_MARKS
+            val filterOdds = baseForZoom(zoom * 10f / FRAMES_BETWEEN_MARKS)
+            var barIndex = ceil(start / FRAMES_BETWEEN_MARKS).toInt()
+            var current = (barIndex * FRAMES_BETWEEN_MARKS / 60f) * timeToPixel + pixelOffset
 
-            val markOffset = (pixelOffset / markSize).toInt()
-            val filterOdds = baseForZoom(zoom)
+            while (current < size.x) {
+                if (barIndex % filterOdds == 0) {
 
-            repeat(marks.toInt()) { index ->
+                    val frame = (barIndex * markSize / frameSize).roundToInt()
+                    val offsetX = markSize * barIndex + pixelOffset
 
-                val it = index - markOffset
-                if (it % filterOdds != 0) return@repeat
-                val frame = (it * markSize / frameSize).roundToInt()
+                    if (offsetX >= 0) {
+                        renderMark(nanovg, absPos.x + offsetX, absPos.y, frame)
+                    }
+                }
 
-                val offsetX = markSize * it + pixelOffset
-                if (offsetX < 0) return@repeat
-
-                renderMark(nanovg, absPos.x + offsetX, absPos.y, frame)
+                current += markSize
+                barIndex++
             }
         }
 
         fun renderMark(nanovg: Long, posX: Float, posY: Float, frame: Int) {
             NvgText.drawTextLineToRect(
-                    nanovg,
-                    Vector4f(posX - 30f, posY, 60f, 20f),
-                    false,
-                    HorizontalAlign.CENTER,
-                    VerticalAlign.MIDDLE,
-                    18f,
-                    FontRegistry.DEFAULT,
-                    frame.toString(),
-                    ColorConstants.white()
+                nanovg,
+                Vector4f(posX - 30f, posY, 60f, 20f),
+                false,
+                HorizontalAlign.CENTER,
+                VerticalAlign.MIDDLE,
+                18f,
+                FontRegistry.DEFAULT,
+                frame.toString(),
+                white()
             )
         }
     }

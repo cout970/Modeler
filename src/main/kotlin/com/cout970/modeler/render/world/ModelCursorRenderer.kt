@@ -93,7 +93,6 @@ class ModelCursorRenderer {
     data class CursorPart(val model: VAO, val color: IVector3, val transform: IMatrix4)
 
     fun renderCursor(ctx: RenderContext) {
-
         render(ctx)
     }
 }

@@ -8,6 +8,7 @@ import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.toTRS
 import com.cout970.modeler.gui.Gui
+import com.cout970.modeler.util.toFrame
 
 class Animator {
 
@@ -84,7 +85,7 @@ class Animator {
     fun animate(anim: IAnimation, obj: IObjectRef, transform: ITransformation): ITransformation {
         val validChannels = anim.channels
                 .filter { it.value.enabled }
-                .filter { (chanRef) -> (anim.channelMapping[chanRef] as? AnimationTargetObject)?.ref == obj }
+            .filter { (chanRef) -> (anim.channelMapping[chanRef] as? AnimationTargetObject)?.refs?.first() == obj }
                 .map { it.value }
 
         return animate(validChannels, transform)
@@ -106,12 +107,12 @@ class Animator {
     companion object {
 
         @Suppress("UNUSED_PARAMETER")
-        fun combine(original: ITransformation, animation: ITransformation): TRSTransformation {
+        fun combine(original: ITransformation, animation: ITransformation): ITransformation {
             // Change if needed a different algorithm
             return animation.toTRS()
         }
 
-        fun interpolate(time: Float, prev: IKeyframe, next: IKeyframe): TRSTransformation {
+        fun interpolate(time: Float, prev: IKeyframe, next: IKeyframe): ITransformation {
             if (next.time == prev.time) return next.value
 
             val size = next.time - prev.time
@@ -120,13 +121,13 @@ class Animator {
             return interpolate(prev.value, next.value, step)
         }
 
-        fun interpolate(a: TRSTransformation, b: TRSTransformation, delta: Float): TRSTransformation {
-            return a.lerp(b, delta)
+        fun interpolate(a: ITransformation, b: ITransformation, delta: Float): ITransformation {
+            return a.toTRS().lerp(b.toTRS(), delta)
         }
 
         fun getPrevAndNext(time: Float, keyframes: List<IKeyframe>): Pair<IKeyframe, IKeyframe> {
-            val next = keyframes.firstOrNull { it.time > time } ?: keyframes.first()
-            val prev = keyframes.lastOrNull { it.time <= time } ?: keyframes.last()
+            val next = keyframes.firstOrNull { it.time.toFrame() > time.toFrame() } ?: keyframes.first()
+            val prev = keyframes.lastOrNull { it.time.toFrame() <= time.toFrame() } ?: keyframes.last()
 
             return prev to next
         }

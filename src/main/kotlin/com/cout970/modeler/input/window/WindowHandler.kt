@@ -40,6 +40,8 @@ class WindowHandler : ITickeable {
 
     fun create() {
         window = WindowBuilder.build {
+
+            //            screen = glfwGetMonitors()!![0]
             title = WINDOW_TITLE
             size = vec2Of(800, 600)
             vSync = true
@@ -47,6 +49,8 @@ class WindowHandler : ITickeable {
             // multisampling anti-aliasing makes a lot of artifacts on edges
 //            properties[GLFW_SAMPLES] = 4
 
+//            glfwWindowHint( GLFW_DOUBLEBUFFER, GL_FALSE )
+//            properties[GLFW_DOUBLEBUFFER] = 0
             properties[GLFW_CONTEXT_VERSION_MAJOR] = 3
             properties[GLFW_CONTEXT_VERSION_MINOR] = 3
             properties[GLFW_VISIBLE] = 0

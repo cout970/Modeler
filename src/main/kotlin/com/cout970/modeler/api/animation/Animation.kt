@@ -3,7 +3,6 @@ package com.cout970.modeler.api.animation
 import com.cout970.modeler.api.model.ITransformation
 import com.cout970.modeler.api.model.`object`.IGroupRef
 import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.modeler.core.model.TRSTransformation
 import java.util.*
 
 interface IAnimationRef {
@@ -11,8 +10,14 @@ interface IAnimationRef {
 }
 
 sealed class AnimationTarget
-data class AnimationTargetGroup(val ref: IGroupRef) : AnimationTarget()
-data class AnimationTargetObject(val ref: IObjectRef) : AnimationTarget()
+
+data class AnimationTargetGroup(
+    val ref: IGroupRef
+) : AnimationTarget()
+
+data class AnimationTargetObject(
+    val refs: List<IObjectRef>
+) : AnimationTarget()
 
 interface IAnimation {
     val id: UUID
@@ -21,8 +26,12 @@ interface IAnimation {
     val channelMapping: Map<IChannelRef, AnimationTarget>
     val timeLength: Float
 
+    fun withName(name: String): IAnimation
+
     fun withChannel(channel: IChannel): IAnimation
+
     fun withTimeLength(newLength: Float): IAnimation
+
     fun withMapping(channel: IChannelRef, target: AnimationTarget): IAnimation
 
     fun removeChannels(list: List<IChannelRef>): IAnimation
@@ -42,16 +51,20 @@ interface IChannel {
     val enabled: Boolean
 
     fun withName(name: String): IChannel
+
     fun withEnable(enabled: Boolean): IChannel
+
     fun withInterpolation(method: InterpolationMethod): IChannel
+
     fun withKeyframes(keyframes: List<IKeyframe>): IChannel
 }
 
 interface IKeyframe {
     val time: Float
-    val value: TRSTransformation
+    val value: ITransformation
 
     fun withValue(trs: ITransformation): IKeyframe
+    fun withTime(time: Float): IKeyframe
 }
 
 enum class InterpolationMethod {

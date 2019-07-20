@@ -6,8 +6,11 @@ import com.cout970.modeler.core.animation.AnimationNone
 import com.cout970.modeler.core.animation.Keyframe
 import com.cout970.modeler.core.helpers.AnimationHelper
 import com.cout970.modeler.core.model.TRSTransformation
+import com.cout970.modeler.core.model.toTRS
 import com.cout970.modeler.render.tool.Animator
 import com.cout970.modeler.util.EulerRotation
+import com.cout970.modeler.util.fromFrame
+import com.cout970.modeler.util.toFrame
 import com.cout970.vector.extensions.vec3Of
 import org.liquidengine.legui.component.Component
 
@@ -20,15 +23,28 @@ private fun changeKeyframe(comp: Component, animator: Animator, model: IModel): 
     val channelRef = animator.selectedChannel ?: return TaskNone
     val keyframeIndex = animator.selectedKeyframe ?: return TaskNone
 
-    val channel = animator.animation.channels[channelRef]!!
+    val channel = animator.animation.channels[channelRef] ?: error("Missing channel $channelRef")
     val keyframe = channel.keyframes[keyframeIndex]
+    val prev = channel.keyframes.filter { it.time.toFrame() < keyframe.time.toFrame() }
+    val next = channel.keyframes.filter { it.time.toFrame() > keyframe.time.toFrame() }
 
-    val prev = channel.keyframes.filter { it.time < keyframe.time }
-    val next = channel.keyframes.filter { it.time > keyframe.time }
+    val newChannel = if (cmd == "time") {
+        val newTime = (text.toFloat() / 60f).toFrame()
+        val current = channel.keyframes.find { it != keyframe && it.time.toFrame() == newTime }
+        if (current != null) return TaskNone
 
-    val newValue = updateTransformation(keyframe.value, cmd, text, offset) ?: return TaskNone
-    val newKeyframe = keyframe.withValue(newValue)
-    val newChannel = channel.withKeyframes(prev + newKeyframe + next)
+        val newKeyframe = keyframe.withTime(newTime.fromFrame())
+        val newKeyframes = (prev + newKeyframe + next).sortedBy { it.time }
+        val newIndex = newKeyframes.indexOf(newKeyframe)
+        animator.selectedKeyframe = newIndex
+        channel.withKeyframes(newKeyframes)
+    } else {
+        val newValue = updateTransformation(keyframe.value, cmd, text, offset) ?: return TaskNone
+        val newKeyframe = keyframe.withValue(newValue)
+
+        channel.withKeyframes(prev + newKeyframe + next)
+    }
+
     val newAnimation = animator.animation.withChannel(newChannel)
 
     return TaskUpdateModel(model, model.modifyAnimation(newAnimation))
@@ -38,24 +54,25 @@ private fun changeKeyframe(comp: Component, animator: Animator, model: IModel): 
 private fun addKeyframe(animator: Animator, model: IModel): ITask {
     val channelRef = animator.selectedChannel ?: return TaskNone
     val channel = animator.animation.channels[channelRef] ?: return TaskNone
+    if (animator.animationTime > animator.animation.timeLength) return TaskNone
 
-    val now = (animator.animationTime * 60f).toInt() / 60f
-    if (channel.keyframes.any { it.time == now }) return TaskNone
+    val now = animator.animationTime.toFrame()
+    if (channel.keyframes.any { it.time.toFrame() == now }) return TaskNone
 
-    val prev = channel.keyframes.filter { it.time <= now }
-    val next = channel.keyframes.filter { it.time >= now }
+    val prev = channel.keyframes.filter { it.time.toFrame() < now }
+    val next = channel.keyframes.filter { it.time.toFrame() > now }
 
-    val pair = Animator.getPrevAndNext(now, channel.keyframes)
-    val value = Animator.interpolate(now, pair.first, pair.second)
-    val keyframe = Keyframe(now, value)
+    val pair = Animator.getPrevAndNext(now.fromFrame(), channel.keyframes)
+    val value = Animator.interpolate(now.fromFrame(), pair.first, pair.second)
+    val keyframe = Keyframe(now.fromFrame(), value)
 
     val newList = prev + keyframe + next
     val newChannel = channel.withKeyframes(newList)
     val newAnimation = animator.animation.withChannel(newChannel)
 
     return TaskChain(listOf(
-            TaskUpdateModel(model, model.modifyAnimation(newAnimation)),
-            ModifyGui { animator.selectedKeyframe = newList.indexOf(keyframe) }
+        TaskUpdateModel(model, model.modifyAnimation(newAnimation)),
+        ModifyGui { animator.selectedKeyframe = newList.indexOf(keyframe) }
     ))
 }
 
@@ -64,7 +81,7 @@ private fun removeKeyframe(animator: Animator, model: IModel): ITask {
     val channelRef = animator.selectedChannel ?: return TaskNone
     val keyframeIndex = animator.selectedKeyframe ?: return TaskNone
 
-    val channel = animator.animation.channels[channelRef]!!
+    val channel = animator.animation.channels[channelRef] ?: error("Missing channel $channelRef")
     val keyframe = channel.keyframes[keyframeIndex]
 
     if (channel.keyframes.size <= 1) return TaskNone
@@ -73,8 +90,8 @@ private fun removeKeyframe(animator: Animator, model: IModel): ITask {
     val newAnimation = animator.animation.withChannel(newChannel)
 
     return TaskChain(listOf(
-            ModifyGui { it.animator.selectedKeyframe = null },
-            TaskUpdateModel(model, model.modifyAnimation(newAnimation))
+        ModifyGui { it.animator.selectedKeyframe = null },
+        TaskUpdateModel(model, model.modifyAnimation(newAnimation))
     ))
 }
 
@@ -151,7 +168,7 @@ private fun spreadValue(model: IModel, animator: Animator, func: (TRSTransformat
     val value = animation.channels[channelRef]!!.keyframes[keyframe].value
 
     val newModel = AnimationHelper.editChannel(model, animator) {
-        it.withValue(func(it.value, value))
+        it.withValue(func(it.value.toTRS(), value.toTRS()))
     } ?: return TaskNone
 
     return TaskUpdateModel(model, newModel)

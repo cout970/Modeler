@@ -1,7 +1,7 @@
 package com.cout970.modeler.gui.leguicomp
 
 import com.cout970.glutilities.structure.Timer
-import com.cout970.modeler.controller.dispatcher
+import com.cout970.modeler.controller.Dispatch
 import com.cout970.modeler.core.config.ColorPalette
 import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.EventGuiCommand
@@ -44,7 +44,7 @@ fun Component.printPaths(prefix: String = "") {
 }
 
 fun spaces(amount: Int): String = buildString {
-    (0 until amount).forEach { append(' ') }
+    repeat((0 until amount).count()) { append(' ') }
 }
 
 fun Component.alignAsColumn(padding: Float, margin: Float = 0f) {
@@ -162,5 +162,5 @@ fun <T : Event<*>> ListenerMap.clear(clazz: Class<T>) {
 }
 
 fun Component.dispatch(str: String) {
-    dispatcher.onEvent(str, this)
+    Dispatch.run(str, this)
 }

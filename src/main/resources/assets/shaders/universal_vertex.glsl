@@ -57,7 +57,10 @@ void main(void){
     pass_color = in_color;
 
     if(useLight){
-        pass_normal = in_normal;
+        vec3 offset = (matrixM * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
+        vec3 tranformedNormal = (matrixM * vec4(in_normal.xyz, 1.0)).xyz;
+
+        pass_normal = normalize(tranformedNormal - offset);
         toCameraVector = cameraPos - worldPos.xyz;
 
         for(int i = 0; i < lightCount; i++){

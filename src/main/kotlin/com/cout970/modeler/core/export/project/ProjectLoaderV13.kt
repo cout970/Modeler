@@ -49,37 +49,37 @@ object ProjectLoaderV13 {
     const val VERSION = "1.3"
 
     val gson = GsonBuilder()
-            .setExclusionStrategies(ProjectExclusionStrategy())
-            .setPrettyPrinting()
-            .enableComplexMapKeySerialization()
-            .registerTypeAdapter(UUID::class.java, UUIDSerializer())
-            .registerTypeAdapter(IVector3::class.java, Vector3Serializer())
-            .registerTypeAdapter(IVector2::class.java, Vector2Serializer())
-            .registerTypeAdapter(IQuaternion::class.java, QuaternionSerializer())
-            .registerTypeAdapter(IGroupRef::class.java, GroupRefSerializer())
-            .registerTypeAdapter(IMaterialRef::class.java, MaterialRefSerializer())
-            .registerTypeAdapter(IObjectRef::class.java, ObjectRefSerializer())
-            .registerTypeAdapter(ITransformation::class.java, TransformationSerializer())
-            .registerTypeAdapter(ImmutableMap::class.java, ImmutableMapSerializer())
-            .registerTypeAdapter(ImmutableGroupTree::class.java, ImmutableGroupTreeSerializer())
-            .registerTypeAdapter(IModel::class.java, ModelSerializer())
-            .registerTypeAdapter(IMaterial::class.java, MaterialSerializer())
-            .registerTypeAdapter(IObject::class.java, ObjectSerializer())
-            .registerTypeAdapter(IGroupTree::class.java, GroupTreeSerializer())
-            .registerTypeAdapter(IGroup::class.java, serializerOf<Group>())
-            .registerTypeAdapter(IMesh::class.java, MeshSerializer())
-            .registerTypeAdapter(IAnimation::class.java, AnimationSerializer())
-            .registerTypeAdapter(IAnimationRef::class.java, AnimationRefSerializer())
-            .registerTypeAdapter(AnimationTarget::class.java, AnimationTargetSerializer())
-            .create()!!
+        .setExclusionStrategies(ProjectExclusionStrategy())
+        .setPrettyPrinting()
+        .enableComplexMapKeySerialization()
+        .registerTypeAdapter(UUID::class.java, UUIDSerializer())
+        .registerTypeAdapter(IVector3::class.java, Vector3Serializer())
+        .registerTypeAdapter(IVector2::class.java, Vector2Serializer())
+        .registerTypeAdapter(IQuaternion::class.java, QuaternionSerializer())
+        .registerTypeAdapter(IGroupRef::class.java, GroupRefSerializer())
+        .registerTypeAdapter(IMaterialRef::class.java, MaterialRefSerializer())
+        .registerTypeAdapter(IObjectRef::class.java, ObjectRefSerializer())
+        .registerTypeAdapter(ITransformation::class.java, TransformationSerializer())
+        .registerTypeAdapter(ImmutableMap::class.java, ImmutableMapSerializer())
+        .registerTypeAdapter(ImmutableGroupTree::class.java, ImmutableGroupTreeSerializer())
+        .registerTypeAdapter(IModel::class.java, ModelSerializer())
+        .registerTypeAdapter(IMaterial::class.java, MaterialSerializer())
+        .registerTypeAdapter(IObject::class.java, ObjectSerializer())
+        .registerTypeAdapter(IGroupTree::class.java, GroupTreeSerializer())
+        .registerTypeAdapter(IGroup::class.java, serializerOf<Group>())
+        .registerTypeAdapter(IMesh::class.java, MeshSerializer())
+        .registerTypeAdapter(IAnimation::class.java, AnimationSerializer())
+        .registerTypeAdapter(IAnimationRef::class.java, AnimationRefSerializer())
+        .registerTypeAdapter(AnimationTarget::class.java, AnimationTargetSerializer())
+        .create()!!
 
     fun loadProject(zip: ZipFile, path: String): ProgramSave {
 
         val properties = zip.load<ProjectProperties>("project.json", gson)
-                ?: throw IllegalStateException("Missing file 'project.json' inside '$path'")
+            ?: throw IllegalStateException("Missing file 'project.json' inside '$path'")
 
         val model = zip.load<IModel>("model.json", gson)
-                ?: throw IllegalStateException("Missing file 'model.json' inside '$path'")
+            ?: throw IllegalStateException("Missing file 'model.json' inside '$path'")
 
         val animations = zip.load<List<IAnimation>>("animation.json", gson) ?: emptyList()
 
@@ -152,14 +152,14 @@ object ProjectLoaderV13 {
         override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): IModel {
             val obj = json.asJsonObject
             return Model.of(
-                    objectMap = context.deserializeT(obj["objectMap"]),
-                    materialMap = context.deserializeT(obj["materialMap"]),
-                    groupMap = context.deserializeT(obj["groupMap"]),
-                    groupTree = context.deserializeT(obj["groupTree"]),
-                    animationMap = obj["animationMap"]?.let {
-                        context.deserializeT<Map<IAnimationRef, IAnimation>>(it)
-                                .filter { (key, value) -> key == value.ref }
-                    } ?: emptyMap()
+                objectMap = context.deserializeT(obj["objectMap"]),
+                materialMap = context.deserializeT(obj["materialMap"]),
+                groupMap = context.deserializeT(obj["groupMap"]),
+                groupTree = context.deserializeT(obj["groupTree"]),
+                animationMap = obj["animationMap"]?.let {
+                    context.deserializeT<Map<IAnimationRef, IAnimation>>(it)
+                        .filter { (key, value) -> key == value.ref }
+                } ?: emptyMap()
             )
         }
     }
@@ -223,23 +223,23 @@ object ProjectLoaderV13 {
             return when (obj["class"].asString) {
                 "ObjectCube" -> {
                     ObjectCube(
-                            name = context.deserialize(obj["name"], String::class.java),
-                            transformation = context.deserialize(obj["transformation"], ITransformation::class.java),
-                            material = context.deserialize(obj["material"], IMaterialRef::class.java),
-                            textureOffset = context.deserialize(obj["textureOffset"], IVector2::class.java),
-                            textureSize = context.deserialize(obj["textureSize"], IVector2::class.java),
-                            mirrored = context.deserialize(obj["mirrored"], Boolean::class.java),
-                            visible = context.deserialize(obj["visible"], Boolean::class.java),
-                            id = context.deserialize(obj["id"], UUID::class.java)
+                        name = context.deserialize(obj["name"], String::class.java),
+                        transformation = context.deserialize(obj["transformation"], ITransformation::class.java),
+                        material = context.deserialize(obj["material"], IMaterialRef::class.java),
+                        textureOffset = context.deserialize(obj["textureOffset"], IVector2::class.java),
+                        textureSize = context.deserialize(obj["textureSize"], IVector2::class.java),
+                        mirrored = context.deserialize(obj["mirrored"], Boolean::class.java),
+                        visible = context.deserialize(obj["visible"], Boolean::class.java),
+                        id = context.deserialize(obj["id"], UUID::class.java)
                     )
                 }
                 "Object" -> Object(
-                        name = context.deserialize(obj["name"], String::class.java),
-                        mesh = context.deserialize(obj["mesh"], IMesh::class.java),
-                        material = context.deserialize(obj["material"], IMaterialRef::class.java),
-                        transformation = context.deserialize(obj["transformation"], ITransformation::class.java),
-                        visible = context.deserialize(obj["visible"], Boolean::class.java),
-                        id = context.deserialize(obj["id"], UUID::class.java)
+                    name = context.deserialize(obj["name"], String::class.java),
+                    mesh = context.deserialize(obj["mesh"], IMesh::class.java),
+                    material = context.deserialize(obj["material"], IMaterialRef::class.java),
+                    transformation = context.deserialize(obj["transformation"], ITransformation::class.java),
+                    visible = context.deserialize(obj["visible"], Boolean::class.java),
+                    id = context.deserialize(obj["id"], UUID::class.java)
                 )
 
                 else -> throw IllegalStateException("Unknown Class: ${obj["class"]}")
@@ -272,16 +272,16 @@ object ProjectLoaderV13 {
             val parentMapArray = obj["parentMap"].asJsonArray
 
             val childMap = childMapArray
-                    .map { context.deserialize(it, Aux::class.java) as Aux }
-                    .map { it.key to it.value }
-                    .toMap()
-                    .toImmutableMap()
+                .map { context.deserialize(it, Aux::class.java) as Aux }
+                .map { it.key to it.value }
+                .toMap()
+                .toImmutableMap()
 
             val parentMap = parentMapArray
-                    .map { context.deserialize(it, Aux2::class.java) as Aux2 }
-                    .map { it.key to it.value }
-                    .toMap()
-                    .toImmutableMap()
+                .map { context.deserialize(it, Aux2::class.java) as Aux2 }
+                .map { it.key to it.value }
+                .toMap()
+                .toImmutableMap()
 
             return GroupTree(parentMap, childMap)
         }
@@ -344,6 +344,7 @@ object ProjectLoaderV13 {
         override fun serialize(src: IAnimation, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
             return JsonObject().apply {
                 add("id", context.serializeT(src.id))
+                addProperty("name", src.name)
                 addProperty("timeLength", src.timeLength)
 
                 add("channels", src.channels.values.toJsonArray { v ->
@@ -376,14 +377,15 @@ object ProjectLoaderV13 {
             if (json.isJsonNull) return Animation.of()
 
             val obj = json.asJsonObject
+            val name = if (obj.has("name")) obj["name"].asString else "animation"
 
             val id = if (obj.has("id")) context.deserializeT<UUID>(obj["id"]) else UUID.randomUUID()
 
             val channelMapping = obj["mapping"].asJsonArray
-                    .map { it.asJsonObject }
-                    .map { context.deserializeT<UUID>(it["key"]) to context.deserializeT<AnimationTarget>(it["value"]) }
-                    .map { (ChannelRef(it.first) as IChannelRef) to it.second }
-                    .toMap()
+                .map { it.asJsonObject }
+                .map { context.deserializeT<UUID>(it["key"]) to context.deserializeT<AnimationTarget>(it["value"]) }
+                .map { (ChannelRef(it.first) as IChannelRef) to it.second }
+                .toMap()
 
             val channels = obj["channels"].asJsonArray.map { elem ->
                 val channel = elem.asJsonObject
@@ -393,26 +395,26 @@ object ProjectLoaderV13 {
 
                 val keyframes = keyframesJson.map { it.asJsonObject }.map {
                     Keyframe(
-                            time = it["time"].asFloat,
-                            value = context.deserializeT(it["value"])
+                        time = it["time"].asFloat,
+                        value = context.deserializeT(it["value"])
                     )
                 }
 
                 Channel(
-                        name = channel["name"].asString,
-                        interpolation = InterpolationMethod.valueOf(interName),
-                        enabled = channel["enabled"].asBoolean,
-                        keyframes = keyframes,
-                        id = context.deserializeT(channel["id"])
+                    name = channel["name"].asString,
+                    interpolation = InterpolationMethod.valueOf(interName),
+                    enabled = channel["enabled"].asBoolean,
+                    keyframes = keyframes,
+                    id = context.deserializeT(channel["id"])
                 )
             }
 
             return Animation(
-                    channels = channels.associateBy { it.ref },
-                    timeLength = obj["timeLength"].asFloat,
-                    channelMapping = channelMapping,
-                    name = "animation",
-                    id = id
+                channels = channels.associateBy { it.ref },
+                timeLength = obj["timeLength"].asFloat,
+                channelMapping = channelMapping,
+                name = name,
+                id = id
             )
         }
     }
@@ -439,8 +441,8 @@ object ProjectLoaderV13 {
             val groups = obj["groups"].asJsonArray
 
             return ImmutableGroupTree(
-                    biMultimapOf(*objects.map { context.deserializeT<Aux>(it) }.map { it.key to it.value }.toTypedArray()),
-                    biMultimapOf(*groups.map { context.deserializeT<Aux2>(it) }.map { it.key to it.value }.toTypedArray())
+                biMultimapOf(*objects.map { context.deserializeT<Aux>(it) }.map { it.key to it.value }.toTypedArray()),
+                biMultimapOf(*groups.map { context.deserializeT<Aux2>(it) }.map { it.key to it.value }.toTypedArray())
             )
         }
     }
@@ -455,19 +457,21 @@ object ProjectLoaderV13 {
                 }
                 is AnimationTargetObject -> JsonObject().apply {
                     addProperty("type", "object")
-                    add("ref", context.serializeT(src.ref))
+                    // TODO
+                    add("ref", context.serializeT(src.refs.first()))
                 }
             }
         }
 
         override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): AnimationTarget {
-            if (!json.isJsonObject) return AnimationTargetObject(ObjectRefNone)
+            if (!json.isJsonObject) return AnimationTargetObject(listOf(ObjectRefNone))
             val obj = json.asJsonObject
-            if (!obj.has("type")) return AnimationTargetObject(ObjectRefNone)
+            if (!obj.has("type")) return AnimationTargetObject(listOf(ObjectRefNone))
 
+            // TODO
             return when (obj["type"].asString) {
                 "group" -> AnimationTargetGroup(context.deserializeT(obj["ref"]))
-                "object" -> AnimationTargetObject(context.deserializeT(obj["ref"]))
+                "object" -> AnimationTargetObject(listOf(context.deserializeT(obj["ref"])))
                 else -> error("Invalid AnimationTarget type: ${obj["type"].asString}")
             }
         }

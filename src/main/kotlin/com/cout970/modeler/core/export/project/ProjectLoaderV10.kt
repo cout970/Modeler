@@ -42,33 +42,33 @@ object ProjectLoaderV10 {
     const val VERSION = "1.0"
 
     val gson = GsonBuilder()
-            .setExclusionStrategies(ProjectExclusionStrategy())
-            .setPrettyPrinting()
-            .registerTypeAdapter(UUID::class.java, UUIDSerializer())
-            .registerTypeAdapter(IVector3::class.java, Vector3Serializer())
-            .registerTypeAdapter(IVector2::class.java, Vector2Serializer())
-            .registerTypeAdapter(IQuaternion::class.java, QuaternionSerializer())
-            .registerTypeAdapter(IGroupRef::class.java, GroupRefSerializer())
-            .registerTypeAdapter(IMaterialRef::class.java, MaterialRefSerializer())
-            .registerTypeAdapter(IObjectRef::class.java, ObjectRefSerializer())
-            .registerTypeAdapter(ITransformation::class.java, TransformationSerializer())
-            .registerTypeAdapter(BiMultimap::class.java, BiMultimapSerializer())
-            .registerTypeAdapter(ImmutableMap::class.java, ImmutableMapSerializer())
-            .registerTypeAdapter(IModel::class.java, ModelDeserializer())
-            .registerTypeAdapter(IMaterial::class.java, MaterialDeserializer())
-            .registerTypeAdapter(IObject::class.java, ObjectDeserializer())
-            .registerTypeAdapter(IMesh::class.java, MeshSerializer())
-            .registerTypeAdapter(IFaceIndex::class.java, FaceSerializer())
-            .create()!!
+        .setExclusionStrategies(ProjectExclusionStrategy())
+        .setPrettyPrinting()
+        .registerTypeAdapter(UUID::class.java, UUIDSerializer())
+        .registerTypeAdapter(IVector3::class.java, Vector3Serializer())
+        .registerTypeAdapter(IVector2::class.java, Vector2Serializer())
+        .registerTypeAdapter(IQuaternion::class.java, QuaternionSerializer())
+        .registerTypeAdapter(IGroupRef::class.java, GroupRefSerializer())
+        .registerTypeAdapter(IMaterialRef::class.java, MaterialRefSerializer())
+        .registerTypeAdapter(IObjectRef::class.java, ObjectRefSerializer())
+        .registerTypeAdapter(ITransformation::class.java, TransformationSerializer())
+        .registerTypeAdapter(BiMultimap::class.java, BiMultimapSerializer())
+        .registerTypeAdapter(ImmutableMap::class.java, ImmutableMapSerializer())
+        .registerTypeAdapter(IModel::class.java, ModelDeserializer())
+        .registerTypeAdapter(IMaterial::class.java, MaterialDeserializer())
+        .registerTypeAdapter(IObject::class.java, ObjectDeserializer())
+        .registerTypeAdapter(IMesh::class.java, MeshSerializer())
+        .registerTypeAdapter(IFaceIndex::class.java, FaceSerializer())
+        .create()!!
 
 
     fun loadProject(zip: ZipFile, path: String): ProgramSave {
 
         val properties = zip.load<ProjectProperties>("project.json", gson)
-                ?: throw IllegalStateException("Missing file 'project.json' inside '$path'")
+            ?: throw IllegalStateException("Missing file 'project.json' inside '$path'")
 
         val model = zip.load<IModel>("model.json", gson)
-                ?: throw IllegalStateException("Missing file 'model.json' inside '$path'")
+            ?: throw IllegalStateException("Missing file 'model.json' inside '$path'")
 
         checkIntegrity(model.objects)
         return ProgramSave(VERSION, properties, model, emptyList())
@@ -85,18 +85,22 @@ object ProjectLoaderV10 {
                 context.deserialize<IMaterial>(it, IMaterial::class.java)
             }
 
-            val objectsList = objects.map { it ->
-                val materialIndex: Int = it.asJsonObject["material"].asJsonObject["materialIndex"].asInt
+            val objectsList = objects.map {
                 val obj = context.deserialize<IObject>(it, IObject::class.java)
+                if (it.asJsonObject["material"].asJsonObject.has("materialIndex")) {
+                    val materialIndex: Int = it.asJsonObject["material"].asJsonObject["materialIndex"].asInt
 
-                // fix material id adding material refs
-                obj.withMaterial(materialList.getOrElse(materialIndex) { MaterialNone }.ref)
+                    // fix material id adding material refs
+                    obj.withMaterial(materialList.getOrElse(materialIndex) { MaterialNone }.ref)
+                } else {
+                    obj
+                }
             }
 
             return Model.of(
-                    objectMap = objectsList.associateBy { it.ref },
-                    materialMap = materialList.associateBy { it.ref },
-                    groupTree = MutableGroupTree(RootGroupRef, objectsList.map { it.ref }.toMutableList()).toImmutable()
+                objectMap = objectsList.associateBy { it.ref },
+                materialMap = materialList.associateBy { it.ref },
+                groupTree = MutableGroupTree(RootGroupRef, objectsList.map { it.ref }.toMutableList()).toImmutable()
             )
         }
     }
@@ -108,8 +112,8 @@ object ProjectLoaderV10 {
             return when {
                 obj["name"].asString == "noTexture" -> MaterialNone
                 else -> TexturedMaterial(
-                        name = obj["name"].asString,
-                        path = ResourcePath(URI(obj["path"].asString))
+                    name = obj["name"].asString,
+                    path = ResourcePath(URI(obj["path"].asString))
                 )
             }
         }
@@ -122,23 +126,23 @@ object ProjectLoaderV10 {
             return when (obj["class"].asString) {
                 "ObjectCube" -> {
                     ObjectCube(
-                            name = context.deserialize(obj["name"], String::class.java),
-                            transformation = context.deserialize(obj["transformation"], TRSTransformation::class.java),
-                            material = MaterialRefNone,
-                            textureOffset = context.deserialize(obj["textureOffset"], IVector2::class.java),
-                            textureSize = context.deserialize(obj["textureSize"], IVector2::class.java),
-                            mirrored = context.deserialize(obj["mirrored"], Boolean::class.java),
-                            visible = true,
-                            id = UUID.randomUUID()
+                        name = context.deserialize(obj["name"], String::class.java),
+                        transformation = context.deserialize(obj["transformation"], TRSTransformation::class.java),
+                        material = MaterialRefNone,
+                        textureOffset = context.deserialize(obj["textureOffset"], IVector2::class.java),
+                        textureSize = context.deserialize(obj["textureSize"], IVector2::class.java),
+                        mirrored = context.deserialize(obj["mirrored"], Boolean::class.java),
+                        visible = true,
+                        id = UUID.randomUUID()
                     )
                 }
                 "Object" -> {
                     Object(
-                            name = context.deserialize(obj["name"], String::class.java),
-                            mesh = context.deserialize(obj["mesh"], IMesh::class.java),
-                            material = MaterialRefNone,
-                            visible = true,
-                            id = UUID.randomUUID()
+                        name = context.deserialize(obj["name"], String::class.java),
+                        mesh = context.deserialize(obj["mesh"], IMesh::class.java),
+                        material = MaterialRefNone,
+                        visible = true,
+                        id = UUID.randomUUID()
                     )
                 }
                 else -> throw IllegalStateException("Unknown Class: ${obj["class"]}")
@@ -152,9 +156,9 @@ object ProjectLoaderV10 {
             val obj = json.asJsonObject
 
             return Mesh(
-                    pos = context.deserializeT(obj["pos"]),
-                    tex = context.deserializeT(obj["tex"]),
-                    faces = context.deserializeT(obj["faces"])
+                pos = context.deserializeT(obj["pos"]),
+                tex = context.deserializeT(obj["tex"]),
+                faces = context.deserializeT(obj["faces"])
             )
         }
     }
@@ -166,8 +170,8 @@ object ProjectLoaderV10 {
 
             return if (obj.has("pos")) {
                 FaceIndex.from(
-                        pos = context.deserializeT(obj["pos"]),
-                        tex = context.deserializeT(obj["tex"])
+                    pos = context.deserializeT(obj["pos"]),
+                    tex = context.deserializeT(obj["tex"])
                 )
             } else {
                 val (pos, tex) = obj["index"].asJsonArray.map {
@@ -176,8 +180,8 @@ object ProjectLoaderV10 {
                 }.unzip()
 
                 FaceIndex.from(
-                        pos = pos,
-                        tex = tex
+                    pos = pos,
+                    tex = tex
                 )
             }
         }

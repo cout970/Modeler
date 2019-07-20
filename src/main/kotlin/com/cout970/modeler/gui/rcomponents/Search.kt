@@ -1,7 +1,7 @@
 package com.cout970.modeler.gui.rcomponents
 
 import com.cout970.glutilities.device.Keyboard
-import com.cout970.modeler.controller.dispatcher
+import com.cout970.modeler.controller.Dispatch
 import com.cout970.modeler.core.search.SearchDatabase
 import com.cout970.modeler.gui.leguicomp.classes
 import com.cout970.modeler.gui.leguicomp.defaultTextColor
@@ -182,7 +182,7 @@ class Search : RComponent<EmptyProps, SearchState>() {
         } else if (e.key == Keyboard.KEY_DOWN && min(state.results.size, MAX_SEARCH_RESULTS) > state.selected + 1) {
             setState { copy(selected = selected + 1) }
         } else if (e.key == Keyboard.KEY_ENTER) {
-            dispatcher.onEvent(state.results[state.selected].cmd, null)
+            Dispatch.run(state.results[state.selected].cmd)
             setState { getInitialState() }
         } else if (e.key == Keyboard.KEY_ESCAPE) {
             setState { getInitialState() }
