@@ -27,10 +27,7 @@ class StringInput(
 
     init {
         defaultTextColor()
-        focusedStrokeColor { grey }
-        highlightColor { bright3 }
         classes("string_input")
-        textState.fontSize = 18f
 
         listenerMap.replaceListener(MouseClickEvent::class.java, MouseClickEventListener())
 

@@ -132,9 +132,6 @@ class TinyFloatInput : RStatelessComponent<TinyFloatInputProps>() {
 
     override fun RBuilder.render() = div("TinyFloatInput") {
         style {
-            background { dark3 }
-            borderless()
-            rectCorners()
             position.set(props.pos)
             width = 120f
             height = 24f

@@ -2,11 +2,11 @@ package com.cout970.modeler.render
 
 import com.cout970.glutilities.structure.GLStateMachine
 import com.cout970.modeler.Debugger
-import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.resource.ResourceLoader
+import com.cout970.modeler.gui.CSSTheme
 import com.cout970.modeler.gui.Gui
 import com.cout970.modeler.render.tool.shader.UniversalShader
 import com.cout970.modeler.util.ITickeable
@@ -33,7 +33,7 @@ class RenderManager : ITickeable {
         shader = UniversalShader(resourceLoader)
         log(Level.FINE) { "[RenderManager] Creating CanvasRenderer" }
         canvasRenderer = CanvasRenderer(this)
-        GLStateMachine.clearColor = Config.colorPalette.modelBackgroundColor.toVector4(1.0f)
+        GLStateMachine.clearColor = CSSTheme.getColor("background").toVector4(1.0f)
     }
 
     override fun preTick() {

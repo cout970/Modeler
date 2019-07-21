@@ -151,10 +151,7 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
             }
 
             +FixedLabel(project.owner.name, 160f, 30f, 480f, 24f).apply {
-                background { dark3 }
-                textState.fontSize = 20f
-                textState.textColor = ColorConstants.lightBlue()
-                textState.horizontalAlign = HorizontalAlign.RIGHT
+                classes("special_label")
             }
 
             // Name
@@ -164,10 +161,8 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
             }
 
             +StringInput("", project.name, 160f, 60f, 480f).apply {
-                background { dark3 }
+                classes("special_label")
                 paddingRight(10f)
-                textState.fontSize = 20f
-                textState.horizontalAlign = HorizontalAlign.RIGHT
                 onTextChange = {
                     updateProjectProperties(project.copy(name = it.newValue))
                 }
@@ -186,9 +181,8 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
             }
 
             +MultilineStringInput(project.description, 160f, 90f, 480f, 24f + 80f).apply {
-                background { dark3 }
+                classes("special_label")
                 paddingRight(10f)
-                textState.fontSize = 20f
                 onTextChange = {
                     updateProjectProperties(project.copy(description = it.newValue))
                 }
@@ -223,10 +217,8 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
             }
 
             +StringInput("", user.name, 160f, 30f, 480f).apply {
-                background { dark3 }
+                classes("special_label")
                 paddingRight(10f)
-                textState.fontSize = 20f
-                textState.horizontalAlign = HorizontalAlign.RIGHT
                 onTextChange = {
                     updateUser(user.copy(name = it.newValue))
                 }
@@ -244,10 +236,8 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
             }
 
             +StringInput("", user.email, 160f, 60f, 480f).apply {
-                background { dark3 }
+                classes("special_label")
                 paddingRight(10f)
-                textState.fontSize = 20f
-                textState.horizontalAlign = HorizontalAlign.RIGHT
                 onTextChange = {
                     updateUser(user.copy(email = it.newValue))
                 }
@@ -265,10 +255,8 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
             }
 
             +StringInput("", user.web, 160f, 90f, 480f).apply {
-                background { dark3 }
+                classes("special_label")
                 paddingRight(10f)
-                textState.fontSize = 20f
-                textState.horizontalAlign = HorizontalAlign.RIGHT
                 onTextChange = {
                     updateUser(user.copy(web = it.newValue))
                 }

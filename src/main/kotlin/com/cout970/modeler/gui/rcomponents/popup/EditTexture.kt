@@ -1,8 +1,8 @@
 package com.cout970.modeler.gui.rcomponents.popup
 
 import com.cout970.modeler.api.model.material.IMaterial
-import com.cout970.modeler.core.config.ColorPalette
-import com.cout970.modeler.core.config.ColorPalette.Companion.colorOf
+import com.cout970.modeler.core.config.colorOf
+import com.cout970.modeler.core.config.colorToHex
 import com.cout970.modeler.core.model.material.ColoredMaterial
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.TexturedMaterial
@@ -136,7 +136,7 @@ class EditTexture : RComponent<EditTextureProps, EditTextureState>() {
 
         val color = state.color ?: material.color
 
-        comp(TextInput(ColorPalette.colorToHex(color), 90f, 90f, 250f, 24f)) {
+        comp(TextInput(colorToHex(color), 90f, 90f, 250f, 24f)) {
             on<TextInputContentChangeEvent<TextInput>> {
                 if (it.newValue.length == 6) {
                     val newColor = colorOf(it.newValue).toIVector().toVector3()

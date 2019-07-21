@@ -3,8 +3,6 @@ package com.cout970.modeler.gui.leguicomp
 import com.cout970.glutilities.device.Keyboard
 import org.liquidengine.legui.component.TextArea
 import org.liquidengine.legui.component.event.textinput.TextInputContentChangeEvent
-import org.liquidengine.legui.component.optional.align.HorizontalAlign
-import org.liquidengine.legui.component.optional.align.VerticalAlign
 import org.liquidengine.legui.event.FocusEvent
 import org.liquidengine.legui.event.KeyEvent
 
@@ -23,10 +21,6 @@ class MultilineStringInput(
     init {
         textState.text = text
         defaultTextColor()
-        focusedStrokeColor { grey }
-        highlightColor { bright3 }
-        textState.horizontalAlign = HorizontalAlign.LEFT
-        textState.verticalAlign = VerticalAlign.TOP
         classes("multiline_input")
 
         listenerMap.addListener(FocusEvent::class.java) {

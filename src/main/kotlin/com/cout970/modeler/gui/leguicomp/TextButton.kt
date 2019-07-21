@@ -1,7 +1,5 @@
 package com.cout970.modeler.gui.leguicomp
 
-import com.cout970.modeler.core.config.Config
-import com.cout970.modeler.util.toColor
 import org.liquidengine.legui.component.Button
 
 /**
@@ -17,7 +15,6 @@ class TextButton(
 ) : Button(text, posX.toFloat(), posY.toFloat(), sizeX.toFloat(), sizeY.toFloat()) {
 
     init {
-        textState.textColor = Config.colorPalette.textColor.toColor()
         classes("text_button")
     }
 

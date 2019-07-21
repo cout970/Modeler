@@ -6,7 +6,7 @@ import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.SelectionTarget
 import com.cout970.modeler.api.model.selection.SelectionType
 import com.cout970.modeler.controller.tasks.*
-import com.cout970.modeler.core.config.ColorPalette
+import com.cout970.modeler.core.config.colorToHex
 import com.cout970.modeler.core.model.material.ColoredMaterial
 import com.cout970.modeler.core.model.material.MaterialNone
 import com.cout970.modeler.core.model.material.MaterialRefNone
@@ -96,7 +96,7 @@ private fun newColoredMaterial(): ITask = TaskAsync { returnFunc ->
 
     val c = Color.getHSBColor(Math.random().toFloat(), 0.5f, 1.0f)
     val color = vec3Of(c.red / 255f, c.green / 255f, c.blue / 255f)
-    val name = "Color #${ColorPalette.colorToHex(color)}"
+    val name = "Color #${colorToHex(color)}"
 
     returnFunc(TaskImportMaterial(ColoredMaterial(name, color)))
 }

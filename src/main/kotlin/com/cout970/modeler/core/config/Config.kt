@@ -58,6 +58,6 @@ object Config {
     var modelTreeScale: Float = 20f
 
     var user: Author = Author()
-    var colorPalette = ColorPalette.defaultPalette
+
     var keyBindings = KeyBindings()
 }

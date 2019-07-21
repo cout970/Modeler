@@ -8,6 +8,7 @@ Loads of skyboxes "http://www.custommapmakers.org/skyboxes.php"
 
 ### Current
 Fix animations
+- Change keyframe panel based on channel type
 - Fix animation export
 - Fix multiple objects in animation project save file
 

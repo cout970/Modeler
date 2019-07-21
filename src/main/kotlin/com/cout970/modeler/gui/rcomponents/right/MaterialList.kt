@@ -1,14 +1,12 @@
 package com.cout970.modeler.gui.rcomponents.right
 
 import com.cout970.modeler.api.model.material.IMaterialRef
-import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.material.MaterialRefNone
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.model.ref
 import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.util.flatMapList
-import com.cout970.modeler.util.toColor
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RProps
 import com.cout970.reactive.core.RStatelessComponent
@@ -40,14 +38,9 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
         onCmd("updateSelection") { rerender() }
         onCmd("updateMaterial") { rerender() }
 
-        comp(FixedLabel()) {
+        comp(FixedLabel("Material List")) {
             style {
-                textState.apply {
-                    this.text = "Material List"
-                    textColor = Config.colorPalette.textColor.toColor()
-                    horizontalAlign = HorizontalAlign.CENTER
-                    fontSize = 20f
-                }
+                classes("fixed_label", "material_list_label")
             }
 
             postMount {
@@ -121,7 +114,6 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
             verticalScroll {
                 style {
                     style.minWidth = 16f
-                    arrowColor = color { bright1 }
                     visibleAmount = 50f
                     style.top = 0f
                     style.bottom = 0f

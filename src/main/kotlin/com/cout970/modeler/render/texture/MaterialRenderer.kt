@@ -15,6 +15,7 @@ import com.cout970.modeler.core.helpers.PickupHelper
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.material.ColoredMaterial
 import com.cout970.modeler.core.model.mesh.MeshFactory
+import com.cout970.modeler.gui.CSSTheme
 import com.cout970.modeler.render.tool.AutoCache
 import com.cout970.modeler.render.tool.CacheFlags.*
 import com.cout970.modeler.render.tool.RenderContext
@@ -125,7 +126,7 @@ class MaterialRenderer {
     fun renderTextureSelection(ctx: RenderContext, selection: ISelection, material: IMaterial) {
         val vao = textureSelectionCache.getOrCreate(ctx) {
             val model = ctx.gui.state.tmpModel ?: ctx.gui.programState.model
-            val color = Config.colorPalette.textureSelectionColor
+            val color = CSSTheme.getColor("textureSelection")
 
             ctx.buffer.build(DrawMode.LINES) {
 
@@ -163,7 +164,7 @@ class MaterialRenderer {
 
         val vao = modelSelectionCache.getOrCreate(ctx) {
             val model = ctx.gui.state.tmpModel ?: ctx.gui.programState.model
-            val color = Config.colorPalette.modelSelectionColor
+            val color = CSSTheme.getColor("modelSelection")
 
             ctx.buffer.build(DrawMode.LINES) {
 
@@ -332,15 +333,17 @@ class MaterialRenderer {
         val min = 0
         val maxX = material.size.xi
         val maxY = material.size.yi
+        val color1 = CSSTheme.getColor("grid1")
+        val color2 = CSSTheme.getColor("grid2")
 
         for (x in min..maxX) {
-            val color = if (x % 16 == 0) Config.colorPalette.grid2Color else Config.colorPalette.grid1Color
+            val color = if (x % 16 == 0) color2 else color1
             if (!pixel && x % 16 != 0) continue
             add(vec3Of(x, min, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
             add(vec3Of(x, maxY, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
         }
         for (y in min..maxY) {
-            val color = if (y % 16 == 0) Config.colorPalette.grid2Color else Config.colorPalette.grid1Color
+            val color = if (y % 16 == 0) color2 else color1
             if (!pixel && y % 16 != 0) continue
             add(vec3Of(min, y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
             add(vec3Of(maxX, y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)

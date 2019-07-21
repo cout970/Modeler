@@ -120,6 +120,7 @@ val Component.isNotEmpty get() = !isEmpty
 fun Component.disableInput() {
     when {
         this is Button -> this.isEnabled = false
+        this is CheckBox -> this.isEnabled = false
         this is TextInput -> {
             this.isEnabled = false
             this.isEditable = false

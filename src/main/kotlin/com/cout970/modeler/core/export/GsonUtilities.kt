@@ -11,7 +11,7 @@ import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.animation.AnimationRef
 import com.cout970.modeler.core.animation.AnimationRefNone
-import com.cout970.modeler.core.config.ColorPalette.Companion.colorToHex
+import com.cout970.modeler.core.config.colorToHex
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.TRTSTransformation
 import com.cout970.modeler.core.model.material.MaterialRef

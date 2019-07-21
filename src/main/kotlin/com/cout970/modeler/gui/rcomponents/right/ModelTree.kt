@@ -13,7 +13,10 @@ import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.gui.sendCmd
 import com.cout970.modeler.input.event.IInput
-import com.cout970.modeler.util.*
+import com.cout970.modeler.util.focus
+import com.cout970.modeler.util.getOr
+import com.cout970.modeler.util.toIVector
+import com.cout970.modeler.util.toJoml2f
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
 import com.cout970.reactive.core.RProps
@@ -26,7 +29,6 @@ import org.joml.Vector2i
 import org.liquidengine.legui.animation.Animation
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.Panel
-import org.liquidengine.legui.component.optional.align.HorizontalAlign
 import org.liquidengine.legui.style.border.SimpleLineBorder
 import org.liquidengine.legui.style.color.ColorConstants
 import org.liquidengine.legui.system.context.Context
@@ -95,14 +97,9 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
         onCmd("updateModel") { rerender() }
         onCmd("updateSelection") { rerender() }
 
-        comp(FixedLabel()) {
+        comp(FixedLabel("Model Tree")) {
             style {
-                textState.apply {
-                    this.text = "Model Tree"
-                    textColor = Config.colorPalette.textColor.toColor()
-                    horizontalAlign = HorizontalAlign.CENTER
-                    fontSize = 20f
-                }
+                classes("fixed_label", "model_tree_label")
             }
 
             postMount {
@@ -153,7 +150,6 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
                 style {
                     borderless()
                     style.minWidth = 16f
-                    arrowColor = color { bright1 }
                     visibleAmount = 50f
                     style.top = 0f
                     style.bottom = 0f

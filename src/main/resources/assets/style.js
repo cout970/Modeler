@@ -1,6 +1,14 @@
 var transparent = "rgba(0, 0, 0, 0.0)";
 
 var exported = {
+    colors: {
+        grid1: "#6F6F6F",
+        grid2: "#F0F0F0",
+        modelSelection: "#FFFF00",
+        textureSelection: "#0000FF",
+        background: "#4C99E5",
+        text: "#FBFBFB"
+    },
     top_bar: {
         backgroundColor: "#282828",
         borderStyle: "solid",
@@ -16,8 +24,13 @@ var exported = {
     },
     left_panel_scroll: {
         backgroundColor: transparent,
-        scrollColor: "#565656",
         borderStyle: "none"
+    },
+    vertical_scroll: {
+        scrollColor: "#565656",
+        arrowColor: "#888888",
+        backgroundColor: "#999999",
+        borderRadius: "0"
     },
     group_title: {
         backgroundColor: "#3c3c3c",
@@ -32,20 +45,43 @@ var exported = {
     string_input: {
         borderStyle: "none",
         backgroundColor: "#474747",
-        borderRadius: "2"
+        borderRadius: "2",
+        fontSize: "18",
+        highlightColor: "#BBBBBB",
+        focusedStrokeColor: "#777777",
+        textAlign: "center",
     },
     string_input_rename: {
         fontSize: "24",
-        horizontalAlign: "center",
+        textAlign: "center",
     },
     checkbox: {
         borderStyle: "none",
         backgroundColor: transparent,
         borderRadius: "2",
-        textSize: "22"
+        textSize: "22",
+        checkedIconColor: "#CCCCCC",
+        uncheckedIconColor: "#CCCCCC"
     },
     checkbox_active: {
         backgroundColor: "rgba(1, 1, 1, 0.3)"
+    },
+    checkbox_icon_off: {
+        checkedIconColor: "#666666",
+        uncheckedIconColor: "#666666"
+    },
+    checkbox_icon_on: {
+        checkedIconColor: "#CCCCCC",
+        uncheckedIconColor: "#CCCCCC"
+    },
+    checkbox_disable: {
+        backgroundColor: transparent,
+        color: "#666666"
+    },
+    import_checkbox: {
+        backgroundColor: "#707070",
+        fontSize: "18",
+        borderRadius: "0"
     },
     right_panel_hide: {
         display: "none"
@@ -78,7 +114,8 @@ var exported = {
     left_panel_model_tree_scroll: {
         backgroundColor: transparent,
         scrollColor: "#565656",
-        borderStyle: "none"
+        borderStyle: "none",
+        arrowColor: "#999999"
     },
     model_tree_item: {
         backgroundColor: transparent,
@@ -116,7 +153,8 @@ var exported = {
     left_panel_material_list_scroll: {
         backgroundColor: transparent,
         scrollColor: "#565656",
-        borderStyle: "none"
+        borderStyle: "none",
+        arrowColor: "#999999"
     },
     material_list_item: {
         backgroundColor: "#292929",
@@ -316,9 +354,11 @@ var exported = {
         textAlign: "center",
     },
     tiny_float_input: {
+        backgroundColor: "#666666",
         borderWidth: "1",
         borderColor: "#131313",
-        borderRadius: "0"
+        borderRadius: "0",
+        borderStyle: "none"
     },
     tiny_float_input_left: {
         backgroundColor: "#484848",
@@ -356,10 +396,10 @@ var exported = {
         backgroundColor: "#656565"
     },
     text_button: {
-        // backgroundColor: "#565656",
         backgroundColor: "#484848",
         borderRadius: "0",
-        borderStyle: "none"
+        borderStyle: "none",
+        color: "#FBFBFB"
     },
     "text_button:hover": {
         backgroundColor: "#787878"
@@ -401,7 +441,11 @@ var exported = {
         textSize: "18",
         borderRadius: "0",
         borderStyle: "none",
-        backgroundColor: transparent
+        backgroundColor: transparent,
+        highlightColor: "#BBBBBB",
+        focusedStrokeColor: "#777777",
+        textAlign: "left",
+        textAlignVertical: "top",
     },
     btn_active: {
         backgroundColor: "#6a6a6a"
@@ -413,6 +457,30 @@ var exported = {
     },
     btn_text: {
         textSize: "18",
+    },
+    fixed_label: {
+        textAlign: "center",
+        color: "#fbfbfb"
+    },
+    material_list_label: {
+        fontSize: "20"
+    },
+    model_tree_label: {
+        fontSize: "20"
+    },
+    icon_button: {
+        backgroundColor: transparent,
+        borderStyle: "none",
+        borderRadius: "0"
+    },
+    "icon_button:hovered": {
+        backgroundColor: "#AAAAAA",
+    },
+    special_label: {
+        backgroundColor: "#666666",
+        color: "#99b2ff",
+        fontSize: "20",
+        textAlign: "right"
     }
 };
 

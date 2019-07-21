@@ -1,11 +1,13 @@
 package com.cout970.modeler.gui.rcomponents.popup
 
-import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.export.ImportFormat
 import com.cout970.modeler.core.export.ImportProperties
-import com.cout970.modeler.gui.leguicomp.*
+import com.cout970.modeler.gui.leguicomp.FixedLabel
+import com.cout970.modeler.gui.leguicomp.TextButton
+import com.cout970.modeler.gui.leguicomp.classes
+import com.cout970.modeler.gui.leguicomp.onClick
 import com.cout970.modeler.input.dialogs.FileDialogs
-import com.cout970.modeler.util.toColor
+import com.cout970.modeler.util.disableInput
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
 import com.cout970.reactive.core.RState
@@ -19,7 +21,6 @@ import org.liquidengine.legui.component.event.checkbox.CheckBoxChangeValueEvent
 import org.liquidengine.legui.component.event.selectbox.SelectBoxChangeSelectionEvent
 import org.liquidengine.legui.component.event.textinput.TextInputContentChangeEvent
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
-import org.liquidengine.legui.icon.CharIcon
 
 
 data class ImportDialogState(val text: String, val option: Int, val flipUV: Boolean, val forceUpdate: Boolean) : RState
@@ -116,21 +117,15 @@ class ImportDialog : RComponent<PopupReturnProps, ImportDialogState>() {
         //fourth line
         +CheckBox("Flip UV", 360f, 150f, 80f, 24f).apply {
 
-            background { buttonColor }
-            textState.fontSize = 18f
+            classes("import_checkbox")
             paddingLeft(5f)
             isChecked = state.flipUV
-            style.setBorderRadius(0f)
 
-            if (state.option != 0) { // disable
-                isEnabled = false
-                textState.textColor = Config.colorPalette.dark3.toColor()
-                (iconChecked as CharIcon).color = Config.colorPalette.dark3.toColor()
-                (iconUnchecked as CharIcon).color = Config.colorPalette.dark3.toColor()
-            } else { // enable
-                textState.textColor = Config.colorPalette.textColor.toColor()
-                (iconChecked as CharIcon).color = Config.colorPalette.bright4.toColor()
-                (iconUnchecked as CharIcon).color = Config.colorPalette.bright4.toColor()
+            if (state.option == 0) { // enable
+                classes("checkbox_icon_on")
+            } else { // disable
+                disableInput()
+                classes("checkbox_disable", "checkbox_icon_off")
             }
 
             on<CheckBoxChangeValueEvent<CheckBox>> {

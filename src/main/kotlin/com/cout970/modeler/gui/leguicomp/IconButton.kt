@@ -1,9 +1,6 @@
 package com.cout970.modeler.gui.leguicomp
 
 import com.cout970.modeler.gui.GuiResources
-import com.cout970.reactive.dsl.borderless
-import com.cout970.reactive.dsl.rectCorners
-import com.cout970.reactive.dsl.transparent
 import org.liquidengine.legui.component.Button
 import org.liquidengine.legui.icon.Icon
 import org.liquidengine.legui.icon.ImageIcon
@@ -19,10 +16,7 @@ class IconButton(
 ) : Button("", posX, posY, sizeX, sizeY), IResourceReloadable {
 
     init {
-        hoveredStyle.background.color = color { bright2 }
-        borderless()
-        transparent()
-        rectCorners()
+        classes("icon_button")
     }
 
     override fun loadResources(resources: GuiResources) {

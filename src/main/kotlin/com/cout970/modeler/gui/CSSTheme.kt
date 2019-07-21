@@ -1,16 +1,21 @@
 package com.cout970.modeler.gui
 
 import com.cout970.modeler.Debugger
-import com.cout970.modeler.core.config.ColorPalette.Companion.colorOf
+import com.cout970.modeler.core.config.colorOf
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
 import com.cout970.modeler.core.log.print
 import com.cout970.reactive.dsl.hide
 import com.cout970.reactive.dsl.show
+import com.cout970.vector.api.IVector3
+import com.cout970.vector.extensions.Vector3
+import com.cout970.vector.extensions.vec3Of
 import jdk.nashorn.api.scripting.ScriptObjectMirror
 import org.joml.Vector4f
 import org.liquidengine.legui.component.*
 import org.liquidengine.legui.component.optional.align.HorizontalAlign
+import org.liquidengine.legui.component.optional.align.VerticalAlign
+import org.liquidengine.legui.icon.CharIcon
 import org.liquidengine.legui.style.Style
 import org.liquidengine.legui.style.border.SimpleLineBorder
 import org.liquidengine.legui.theme.*
@@ -31,7 +36,7 @@ object CSSTheme : Theme(createThemeManager()) {
             val reader = if (Debugger.STATIC_DEBUG) {
                 File("../src/main/resources/assets/style.js").reader()
             } else {
-                Thread.currentThread().contextClassLoader.getResourceAsStream("assets/style.js").reader()
+                Thread.currentThread().contextClassLoader.getResourceAsStream("assets/style.js")!!.reader()
             }
             val obj = engine.eval(reader) as ScriptObjectMirror
             style = obj.keys.map { it.toSelector() to (obj[it] as ScriptObjectMirror) }.toMap()
@@ -46,14 +51,25 @@ object CSSTheme : Theme(createThemeManager()) {
         return Selector(substringBefore(":"), substringAfter(":"))
     }
 
+    fun getColor(name: String): IVector3 {
+        val som = style[Selector("colors")] ?: error("Missing 'colors' section in style.js")
+
+        if (som.hasMember(name)) {
+            val color = colorOf(som.getMember(name) as String)
+            return vec3Of(color.x, color.y, color.z)
+        }
+
+        return Vector3.ONE
+    }
+
     fun applyComp(component: Component) {
         val classes = component.metadata["classes"] ?: return
         if (classes is String) {
             val modes = mapOf(
-                    null to component.style,
-                    "hover" to component.hoveredStyle,
-                    "focus" to component.focusedStyle,
-                    "pressed" to component.pressedStyle
+                null to component.style,
+                "hover" to component.hoveredStyle,
+                "focus" to component.focusedStyle,
+                "pressed" to component.pressedStyle
             )
 
             modes.forEach { (type, styleObj) ->
@@ -80,16 +96,24 @@ object CSSTheme : Theme(createThemeManager()) {
                 "none" -> styleObj.border = null
             }
         }
-        style.getFloat("borderWidth") { (styleObj.border as SimpleLineBorder).thickness = it }
+        style.getFloat("borderWidth") { (styleObj.border as? SimpleLineBorder)?.thickness = it }
         style.getFloat("borderRadius") { styleObj.setBorderRadius(it) }
-        style.getColor("borderColor") { (styleObj.border as SimpleLineBorder).color = it }
+        style.getColor("borderColor") { (styleObj.border as? SimpleLineBorder)?.color = it }
+        style.getColor("focusedStrokeColor") { styleObj.focusedStrokeColor = it }
 
         if (comp is ScrollBar) {
             style.getColor("scrollColor") { comp.scrollColor = it }
+            style.getColor("arrowColor") { comp.arrowColor = it }
+            style.getColor("arrowColor") { comp.arrowColor = it }
         }
 
         if (comp is ToggleButton) {
             style.getColor("toggledBackgroundColor") { comp.toggledBackgroundColor = it }
+        }
+
+        if (comp is CheckBox) {
+            style.getColor("checkedIconColor") { (comp.iconChecked as CharIcon).color = it }
+            style.getColor("uncheckedIconColor") { (comp.iconUnchecked as CharIcon).color = it }
         }
 
         if (comp is TextComponent) {
@@ -101,7 +125,17 @@ object CSSTheme : Theme(createThemeManager()) {
                     else -> log(Level.DEBUG) { "Invalid textAlign value: $it" }
                 }
             }
+            style.getString("textAlignVertical") {
+                when (it) {
+                    "top" -> comp.textState.verticalAlign = VerticalAlign.TOP
+                    "middle" -> comp.textState.verticalAlign = VerticalAlign.MIDDLE
+                    "bottom" -> comp.textState.verticalAlign = VerticalAlign.BOTTOM
+                    else -> log(Level.DEBUG) { "Invalid textAlignVertical value: $it" }
+                }
+            }
             style.getFloat("textSize") { comp.textState.fontSize = it }
+            style.getColor("color") { comp.textState.textColor = it }
+            style.getColor("highlightColor") { comp.textState.highlightColor = it }
         }
     }
 

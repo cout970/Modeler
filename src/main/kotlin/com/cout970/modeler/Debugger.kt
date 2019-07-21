@@ -11,7 +11,7 @@ object Debugger {
 
     private lateinit var state: Program
 
-    val STATIC_DEBUG: Boolean by lazy { System.getProperty("user.name") == "cout970" && File(".").absolutePath.endsWith("run") }
+    val STATIC_DEBUG: Boolean by lazy { System.getProperty("user.name") == "cout970" && File(".").absolutePath.endsWith("run/.") }
     var DYNAMIC_DEBUG: Boolean = false
 
     var drawVboCount = 0

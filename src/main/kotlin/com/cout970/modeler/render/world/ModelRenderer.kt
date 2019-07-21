@@ -21,6 +21,7 @@ import com.cout970.modeler.core.model.material.ColoredMaterial
 import com.cout970.modeler.core.model.mesh.MeshFactory
 import com.cout970.modeler.core.model.pos
 import com.cout970.modeler.core.model.ref
+import com.cout970.modeler.gui.CSSTheme
 import com.cout970.modeler.render.tool.*
 import com.cout970.modeler.util.Nullable
 import com.cout970.modeler.util.getColor
@@ -83,8 +84,8 @@ class ModelRenderer {
                 }
 
                 val geom = obj.mesh.createVao(ctx.buffer, getColor(obj.id.hashCode()))
-                val modSel = getSelectionVao(ctx, obj, modelSel, Config.colorPalette.modelSelectionColor)
-                val texSel = getSelectionVao(ctx, obj, textureSel, Config.colorPalette.textureSelectionColor)
+                val modSel = getSelectionVao(ctx, obj, modelSel, CSSTheme.getColor("modelSelection"))
+                val texSel = getSelectionVao(ctx, obj, textureSel, CSSTheme.getColor("textureSelection"))
 
                 objectCache[obj.ref] = ObjectCache(geom, modSel, texSel)
                 objectCacheHash[obj.ref] = obj.hashCode() xor modelSelectionHash xor textureSelectionHash

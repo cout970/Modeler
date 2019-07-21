@@ -6,7 +6,6 @@ import com.cout970.modeler.gui.canvas.CanvasContainer
 import com.cout970.modeler.gui.canvas.GridLines
 import com.cout970.modeler.gui.leguicomp.classes
 import com.cout970.modeler.gui.leguicomp.clear
-import com.cout970.modeler.gui.leguicomp.color
 import com.cout970.modeler.render.tool.Animator
 import com.cout970.reactive.core.*
 import com.cout970.reactive.dsl.*
@@ -61,9 +60,7 @@ class LeftPanel : RStatelessComponent<LeftPanelProps>() {
             verticalScroll {
                 style {
                     isArrowsEnabled = false
-                    scrollColor = color { bright1 }
-                    rectCorners()
-                    classes("left_panel_scroll")
+                    classes("vertical_scroll", "left_panel_scroll")
                 }
             }
 

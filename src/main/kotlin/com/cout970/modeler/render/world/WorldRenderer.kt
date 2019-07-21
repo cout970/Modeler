@@ -12,6 +12,7 @@ import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.model.TRSTransformation
 import com.cout970.modeler.core.model.TRTSTransformation
 import com.cout970.modeler.core.model.objects
+import com.cout970.modeler.gui.CSSTheme
 import com.cout970.modeler.render.tool.AutoCache
 import com.cout970.modeler.render.tool.CacheFlags
 import com.cout970.modeler.render.tool.RenderContext
@@ -133,16 +134,18 @@ class WorldRenderer {
         val xRange = (-size.xi / 2 + 8..size.xi / 2 + 8)
         val yRange = (-size.yi / 2 + 8..size.yi / 2 + 8)
         val zRange = (-size.zi / 2 + 8..size.zi / 2 + 8)
+        val color1 = CSSTheme.getColor("grid1")
+        val color2 = CSSTheme.getColor("grid2")
 
         if (ctx.gui.gridLines.enableXPlane) {
             for (z in zRange) {
-                val color = if (z % 16 == 0) Config.colorPalette.grid2Color else Config.colorPalette.grid1Color
+                val color = if (z % 16 == 0) color2 else color1
                 if (!pixel && z % 16 != 0) continue
                 add(offset + vec3Of(0, yRange.first, z), Vector2.ORIGIN, Vector3.ORIGIN, color)
                 add(offset + vec3Of(0, yRange.last, z), Vector2.ORIGIN, Vector3.ORIGIN, color)
             }
             for (y in yRange) {
-                val color = if (y % 16 == 0) Config.colorPalette.grid2Color else Config.colorPalette.grid1Color
+                val color = if (y % 16 == 0) color2 else color1
                 if (!pixel && y % 16 != 0) continue
                 add(offset + vec3Of(0, y, zRange.first), Vector2.ORIGIN, Vector3.ORIGIN, color)
                 add(offset + vec3Of(0, y, zRange.last), Vector2.ORIGIN, Vector3.ORIGIN, color)
@@ -151,13 +154,13 @@ class WorldRenderer {
 
         if (ctx.gui.gridLines.enableYPlane) {
             for (x in xRange) {
-                val color = if (x % 16 == 0) Config.colorPalette.grid2Color else Config.colorPalette.grid1Color
+                val color = if (x % 16 == 0) color2 else color1
                 if (!pixel && x % 16 != 0) continue
                 add(offset + vec3Of(x, 0, zRange.first), Vector2.ORIGIN, Vector3.ORIGIN, color)
                 add(offset + vec3Of(x, 0, zRange.last), Vector2.ORIGIN, Vector3.ORIGIN, color)
             }
             for (z in zRange) {
-                val color = if (z % 16 == 0) Config.colorPalette.grid2Color else Config.colorPalette.grid1Color
+                val color = if (z % 16 == 0) color2 else color1
                 if (!pixel && z % 16 != 0) continue
                 add(offset + vec3Of(xRange.first, 0, z), Vector2.ORIGIN, Vector3.ORIGIN, color)
                 add(offset + vec3Of(xRange.last, 0, z), Vector2.ORIGIN, Vector3.ORIGIN, color)
@@ -166,13 +169,13 @@ class WorldRenderer {
 
         if (ctx.gui.gridLines.enableZPlane) {
             for (x in xRange) {
-                val color = if (x % 16 == 0) Config.colorPalette.grid2Color else Config.colorPalette.grid1Color
+                val color = if (x % 16 == 0) color2 else color1
                 if (!pixel && x % 16 != 0) continue
                 add(offset + vec3Of(x, yRange.first, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
                 add(offset + vec3Of(x, yRange.last, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
             }
             for (y in yRange) {
-                val color = if (y % 16 == 0) Config.colorPalette.grid2Color else Config.colorPalette.grid1Color
+                val color = if (y % 16 == 0) color2 else color1
                 if (!pixel && y % 16 != 0) continue
                 add(offset + vec3Of(xRange.first, y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)
                 add(offset + vec3Of(xRange.last, y, 0), Vector2.ORIGIN, Vector3.ORIGIN, color)

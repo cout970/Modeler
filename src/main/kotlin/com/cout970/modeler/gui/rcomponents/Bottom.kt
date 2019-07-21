@@ -306,13 +306,10 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
 
         verticalScroll {
             style {
-                rectCorners()
+                classes("vertical_scroll")
                 style.minWidth = 16f
                 style.bottom = 0f
-                arrowColor = color { bright1 }
-                scrollColor = color { dark2 }
                 visibleAmount = 50f
-                backgroundColor { color { bright1 } }
             }
         }
 

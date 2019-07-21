@@ -1,13 +1,12 @@
 package com.cout970.modeler.gui.rcomponents.popup
 
-import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.export.*
 import com.cout970.modeler.gui.leguicomp.FixedLabel
 import com.cout970.modeler.gui.leguicomp.TextButton
 import com.cout970.modeler.gui.leguicomp.classes
 import com.cout970.modeler.gui.leguicomp.onClick
 import com.cout970.modeler.input.dialogs.FileDialogs
-import com.cout970.modeler.util.toColor
+import com.cout970.modeler.util.disableInput
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
 import com.cout970.reactive.core.RState
@@ -172,15 +171,11 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
             isChecked = state.flipUV
             style.setBorderRadius(0f)
 
-            if (state.selection != 0) { // disable
-                isEnabled = false
-                textState.textColor = Config.colorPalette.dark3.toColor()
-                (iconChecked as CharIcon).color = Config.colorPalette.dark3.toColor()
-                (iconUnchecked as CharIcon).color = Config.colorPalette.dark3.toColor()
-            } else { // enable
-                textState.textColor = Config.colorPalette.textColor.toColor()
-                (iconChecked as CharIcon).color = Config.colorPalette.bright4.toColor()
-                (iconUnchecked as CharIcon).color = Config.colorPalette.bright4.toColor()
+            if (state.selection == 0) { // enable
+                classes("checkbox_icon_on")
+            } else { // disable
+                disableInput()
+                classes("checkbox_disable", "checkbox_icon_off")
             }
 
             (iconChecked as CharIcon).size = Vector2f(24f)
@@ -198,15 +193,11 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
             isChecked = state.useNormals
             style.setBorderRadius(0f)
 
-            if (state.selection != 0) { // disable
-                isEnabled = false
-                textState.textColor = Config.colorPalette.dark3.toColor()
-                (iconChecked as CharIcon).color = Config.colorPalette.dark3.toColor()
-                (iconUnchecked as CharIcon).color = Config.colorPalette.dark3.toColor()
-            } else { // enable
-                textState.textColor = Config.colorPalette.textColor.toColor()
-                (iconChecked as CharIcon).color = Config.colorPalette.bright4.toColor()
-                (iconUnchecked as CharIcon).color = Config.colorPalette.bright4.toColor()
+            if (state.selection == 0) { // enable
+                classes("checkbox_icon_on")
+            } else { // disable
+                disableInput()
+                classes("checkbox_disable", "checkbox_icon_off")
             }
 
             (iconChecked as CharIcon).size = Vector2f(24f)

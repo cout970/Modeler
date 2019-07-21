@@ -1,11 +1,9 @@
 package com.cout970.modeler.gui.rcomponents.left
 
-import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.canvas.GridLines
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.gui.rcomponents.TinyFloatInput
 import com.cout970.modeler.gui.rcomponents.TinyFloatInputProps
-import com.cout970.modeler.util.toColor
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
 import com.cout970.reactive.core.RProps
@@ -273,7 +271,7 @@ class EditGrids : RComponent<EditGridsProps, VisibleWidget>() {
     }
 
     private fun CheckBox.configIcon(icon: CharIcon) {
-        icon.color = Config.colorPalette.bright4.toColor()
+        classes("checkbox_icon_on")
         icon.size = Vector2f(24f, 24f)
         icon.position = Vector2f(size.x - icon.size.x, 0f)
         icon.horizontalAlign = HorizontalAlign.CENTER

@@ -1,11 +1,9 @@
 package com.cout970.modeler.gui.rcomponents.left
 
-import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.gui.GuiState
 import com.cout970.modeler.gui.leguicomp.classes
 import com.cout970.modeler.gui.leguicomp.defaultTextColor
 import com.cout970.modeler.gui.leguicomp.onClick
-import com.cout970.modeler.util.toColor
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
 import com.cout970.reactive.core.RProps
@@ -90,7 +88,7 @@ class EditorControls : RComponent<EditorControlsProps, VisibleWidget>() {
     }
 
     private fun CheckBox.configIcon(icon: CharIcon) {
-        icon.color = Config.colorPalette.bright4.toColor()
+        classes("checkbox_icon_on")
         icon.size = Vector2f(24f, 24f)
         icon.position = Vector2f(size.x - icon.size.x, 0f)
         icon.horizontalAlign = HorizontalAlign.CENTER

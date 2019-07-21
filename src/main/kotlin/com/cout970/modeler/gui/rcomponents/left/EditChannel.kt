@@ -6,11 +6,9 @@ import com.cout970.modeler.api.animation.ChannelType
 import com.cout970.modeler.api.animation.InterpolationMethod
 import com.cout970.modeler.controller.Dispatch
 import com.cout970.modeler.core.animation.ref
-import com.cout970.modeler.core.config.Config
 import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.render.tool.Animator
-import com.cout970.modeler.util.toColor
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
 import com.cout970.reactive.core.RProps
@@ -145,7 +143,7 @@ class EditChannel : RComponent<EditChannelProps, VisibleWidget>() {
 
         button(msg) {
             style {
-                classes("text_button", "big_text", "center_text")
+                classes("btn_text", "big_text")
                 sizeY = 32f
             }
             postMount {
@@ -161,7 +159,7 @@ class EditChannel : RComponent<EditChannelProps, VisibleWidget>() {
 
         button("Update with selection") {
             style {
-                classes("text_button", "big_text", "center_text")
+                classes("btn_text", "big_text")
                 sizeY = 32f
             }
             postMount {
@@ -176,7 +174,7 @@ class EditChannel : RComponent<EditChannelProps, VisibleWidget>() {
     }
 
     private fun CheckBox.configIcon(icon: CharIcon) {
-        icon.color = Config.colorPalette.bright4.toColor()
+        classes("checkbox_icon_on")
         icon.size = Vector2f(24f, 24f)
         icon.position = Vector2f(size.x - icon.size.x, 0f)
         icon.horizontalAlign = HorizontalAlign.CENTER

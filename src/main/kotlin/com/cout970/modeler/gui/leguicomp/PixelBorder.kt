@@ -1,6 +1,6 @@
 package com.cout970.modeler.gui.leguicomp
 
-import com.cout970.modeler.core.config.ColorPalette.Companion.colorOf
+import com.cout970.modeler.core.config.colorOf
 import org.joml.Vector2f
 import org.joml.Vector4f
 import org.liquidengine.legui.component.Component
