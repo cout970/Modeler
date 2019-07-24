@@ -74,6 +74,7 @@ class WorldRenderer {
         renderOrientationCube(ctx)
 
         renderPivot(ctx)
+        renderPivot2(ctx)
 
         cursorRenderer.renderCursor(ctx)
     }
@@ -100,6 +101,20 @@ class WorldRenderer {
         val value = obj.transformation as? TRTSTransformation ?: return
 
         val transform = TRSTransformation(translation = value.pivot, scale = Vector3.ONE * 0.25)
+        ctx.shader.render(vao, transform.matrix, ShaderFlag.LIGHT, ShaderFlag.COLOR)
+    }
+
+    fun renderPivot2(ctx: RenderContext) {
+        val vao = pivot.getOrCreate(ctx) {
+            ctx.gui.resources.lightMesh.createVao(ctx.buffer, vec3Of(0, 0, 1))
+        }
+        val animation = ctx.gui.animator.animation
+        val channelRef = ctx.gui.animator.selectedChannel ?: return
+        val keyframeRef = ctx.gui.animator.selectedKeyframe ?: return
+        val channel = animation.channels[channelRef] ?: return
+        val keyframe = channel.keyframes[keyframeRef]
+
+        val transform = TRSTransformation(translation = keyframe.value.pivot, scale = Vector3.ONE * 0.25)
         ctx.shader.render(vao, transform.matrix, ShaderFlag.LIGHT, ShaderFlag.COLOR)
     }
 

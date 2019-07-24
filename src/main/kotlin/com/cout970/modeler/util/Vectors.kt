@@ -88,16 +88,16 @@ fun IVector4.toJoml4f(): Vector4f = Vector4f(xf, yf, zf, wf)
 fun IVector4.toJoml4d(): Vector4d = Vector4d(xd, yd, zd, wd)
 fun IVector4.toJoml4i(): Vector4i = Vector4i(xi, yi, zi, wi)
 fun Matrix4d.toIMatrix(): IMatrix4 = mat4Of(
-        m00(), m01(), m02(), m03(),
-        m10(), m11(), m12(), m13(),
-        m20(), m21(), m22(), m23(),
-        m30(), m31(), m32(), m33())
+    m00(), m01(), m02(), m03(),
+    m10(), m11(), m12(), m13(),
+    m20(), m21(), m22(), m23(),
+    m30(), m31(), m32(), m33())
 
 fun IMatrix4.toJOML(): Matrix4d = Matrix4d(
-        m00d, m01d, m02d, m03d,
-        m10d, m11d, m12d, m13d,
-        m20d, m21d, m22d, m23d,
-        m30d, m31d, m32d, m33d)
+    m00d, m01d, m02d, m03d,
+    m10d, m11d, m12d, m13d,
+    m20d, m21d, m22d, m23d,
+    m30d, m31d, m32d, m33d)
 
 fun IQuaternion.toJOML(): Quaterniond {
     return Quaterniond(xd, yd, zd, wd)
@@ -113,7 +113,7 @@ fun IQuaternion.slerp(other: IQuaternion, amount: Double): IQuaternion {
 
 fun IVector3.toColor() = Vector4f(xf, yf, zf, 1f)
 fun Quaterniond.toIQuaternion(): IQuaternion = quatOf(x,
-        y, z, w)
+    y, z, w)
 
 /**
  * Created by cout970 on 2016/12/07.
@@ -121,7 +121,7 @@ fun Quaterniond.toIQuaternion(): IQuaternion = quatOf(x,
 
 fun IVector2.isInside(pos: IVector2, size: IVector2): Boolean {
     return xd > pos.xd && xd < pos.xd + size.xd &&
-            yd > pos.yd && yd < pos.yd + size.yd
+        yd > pos.yd && yd < pos.yd + size.yd
 }
 
 private fun IVector3.scale(center: IVector3, scale: IVector3): IVector3 {
@@ -167,6 +167,8 @@ fun quatOfAngles(angles: IVector3): IQuaternion {
     val rads = angles.toRadians()
     return Quaterniond().rotateXYZ(rads.x.toDouble(), rads.y.toDouble(), rads.z.toDouble()).toIQuaternion()
 }
+
+fun IVector3.toQuaternion() = quatOfAngles(this)
 
 fun IQuaternion.transform(pos: IVector3): IVector3 {
     return toJOML().transform(pos.toJoml3d()).toIVector()

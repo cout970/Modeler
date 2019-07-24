@@ -120,6 +120,7 @@ class EditChannel : RComponent<EditChannelProps, VisibleWidget>() {
                 sizeY = 26f
                 addElement(InterpolationMethod.LINEAR.toString())
                 addElement(InterpolationMethod.COSINE.toString())
+                addElement(InterpolationMethod.STEP.toString())
                 setSelected(channel.interpolation.ordinal, true)
             }
             postMount {

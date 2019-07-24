@@ -10,7 +10,10 @@ import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.material.IMaterialRef
 import com.cout970.modeler.api.model.mesh.IMesh
 import com.cout970.modeler.api.model.selection.IObjectRef
-import com.cout970.modeler.core.animation.*
+import com.cout970.modeler.core.animation.Animation
+import com.cout970.modeler.core.animation.Channel
+import com.cout970.modeler.core.animation.Keyframe
+import com.cout970.modeler.core.animation.ref
 import com.cout970.modeler.core.export.glTF.*
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
@@ -28,6 +31,7 @@ import com.cout970.modeler.render.tool.Animator
 import com.cout970.modeler.util.toIQuaternion
 import com.cout970.modeler.util.toIVector
 import com.cout970.modeler.util.toJOML
+import com.cout970.modeler.util.toQuaternion
 import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.api.IVector3
@@ -133,11 +137,29 @@ class GlTFExporter {
 
     class ModelToGltf(val model: IModel, val prefix: String) {
 
-        val targetToNode = mutableMapOf<AnimationTarget, UUID>()
+        val objToWrapper = mutableMapOf<IObjectRef, UUID>()
+        val objToWrapper2 = mutableMapOf<IObjectRef, UUID>()
+        val objToNode = mutableMapOf<IObjectRef, UUID>()
+        val groupToWrapper = mutableMapOf<IGroupRef, UUID>()
+        val groupToWrapper2 = mutableMapOf<IGroupRef, UUID>()
+        val groupToNode = mutableMapOf<IGroupRef, UUID>()
+
         val pathToImg = mutableMapOf<String, ResourcePath>()
         val definedMaterials = mutableSetOf<IMaterialRef>()
+        lateinit var animatedObjects: Set<IObjectRef>
+        lateinit var animatedGroups: Set<IGroupRef>
 
         fun build(): GltfModel {
+            animatedObjects = model.animationMap.values
+                .flatMap { anim -> anim.channels.values.filter { it.type == ChannelType.ROTATION }.map { anim.channelMapping[it.ref] } }
+                .mapNotNull { (it as? AnimationTargetObject)?.refs }
+                .flatten()
+                .toSet()
+
+            animatedGroups = model.animationMap.values
+                .flatMap { anim -> anim.channels.values.filter { it.type == ChannelType.ROTATION }.map { anim.channelMapping[it.ref] } }
+                .mapNotNull { (it as? AnimationTargetGroup)?.ref }
+                .toSet()
 
             val (model, buffer) = glftModel {
                 bufferName = "$prefix.bin"
@@ -148,7 +170,7 @@ class GlTFExporter {
                         name = "root"
 
                         val tree = model.tree.toMutable()
-                        targetToNode += AnimationTargetGroup(tree.group) to id
+                        groupToNode[tree.group] = id
 
                         tree.children.forEach {
                             addSceneTree(this, it)
@@ -160,14 +182,36 @@ class GlTFExporter {
                 }
 
                 model.animationMap.values.forEach { anim ->
-                    addAnimation(anim)
+                    addAnimation(anim, model)
                 }
             }
 
             return GltfModel(model, buffer, pathToImg.toList())
         }
 
-        fun GLTFBuilder.addSceneTree(builder: GLTFBuilder.Node, tree: MutableGroupTree): Unit = builder.run {
+        fun GLTFBuilder.addSceneTree(builder: GLTFBuilder.Node, tree: MutableGroupTree) {
+
+            if (tree.group in animatedGroups) {
+                with(builder) {
+                    val group = model.getGroup(tree.group)
+                    node {
+                        name = "${group.name}_animation_wrapper_2"
+                        groupToWrapper2[tree.group] = id
+
+                        node {
+                            name = "${group.name}_animation_wrapper"
+                            groupToWrapper[tree.group] = id
+
+                            addFinalSceneTree(this, tree)
+                        }
+                    }
+                }
+            } else {
+                addFinalSceneTree(builder, tree)
+            }
+        }
+
+        fun GLTFBuilder.addFinalSceneTree(builder: GLTFBuilder.Node, tree: MutableGroupTree): Unit = builder.run {
 
             node {
                 val group = model.getGroup(tree.group)
@@ -182,7 +226,7 @@ class GlTFExporter {
                     )
                 }
 
-                targetToNode += AnimationTargetGroup(tree.group) to id
+                groupToNode[tree.group] = id
 
                 tree.children.forEach {
                     addSceneTree(this, it)
@@ -192,11 +236,32 @@ class GlTFExporter {
             }
         }
 
-        fun GLTFBuilder.addObject(parent: GLTFBuilder.Node, it: IObject) = parent.run {
-            node {
-                name = it.name
+        fun GLTFBuilder.addObject(parent: GLTFBuilder.Node, it: IObject) {
+            if (it.ref in animatedObjects) {
+                with(parent) {
+                    node {
+                        name = "${it.name}_animation_wrapper_2"
+                        objToWrapper2[it.ref] = id
 
-                val objTransform = it.transformation.toTRS()
+                        node {
+                            name = "${it.name}_animation_wrapper"
+                            objToWrapper[it.ref] = id
+
+                            addFinalObject(this, it)
+                        }
+                    }
+                }
+            } else {
+                addFinalObject(parent, it)
+            }
+        }
+
+
+        fun GLTFBuilder.addFinalObject(parent: GLTFBuilder.Node, obj: IObject) = parent.run {
+            node {
+                name = obj.name
+
+                val objTransform = obj.transformation.toTRS()
                 if (objTransform.matrix != Matrix4.IDENTITY) {
                     transformation = GLTFBuilder.Transformation.TRS(
                         objTransform.translation * 0.0625f,
@@ -205,18 +270,20 @@ class GlTFExporter {
                     )
                 }
 
-                targetToNode += AnimationTargetObject(listOf(it.ref)) to id
-                addMesh(this, it)
+                objToNode[obj.ref] = id
+                addMesh(this, obj)
             }
         }
 
-        fun GLTFBuilder.addAnimation(anim: IAnimation) {
+
+        fun GLTFBuilder.addAnimation(anim: IAnimation, model: IModel) {
 
             val used = anim.channels.values.any { chan ->
                 val target = anim.channelMapping[chan.ref] ?: return@any false
-                targetToNode[target] ?: return@any false
-
-                chan.usesTranslation() || chan.usesRotation() || chan.usesScale()
+                when (target) {
+                    is AnimationTargetGroup -> target.ref in groupToNode
+                    is AnimationTargetObject -> target.refs.any { it in objToNode }
+                }
             }
 
             if (!used) return
@@ -224,45 +291,123 @@ class GlTFExporter {
             animation {
                 name = anim.name
                 anim.channels.values.map { chan ->
-                    val target = anim.channelMapping[chan.ref] ?: return@map
-                    val groupNode = targetToNode[target] ?: return@map
-
-                    val useTranslation = chan.usesTranslation()
-                    val useRotation = chan.usesRotation()
-                    val useScale = chan.usesScale()
-
-                    if (!useTranslation && !useRotation && !useScale) return@map
-
-                    val keyframeValues = chan.keyframes.map {
-                        Animator.combine(target.getTransformation(model).toTRTS(), it.value).toTRS()
-                    }
-
-                    if (useTranslation)
-                        channel {
-                            node = groupNode
-                            transformType = TRANSLATION
-                            timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
-                            transformValues = buffer(FLOAT, keyframeValues.map { it.translation * 0.0625 })
-                        }
-
-
-                    if (useRotation)
-                        channel {
-                            node = groupNode
-                            transformType = ROTATION
-                            timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
-                            transformValues = buffer(FLOAT, keyframeValues.map { it.rotation.toVector4() })
-                        }
-
-                    if (useScale)
-                        channel {
-                            node = groupNode
-                            transformType = SCALE
-                            timeValues = buffer(FLOAT, chan.keyframes.map { it.time })
-                            transformValues = buffer(FLOAT, keyframeValues.map { it.scale })
-                        }
+                    addAnimationChannel(this, chan, anim, model)
                 }
             }
+        }
+
+        fun GLTFBuilder.addAnimationChannel(dsl: GLTFBuilder.Animation, chan: IChannel, anim: IAnimation, model: IModel) = dsl.run {
+            val target = anim.channelMapping[chan.ref] ?: return
+
+            val keyframeValues = chan.keyframes.map {
+                Animator.combine(TRTSTransformation.IDENTITY, it.value).toTRTS()
+            }
+            // Avoid duplication of buffers by sharing instances
+            val times = buffer(GltfComponentType.FLOAT, chan.keyframes.map { it.time })
+            val values = when (chan.type) {
+                ChannelType.TRANSLATION -> buffer(GltfComponentType.FLOAT, keyframeValues.map { it.translation * 0.0625 })
+                ChannelType.ROTATION -> buffer(GltfComponentType.FLOAT, keyframeValues.map { it.rotation.toQuaternion().toVector4() })
+                ChannelType.SCALE -> buffer(GltfComponentType.FLOAT, keyframeValues.map { it.scale })
+            }
+            val path = when (chan.type) {
+                ChannelType.TRANSLATION -> GltfChannelPath.translation
+                ChannelType.ROTATION -> GltfChannelPath.rotation
+                ChannelType.SCALE -> GltfChannelPath.scale
+            }
+
+            when (target) {
+                is AnimationTargetGroup -> {
+
+                    if (chan.type == ChannelType.ROTATION) {
+                        // translation
+                        val pivot = buffer(GltfComponentType.FLOAT, keyframeValues.map { it.pivot * 0.0625 })
+                        val negPivot = buffer(GltfComponentType.FLOAT, keyframeValues.map { -it.pivot * 0.0625 })
+                        channel {
+                            node = groupToWrapper[target.ref]!!
+                            interpolation = chan.interpolation.toGLTF()
+                            transformType = TRANSLATION
+                            timeValues = times
+                            transformValues = negPivot
+                        }
+
+                        channel {
+                            node = groupToWrapper2[target.ref]!!
+                            interpolation = chan.interpolation.toGLTF()
+                            transformType = ROTATION
+                            timeValues = times
+                            transformValues = values
+                        }
+
+                        channel {
+                            node = groupToWrapper2[target.ref]!!
+                            interpolation = chan.interpolation.toGLTF()
+                            transformType = TRANSLATION
+                            timeValues = times
+                            transformValues = pivot
+                        }
+                    } else {
+                        channel {
+                            node = groupToNode[target.ref]!!
+                            interpolation = chan.interpolation.toGLTF()
+                            transformType = path
+                            timeValues = times
+                            transformValues = values
+                        }
+                    }
+                }
+                is AnimationTargetObject -> {
+
+                    if (target.refs.isEmpty()) return
+
+                    if (chan.type == ChannelType.ROTATION) {
+                        // translation
+                        val pivot = buffer(GltfComponentType.FLOAT, keyframeValues.map { it.pivot * 0.0625 })
+                        val negPivot = buffer(GltfComponentType.FLOAT, keyframeValues.map { -it.pivot * 0.0625 })
+                        target.refs.forEach {
+
+                            channel {
+                                node = objToWrapper[it]!!
+                                interpolation = chan.interpolation.toGLTF()
+                                transformType = TRANSLATION
+                                timeValues = times
+                                transformValues = negPivot
+                            }
+
+                            channel {
+                                node = objToWrapper2[it]!!
+                                interpolation = chan.interpolation.toGLTF()
+                                transformType = ROTATION
+                                timeValues = times
+                                transformValues = values
+                            }
+
+                            channel {
+                                node = objToWrapper2[it]!!
+                                interpolation = chan.interpolation.toGLTF()
+                                transformType = TRANSLATION
+                                timeValues = times
+                                transformValues = pivot
+                            }
+                        }
+                    } else {
+                        target.refs.forEach {
+                            channel {
+                                node = objToNode[it]!!
+                                interpolation = chan.interpolation.toGLTF()
+                                transformType = path
+                                timeValues = times
+                                transformValues = values
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        fun InterpolationMethod.toGLTF(): GltfInterpolation = when (this) {
+            InterpolationMethod.LINEAR -> GltfInterpolation.LINEAR
+            InterpolationMethod.COSINE -> GltfInterpolation.LINEAR
+            InterpolationMethod.STEP -> GltfInterpolation.STEP
         }
 
         fun GLTFBuilder.addMesh(node: GLTFBuilder.Node, obj: IObject) = node.apply {
@@ -350,7 +495,7 @@ class GlTFExporter {
                                         count++
                                     }
                                     pathToImg[finalName] = material.path
-                                    uri = name
+                                    uri = finalName
                                 }
                             }
                         }
@@ -373,18 +518,6 @@ class GlTFExporter {
             }
         }
 
-        // TODO fix this
-        fun IChannel.usesTranslation() = keyframes.any {
-            it.value.toTRS().translation != Vector3.ZERO
-        }
-
-        fun IChannel.usesRotation() = keyframes.any {
-            it.value.toTRS().rotation != Quaternion.IDENTITY
-        }
-
-        fun IChannel.usesScale() = keyframes.any {
-            it.value.toTRS().scale != Vector3.ONE
-        }
 
         fun IQuaternion.toVector4() = vec4Of(x, y, z, w)
     }

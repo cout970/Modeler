@@ -3,7 +3,8 @@ package com.cout970.modeler.controller.usecases
 import com.cout970.modeler.Debugger
 import com.cout970.modeler.controller.tasks.ITask
 import com.cout970.modeler.controller.tasks.ModifyGui
-import com.cout970.modeler.gui.CSSTheme
+import com.cout970.modeler.controller.tasks.TaskExportModel
+import com.cout970.modeler.core.export.GltfExportProperties
 import com.cout970.modeler.gui.leguicomp.ProfilerDiagram
 import com.cout970.modeler.gui.leguicomp.key
 import com.cout970.modeler.render.RenderManager
@@ -17,10 +18,10 @@ private fun onDebug(): ITask = ModifyGui {
     Debugger.debug {
         //reload gui
 
-        CSSTheme.loadCss()
-        gui.root.reRender()
-        gui.resources.reload(resourceLoader)
-        gui.root.loadResources(gui.resources)
+//        CSSTheme.loadCss()
+//        gui.root.reRender()
+//        gui.resources.reload(resourceLoader)
+//        gui.root.loadResources(gui.resources)
 
 
 //        pushNotification("Debug", "This is a debug message that is supposed to be long enough to force an overflow in the event box, even when there will never be messages that long in the program")
@@ -32,6 +33,10 @@ private fun onDebug(): ITask = ModifyGui {
 //                append = false
 //        )
 //        taskHistory.processTask(TaskImportModel(projectManager.model, properties))
+
+        // Test export system
+        val properties = GltfExportProperties("debug/test.gltf")
+        taskHistory.processTask(TaskExportModel(projectManager.model, properties))
     }
 }
 

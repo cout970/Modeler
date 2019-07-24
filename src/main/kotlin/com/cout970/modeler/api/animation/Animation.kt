@@ -75,7 +75,7 @@ enum class ChannelType {
 }
 
 enum class InterpolationMethod {
-    LINEAR, COSINE
+    LINEAR, COSINE, STEP
 }
 
 enum class AnimationState {

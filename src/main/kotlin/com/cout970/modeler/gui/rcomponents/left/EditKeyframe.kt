@@ -1,8 +1,7 @@
 package com.cout970.modeler.gui.rcomponents.left
 
+import com.cout970.modeler.api.animation.ChannelType
 import com.cout970.modeler.controller.Dispatch
-import com.cout970.modeler.core.model.TRTSTransformation
-import com.cout970.modeler.core.model.toTRTS
 import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.gui.leguicomp.IconButton
 import com.cout970.modeler.gui.leguicomp.alignAsColumn
@@ -45,9 +44,30 @@ class EditKeyframe : RComponent<EditKeyframeProps, VisibleWidget>() {
         val channel = props.animator.animation.channels[channelRef]
         val keyframe = keyframeRef?.let { channel?.keyframes?.getOrNull(it) }
 
+        // Header
+        var heightCount = 24f
+
+        if (state.on && keyframe != null) {
+            // Time field
+            heightCount += 42f
+
+            // Other fields
+            when (channel?.type) {
+                ChannelType.TRANSLATION -> {
+                    heightCount += 100f
+                }
+                ChannelType.ROTATION -> {
+                    heightCount += 200f
+                }
+                ChannelType.SCALE -> {
+                    heightCount += 100f
+                }
+            }
+        }
+
         style {
             classes("left_panel_group", "edit_animation")
-            height = if (state.on && keyframe != null) 460f else 24f
+            height = heightCount
         }
 
         postMount {
@@ -57,17 +77,27 @@ class EditKeyframe : RComponent<EditKeyframeProps, VisibleWidget>() {
 
         child(GroupTitle::class.java, GroupTitleProps("Edit Keyframe", state.on) { setState { copy(on = !on) } })
 
-
-        val t = keyframe?.value?.toTRTS() ?: TRTSTransformation.IDENTITY
-        time((keyframe?.time ?: 0f) * 60f)
-        scale(t.scale)
-        position(t.translation)
-        rotation(if (t.rotation.hasNaN()) Vector3.ZERO else t.rotation)
-        pivot(t.pivot)
-
         onCmd("updateModel") { rerender() }
         onCmd("updateSelection") { rerender() }
         onCmd("updateAnimation") { rerender() }
+
+        if (keyframe == null || channel == null) return@div
+
+        val t = keyframe.value
+        time(keyframe.time * 60f)
+
+        when (channel.type) {
+            ChannelType.TRANSLATION -> {
+                position(t.translation)
+            }
+            ChannelType.ROTATION -> {
+                rotation(if (t.rotation.hasNaN()) Vector3.ZERO else t.rotation)
+                pivot(t.pivot)
+            }
+            ChannelType.SCALE -> {
+                scale(t.scale)
+            }
+        }
     }
 
     fun RBuilder.time(time: Float) {

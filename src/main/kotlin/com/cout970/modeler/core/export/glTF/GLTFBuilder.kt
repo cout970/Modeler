@@ -64,29 +64,29 @@ private fun GLTFBuilder.cubeMesh(node: GLTFBuilder.Node) = node.apply {
             mode = TRIANGLES
 
             attributes[POSITION] = buffer(FLOAT, listOf(
-                    vec3Of(-1.0f, 1.0f, 1.0f),
-                    vec3Of(1.0f, 1.0f, 1.0f),
-                    vec3Of(-1.0f, -1.0f, 1.0f),
-                    vec3Of(1.0f, -1.0f, 1.0f),
-                    vec3Of(-1.0f, 1.0f, -1.0f),
-                    vec3Of(1.0f, 1.0f, -1.0f),
-                    vec3Of(-1.0f, -1.0f, -1.0f),
-                    vec3Of(1.0f, -1.0f, -1.0f)
+                vec3Of(-1.0f, 1.0f, 1.0f),
+                vec3Of(1.0f, 1.0f, 1.0f),
+                vec3Of(-1.0f, -1.0f, 1.0f),
+                vec3Of(1.0f, -1.0f, 1.0f),
+                vec3Of(-1.0f, 1.0f, -1.0f),
+                vec3Of(1.0f, 1.0f, -1.0f),
+                vec3Of(-1.0f, -1.0f, -1.0f),
+                vec3Of(1.0f, -1.0f, -1.0f)
             ))
 
             indices = buffer(UNSIGNED_INT, listOf(
-                    0, 1, 2, // 0
-                    1, 3, 2,
-                    4, 6, 5, // 2
-                    5, 6, 7,
-                    0, 2, 4, // 4
-                    4, 2, 6,
-                    1, 5, 3, // 6
-                    5, 7, 3,
-                    0, 4, 1, // 8
-                    4, 5, 1,
-                    2, 3, 6, // 10
-                    6, 3, 7
+                0, 1, 2, // 0
+                1, 3, 2,
+                4, 6, 5, // 2
+                5, 6, 7,
+                0, 2, 4, // 4
+                4, 2, 6,
+                1, 5, 3, // 6
+                5, 7, 3,
+                0, 4, 1, // 8
+                4, 5, 1,
+                2, 3, 6, // 10
+                6, 3, 7
             ))
         }
     }
@@ -121,7 +121,7 @@ class GLTFBuilder {
     private val bakedAccessors = mutableListOf<GltfAccessor>()
     private val animations = mutableListOf<Animation>()
     private val meshToId = mutableMapOf<Mesh, Int>()
-    private val bufferToId = mutableMapOf<UnpackedBuffer, Int>()
+    private val bufferToId = mutableMapOf<UUID, Int>()
 
 
     var bufferName = "model.bin"
@@ -140,24 +140,24 @@ class GLTFBuilder {
         val binary = buffer.toArray()
 
         return GltfFile(
-                asset = asset.build(),
-                nodes = bakedNodes,
-                meshes = bakedMeshes,
-                bufferViews = bakedBufferViews,
-                accessors = bakedAccessors,
-                scene = 0,
-                scenes = scenes,
-                buffers = listOf(GltfBuffer(uri = bufferName, byteLength = binary.size)),
-                materials = bakedMaterials,
-                animations = animations,
-                images = bakedImages,
-                textures = bakedTextures,
-                samplers = bakedSamplers
+            asset = asset.build(),
+            nodes = bakedNodes,
+            meshes = bakedMeshes,
+            bufferViews = bakedBufferViews,
+            accessors = bakedAccessors,
+            scene = 0,
+            scenes = scenes,
+            buffers = listOf(GltfBuffer(uri = bufferName, byteLength = binary.size)),
+            materials = bakedMaterials,
+            animations = animations,
+            images = bakedImages,
+            textures = bakedTextures,
+            samplers = bakedSamplers
         ) to binary
     }
 
     data class Asset(
-            var copyright: String? = null
+        var copyright: String? = null
     )
 
     fun asset(func: Asset.() -> Unit) {
@@ -166,8 +166,8 @@ class GLTFBuilder {
 
     fun Asset.build(): JsObject {
         val map = mutableMapOf(
-                "generator" to "$NAME glTF v2 Exporter",
-                "version" to "2.0"
+            "generator" to "$NAME glTF v2 Exporter",
+            "version" to "2.0"
         )
 
         copyright?.let { map["copyright"] = it }
@@ -175,9 +175,9 @@ class GLTFBuilder {
     }
 
     data class Scene(
-            val nodes: MutableList<Node> = mutableListOf(),
-            var name: String? = null,
-            var extras: Any? = null
+        val nodes: MutableList<Node> = mutableListOf(),
+        var name: String? = null,
+        var extras: Any? = null
     )
 
     fun scene(func: Scene.() -> Unit) {
@@ -196,27 +196,27 @@ class GLTFBuilder {
         }
 
         return GltfScene(
-                nodes = indices,
-                name = name,
-                extras = extras
+            nodes = indices,
+            name = name,
+            extras = extras
         )
     }
 
     data class Node(
-            val id: UUID = UUID.randomUUID(),
-            var transformation: Transformation? = null,
-            var name: String? = null,
-            var children: MutableList<Node>? = null,
-            var mesh: Mesh? = null,
-            var extras: Any? = null
+        val id: UUID = UUID.randomUUID(),
+        var transformation: Transformation? = null,
+        var name: String? = null,
+        var children: MutableList<Node>? = null,
+        var mesh: Mesh? = null,
+        var extras: Any? = null
     )
 
     sealed class Transformation {
         data class Matrix(var matrix: IMatrix4) : Transformation()
         data class TRS(
-                var translation: IVector3? = null,
-                var rotation: IQuaternion? = null,
-                var scale: IVector3? = null
+            var translation: IVector3? = null,
+            var rotation: IQuaternion? = null,
+            var scale: IVector3? = null
         ) : Transformation()
     }
 
@@ -251,14 +251,14 @@ class GLTFBuilder {
         val m = mesh?.build()
 
         val node = GltfNode(
-                name = name,
-                matrix = (t as? Transformation.Matrix)?.matrix,
-                translation = (t as? Transformation.TRS)?.translation,
-                rotation = (t as? Transformation.TRS)?.rotation,
-                scale = (t as? Transformation.TRS)?.scale,
-                children = bakedChildren?.map { bakedNodes.indexOf(it) } ?: emptyList(),
-                mesh = m,
-                extras = extras
+            name = name,
+            matrix = (t as? Transformation.Matrix)?.matrix,
+            translation = (t as? Transformation.TRS)?.translation,
+            rotation = (t as? Transformation.TRS)?.rotation,
+            scale = (t as? Transformation.TRS)?.scale,
+            children = bakedChildren?.map { bakedNodes.indexOf(it) } ?: emptyList(),
+            mesh = m,
+            extras = extras
         )
 
         nodeIdToIndex[id] = bakedNodes.size
@@ -267,9 +267,9 @@ class GLTFBuilder {
     }
 
     data class Mesh(
-            var name: String? = null,
-            var primitives: MutableList<Primitive> = mutableListOf(),
-            var weights: MutableList<Double> = mutableListOf()
+        var name: String? = null,
+        var primitives: MutableList<Primitive> = mutableListOf(),
+        var weights: MutableList<Double> = mutableListOf()
     )
 
     fun Node.mesh(func: Mesh.() -> Unit) {
@@ -288,11 +288,11 @@ class GLTFBuilder {
 
     @Suppress("PropertyName", "unused")
     data class Primitive(
-            val attributes: MutableMap<String, UnpackedBuffer> = mutableMapOf(),
-            var indices: UnpackedBuffer? = null,
-            var material: Material? = null,
-            var mode: GltfMode = GltfMode.TRIANGLES,
-            val targets: MutableMap<String, Int> = mutableMapOf()
+        val attributes: MutableMap<String, UnpackedBuffer> = mutableMapOf(),
+        var indices: UnpackedBuffer? = null,
+        var material: Material? = null,
+        var mode: GltfMode = GltfMode.TRIANGLES,
+        val targets: MutableMap<String, Int> = mutableMapOf()
     ) {
 
         // this avoids having to import ComponentType.*
@@ -339,7 +339,9 @@ class GLTFBuilder {
             IMatrix2::class.java.isAssignableFrom(T::class.java) -> GltfType.MAT2
             IMatrix3::class.java.isAssignableFrom(T::class.java) -> GltfType.MAT3
             IMatrix4::class.java.isAssignableFrom(T::class.java) -> GltfType.MAT4
-            else -> error("Invalid buffer type")
+            else -> {
+                error("Invalid buffer type")
+            }
         }
         return UnpackedBuffer(container, type, data, indices)
     }
@@ -348,11 +350,11 @@ class GLTFBuilder {
         val matIndex: Int? = material?.build()
 
         return GltfPrimitive(
-                attributes = attributes.mapValues { it.value.build() },
-                indices = indices?.build(),
-                material = matIndex,
-                mode = mode.code,
-                targets = targets
+            attributes = attributes.mapValues { it.value.build() },
+            indices = indices?.build(),
+            material = matIndex,
+            mode = mode.code,
+            targets = targets
         )
     }
 
@@ -370,24 +372,25 @@ class GLTFBuilder {
 
         materialsMap[id!!] = bakedMaterials.size
         bakedMaterials.add(GltfMaterial(
-                pbrMetallicRoughness = pbrMetallicRoughness?.build(),
-                normalTexture = normalTexture,
-                occlusionTexture = occlusionTexture,
-                emissiveTexture = emissiveTexture,
-                emissiveFactor = emissiveFactor,
-                alphaMode = alphaMode ?: GltfAlphaMode.MASK,
-                alphaCutoff = alphaCutoff ?: 0.5,
-                doubleSided = doubleSided
+            pbrMetallicRoughness = pbrMetallicRoughness?.build(),
+            normalTexture = normalTexture,
+            occlusionTexture = occlusionTexture,
+            emissiveTexture = emissiveTexture,
+            emissiveFactor = emissiveFactor,
+            alphaMode = alphaMode ?: GltfAlphaMode.MASK,
+            alphaCutoff = alphaCutoff ?: 0.5,
+            doubleSided = doubleSided
         ))
 
         return bakedMaterials.size - 1
     }
 
     data class UnpackedBuffer(
-            val containerType: GltfType,
-            val elementType: GltfComponentType,
-            val data: List<*>,
-            val indices: Boolean
+        val containerType: GltfType,
+        val elementType: GltfComponentType,
+        val data: List<*>,
+        val indices: Boolean,
+        val uuid: UUID = UUID.randomUUID()
     ) {
         init {
             require(data.isNotEmpty()) { "Unable to build an empty Buffer" }
@@ -400,30 +403,30 @@ class GLTFBuilder {
     @Suppress("UNCHECKED_CAST")
     fun UnpackedBuffer.build(animation: Boolean = false): Int {
 
-        if (this in bufferToId) {
-            return bufferToId[this]!!
+        if (this.uuid in bufferToId) {
+            return bufferToId[this.uuid]!!
         }
 
         val size = elementType.size * containerType.numComponents * data.size
         val index = bakedBufferViews.size
         val view = GltfBufferView(
-                buffer = 0,
-                name = null,
-                byteLength = size,
-                byteOffset = buffer.position(),
-                byteStride = null,
-                target = if (animation) null else if (indices) 34963 else 34962
+            buffer = 0,
+            name = null,
+            byteLength = size,
+            byteOffset = buffer.position(),
+            byteStride = null,
+            target = if (animation) null else if (indices) 34963 else 34962
         )
         val accessor = GltfAccessor(
-                bufferView = index,
-                byteOffset = 0,
-                componentType = elementType.id,
-                normalized = false,
-                count = data.size,
-                type = containerType,
-                min = getMin(this),
-                max = getMax(this),
-                name = null
+            bufferView = index,
+            byteOffset = 0,
+            componentType = elementType.id,
+            normalized = false,
+            count = data.size,
+            type = containerType,
+            min = getMin(this),
+            max = getMax(this),
+            name = null
         )
 
         val put = { n: Number ->
@@ -451,7 +454,7 @@ class GLTFBuilder {
 
         bakedBufferViews.add(view)
         bakedAccessors.add(accessor)
-        bufferToId[this] = index
+        bufferToId[this.uuid] = index
         return index
     }
 
@@ -528,34 +531,34 @@ class GLTFBuilder {
     }
 
     data class Material(
-            var id: UUID? = null,
-            var pbrMetallicRoughness: PbrMetallicRoughness? = null,
-            var normalTexture: GltfNormalTextureInfo? = null,
-            var occlusionTexture: GltfOcclusionTextureInfo? = null,
-            var emissiveTexture: GltfTextureInfo? = null,
-            var emissiveFactor: IVector3? = null,
-            var alphaMode: GltfAlphaMode? = null,
-            var alphaCutoff: Double? = null,
-            var doubleSided: Boolean = false
+        var id: UUID? = null,
+        var pbrMetallicRoughness: PbrMetallicRoughness? = null,
+        var normalTexture: GltfNormalTextureInfo? = null,
+        var occlusionTexture: GltfOcclusionTextureInfo? = null,
+        var emissiveTexture: GltfTextureInfo? = null,
+        var emissiveFactor: IVector3? = null,
+        var alphaMode: GltfAlphaMode? = null,
+        var alphaCutoff: Double? = null,
+        var doubleSided: Boolean = false
     )
 
     data class PbrMetallicRoughness(
-            var baseColorFactor: IVector4? = null,
-            var baseColorTexture: TextureInfo? = null,
-            var metallicFactor: Double? = null,
-            var roughnessFactor: Double? = null,
-            var metallicRoughnessTexture: TextureInfo? = null
+        var baseColorFactor: IVector4? = null,
+        var baseColorTexture: TextureInfo? = null,
+        var metallicFactor: Double? = null,
+        var roughnessFactor: Double? = null,
+        var metallicRoughnessTexture: TextureInfo? = null
     )
 
     data class TextureInfo(
-            var image: Image? = null,
-            var texCoord: Int = 0
+        var image: Image? = null,
+        var texCoord: Int = 0
     )
 
     data class Image(
-            var uri: String? = null,
-            var mimeType: String? = null,
-            var name: String? = null
+        var uri: String? = null,
+        var mimeType: String? = null,
+        var name: String? = null
     )
 
     fun Material.pbrMetallicRoughness(func: PbrMetallicRoughness.() -> Unit) {
@@ -570,40 +573,40 @@ class GLTFBuilder {
 
     fun PbrMetallicRoughness.build(): GltfPbrMetallicRoughness {
         return GltfPbrMetallicRoughness(
-                baseColorFactor = baseColorFactor ?: Vector4.ONE,
-                baseColorTexture = baseColorTexture?.build(),
-                metallicFactor = metallicFactor ?: 1.0,
-                roughnessFactor = roughnessFactor ?: 1.0,
-                metallicRoughnessTexture = metallicRoughnessTexture?.build()
+            baseColorFactor = baseColorFactor ?: Vector4.ONE,
+            baseColorTexture = baseColorTexture?.build(),
+            metallicFactor = metallicFactor ?: 1.0,
+            roughnessFactor = roughnessFactor ?: 1.0,
+            metallicRoughnessTexture = metallicRoughnessTexture?.build()
         )
     }
 
     fun TextureInfo.build(): GltfTextureInfo {
         return GltfTextureInfo(
-                index = image!!.build(),
-                texCoord = texCoord
+            index = image!!.build(),
+            texCoord = texCoord
         )
     }
 
     fun Image.build(): Int {
         if (bakedSamplers.isEmpty()) {
             bakedSamplers.add(GltfSampler(
-                    magFilter = Texture.PIXELATED,
-                    minFilter = Texture.PIXELATED,
-                    wrapS = Texture.REPEAT,
-                    wrapT = Texture.REPEAT,
-                    name = "pixelated"
+                magFilter = Texture.PIXELATED,
+                minFilter = Texture.PIXELATED,
+                wrapS = Texture.REPEAT,
+                wrapT = Texture.REPEAT,
+                name = "pixelated"
             ))
         }
 
         bakedImages.add(GltfImage(
-                uri = uri
+            uri = uri
         ))
 
         bakedTextures.add(GltfTexture(
-                sampler = 0,
-                source = bakedImages.size - 1,
-                name = name
+            sampler = 0,
+            source = bakedImages.size - 1,
+            name = name
         ))
 
         return bakedTextures.size - 1
@@ -629,35 +632,35 @@ class GLTFBuilder {
             val node = nodeIdToIndex[chan.node] ?: return@forEach
 
             channels += GltfAnimationChannel(
-                    target = GltfChannelTarget(node = node, path = chan.transformType.toString()),
-                    sampler = samplers.size
+                target = GltfChannelTarget(node = node, path = chan.transformType.toString()),
+                sampler = samplers.size
             )
 
             samplers += GltfAnimationSampler(
-                    input = chan.timeValues!!.build(true),
-                    interpolation = chan.interpolation,
-                    output = chan.transformValues!!.build(true)
+                input = chan.timeValues!!.build(true),
+                interpolation = chan.interpolation,
+                output = chan.transformValues!!.build(true)
             )
         }
 
         return GltfAnimation(
-                name = name,
-                channels = channels,
-                samplers = samplers
+            name = name,
+            channels = channels,
+            samplers = samplers
         )
     }
 
     data class Animation(
-            var name: String? = null,
-            val channels: MutableList<Channel> = mutableListOf()
+        var name: String? = null,
+        val channels: MutableList<Channel> = mutableListOf()
     )
 
     data class Channel(
-            var node: UUID? = null,
-            var interpolation: GltfInterpolation = GltfInterpolation.LINEAR,
-            var transformType: GltfChannelPath = GltfChannelPath.translation,
-            var timeValues: UnpackedBuffer? = null,
-            var transformValues: UnpackedBuffer? = null
+        var node: UUID? = null,
+        var interpolation: GltfInterpolation = GltfInterpolation.LINEAR,
+        var transformType: GltfChannelPath = GltfChannelPath.translation,
+        var timeValues: UnpackedBuffer? = null,
+        var transformValues: UnpackedBuffer? = null
     ) {
 
         // this avoids having to import GltfInterpolation.*

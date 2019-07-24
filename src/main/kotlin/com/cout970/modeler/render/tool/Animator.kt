@@ -8,9 +8,11 @@ import com.cout970.modeler.api.model.selection.IObjectRef
 import com.cout970.modeler.core.model.TRTSTransformation
 import com.cout970.modeler.core.model.toTRTS
 import com.cout970.modeler.gui.Gui
+import com.cout970.modeler.util.lerp
 import com.cout970.modeler.util.slerp
 import com.cout970.modeler.util.toAxisRotations
 import com.cout970.modeler.util.toFrame
+import com.cout970.vector.api.IQuaternion
 import com.cout970.vector.api.IVector3
 import com.cout970.vector.extensions.vec3Of
 import kotlin.math.PI
@@ -88,10 +90,10 @@ class Animator {
         return animateTransform(validChannels, transform.toTRTS())
     }
 
-    fun animateTransform(validChannels: List<IChannel>, transform: TRTSTransformation): TRTSTransformation {
+    fun animateTransform(validChannels: List<IChannel>, current: TRTSTransformation): TRTSTransformation {
         val now = animationTime
 
-        if (validChannels.isEmpty()) return transform
+        if (validChannels.isEmpty()) return current
         val overrideProperties = mutableListOf<ChannelType>()
 
         val anim = validChannels.fold(TRTSTransformation.IDENTITY) { acc, channel ->
@@ -108,12 +110,27 @@ class Animator {
             acc.merge(focus)
         }
 
+        var transform = current
+        if (ChannelType.ROTATION in overrideProperties) {
+            transform = transform.merge(TRTSTransformation(
+                rotation = anim.rotation,
+                pivot = anim.pivot
+            ))
+        }
+
         val final = TRTSTransformation(
             if (ChannelType.TRANSLATION in overrideProperties) anim.translation else transform.translation,
-            if (ChannelType.ROTATION in overrideProperties) anim.rotation else transform.rotation,
-            if (ChannelType.ROTATION in overrideProperties) anim.pivot else transform.pivot,
+            transform.rotation,
+            transform.pivot,
             if (ChannelType.SCALE in overrideProperties) anim.scale else transform.scale
         )
+
+//        val final = TRTSTransformation(
+//            if (ChannelType.TRANSLATION in overrideProperties) anim.translation else transform.translation,
+//            if (ChannelType.ROTATION in overrideProperties) anim.rotation else transform.rotation,
+//            if (ChannelType.ROTATION in overrideProperties) anim.pivot else transform.pivot,
+//            if (ChannelType.SCALE in overrideProperties) anim.scale else transform.scale
+//        )
 
         return combine(transform, final)
     }
@@ -140,7 +157,7 @@ class Animator {
 
             return TRTSTransformation(
                 translation = interpolateVector3(a.translation, b.translation, step, method),
-                rotation = a.quatRotation.slerp(b.quatRotation, step).toAxisRotations(),
+                rotation = interpolateQuaternion(a.quatRotation, b.quatRotation, step, method).toAxisRotations(),
                 pivot = interpolateVector3(a.pivot, b.pivot, step, method),
                 scale = interpolateVector3(a.scale, b.scale, step, method)
             )
@@ -158,6 +175,15 @@ class Animator {
                     cosine(a.yd, b.yd, mu),
                     cosine(a.zd, b.zd, mu)
                 )
+                InterpolationMethod.STEP -> a
+            }
+        }
+
+        fun interpolateQuaternion(a: IQuaternion, b: IQuaternion, mu: Double, method: InterpolationMethod): IQuaternion {
+            return when (method) {
+                InterpolationMethod.LINEAR -> a.lerp(b, mu)
+                InterpolationMethod.COSINE -> a.slerp(b, mu)
+                InterpolationMethod.STEP -> a
             }
         }
 
