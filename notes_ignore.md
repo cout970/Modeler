@@ -7,10 +7,8 @@ Loads of skyboxes "http://www.custommapmakers.org/skyboxes.php"
 - Fix bugs
 
 ### Current
-Fix animations
-- Fix animation export
-- Fix multiple objects in animation project save file
 
+Fix unnamed task ?
 Fix center cursor when moving the camera
 Add Java export format
 Spread textures UVs
@@ -23,7 +21,6 @@ Last actions panel
 Several textures per cube
 Custom UVs in cubes
 Join/split objects
-Fix UV selection of triangles
 Join triangles into quads
 Custom skybox
 Add rotation pivot to cubes

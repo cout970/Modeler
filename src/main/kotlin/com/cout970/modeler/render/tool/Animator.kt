@@ -87,6 +87,7 @@ class Animator {
             .filter { (chanRef) -> (obj in (anim.channelMapping[chanRef] as? AnimationTargetObject)?.refs ?: emptyList()) }
             .map { it.value }
 
+        if (validChannels.isEmpty()) return transform
         return animateTransform(validChannels, transform.toTRTS())
     }
 

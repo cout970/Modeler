@@ -174,7 +174,9 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
                 sizeY = 26f
 
                 addElement("None")
-                animations.forEachIndexed { index, animation -> addElement("$index ${animation.name}") }
+                animations.forEachIndexed { index, animation ->
+                    addElement("${index}_${animation.name}".replace(' ', '_'))
+                }
 
                 val selectedIndex = animations.indexOfFirst { it.ref == props.programState.selectedAnimation }
                 if (selectedIndex != -1) {

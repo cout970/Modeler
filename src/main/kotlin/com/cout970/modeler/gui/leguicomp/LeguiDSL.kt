@@ -8,9 +8,7 @@ import com.cout970.modeler.util.forEachComponent
 import com.cout970.modeler.util.toColor
 import com.cout970.reactive.core.Listener
 import com.cout970.reactive.core.RBuilder
-import com.cout970.reactive.dsl.onClick
-import com.cout970.reactive.dsl.posY
-import com.cout970.reactive.dsl.sizeY
+import com.cout970.reactive.dsl.*
 import org.joml.Vector4f
 import org.liquidengine.legui.component.Component
 import org.liquidengine.legui.component.TextArea
@@ -48,6 +46,32 @@ fun Component.alignAsColumn(padding: Float, margin: Float = 0f) {
     childComponents.forEach {
         it.posY = y
         y += it.sizeY + padding
+    }
+}
+
+fun Component.alignAsRowFromFixedSize(margin: Float = 0f) {
+    if (childComponents.isEmpty()) return
+    val spaceLeft = sizeX - childComponents.sumBy { it.sizeX.toInt() }
+    val separation = if (childComponents.size == 1) 0f else spaceLeft / (childComponents.size - 1)
+    var x = margin
+
+    childComponents.forEach {
+        it.posX = x
+        x += it.sizeY + separation
+    }
+}
+
+fun Component.alignAsRowFromFlexibleSize(padding: Float = 5f, margin: Float = 0f) {
+    if (childComponents.isEmpty()) return
+    val space = sizeX - margin * 2
+    val emptySpace = if (childComponents.size == 1) space else space - padding * (childComponents.size - 1)
+    val itemSize = emptySpace / childComponents.size
+    var x = margin
+
+    childComponents.forEach {
+        it.posX = x
+        it.sizeX = itemSize
+        x += itemSize + padding
     }
 }
 

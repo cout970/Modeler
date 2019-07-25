@@ -64,9 +64,11 @@ sealed class Nullable<T> {
         }
     }
 
-    fun <A, B> split(func: (T) -> Pair<A, B>): Pair<Nullable<A>, Nullable<B>> = when (this) {
-        Null -> castNull<A>() to castNull<B>()
-        is NonNull -> func(value).let { it.first.asNullable() to it.second.asNullable() }
+    fun <A, B> split(func: (T) -> Pair<A, B>): Pair<Nullable<A>, Nullable<B>> {
+        return when (this) {
+            Null -> castNull<A>() to castNull<B>()
+            is NonNull -> func(value).let { (a, b) -> NonNull(a) to NonNull(b) }
+        }
     }
 
     @Suppress("UNCHECKED_CAST")

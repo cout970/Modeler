@@ -214,22 +214,28 @@ private fun setAnimationChannelType(comp: Component, programState: IProgramState
     return TaskUpdateModel(programState.model, programState.model.modifyAnimation(newAnimation))
 }
 
-@UseCase("animation.channel.update")
+@UseCase("animation.channel.update.object")
 private fun setAnimationChannelObjects(comp: Component, programState: IProgramState): ITask {
+    val ref = comp.metadata["ref"] as IChannelRef
+    val animation = programState.animation
+
+    val selection = programState.modelSelection.getOrNull() ?: return TaskNone
+    if (selection.selectionType != SelectionType.OBJECT) return TaskNone
+    if (selection.selectionTarget != SelectionTarget.MODEL) return TaskNone
+
+    val target = AnimationTargetObject(selection.objects)
+    val newAnimation = animation.withMapping(ref, target)
+
+    return TaskUpdateModel(programState.model, programState.model.modifyAnimation(newAnimation))
+}
+
+@UseCase("animation.channel.update.group")
+private fun setAnimationChannelGroup(comp: Component, programState: IProgramState): ITask {
     val ref = comp.metadata["ref"] as IChannelRef
     val animation = programState.animation
     val group = programState.selectedGroup
 
-    val target = if (group != RootGroupRef) {
-        AnimationTargetGroup(group)
-    } else {
-        val selection = programState.modelSelection.getOrNull() ?: return TaskNone
-        if (selection.selectionType != SelectionType.OBJECT) return TaskNone
-        if (selection.selectionTarget != SelectionTarget.MODEL) return TaskNone
-
-        AnimationTargetObject(selection.objects)
-    }
-
+    val target = if (group != RootGroupRef) AnimationTargetGroup(group) else return TaskNone
     val newAnimation = animation.withMapping(ref, target)
 
     return TaskUpdateModel(programState.model, programState.model.modifyAnimation(newAnimation))

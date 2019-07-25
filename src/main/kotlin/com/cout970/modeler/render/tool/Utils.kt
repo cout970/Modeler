@@ -61,7 +61,6 @@ inline fun IMesh.forEachVertex(func: (Vertex) -> Unit) {
         val bd = d - b
         val normal = (ac cross bd).normalize()
 
-
         func(Vertex(pos[face.pos[0]], tex[face.tex[0]], normal))
         func(Vertex(pos[face.pos[1]], tex[face.tex[1]], normal))
         func(Vertex(pos[face.pos[2]], tex[face.tex[2]], normal))
@@ -84,7 +83,7 @@ inline fun IMesh.forEachEdge(func: (Pair<Vertex, Vertex>) -> Unit) {
         for (index in 0 until face.vertexCount) {
             val next = (index + 1) % face.vertexCount
             list += (Vertex(pos[face.pos[index]], tex[face.tex[index]], normal) to
-                    Vertex(pos[face.pos[next]], tex[face.tex[next]], normal))
+                Vertex(pos[face.pos[next]], tex[face.tex[next]], normal))
         }
     }
     list.distinct().forEach(func)

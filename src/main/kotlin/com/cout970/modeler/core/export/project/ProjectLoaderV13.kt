@@ -464,9 +464,11 @@ object ProjectLoaderV13 {
                     add("ref", context.serializeT(src.ref))
                 }
                 is AnimationTargetObject -> JsonObject().apply {
-                    addProperty("type", "object")
-                    // TODO
-                    add("ref", context.serializeT(src.refs.first()))
+                    addProperty("type", "objects")
+
+                    add("refs", JsonArray().apply {
+                        src.refs.forEach { add(context.serializeT(it)) }
+                    })
                 }
             }
         }
@@ -476,10 +478,10 @@ object ProjectLoaderV13 {
             val obj = json.asJsonObject
             if (!obj.has("type")) return AnimationTargetObject(listOf(ObjectRefNone))
 
-            // TODO
             return when (obj["type"].asString) {
                 "group" -> AnimationTargetGroup(context.deserializeT(obj["ref"]))
                 "object" -> AnimationTargetObject(listOf(context.deserializeT(obj["ref"])))
+                "objects" -> AnimationTargetObject(obj["refs"].asJsonArray.map { context.deserializeT<IObjectRef>(it) })
                 else -> error("Invalid AnimationTarget type: ${obj["type"].asString}")
             }
         }

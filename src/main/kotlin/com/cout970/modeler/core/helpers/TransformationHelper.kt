@@ -12,7 +12,6 @@ import com.cout970.modeler.api.model.selection.toObjectRef
 import com.cout970.modeler.core.model.*
 import com.cout970.modeler.core.model.mesh.FaceIndex
 import com.cout970.modeler.core.model.mesh.Mesh
-import com.cout970.modeler.core.model.mesh.getTextureVertex
 import com.cout970.modeler.render.tool.Animator
 import com.cout970.modeler.util.*
 import com.cout970.vector.api.IVector2
@@ -304,24 +303,23 @@ object TransformationHelper {
     }
 
     fun splitTextures(model: IModel, selection: ISelection): IModel {
-
         return when (selection.selectionType) {
             SelectionType.OBJECT -> {
                 model.modifyObjects(selection::isSelected) { _, obj ->
                     val faces = obj.mesh.faces
                     val pos = obj.mesh.pos
+                    val tex = faces.flatMap { face -> face.tex.map { obj.mesh.tex[it] } }
+                    var lastIndex = 0
 
-                    val newTex = faces.flatMap { it.getTextureVertex(obj.mesh) }
+                    val newFaces = faces.map { face ->
+                        val startIndex = lastIndex
+                        lastIndex += face.vertexCount
+                        val endIndex = lastIndex
 
-                    val newFaces = faces.mapIndexed { index, face ->
-                        val startIndex = (index * 4)
-                        val endIndex = ((index + 1) * 4)
-                        val newTexIndices = (startIndex until endIndex).toList()
-
-                        FaceIndex.from(face.pos, newTexIndices)
+                        FaceIndex.from(face.pos, (startIndex until endIndex).toList())
                     }
 
-                    val newMesh = Mesh(pos, newTex, newFaces)
+                    val newMesh = Mesh(pos, tex, newFaces)
                     obj.withMesh(newMesh)
                 }
             }

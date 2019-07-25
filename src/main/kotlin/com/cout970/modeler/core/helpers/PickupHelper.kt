@@ -1,13 +1,11 @@
 package com.cout970.modeler.core.helpers
 
 import com.cout970.collision.IPolygon
-import com.cout970.collision.collide
 import com.cout970.modeler.api.model.IModel
 import com.cout970.modeler.api.model.material.IMaterial
 import com.cout970.modeler.api.model.selection.IRef
 import com.cout970.modeler.api.model.selection.ISelection
 import com.cout970.modeler.api.model.selection.SelectionType
-import com.cout970.modeler.core.collision.TexturePolygon
 import com.cout970.modeler.core.model.getGlobalMesh
 import com.cout970.modeler.core.model.objects
 import com.cout970.modeler.core.model.ref
@@ -20,6 +18,7 @@ import com.cout970.raytrace.RayTraceResult
 import com.cout970.vector.api.IVector2
 import com.cout970.vector.extensions.*
 import org.joml.Vector3d
+import kotlin.math.sqrt
 
 object PickupHelper {
 
@@ -47,14 +46,14 @@ object PickupHelper {
 
         // project the mouse position into the scene, as close as possible to the camera
         matrix.unproject(
-                Vector3d(mousePos.xd, viewportSize.yd - mousePos.yd, 0.0), // y is inverted
-                viewport, a
+            Vector3d(mousePos.xd, viewportSize.yd - mousePos.yd, 0.0), // y is inverted
+            viewport, a
         )
 
         // project the mouse position into the scene, as far as possible to the camera
         matrix.unproject(
-                Vector3d(mousePos.xd, viewportSize.yd - mousePos.yd, 1.0),
-                viewport, b
+            Vector3d(mousePos.xd, viewportSize.yd - mousePos.yd, 1.0),
+            viewport, b
         )
 
         return Ray(a.toIVector(), b.toIVector())
@@ -104,25 +103,29 @@ object PickupHelper {
     }
 
     fun <T> getFirstCollision(point: IVector2, obstacles: List<Pair<IPolygon, T>>): Pair<IPolygon, T>? {
-        val mouseCollisionBox = getPointPolygon(point)
-        val selected = obstacles.filter { it.first.collide(mouseCollisionBox) }
+        val farPoint = vec2Of(0.0, 1000.0)
+
+        val selected = obstacles.filter { (polygon, _) ->
+            polygon.getEdges().count { linesIntersect(point, farPoint, it.first, it.second) }.isOdd()
+        }
+
         return selected.firstOrNull()
     }
 
     fun getTexturePolygons(model: IModel, selection: Nullable<ISelection>, type: SelectionType, mat: IMaterial)
-            : List<Pair<IPolygon, IRef>> {
+        : List<Pair<IPolygon, IRef>> {
 
         val selectedObjects = selection.map { sel ->
             sel.objects
-                    .map { it to model.getObject(it) }
-                    .filter { it.second.visible && it.second.material == mat.ref }
+                .map { it to model.getObject(it) }
+                .filter { it.second.visible && it.second.material == mat.ref }
         }.flatMapList()
 
         val objs = when {
             selectedObjects.isNotEmpty() -> selectedObjects
             else -> model.objectMap
-                    .toList()
-                    .filter { it.second.visible && it.second.material == mat.ref }
+                .toList()
+                .filter { it.second.visible && it.second.material == mat.ref }
         }
 
         return when (type) {
@@ -132,15 +135,6 @@ object PickupHelper {
             SelectionType.VERTEX -> objs.flatMap { (ref, obj) -> obj.getVertexTexturePolygons(ref, mat) }
         }
     }
-
-    fun getPointPolygon(point: IVector2): IPolygon {
-        val scale = vec2Of(0.01)
-        return TexturePolygon(listOf(
-                point + vec2Of(-scale.xd, -scale.yd), point + vec2Of(scale.xd, -scale.yd),
-                point + vec2Of(scale.xd, scale.yd), point + vec2Of(-scale.xd, scale.yd)
-        ))
-    }
-
 
     fun fromCanvasToMaterial(pos: IVector2, material: IMaterial): IVector2 {
         val scaled = pos / material.size
@@ -158,5 +152,54 @@ object PickupHelper {
         val finalPos = fromCanvasToMaterial(clickPos, material)
         val polygons = getTexturePolygons(model, selection, selectionType, material)
         return getFirstCollision(finalPos, polygons)
+    }
+
+    /**
+     * Ported from C to Kotlin
+     * Stolen from: http://alienryderflex.com/intersect/
+     * Credits to Darel Rex Finley
+     */
+    fun linesIntersect(a: IVector2, b: IVector2, c: IVector2, d: IVector2): Boolean {
+
+        // Fail if either line segment is zero-length.
+        if (a.xd == b.xd && a.yd == b.yd || c.xd == d.xd && c.yd == d.yd) return false
+
+        // Fail if the segments share an end-point.
+        if (a.xd == c.xd && a.yd == c.yd || b.xd == c.xd && b.yd == c.yd ||
+            a.xd == d.xd && a.yd == d.yd || b.xd == d.xd && b.yd == d.yd) {
+            return false
+        }
+
+        // (1) Translate the system so that point A is on the origin.
+        val bx = b.xd - a.xd
+        val by = b.yd - a.yd
+        val cx = c.xd - a.xd
+        val cy = c.yd - a.yd
+        val dx = d.xd - a.xd
+        val dy = d.yd - a.yd
+
+        // Discover the length of segment A-B.
+        val distAB = sqrt(bx * bx + by * by)
+
+        // (2) Rotate the system so that point B is on the positive X axis.
+        val theCos = bx / distAB
+        val theSin = by / distAB
+
+        val newCy = cy * theCos - cx * theSin
+        val newCx = cx * theCos + cy * theSin
+        val newDy = dy * theCos - dx * theSin
+        val newDx = dx * theCos + dy * theSin
+
+        // Fail if segment C-D doesn't cross line A-B.
+        if (newCy < 0.0 && newDy < 0.0 || newCy >= 0.0 && newDy >= 0.0) return false
+
+        // (3) Discover the position of the intersection point along line A-B.
+        val posAB = newDx + (newCx - newDx) * newDy / (newDy - newCy)
+
+        // Fail if segment C-D crosses line A-B outside of segment A-B.
+        if (posAB < 0.0 || posAB > distAB) return false
+
+        // Success.
+        return true
     }
 }

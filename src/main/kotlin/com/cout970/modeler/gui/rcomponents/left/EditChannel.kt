@@ -4,11 +4,13 @@ import com.cout970.modeler.api.animation.AnimationTargetGroup
 import com.cout970.modeler.api.animation.AnimationTargetObject
 import com.cout970.modeler.api.animation.ChannelType
 import com.cout970.modeler.api.animation.InterpolationMethod
+import com.cout970.modeler.api.model.`object`.RootGroupRef
 import com.cout970.modeler.controller.Dispatch
 import com.cout970.modeler.core.animation.ref
 import com.cout970.modeler.core.project.IProgramState
 import com.cout970.modeler.gui.leguicomp.*
 import com.cout970.modeler.render.tool.Animator
+import com.cout970.modeler.util.disableInput
 import com.cout970.reactive.core.RBuilder
 import com.cout970.reactive.core.RComponent
 import com.cout970.reactive.core.RProps
@@ -29,6 +31,8 @@ class EditChannel : RComponent<EditChannelProps, VisibleWidget>() {
     override fun getInitialState() = VisibleWidget(true)
 
     override fun RBuilder.render() = div("EditChannel") {
+        val modelSelection = props.programState.modelSelection.getOrNull()
+        val groupSelection = props.programState.selectedGroup.takeIf { it != RootGroupRef }
         val channelRef = props.animator.selectedChannel
         val animation = props.animator.animation
         val channel = props.animator.animation.channels[channelRef]
@@ -158,20 +162,58 @@ class EditChannel : RComponent<EditChannelProps, VisibleWidget>() {
             }
         }
 
-        button("Update with selection") {
+
+
+        div {
             style {
-                classes("btn_text", "big_text")
-                sizeY = 32f
+                sizeY = 34f
+                classes("div")
             }
+
             postMount {
                 marginX(5f)
+                alignAsRowFromFlexibleSize(10f, 1f)
             }
-            onClick {
-                Dispatch.run("animation.channel.update") {
-                    this["ref"] = channelRef
+
+            button("Link Objects") {
+                style {
+                    classes("btn_text", "big_text")
+                    sizeY = 32f
+                    posY = 1f
+
+                    if (modelSelection == null) {
+                        disableInput()
+                        classes("btn_disable")
+                    }
+                }
+
+                onClick {
+                    Dispatch.run("animation.channel.update.object") {
+                        this["ref"] = channelRef
+                    }
+                }
+            }
+
+            button("Link Group") {
+                style {
+                    classes("btn_text", "big_text")
+                    sizeY = 32f
+                    posY = 1f
+
+                    if (groupSelection == null) {
+                        disableInput()
+                        classes("btn_disable")
+                    }
+                }
+
+                onClick {
+                    Dispatch.run("animation.channel.update.group") {
+                        this["ref"] = channelRef
+                    }
                 }
             }
         }
+
     }
 
     private fun CheckBox.configIcon(icon: CharIcon) {

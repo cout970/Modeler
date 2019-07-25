@@ -450,6 +450,18 @@ var exported = {
     btn_active: {
         backgroundColor: "#6a6a6a"
     },
+    btn_disable: {
+        backgroundColor: "#363636"
+    },
+    "btn_disable:hover": {
+        backgroundColor: "#363636"
+    },
+    "btn_disable:focus": {
+        backgroundColor: "#363636"
+    },
+    "btn_disable:pressed": {
+        backgroundColor: "#363636"
+    },
     canvas_label: {
         backgroundColor: transparent,
         textSize: "20",

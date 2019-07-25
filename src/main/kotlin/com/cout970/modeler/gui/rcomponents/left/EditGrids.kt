@@ -26,7 +26,7 @@ class EditGrids : RComponent<EditGridsProps, VisibleWidget>() {
     override fun RBuilder.render() = div("EditGrids") {
         style {
             classes("left_panel_group", "config_grids")
-            height = if (state.on) 355f else 24f
+            height = if (state.on) 320f else 24f
         }
 
         postMount {

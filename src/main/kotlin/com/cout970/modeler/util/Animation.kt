@@ -7,4 +7,6 @@ fun Float.toFrame(): Int = (this * 60f).roundToInt()
 
 fun Int.fromFrame(): Float = this / 60f
 
+fun Int.isOdd(): Boolean = this % 2 != 0
+
 fun Double.aprox(other: Double, epsilon: Double = 0.001) = (this - other).absoluteValue < epsilon

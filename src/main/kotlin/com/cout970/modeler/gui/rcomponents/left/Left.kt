@@ -86,6 +86,7 @@ class LeftPanel : RStatelessComponent<LeftPanelProps>() {
 
                 postMount {
                     floatTop(6f)
+                    height = childComponents.last().let { it.posY + it.sizeY }
                 }
 
                 child(EditObjectPanel::class, ModelAccessorProps(props.programState))
