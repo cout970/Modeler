@@ -182,7 +182,7 @@ class GlTFExporter {
                 }
 
                 model.animationMap.values.forEach { anim ->
-                    addAnimation(anim, model)
+                    addAnimation(anim)
                 }
             }
 
@@ -276,7 +276,7 @@ class GlTFExporter {
         }
 
 
-        fun GLTFBuilder.addAnimation(anim: IAnimation, model: IModel) {
+        fun GLTFBuilder.addAnimation(anim: IAnimation) {
 
             val used = anim.channels.values.any { chan ->
                 val target = anim.channelMapping[chan.ref] ?: return@any false
@@ -291,12 +291,12 @@ class GlTFExporter {
             animation {
                 name = anim.name
                 anim.channels.values.map { chan ->
-                    addAnimationChannel(this, chan, anim, model)
+                    addAnimationChannel(this, chan, anim)
                 }
             }
         }
 
-        fun GLTFBuilder.addAnimationChannel(dsl: GLTFBuilder.Animation, chan: IChannel, anim: IAnimation, model: IModel) = dsl.run {
+        fun GLTFBuilder.addAnimationChannel(dsl: GLTFBuilder.Animation, chan: IChannel, anim: IAnimation) = dsl.run {
             val target = anim.channelMapping[chan.ref] ?: return
 
             val keyframeValues = chan.keyframes.map {

@@ -3,6 +3,7 @@ package com.cout970.modeler.input.window
 import com.cout970.glutilities.texture.TextureLoader
 import com.cout970.glutilities.window.GLFWWindow
 import com.cout970.glutilities.window.WindowBuilder
+import com.cout970.modeler.NAME
 import com.cout970.modeler.core.log.Profiler
 import com.cout970.modeler.core.resource.ResourceLoader
 import com.cout970.modeler.util.ITickeable
@@ -33,16 +34,11 @@ class WindowHandler : ITickeable {
     private val viewportStack = Stack<Pair<IVector2, IVector2>>()
     private val vsync = VSyncTimer()
 
-
-    companion object {
-        const val WINDOW_TITLE = "TO BE NAMED"
-    }
-
     fun create() {
         window = WindowBuilder.build {
 
             //            screen = glfwGetMonitors()!![0]
-            title = WINDOW_TITLE
+            title = NAME
             size = vec2Of(800, 600)
             vSync = true
             properties[GLFW_STENCIL_BITS] = 24
@@ -95,7 +91,7 @@ class WindowHandler : ITickeable {
 
     fun updateTitle(projectName: String) {
         val projectPath = File(".").absolutePath
-        window.setTitle("$projectName [$projectPath] - $WINDOW_TITLE")
+        window.setTitle("$projectName [$projectPath] - $NAME")
     }
 
     override fun tick() {

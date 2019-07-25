@@ -6,11 +6,10 @@ import com.cout970.modeler.controller.tasks.TaskNone
 import com.cout970.modeler.controller.tasks.TaskUpdateModel
 import com.cout970.modeler.core.helpers.TransformationHelper
 import com.cout970.modeler.core.project.IProgramState
-import com.cout970.modeler.core.project.ProjectManager
 
 
 @UseCase("model.texture.split")
-private fun splitTextures(model: IModel, state: IProgramState, projectManager: ProjectManager): ITask {
+private fun splitTextures(model: IModel, state: IProgramState): ITask {
     val sel = state.textureSelection.getOrNull() ?: state.modelSelection.getOrNull() ?: return TaskNone
     val newModel = TransformationHelper.splitTextures(model, sel)
     return TaskUpdateModel(oldModel = model, newModel = newModel)
