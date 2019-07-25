@@ -91,7 +91,7 @@ class WorldRenderer {
 
     fun renderPivot(ctx: RenderContext) {
         val vao = pivot.getOrCreate(ctx) {
-            ctx.gui.resources.lightMesh.createVao(ctx.buffer, vec3Of(0, 0, 1))
+            ctx.gui.resources.lightMesh.createVao(ctx.buffer, vec3Of(1, 0, 1))
         }
         val (model, selection) = ctx.gui.programState
         val sel = selection.getOrNull() ?: return
@@ -231,7 +231,6 @@ class WorldRenderer {
     fun renderOrientationCube(ctx: RenderContext) {
 
         ctx.gui.windowHandler.saveViewport(ctx.viewportPos, vec2Of(150, 150)) {
-
 
             val vao = orientationCubeCache.getOrCreate(ctx) {
                 ctx.gui.resources.orientationCubeMesh.createVao(ctx.buffer)

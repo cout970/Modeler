@@ -8,11 +8,9 @@ Loads of skyboxes "http://www.custommapmakers.org/skyboxes.php"
 
 ### Current
 
-Fix unnamed task ?
 Fix center cursor when moving the camera
 Add Java export format
 Spread textures UVs
-Fix left panel size
 Fix cursor in UV mode
 Buttons to show/hide panels
 Documentation

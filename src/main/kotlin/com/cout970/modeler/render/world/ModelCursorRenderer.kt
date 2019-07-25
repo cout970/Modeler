@@ -36,12 +36,12 @@ class ModelCursorRenderer {
         }
 
         val rotation = listOf(
-                base rotationTo cursor.rotation.transform(Vector3.X_AXIS),
-                base rotationTo cursor.rotation.transform(Vector3.Y_AXIS),
-                base rotationTo cursor.rotation.transform(Vector3.Z_AXIS),
-                base rotationTo cursor.rotation.transform(Vector3.NEG_X_AXIS),
-                base rotationTo cursor.rotation.transform(Vector3.NEG_Y_AXIS),
-                base rotationTo cursor.rotation.transform(Vector3.NEG_Z_AXIS)
+            base rotationTo cursor.rotation.transform(Vector3.X_AXIS),
+            base rotationTo cursor.rotation.transform(Vector3.Y_AXIS),
+            base rotationTo cursor.rotation.transform(Vector3.Z_AXIS),
+            base rotationTo cursor.rotation.transform(Vector3.NEG_X_AXIS),
+            base rotationTo cursor.rotation.transform(Vector3.NEG_Y_AXIS),
+            base rotationTo cursor.rotation.transform(Vector3.NEG_Z_AXIS)
         )
 
         val model = when (cursor.mode) {
@@ -58,11 +58,11 @@ class ModelCursorRenderer {
 
         val parts = cursor.getParts().mapIndexed { index, cursorPart ->
             CursorPart(model, if (cursorPart.hovered) Vector3.ONE else cursorPart.color,
-                    TRSTransformation(
-                            translation = cursor.position,
-                            rotation = rotation[index],
-                            scale = vec3Of(params.length / 16f)
-                    ).matrix
+                TRSTransformation(
+                    translation = cursor.position,
+                    rotation = rotation[index],
+                    scale = vec3Of(params.length / 16f)
+                ).matrix
             )
         }
 
@@ -77,6 +77,7 @@ class ModelCursorRenderer {
                 globalColor.setVector3(p.color)
                 accept(p.model)
 
+                // Cursor hitboxes
 //                val part = cursor.getParts()[index]
 //                val vao = part.calculateHitbox(cursor, ctx.camera, ctx.viewport).createVao(ctx.buffer, vec3Of(1, 1, 1))
 //

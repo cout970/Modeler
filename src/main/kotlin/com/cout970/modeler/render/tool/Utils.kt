@@ -61,13 +61,13 @@ inline fun IMesh.forEachVertex(func: (Vertex) -> Unit) {
         val bd = d - b
         val normal = (ac cross bd).normalize()
 
-        func(Vertex(pos[face.pos[0]], tex[face.tex[0]], normal))
-        func(Vertex(pos[face.pos[1]], tex[face.tex[1]], normal))
-        func(Vertex(pos[face.pos[2]], tex[face.tex[2]], normal))
+        func(Vertex(a, tex[face.tex[0]], normal))
+        func(Vertex(b, tex[face.tex[1]], normal))
+        func(Vertex(c, tex[face.tex[2]], normal))
 
-        func(Vertex(pos[face.pos[0]], tex[face.tex[0]], normal))
-        func(Vertex(pos[face.pos[2]], tex[face.tex[2]], normal))
-        func(Vertex(pos[face.pos[3]], tex[face.tex[3]], normal))
+        func(Vertex(a, tex[face.tex[0]], normal))
+        func(Vertex(c, tex[face.tex[2]], normal))
+        func(Vertex(d, tex[face.tex[3]], normal))
     }
 }
 

@@ -55,7 +55,7 @@ class StringInput(
             onTextChange?.invoke(it)
         }
 
-        eventName?.let { event ->
+        eventName?.takeIf { it.isNotBlank() }?.let { event ->
             onLoseFocus = {
                 dispatch(event)
             }
