@@ -1,3 +1,4 @@
+dist: trusty
 language: java
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -6,6 +7,6 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 jdk:
-  - oraclejdk8
+  - openjdk8
 install:
   - chmod +x gradlew && ./gradlew build
