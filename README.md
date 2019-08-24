@@ -13,6 +13,15 @@ This tool is written in Kotlin, using [LWJGL3](https://www.lwjgl.org/) for rende
 ![texture editing](https://i.imgur.com/5HfHfy4.png)
 ![animations](https://i.imgur.com/c1KTFaO.png)
 
+### How to install/run
+Go to releases in github and download the latest version. In each release there are 3 files, you need to download the file modeler-A.B-beta.jar where A.B is the version of the program.
+
+Once you get the jar file, create a new folder and move the jar file to that folder. If you have java correclty configurared you can double click the jar file to start the application. 
+
+If this doesn't work for your, you can start the program by opening a comand line window in the folder and type `java -jar modeler-A.B-beta.jar` replacing 'modeler-A.B-beta.jar' for the name of the jar file.
+
+If the program starts, a folder called `data` will be created. This folders stores backups, the main config file and the logs of the program. If the program fails to start you can copy the program logs and open an issue in github.
+
 ### Current state
 Currently this is project is not in active development. So don't expect updates soon, unless I need 3D models for other project, then I will continue updating this 3D editor.
 
