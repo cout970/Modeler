@@ -4,7 +4,7 @@ import com.cout970.modeler.core.log.print
 import org.liquidengine.legui.exception.LeguiExceptionTemplate
 import org.liquidengine.legui.image.ImageChannels
 import org.liquidengine.legui.image.LoadableImage
-import org.liquidengine.leutil.io.IOUtil
+import org.liquidengine.legui.util.IOUtil
 import org.lwjgl.stb.STBImage
 import java.io.IOException
 import java.nio.ByteBuffer

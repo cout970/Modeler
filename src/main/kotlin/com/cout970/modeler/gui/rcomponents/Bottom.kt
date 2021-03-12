@@ -309,8 +309,8 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
         verticalScroll {
             style {
                 classes("vertical_scroll")
-                style.minWidth = 16f
-                style.bottom = 0f
+                style.setMinWidth(16f)
+                style.setBottom(0f)
                 visibleAmount = 50f
             }
         }
@@ -322,8 +322,8 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
             }
 
             postMount {
-                style.right = 16f
-                style.bottom = 0f
+                style.setRight(16f)
+                style.setBottom(0f)
                 listenerMap.clear(ScrollEvent::class.java)
             }
         }
@@ -357,9 +357,9 @@ class BottomPanel : RStatelessComponent<BottomPanelProps>() {
                 onKey {
                     if (it.action == 0) return@onKey
 
-                    val state = when {
-                        it.key == 263 -> "left"
-                        it.key == 262 -> "right"
+                    val state = when (it.key) {
+                        263 -> "left"
+                        262 -> "right"
                         else -> return@onKey
                     }
 

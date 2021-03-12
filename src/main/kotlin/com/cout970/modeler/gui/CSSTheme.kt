@@ -119,23 +119,23 @@ object CSSTheme : Theme(createThemeManager()) {
         if (comp is TextComponent) {
             style.getString("textAlign") {
                 when (it) {
-                    "right" -> comp.textState.horizontalAlign = HorizontalAlign.RIGHT
-                    "left" -> comp.textState.horizontalAlign = HorizontalAlign.LEFT
-                    "center" -> comp.textState.horizontalAlign = HorizontalAlign.CENTER
+                    "right" -> comp.style.horizontalAlign = HorizontalAlign.RIGHT
+                    "left" -> comp.style.horizontalAlign = HorizontalAlign.LEFT
+                    "center" -> comp.style.horizontalAlign = HorizontalAlign.CENTER
                     else -> log(Level.DEBUG) { "Invalid textAlign value: $it" }
                 }
             }
             style.getString("textAlignVertical") {
                 when (it) {
-                    "top" -> comp.textState.verticalAlign = VerticalAlign.TOP
-                    "middle" -> comp.textState.verticalAlign = VerticalAlign.MIDDLE
-                    "bottom" -> comp.textState.verticalAlign = VerticalAlign.BOTTOM
+                    "top" -> comp.style.verticalAlign = VerticalAlign.TOP
+                    "middle" -> comp.style.verticalAlign = VerticalAlign.MIDDLE
+                    "bottom" -> comp.style.verticalAlign = VerticalAlign.BOTTOM
                     else -> log(Level.DEBUG) { "Invalid textAlignVertical value: $it" }
                 }
             }
-            style.getFloat("textSize") { comp.textState.fontSize = it }
-            style.getColor("color") { comp.textState.textColor = it }
-            style.getColor("highlightColor") { comp.textState.highlightColor = it }
+            style.getFloat("textSize") { comp.textState.textWidth = it }
+            style.getColor("color") { comp.style.textColor = it }
+            style.getColor("highlightColor") { comp.style.highlightColor = it }
         }
     }
 
@@ -179,7 +179,6 @@ private fun createThemeManager(): ThemeManager {
     m.addComponent<CheckBox>()
     m.addComponent<Component>()
     m.addComponent<Label>()
-    m.addComponent<LayerContainer>()
     m.addComponent<ProgressBar>()
     m.addComponent<ScrollablePanel>()
     m.addComponent<RadioButton>()

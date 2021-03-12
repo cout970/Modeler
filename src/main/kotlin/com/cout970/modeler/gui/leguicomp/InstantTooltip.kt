@@ -10,7 +10,7 @@ import org.liquidengine.legui.component.Tooltip
 class InstantTooltip(str: String) : Tooltip(str) {
 
     init {
-        size = Vector2f(str.length * textState.fontSize * 0.5f, textState.fontSize)
+        size = Vector2f(str.length * textState.textWidth * 0.5f, textState.textHeight)
     }
 
     override fun setComponent(component: Component?) {

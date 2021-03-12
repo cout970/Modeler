@@ -141,13 +141,13 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
             val project = props.propertyHolder.projectProperties
 
             +FixedLabel("Project Info", 0f, 4f, 660f, 24f).apply {
-                textState.fontSize = 22f
+                style.fontSize = 22f
             }
 
             // Owner
             +FixedLabel("Project owner", 10f, 30f, 120f, 24f).apply {
-                textState.fontSize = 20f
-                textState.horizontalAlign = HorizontalAlign.LEFT
+                style.fontSize = 20f
+                style.horizontalAlign = HorizontalAlign.LEFT
             }
 
             +FixedLabel(project.owner.name, 160f, 30f, 480f, 24f).apply {
@@ -156,8 +156,8 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
 
             // Name
             +FixedLabel("Project name", 10f, 60f, 120f, 24f).apply {
-                textState.fontSize = 20f
-                textState.horizontalAlign = HorizontalAlign.LEFT
+                style.fontSize = 20f
+                style.horizontalAlign = HorizontalAlign.LEFT
             }
 
             +StringInput("", project.name, 160f, 60f, 480f).apply {
@@ -176,8 +176,8 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
 
             // Description
             +FixedLabel("Project description", 10f, 90f, 120f, 24f).apply {
-                textState.fontSize = 20f
-                textState.horizontalAlign = HorizontalAlign.LEFT
+                style.fontSize = 20f
+                style.horizontalAlign = HorizontalAlign.LEFT
             }
 
             +MultilineStringInput(project.description, 160f, 90f, 480f, 24f + 80f).apply {
@@ -207,13 +207,13 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
             val user = Config.user
 
             +FixedLabel("User Info", 0f, 4f, 660f, 24f).apply {
-                textState.fontSize = 22f
+                style.fontSize = 22f
             }
 
             // Username
             +FixedLabel("Name", 10f, 30f, 80f, 24f).apply {
-                textState.fontSize = 18f
-                textState.horizontalAlign = HorizontalAlign.LEFT
+                style.fontSize = 18f
+                style.horizontalAlign = HorizontalAlign.LEFT
             }
 
             +StringInput("", user.name, 160f, 30f, 480f).apply {
@@ -231,8 +231,8 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
             }
 
             +FixedLabel("Email", 10f, 60f, 80f, 24f).apply {
-                textState.fontSize = 18f
-                textState.horizontalAlign = HorizontalAlign.LEFT
+                style.fontSize = 18f
+                style.horizontalAlign = HorizontalAlign.LEFT
             }
 
             +StringInput("", user.email, 160f, 60f, 480f).apply {
@@ -250,8 +250,8 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
             }
 
             +FixedLabel("Web", 10f, 90f, 80f, 24f).apply {
-                textState.fontSize = 18f
-                textState.horizontalAlign = HorizontalAlign.LEFT
+                style.fontSize = 18f
+                style.horizontalAlign = HorizontalAlign.LEFT
             }
 
             +StringInput("", user.web, 160f, 90f, 480f).apply {
@@ -322,8 +322,8 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                         }
 
                         +FixedLabel(name.capitalize(), 10f, 0f, 100f, 24f).apply {
-                            textState.horizontalAlign = HorizontalAlign.LEFT
-                            textState.fontSize = 20f
+                            style.horizontalAlign = HorizontalAlign.LEFT
+                            style.fontSize = 20f
                             tooltip?.let { this.tooltip = InstantTooltip(it) }
                         }
 
@@ -358,10 +358,10 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
 
             verticalScroll {
                 style {
-                    style.minWidth = 16f
+                    style.setMinWidth(16f)
                     visibleAmount = 50f
-                    style.top = 0f
-                    style.bottom = 0f
+                    style.setTop(0f)
+                    style.setBottom(0f)
                     classes("popup_scroll_panel_scroll")
                 }
 
@@ -372,8 +372,8 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
 
             viewport {
                 style {
-                    style.right = 18f
-                    style.bottom = 0f
+                    style.setRight(18f)
+                    style.setBottom(0f)
                     classes("popup_scroll_panel_viewport")
                 }
             }
@@ -401,8 +401,8 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
                         }
 
                         +FixedLabel(name.capitalize(), 10f, 0f, 100f, 24f).apply {
-                            textState.horizontalAlign = HorizontalAlign.LEFT
-                            textState.fontSize = 20f
+                            style.horizontalAlign = HorizontalAlign.LEFT
+                            style.fontSize = 20f
                             tooltip?.let { this.tooltip = InstantTooltip(it) }
                         }
 
@@ -458,53 +458,53 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
             +FixedLabel("Modeler made by Cout970",
                     0f, 10f, width, 24f).apply {
                 fontSize(22f)
-                textState.horizontalAlign = HorizontalAlign.CENTER
+                style.horizontalAlign = HorizontalAlign.CENTER
             }
             +FixedLabel("Special thanks to:",
                     10f, 40f, width - 40f, 24f).apply {
                 fontSize(22f)
-                textState.horizontalAlign = HorizontalAlign.LEFT
+                style.horizontalAlign = HorizontalAlign.LEFT
             }
             +FixedLabel("- MechWarrior99 for the inspiration to start the project, the initial gui design and testing",
                     10f, 60f, width - 40f, 24f).apply {
                 fontSize(22f)
-                textState.horizontalAlign = HorizontalAlign.LEFT
+                style.horizontalAlign = HorizontalAlign.LEFT
             }
             +FixedLabel("- ShchAlexander for develop Legui and support the project",
                     10f, 80f, width - 40f, 24f).apply {
                 fontSize(22f)
-                textState.horizontalAlign = HorizontalAlign.LEFT
+                style.horizontalAlign = HorizontalAlign.LEFT
             }
             +FixedLabel("Technologies used:",
                     10f, 110f, width - 40f, 24f).apply {
                 fontSize(22f)
-                textState.horizontalAlign = HorizontalAlign.LEFT
+                style.horizontalAlign = HorizontalAlign.LEFT
             }
             +FixedLabel("- Kotlin: made by Jetbrains",
                     10f, 130f, width - 40f, 24f).apply {
                 fontSize(22f)
-                textState.horizontalAlign = HorizontalAlign.LEFT
+                style.horizontalAlign = HorizontalAlign.LEFT
             }
             +FixedLabel("- Legui: made by ShchAlexander",
                     10f, 150f, width - 40f, 24f).apply {
                 fontSize(22f)
-                textState.horizontalAlign = HorizontalAlign.LEFT
+                style.horizontalAlign = HorizontalAlign.LEFT
             }
             +FixedLabel("- LWJGL: from the LWJGL Team",
                     10f, 170f, width - 40f, 24f).apply {
                 fontSize(22f)
-                textState.horizontalAlign = HorizontalAlign.LEFT
+                style.horizontalAlign = HorizontalAlign.LEFT
             }
             +FixedLabel("Source code:",
                     10f, 200f, width - 40f, 24f).apply {
                 fontSize(22f)
-                textState.horizontalAlign = HorizontalAlign.LEFT
+                style.horizontalAlign = HorizontalAlign.LEFT
             }
             +FixedLabel("https://github.com/cout970/Modeler",
                     10f, 220f, width - 40f, 24f).apply {
                 fontSize(22f)
-                textState.horizontalAlign = HorizontalAlign.LEFT
-                textState.textColor = Vector4f(0f, 119f / 255f, 204f / 255f, 1.0f)
+                style.horizontalAlign = HorizontalAlign.LEFT
+                style.textColor = Vector4f(0f, 119f / 255f, 204f / 255f, 1.0f)
                 onClick {
                     openLink("https://github.com/cout970/Modeler")
                 }
@@ -513,13 +513,13 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
             +FixedLabel("Shortcuts:",
                     10f, 260f, width - 40f, 24f).apply {
                 fontSize(22f)
-                textState.horizontalAlign = HorizontalAlign.LEFT
+                style.horizontalAlign = HorizontalAlign.LEFT
             }
             +FixedLabel("https://github.com/cout970/Modeler/blob/master/Shortcuts.md",
                     10f, 280f, width - 40f, 24f).apply {
                 fontSize(22f)
-                textState.horizontalAlign = HorizontalAlign.LEFT
-                textState.textColor = Vector4f(0f, 119f / 255f, 204f / 255f, 1.0f)
+                style.horizontalAlign = HorizontalAlign.LEFT
+                style.textColor = Vector4f(0f, 119f / 255f, 204f / 255f, 1.0f)
                 onClick {
                     openLink("https://github.com/cout970/Modeler/blob/master/Shortcuts.md")
                 }
@@ -528,13 +528,13 @@ class ConfigMenu : RComponent<ConfigMenuProps, ConfigMenu.State>() {
             +FixedLabel("You can ask for support at the Magneticraft discord:",
                 10f, 320f, width - 40f, 24f).apply {
                 fontSize(22f)
-                textState.horizontalAlign = HorizontalAlign.LEFT
+                style.horizontalAlign = HorizontalAlign.LEFT
             }
             +FixedLabel("Discord",
                 10f, 340f, width - 40f, 24f).apply {
                 fontSize(22f)
-                textState.horizontalAlign = HorizontalAlign.LEFT
-                textState.textColor = Vector4f(0f, 119f / 255f, 204f / 255f, 1.0f)
+                style.horizontalAlign = HorizontalAlign.LEFT
+                style.textColor = Vector4f(0f, 119f / 255f, 204f / 255f, 1.0f)
                 onClick {
                     openLink("https://discord.gg/EhYbA97")
                 }

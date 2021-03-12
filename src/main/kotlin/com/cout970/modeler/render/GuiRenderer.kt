@@ -10,14 +10,14 @@ import com.cout970.modeler.gui.leguicomp.PixelBorder
 import com.cout970.modeler.gui.leguicomp.ProfilerDiagram
 import com.cout970.modeler.input.event.CustomCallbackKeeper
 import com.cout970.modeler.render.gui.LeguiComponentRenderer
-import org.liquidengine.legui.animation.Animator
+import org.liquidengine.legui.animation.AnimatorProvider
 import org.liquidengine.legui.component.Frame
-import org.liquidengine.legui.component.LayerContainer
 import org.liquidengine.legui.component.Panel
-import org.liquidengine.legui.listener.processor.EventProcessor
+import org.liquidengine.legui.listener.processor.EventProcessorProvider
 import org.liquidengine.legui.system.context.CallbackKeeper
 import org.liquidengine.legui.system.context.Context
 import org.liquidengine.legui.system.handler.processor.SystemEventProcessor
+import org.liquidengine.legui.system.handler.processor.SystemEventProcessorImpl
 import org.liquidengine.legui.system.renderer.Renderer
 import org.liquidengine.legui.system.renderer.RendererProvider
 import org.liquidengine.legui.system.renderer.nvg.NvgComponentRenderer
@@ -39,8 +39,8 @@ class GuiRenderer(val rootFrame: Frame, window: Long) {
 
     init {
         callbackKeeper = CustomCallbackKeeper()
-        systemEventProcessor = SystemEventProcessor()
-        systemEventProcessor.addDefaultCallbacks(callbackKeeper)
+        systemEventProcessor = SystemEventProcessorImpl()
+        SystemEventProcessor.addDefaultCallbacks(callbackKeeper, systemEventProcessor)
         RendererProvider.setRendererProvider(NvgRendererProvider.getInstance())
         renderer = NvgRenderer()
         renderer.initialize()
@@ -48,21 +48,25 @@ class GuiRenderer(val rootFrame: Frame, window: Long) {
         context.isDebugEnabled = Debugger.DYNAMIC_DEBUG
 
         (RendererProvider.getInstance() as? NvgRendererProvider)?.let {
-            it.putBorderRenderer(PixelBorder::class.java, PixelBorder.PixelBorderRenderer)
+//            it.putBorderRenderer(PixelBorder::class.java, PixelBorder.PixelBorderRenderer)
+            it.addBorderRenderer(PixelBorder::class.java, PixelBorder.PixelBorderRenderer)
             it.putComponentRenderer(ProfilerDiagram::class.java, ProfilerDiagram.ProfilerDiagramRenderer)
             it.putComponentRenderer(AnimationPanel::class.java, AnimationPanel.Renderer)
             it.putComponentRenderer(AnimationPanelHead::class.java, AnimationPanelHead.Renderer)
             it.putComponentRenderer(Panel::class.java, LeguiComponentRenderer as NvgComponentRenderer<Panel>)
-            it.putComponentRenderer(com.cout970.modeler.gui.leguicomp.Panel::class.java, LeguiComponentRenderer as NvgComponentRenderer<com.cout970.modeler.gui.leguicomp.Panel>)
-            it.putComponentRenderer(LayerContainer::class.java, LeguiComponentRenderer as NvgComponentRenderer<LayerContainer>)
+            it.putComponentRenderer(
+                com.cout970.modeler.gui.leguicomp.Panel::class.java,
+                LeguiComponentRenderer as NvgComponentRenderer<com.cout970.modeler.gui.leguicomp.Panel>
+            )
+//            it.putComponentRenderer(LayerContainer::class.java, LeguiComponentRenderer as NvgComponentRenderer<LayerContainer>)
         }
     }
 
     fun updateEvents() {
         context.updateGlfwWindow()
-        EventProcessor.getInstance().processEvents()
+        EventProcessorProvider.getInstance().processEvents()
         systemEventProcessor.processEvents(rootFrame, context)
-        Animator.getInstance().runAnimations()
+        AnimatorProvider.getAnimator().runAnimations()
     }
 
     fun render() {

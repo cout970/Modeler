@@ -38,7 +38,7 @@ class AnimationPanel(val animator: Animator, val animation: IAnimation) : Panel(
         override fun renderComponent(comp: AnimationPanel, context: Context, nanovg: Long) {
             createScissorByParent(nanovg, comp)
             val style = comp.style
-            NvgShapes.drawRect(nanovg, comp.absolutePosition, comp.size, style.background.color, style.borderRadius)
+            NvgShapes.drawRect(nanovg, comp.absolutePosition, comp.size, style.background.color, 0f)
             comp.render(nanovg)
             resetScissor(nanovg)
         }
@@ -130,7 +130,7 @@ class AnimationPanelHead(val animator: Animator, val animation: IAnimation) : Pa
         override fun renderComponent(comp: AnimationPanelHead, context: Context, nanovg: Long) {
             createScissorByParent(nanovg, comp)
             val style = comp.style
-            NvgShapes.drawRect(nanovg, comp.absolutePosition, comp.size, style.background.color, style.borderRadius)
+            NvgShapes.drawRect(nanovg, comp.absolutePosition, comp.size, style.background.color, 0f)
             comp.render(nanovg)
             resetScissor(nanovg)
         }
@@ -175,7 +175,7 @@ class AnimationPanelHead(val animator: Animator, val animation: IAnimation) : Pa
                 HorizontalAlign.CENTER,
                 VerticalAlign.MIDDLE,
                 18f,
-                FontRegistry.DEFAULT,
+                FontRegistry.getDefaultFont(),
                 frame.toString(),
                 white()
             )

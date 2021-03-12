@@ -149,18 +149,18 @@ class ModelTree : RComponent<ModelTreeProps, ModelTreeState>() {
             verticalScroll {
                 style {
                     borderless()
-                    style.minWidth = 16f
+                    style.setMinWidth(16f)
                     visibleAmount = 50f
-                    style.top = 0f
-                    style.bottom = 0f
+                    style.setTop(0f)
+                    style.setBottom(0f)
                     classes("left_panel_model_tree_scroll")
                 }
             }
 
             viewport {
                 style {
-                    style.right = 18f
-                    style.bottom = 0f
+                    style.setRight(18f)
+                    style.setBottom(0f)
                     classes("left_panel_model_tree_box")
                 }
             }

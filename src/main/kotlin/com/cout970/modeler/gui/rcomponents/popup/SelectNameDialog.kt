@@ -38,13 +38,13 @@ class SelectNameDialog : RComponent<PopupReturnProps, SelectNameDialogState>() {
 
         // first line
         +FixedLabel("New Project Name", 0f, 8f, 460f, 24f).apply {
-            textState.fontSize = 22f
+            style.fontSize = 22f
         }
 
         //second line
         +FixedLabel("Name", 25f, 50f, 400f, 24f).apply {
-            textState.fontSize = 20f
-            textState.horizontalAlign = HorizontalAlign.LEFT
+            style.fontSize = 20f
+            style.horizontalAlign = HorizontalAlign.LEFT
         }
 
         comp(TextInput(state.text, 90f, 50f, 250f, 24f)) {

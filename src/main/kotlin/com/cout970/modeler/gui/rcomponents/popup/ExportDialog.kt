@@ -63,13 +63,13 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
 
         // first line
         +FixedLabel("Export Model", 0f, 8f, 460f, 24f).apply {
-            textState.fontSize = 22f
+            style.fontSize = 22f
         }
 
         //second line
         +FixedLabel("Format", 25f, 50f, 400f, 24f).apply {
-            textState.fontSize = 20f
-            textState.horizontalAlign = HorizontalAlign.LEFT
+            style.fontSize = 20f
+            style.horizontalAlign = HorizontalAlign.LEFT
         }
 
 
@@ -116,8 +116,8 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
 
         //third line
         +FixedLabel("Path", 25f, 100f, 400f, 24f).apply {
-            textState.fontSize = 20f
-            textState.horizontalAlign = HorizontalAlign.LEFT
+            style.fontSize = 20f
+            style.horizontalAlign = HorizontalAlign.LEFT
         }
 
         comp(TextInput(state.text, 90f, 100f, 250f, 24f)) {
@@ -145,8 +145,8 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
         //fourth line
 
         +FixedLabel("Prefix", 25f, 150f, 400f, 24f).apply {
-            textState.fontSize = 20f
-            textState.horizontalAlign = HorizontalAlign.LEFT
+            style.fontSize = 20f
+            style.horizontalAlign = HorizontalAlign.LEFT
         }
 
         comp(TextInput(state.prefix, 90f, 150f, 350f, 24f)) {
@@ -166,7 +166,7 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
         //fifth line
         +CheckBox("Flip UV", 25f, 200f, 120f, 24f).apply {
 
-            textState.fontSize = 18f
+            style.fontSize = 18f
             paddingLeft(5f)
             isChecked = state.flipUV
             style.setBorderRadius(0f)
@@ -188,7 +188,7 @@ class ExportDialog : RComponent<PopupReturnProps, ExportDialogState>() {
 
         +CheckBox("Include normals", 25f + 120f + 10f, 200f, 180f, 24f).apply {
 
-            textState.fontSize = 18f
+            style.fontSize = 18f
             paddingLeft(5f)
             isChecked = state.useNormals
             style.setBorderRadius(0f)

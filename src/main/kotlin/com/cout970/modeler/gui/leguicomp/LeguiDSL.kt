@@ -109,16 +109,16 @@ fun RBuilder.onDoubleClick(time: Int = 500, func: (MouseClickEvent<*>) -> Unit) 
 }
 
 fun TextComponent.defaultTextColor() {
-    textState.textColor = CSSTheme.getColor("text").toColor()
+    (this as Component).style.textColor = CSSTheme.getColor("text").toColor()
 }
 
 fun TextComponent.fontSize(size: Float = 16f) {
-    textState.fontSize = size
+    (this as Component).style.fontSize = size
 }
 
 
 fun TextArea.defaultTextColor() {
-    textState.textColor = CSSTheme.getColor("text").toColor()
+    (this as Component).style.textColor = CSSTheme.getColor("text").toColor()
 }
 
 fun Component.debugPixelBorder() {

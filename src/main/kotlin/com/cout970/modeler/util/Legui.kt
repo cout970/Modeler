@@ -12,12 +12,12 @@ import org.liquidengine.legui.system.context.Context
 val Component.absolutePositionV: IVector2 get() = absolutePosition.toIVector()
 
 var Frame.size: Vector2f
-    get() = componentLayer.container.size
+    get() = componentLayer.size
     set(value) {
         allLayers.forEach {
-            it.container.size = value
+            it.size = value
         }
-        componentLayer.container.size = value
+        componentLayer.size = value
     }
 
 

@@ -130,7 +130,7 @@ object FileDialogs {
 
         return try {
             TinyFileDialogs.tinyfd_openFileDialog(title, defaultPath, filtersBuffer, description, false)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             log(Level.ERROR) {
                 "Error on a open file dialog: title='$title', description='$description', " +
                         "defaultPath='$defaultPath', filters=$filters"

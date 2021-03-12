@@ -59,8 +59,8 @@ class EditChannel : RComponent<EditChannelProps, VisibleWidget>() {
             style {
                 metadata["ref"] = channel.ref
                 classes("string_input", "string_input_rename")
-                textState.horizontalAlign = HorizontalAlign.CENTER
-                textState.fontSize = 24f
+                style.horizontalAlign = HorizontalAlign.CENTER
+                style.fontSize = 24f
                 sizeY = 32f
             }
             postMount {

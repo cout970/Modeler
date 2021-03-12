@@ -78,42 +78,42 @@ class CenterPanel : RStatelessComponent<CenterPanelProps>() {
 
             // first level
             +FixedLabel("Open new view:", 0f, 0f, 100f, 24f)
-                    .apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+                .apply { horizontalAlign = HorizontalAlign.LEFT; textState.textWidth = 20f }
 
             +FixedLabel("Close view:", 0f, 25f, 100f, 24f)
-                    .apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+                .apply { horizontalAlign = HorizontalAlign.LEFT; textState.textWidth = 20f }
 
             +FixedLabel("Resize view:", 0f, 50f, 100f, 24f)
-                    .apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+                .apply { horizontalAlign = HorizontalAlign.LEFT; textState.textWidth = 20f }
 
             +FixedLabel("Change mode:", 0f, 75f, 100f, 24f)
-                    .apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+                .apply { horizontalAlign = HorizontalAlign.LEFT; textState.textWidth = 20f }
 
             +FixedLabel("Hide left:", 0f, 100f, 100f, 24f)
-                    .apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+                .apply { horizontalAlign = HorizontalAlign.LEFT; textState.textWidth = 20f }
 
             +FixedLabel("Hide right:", 0f, 125f, 100f, 24f)
-                    .apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+                .apply { horizontalAlign = HorizontalAlign.LEFT; textState.textWidth = 20f }
 
             // second level
 
             +FixedLabel("Alt + N", 150f, 0f, 100f, 24f)
-                    .apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+                .apply { horizontalAlign = HorizontalAlign.LEFT; fontSize = 20f }
 
             +FixedLabel("Alt + D", 150f, 25f, 100f, 24f)
-                    .apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+                .apply { horizontalAlign = HorizontalAlign.LEFT; fontSize = 20f }
 
             +FixedLabel("Alt + J/K", 150f, 50f, 100f, 24f)
-                    .apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+                .apply { horizontalAlign = HorizontalAlign.LEFT; fontSize = 20f }
 
             +FixedLabel("Alt + M", 150f, 75f, 100f, 24f)
-                    .apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+                .apply { horizontalAlign = HorizontalAlign.LEFT; fontSize = 20f }
 
             +FixedLabel("Alt + L", 150f, 100f, 100f, 24f)
-                    .apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+                .apply { horizontalAlign = HorizontalAlign.LEFT; fontSize = 20f }
 
             +FixedLabel("Alt + R", 150f, 125f, 100f, 24f)
-                    .apply { textState.horizontalAlign = HorizontalAlign.LEFT; textState.fontSize = 20f }
+                .apply { horizontalAlign = HorizontalAlign.LEFT; fontSize = 20f }
 
         }
 

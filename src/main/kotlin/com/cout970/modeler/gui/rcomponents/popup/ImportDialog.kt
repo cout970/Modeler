@@ -48,13 +48,13 @@ class ImportDialog : RComponent<PopupReturnProps, ImportDialogState>() {
 
         // first line
         +FixedLabel("Import Model", 0f, 8f, 460f, 24f).apply {
-            textState.fontSize = 22f
+            style.fontSize = 22f
         }
 
         //second line
         +FixedLabel("Path", 25f, 50f, 64f, 24f).apply {
-            textState.fontSize = 20f
-            textState.horizontalAlign = HorizontalAlign.LEFT
+            style.fontSize = 20f
+            style.horizontalAlign = HorizontalAlign.LEFT
         }
 
         +TextInput(state.text, 90f, 50f, 250f, 24f).apply {
@@ -90,8 +90,8 @@ class ImportDialog : RComponent<PopupReturnProps, ImportDialogState>() {
 
         //third line
         +FixedLabel("Format", 25f, 100f, 64f, 24f).apply {
-            textState.fontSize = 20f
-            textState.horizontalAlign = HorizontalAlign.LEFT
+            style.fontSize = 20f
+            style.horizontalAlign = HorizontalAlign.LEFT
         }
 
         selectBox {
@@ -129,7 +129,7 @@ class ImportDialog : RComponent<PopupReturnProps, ImportDialogState>() {
             }
 
             on<CheckBoxChangeValueEvent<CheckBox>> {
-                setState { copy(flipUV = it.isNewValue) }
+                setState { copy(flipUV = it.newValue) }
             }
         }
 

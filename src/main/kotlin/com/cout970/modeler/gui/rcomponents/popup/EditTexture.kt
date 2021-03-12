@@ -59,13 +59,13 @@ class EditTexture : RComponent<EditTextureProps, EditTextureState>() {
 
         // first line
         +FixedLabel("Config Material", 0f, 8f, 460f, 24f).apply {
-            textState.fontSize = 22f
+            style.fontSize = 22f
         }
 
         //second line
         +FixedLabel("Name", 25f, 50f, 400f, 24f).apply {
-            textState.fontSize = 20f
-            textState.horizontalAlign = HorizontalAlign.LEFT
+            style.fontSize = 20f
+            style.horizontalAlign = HorizontalAlign.LEFT
         }
 
         comp(TextInput(state.textureName ?: material.name, 90f, 50f, 250f, 24f)) {
@@ -130,8 +130,8 @@ class EditTexture : RComponent<EditTextureProps, EditTextureState>() {
 
     fun DivBuilder.coloredMaterial(material: ColoredMaterial) {
         +FixedLabel("Color", 25f, 90f, 400f, 24f).apply {
-            textState.fontSize = 20f
-            textState.horizontalAlign = HorizontalAlign.LEFT
+            style.fontSize = 20f
+            style.horizontalAlign = HorizontalAlign.LEFT
         }
 
         val color = state.color ?: material.color
@@ -160,8 +160,8 @@ class EditTexture : RComponent<EditTextureProps, EditTextureState>() {
 
     fun DivBuilder.texturedMaterial(material: TexturedMaterial) {
         +FixedLabel("Path", 25f, 90f, 400f, 24f).apply {
-            textState.fontSize = 20f
-            textState.horizontalAlign = HorizontalAlign.LEFT
+            style.fontSize = 20f
+            style.horizontalAlign = HorizontalAlign.LEFT
         }
 
         val path = state.texturePath ?: material.path

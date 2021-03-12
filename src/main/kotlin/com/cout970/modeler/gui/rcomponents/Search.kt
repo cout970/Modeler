@@ -34,7 +34,7 @@ private const val MAX_SEARCH_RESULTS = 40
 
 class Search : RComponent<EmptyProps, SearchState>() {
 
-    private var ctx: Context? = null
+    private var searchCtx: Context? = null
 
     override fun getInitialState() = SearchState(false, "", emptyList(), 0)
 
@@ -91,7 +91,7 @@ class Search : RComponent<EmptyProps, SearchState>() {
                 postMount {
                     sizeX = parent.sizeX - posX - posX
                     if (state.visible) {
-                        ctx?.focus(this)
+                        searchCtx?.focus(this)
                     }
                 }
 
@@ -128,7 +128,7 @@ class Search : RComponent<EmptyProps, SearchState>() {
         }
 
         onCmd("showSearch") {
-            ctx = it["ctx"] as Context
+            searchCtx = it["ctx"] as Context
             setState { copy(visible = true) }
         }
     }

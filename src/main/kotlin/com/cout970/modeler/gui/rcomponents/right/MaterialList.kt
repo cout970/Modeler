@@ -113,18 +113,18 @@ class MaterialList : RStatelessComponent<MaterialListProps>() {
 
             verticalScroll {
                 style {
-                    style.minWidth = 16f
+                    style.setMinWidth(16f)
                     visibleAmount = 50f
-                    style.top = 0f
-                    style.bottom = 0f
+                    style.setTop(0f)
+                    style.setBottom(0f)
                     classes("left_panel_material_list_scroll")
                 }
             }
 
             viewport {
                 style {
-                    style.right = 18f
-                    style.bottom = 0f
+                    style.setRight(18f)
+                    style.setBottom(0f)
                     classes("left_panel_material_list_box")
                 }
             }

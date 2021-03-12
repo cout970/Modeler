@@ -52,9 +52,9 @@ class EditObjectPanel : RComponent<ModelAccessorProps, VisibleWidget>() {
 
         comp(StringInput("model.obj.change.name")) {
             style {
-                textState.horizontalAlign = HorizontalAlign.CENTER
+                style.horizontalAlign = HorizontalAlign.CENTER
                 textState.text = text
-                textState.fontSize = 24f
+                style.fontSize = 24f
                 sizeY = 32f
             }
 

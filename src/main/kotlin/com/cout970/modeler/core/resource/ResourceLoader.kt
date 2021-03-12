@@ -4,8 +4,7 @@ import com.cout970.glutilities.texture.Texture
 import com.cout970.glutilities.texture.TextureLoader
 import com.cout970.modeler.core.log.Level
 import com.cout970.modeler.core.log.log
-import org.liquidengine.legui.image.BufferedImage
-import org.liquidengine.legui.image.Image
+import org.liquidengine.legui.image.StbBackedLoadableImage
 import java.io.FileNotFoundException
 import java.io.InputStream
 
@@ -38,9 +37,10 @@ class ResourceLoader {
                 left,   // GL_TEXTURE_CUBE_MAP_NEGATIVE_X
                 top,    // GL_TEXTURE_CUBE_MAP_POSITIVE_Y
                 bottom, // GL_TEXTURE_CUBE_MAP_NEGATIVE_Y
-                back,   // GL_TEXTURE_CUBE_MAP_POSITIVE_Z
-                front   // GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
-        ))
+            back,   // GL_TEXTURE_CUBE_MAP_POSITIVE_Z
+            front   // GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+        )
+        )
     }
 
     fun getTexture(stream: InputStream): Texture {
@@ -48,7 +48,7 @@ class ResourceLoader {
         return TextureLoader.uploadTexture2D(aux)
     }
 
-    fun getImage(path: String): Image {
-        return BufferedImage(path)
+    fun getImage(path: String): StbBackedLoadableImage {
+        return StbBackedLoadableImage(path)
     }
 }

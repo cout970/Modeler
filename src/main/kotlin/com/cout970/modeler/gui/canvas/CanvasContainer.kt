@@ -30,7 +30,7 @@ class CanvasContainer(var panel: Panel) {
                     l.defaultTextColor()
                     l.posX = 10f
                     l.posY = 8f
-                    l.textState.fontSize = 20f
+                    l.style.fontSize = 20f
                 })
             })
         } else {

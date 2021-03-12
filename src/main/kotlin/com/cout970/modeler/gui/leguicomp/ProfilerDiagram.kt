@@ -46,15 +46,15 @@ class ProfilerDiagram(val timer: Timer) : Panel() {
             val parentPos = parent.absolutePositionV
             val parentSize = parent.size
             NvgText.drawTextLineToRect(
-                    nanovg,
+                nanovg,
                 Vector4f(parentPos.xf + parentSize.x - 50f, parentPos.yf, 60f, 24f),
-                    false,
-                    HorizontalAlign.LEFT,
-                    VerticalAlign.MIDDLE,
-                    16f,
-                    FontRegistry.DEFAULT,
-                    "${component.timer.fps} FPS",
-                    ColorConstants.white()
+                false,
+                HorizontalAlign.LEFT,
+                VerticalAlign.MIDDLE,
+                16f,
+                FontRegistry.getDefaultFont(),
+                "${component.timer.fps} FPS",
+                ColorConstants.white()
             )
 
             if (!Debugger.showProfiling) return
@@ -65,15 +65,15 @@ class ProfilerDiagram(val timer: Timer) : Panel() {
 
             // Ram usage
             NvgText.drawTextLineToRect(
-                    nanovg,
+                nanovg,
                 Vector4f(parentPos.xf + 90f, parentPos.yf, 60f, 24f),
-                    false,
-                    HorizontalAlign.LEFT,
-                    VerticalAlign.MIDDLE,
-                    16f,
-                    FontRegistry.DEFAULT,
-                    "Ram: $ramUsage / $totalRam Mb (used/allocated)",
-                    ColorConstants.white()
+                false,
+                HorizontalAlign.LEFT,
+                VerticalAlign.MIDDLE,
+                16f,
+                FontRegistry.getDefaultFont(),
+                "Ram: $ramUsage / $totalRam Mb (used/allocated)",
+                ColorConstants.white()
             )
 
             // Profiling results
@@ -133,42 +133,43 @@ class ProfilerDiagram(val timer: Timer) : Panel() {
 
 
                 NvgText.drawTextLineToRect(
-                        nanovg,
-                        Vector4f(textBase.xf, textBase.yf + index * 16f + 8f, 200f, 24f),
-                        false,
-                        HorizontalAlign.LEFT,
-                        VerticalAlign.MIDDLE,
-                        16f,
-                        FontRegistry.DEFAULT,
-                        "(%06.2f ms) ".format(time * 1000) + spaces(
-                                level * 5) + lastName,
-                        col[name]!!.toColor()
+                    nanovg,
+                    Vector4f(textBase.xf, textBase.yf + index * 16f + 8f, 200f, 24f),
+                    false,
+                    HorizontalAlign.LEFT,
+                    VerticalAlign.MIDDLE,
+                    16f,
+                    FontRegistry.getDefaultFont(),
+                    "(%06.2f ms) ".format(time * 1000) + spaces(
+                        level * 5
+                    ) + lastName,
+                    col[name]!!.toColor()
                 )
             }
 
             // Text on top the pies
             NvgText.drawTextLineToRect(
-                    nanovg,
-                    Vector4f(pos.xf - 20f, 48f, 200f, 24f),
-                    false,
-                    HorizontalAlign.LEFT,
-                    VerticalAlign.MIDDLE,
-                    16f,
-                    FontRegistry.DEFAULT,
-                    "Level 1",
-                    Vector4f(1f, 1f, 1f, 1f)
+                nanovg,
+                Vector4f(pos.xf - 20f, 48f, 200f, 24f),
+                false,
+                HorizontalAlign.LEFT,
+                VerticalAlign.MIDDLE,
+                16f,
+                FontRegistry.getDefaultFont(),
+                "Level 1",
+                Vector4f(1f, 1f, 1f, 1f)
             )
 
             NvgText.drawTextLineToRect(
-                    nanovg,
-                    Vector4f(pos.xf - 20f, 170f, 200f, 24f),
-                    false,
-                    HorizontalAlign.LEFT,
-                    VerticalAlign.MIDDLE,
-                    16f,
-                    FontRegistry.DEFAULT,
-                    "Level 2",
-                    Vector4f(1f, 1f, 1f, 1f)
+                nanovg,
+                Vector4f(pos.xf - 20f, 170f, 200f, 24f),
+                false,
+                HorizontalAlign.LEFT,
+                VerticalAlign.MIDDLE,
+                16f,
+                FontRegistry.getDefaultFont(),
+                "Level 2",
+                Vector4f(1f, 1f, 1f, 1f)
             )
         }
     }
