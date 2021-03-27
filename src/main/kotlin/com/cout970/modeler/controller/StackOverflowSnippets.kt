@@ -1,6 +1,5 @@
 package com.cout970.modeler.controller
 
-import sun.net.www.protocol.file.FileURLConnection
 import java.io.File
 import java.io.IOException
 import java.io.UnsupportedEncodingException
@@ -134,16 +133,20 @@ object StackOverflowSnippets {
                     connection = url.openConnection()
 
                     if (connection is JarURLConnection) {
-                        checkJarFile(connection, pckgname,
-                                classes)
-                    } else if (connection is FileURLConnection) {
+                        checkJarFile(
+                            connection, pckgname,
+                            classes
+                        )
+                    } else if (connection::class.java.simpleName == "FileURLConnection") {
                         try {
                             checkDirectory(
-                                    File(URLDecoder.decode(url.path, "UTF-8")), pckgname, classes)
+                                File(URLDecoder.decode(url.path, "UTF-8")), pckgname, classes
+                            )
                         } catch (ex: UnsupportedEncodingException) {
                             throw ClassNotFoundException(
-                                    pckgname + " does not appear to be a valid package (Unsupported encoding)",
-                                    ex)
+                                pckgname + " does not appear to be a valid package (Unsupported encoding)",
+                                ex
+                            )
                         }
 
                     } else throw ClassNotFoundException(

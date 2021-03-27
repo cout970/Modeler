@@ -1,9 +1,9 @@
 package com.cout970.modeler.core.network
 
-import sun.misc.Queue
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.net.Socket
+import java.util.*
 import kotlin.concurrent.thread
 
 /**
@@ -35,10 +35,10 @@ class Client() {
 
     data class Connection(val client: Client, val server: Socket) {
 
-        private val packetQueue = Queue<Packet>()
+        private val packetQueue = ArrayDeque<Packet>()
 
         fun send(packet: Packet) {
-            packetQueue.enqueue(packet)
+            packetQueue.addLast(packet)
         }
 
         fun runThread() {
@@ -46,8 +46,8 @@ class Client() {
                 val outStream = DataOutputStream(server.outputStream)
                 val inStream = DataInputStream(server.inputStream)
                 while (!server.isClosed && server.isConnected) {
-                    while (!packetQueue.isEmpty) {
-                        val packet = packetQueue.dequeue()
+                    while (!packetQueue.isEmpty()) {
+                        val packet = packetQueue.removeFirst()
                         val data = packet.encode()
 
                         outStream.writeInt(data.size)

@@ -1,7 +1,6 @@
 package com.cout970.modeler.core.network
 
 import com.cout970.modeler.core.log.print
-import sun.misc.Queue
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.IOException
@@ -44,10 +43,10 @@ class Server {
 
     data class Connection(val server: Server, val client: Socket) {
 
-        private val packetQueue = Queue<Packet>()
+        private val packetQueue = ArrayDeque<Packet>()
 
         fun send(packet: Packet) {
-            packetQueue.enqueue(packet)
+            packetQueue.addLast(packet)
         }
 
         fun runThread() {
@@ -55,8 +54,8 @@ class Server {
                 val outStream = DataOutputStream(client.outputStream.buffered())
                 val inStream = DataInputStream(client.inputStream.buffered())
                 while (!client.isClosed && client.isConnected) {
-                    while (!packetQueue.isEmpty) {
-                        val packet = packetQueue.dequeue()
+                    while (!packetQueue.isEmpty()) {
+                        val packet = packetQueue.removeFirst()
                         val data = packet.encode()
 
                         outStream.writeInt(data.size)
