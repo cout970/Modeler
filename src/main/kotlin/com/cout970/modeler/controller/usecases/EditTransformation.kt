@@ -7,7 +7,7 @@ import com.cout970.modeler.util.EulerRotation
 import com.cout970.vector.extensions.vec3Of
 import javax.script.ScriptEngineManager
 
-val scriptEngine = ScriptEngineManager().getEngineByName("JavaScript")!!
+val scriptEngine = ScriptEngineManager(null).getEngineByName("JavaScript")!!
 
 fun updateTransformation(value: ITransformation, cmd: String, input: String, offset: Float): ITransformation? {
     val newValue: ITransformation

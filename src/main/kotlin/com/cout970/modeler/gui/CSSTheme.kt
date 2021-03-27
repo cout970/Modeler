@@ -24,7 +24,7 @@ import javax.script.ScriptEngineManager
 
 object CSSTheme : Theme(createThemeManager()) {
 
-    private val engine = ScriptEngineManager().getEngineByExtension("js")
+    private val engine = ScriptEngineManager(null).getEngineByExtension("js")
     private lateinit var style: Map<Selector, ScriptObjectMirror>
 
     init {
